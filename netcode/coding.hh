@@ -11,7 +11,7 @@ class coding
 {
 public:
 
-  coding(galois::field&& gf, coding_coefficient_generator_t coefficient_generator)
+  coding(galois::field&& gf, const coding_coefficient_generator_t& coefficient_generator)
     : gf_{std::move(gf)}, coeff_generator_{coefficient_generator}
   {}
 

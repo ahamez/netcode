@@ -29,7 +29,11 @@
 		2BE319541AB0C550001AA9DF /* multiply.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multiply.hh; sourceTree = "<group>"; };
 		2BE319561AB0C550001AA9DF /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
 		2BE319581AB0C550001AA9DF /* compilation.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = compilation.cc; sourceTree = "<group>"; };
-		2BE3195D1AB0C585001AA9DF /* test-compilation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-compilation"; path = "/Users/hal/code/netcode/build/Debug/test-compilation"; sourceTree = "<absolute>"; };
+		2BE319671AB1C3E6001AA9DF /* test-compilation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-compilation"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BE3196A1AB1DE47001AA9DF /* source.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
+		2BE3196B1AB1DEA2001AA9DF /* repair.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = repair.hh; sourceTree = "<group>"; };
+		2BE3196C1AB1EF8D001AA9DF /* handler.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = handler.hh; sourceTree = "<group>"; };
+		2BE3196D1AB206FC001AA9DF /* symbol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +50,7 @@
 		2BC3179E1AB0C53200C61FBB = {
 			isa = PBXGroup;
 			children = (
+				2BE319691AB1DE32001AA9DF /* bin */,
 				2BE3194F1AB0C550001AA9DF /* netcode */,
 				2BE319571AB0C550001AA9DF /* tests */,
 			);
@@ -54,10 +59,14 @@
 		2BE3194F1AB0C550001AA9DF /* netcode */ = {
 			isa = PBXGroup;
 			children = (
+				2BE319521AB0C550001AA9DF /* galois */,
 				2BE319501AB0C550001AA9DF /* coding.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
-				2BE319521AB0C550001AA9DF /* galois */,
+				2BE3196C1AB1EF8D001AA9DF /* handler.hh */,
+				2BE3196B1AB1DEA2001AA9DF /* repair.hh */,
+				2BE3196A1AB1DE47001AA9DF /* source.hh */,
 				2BE319561AB0C550001AA9DF /* types.hh */,
+				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -79,6 +88,14 @@
 			path = tests;
 			sourceTree = "<group>";
 		};
+		2BE319691AB1DE32001AA9DF /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				2BE319671AB1C3E6001AA9DF /* test-compilation */,
+			);
+			name = bin;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -96,7 +113,7 @@
 			);
 			name = "test-compilation";
 			productName = "test-compilation";
-			productReference = 2BE3195D1AB0C585001AA9DF /* test-compilation */;
+			productReference = 2BE319671AB1C3E6001AA9DF /* test-compilation */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -260,6 +277,7 @@
 				2BE319641AB0C585001AA9DF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -1,60 +1,59 @@
 #include <array>
 #include <iostream>
+#include <iterator>
 
-#include "netcode/galois/multiply.hh"
+#include "netcode/galois/field.hh"
 #include "netcode/encoder.hh"
+
+struct handler
+
+{
+  void
+  write(std::size_t len, const char* data)
+  {
+    std::cout << "write " << len << " bytes\n";
+  }
+};
 
 int main()
 {
-  auto field = galois::field{8};
-
   std::array<char[256], 2> src;
-//  char dst[256];
-//
-//  std::fill(dst, dst+256, 0);
-//  std::fill(src[0], src[0]+256, 23);
-//  std::fill(src[1], src[1]+256, 12);
-//
-//  for (auto c : dst)
-//  {
-//    std::cout << +c << ',';
-//  }
-//  std::cout << "\n\n";
-//
-//  galois::multiply_add(field, begin(src), end(src), dst, 1, 250);
-//
-//  for (auto c : dst)
-//  {
-//    std::cout << +c << ',';
-//  }
-//  std::cout << "\n\n";
-//
-//  galois::multiply_add(field, src[0], dst, 2, 256);
-//
-//  for (auto c : dst)
-//  {
-//    std::cout << +c << ',';
-//  }
-//  std::cout << '\n';
 
-  auto coding = ntc::coding{galois::field{8}, [](ntc::id_type x){return x;}};
-  auto encoder = ntc::encoder{std::move(coding)};
+  ntc::coding coding{galois::field{8}, [](ntc::id_type x){return x;}};
+  ntc::encoder encoder{handler{}, coding, 3};
 
-  // Directly write to inner buffer
-  encoder.buffer_size() = 2048;
-  encoder.start_symbol();
-
-  std::copy(src[0], src[0] + 256, encoder.buffer());
-  std::copy(src[1], src[1] + 256, encoder.buffer());
-  // vs
-  encoder.write(src[0], src[0] + 256);
-  encoder.write(src[1], src[1] + 256);
-  // vs
-  encoder.write_n(src[0], 256);
-  encoder.write_n(src[1], 256);
-
-
-  encoder.end_symbol();
+  {
+    auto sym = encoder.make_symbol(512);
+    std::copy(src[0], src[0] + 256, sym.buffer());
+    std::copy(src[1], src[1] + 256, sym.buffer() + 256);
+    encoder.commit_symbol(std::move(sym));
+    std::cout << "---------------\n";
+  }
+  {
+    auto sym = encoder.make_symbol(512);
+    std::copy(src[0], src[0] + 256, sym.buffer());
+    std::copy(src[1], src[1] + 256, sym.buffer() + 256);
+    encoder.commit_symbol(std::move(sym));
+    std::cout << "---------------\n";
+  }
+  {
+    auto sym = encoder.make_symbol(256);
+    std::copy(src[0], src[0] + 256, sym.buffer());
+    sym.resize_buffer(512);
+    std::copy(src[1], src[1] + 256, sym.buffer() + 256);
+    encoder.commit_symbol(std::move(sym));
+    std::cout << "---------------\n";
+  }
+  {
+    auto sym = encoder.make_auto_symbol();
+    auto inserter = sym.back_inserter();
+    std::copy(src[0], src[0] + 256, inserter);
+    std::copy(src[1], src[1] + 256, inserter);
+    std::copy(src[1], src[1] + 256, inserter);
+    encoder.commit_symbol(std::move(sym));
+    std::cout << "---------------\n";
+  }
+  std::cout << encoder.window_size() << '\n';
 
   return 0;
 }
