@@ -44,21 +44,11 @@ public:
   {}
 
   /// @brief Notify the encoder that some data has been received.
-  void
+  /// @return false if the data could not have been decoded, true otherwise.
+  bool
   notify(const char* data)
   {
-  }
-
-  symbol
-  make_symbol(std::size_t buffer_size)
-  {
-    return {buffer_size};
-  }
-
-  auto_symbol
-  make_auto_symbol(std::size_t reserve_size = 256)
-  {
-    return {reserve_size};
+    return {};
   }
 
   void
@@ -70,7 +60,6 @@ public:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      std::cout << "repair!\n";
       repair_.id() = current_repair_id_;
       repair_.write([this](std::size_t nb, const char* data)
                           {
@@ -92,12 +81,12 @@ public:
 
 private:
 
+  /// @brief Delete sources which have been acknowledged.
   void
-  clear_ack_sources()
+  clear_sources()
   noexcept
   {
   }
-
 
   std::unique_ptr<handler_base> handler_ptr_;
 

@@ -23,21 +23,21 @@ int main()
   ntc::encoder encoder{handler{}, coding, 3};
 
   {
-    auto sym = encoder.make_symbol(512);
+    auto sym = ntc::symbol{512};
     std::copy(src[0], src[0] + 256, sym.buffer());
     std::copy(src[1], src[1] + 256, sym.buffer() + 256);
     encoder.commit_symbol(std::move(sym));
     std::cout << "---------------\n";
   }
   {
-    auto sym = encoder.make_symbol(512);
+    auto sym = ntc::symbol{512};
     std::copy(src[0], src[0] + 256, sym.buffer());
     std::copy(src[1], src[1] + 256, sym.buffer() + 256);
     encoder.commit_symbol(std::move(sym));
     std::cout << "---------------\n";
   }
   {
-    auto sym = encoder.make_symbol(256);
+    auto sym = ntc::symbol{256};
     std::copy(src[0], src[0] + 256, sym.buffer());
     sym.resize_buffer(512);
     std::copy(src[1], src[1] + 256, sym.buffer() + 256);
@@ -45,7 +45,7 @@ int main()
     std::cout << "---------------\n";
   }
   {
-    auto sym = encoder.make_auto_symbol();
+    auto sym = ntc::auto_symbol{512};
     auto inserter = sym.back_inserter();
     std::copy(src[0], src[0] + 256, inserter);
     std::copy(src[1], src[1] + 256, inserter);

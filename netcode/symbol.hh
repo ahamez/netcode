@@ -23,7 +23,7 @@ public:
 
 protected:
 
-  /// @brief Tag to discriminate the constructor which reserve a size.
+  /// @brief Tag to discriminate the constructor which reserves a size.
   struct reserve_only{};
 
   symbol_base(std::size_t buffer_size)
@@ -61,7 +61,7 @@ public:
   /// @brief Construct with a 0-initialized buffer.
   /// @param size The size of the initialized buffer.
   symbol(std::size_t size)
-    : symbol_base{buffer_size}
+    : symbol_base{size}
   {}
 
   /// @brief Construct with a copy of some data.
