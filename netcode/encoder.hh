@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "netcode/coding.hh"
-#include "netcode/symbol.hh"
 #include "netcode/types.hh"
 
 namespace ntc {
@@ -18,40 +17,13 @@ public:
   encoder(coding&& c, unsigned int code_rate, code_type type)
     : coding_{std::move(c)}, rate_{code_rate}, type_{type}
     , current_source_id_{0}, current_repair_id_{0}
-    , buffer_size_(1024)
+    , buffer_size_{1024}
   {}
 
   /// @brief Constructor
   encoder(coding&& c)
     : encoder{std::move(c), 4, code_type::systematic}
   {}
-
-  encoder&
-  operator<<(symbol_start s)
-  {
-    start_symbol();
-    return *this;
-  }
-
-  encoder&
-  operator<<(symbol_end)
-  {
-    end_symbol();
-    return *this;
-  }
-
-  encoder&
-  operator<<(symbol_part part)
-  {
-    std::cout << "will read " << (part.buffer_end - part.buffer_start) << " bytes\n";
-    return *this;
-  }
-
-  encoder&
-  operator<<(char byte)
-  {
-    return *this;
-  }
 
   void
   start_symbol()
@@ -62,7 +34,7 @@ public:
   void
   end_symbol()
   {
-    std::cout << "end_symbol " << "\n";
+    std::cout << "end_symbol\n";
   }
 
   char*
@@ -71,9 +43,23 @@ public:
     return nullptr;
   }
 
+//  buffer_iterator_type
+//  buffer_iterator()
+//  {
+//    return an iterator to the underlying container for buffer (certainly a std::vector)
+//    thus, automatic resizing of buffer will be handler by the std::vector
+//  }
+
   template <typename InputIterator>
   void
   write(InputIterator begin, InputIterator end)
+  {
+
+  }
+
+  template <typename InputIterator>
+  void
+  write_n(InputIterator begin, std::size_t)
   {
 
   }

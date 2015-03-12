@@ -40,12 +40,6 @@ int main()
   auto coding = ntc::coding{galois::field{8}, [](ntc::id_type x){return x;}};
   auto encoder = ntc::encoder{std::move(coding)};
 
-  // Copy to inner buffer
-  encoder << ntc::symbol_start{};
-  encoder << ntc::symbol_part{src[0], src[0] + 256}
-          << ntc::symbol_part{src[1], src[1] + 256};
-  encoder << ntc::symbol_end{};
-
   // Directly write to inner buffer
   encoder.buffer_size() = 2048;
   encoder.start_symbol();
@@ -55,6 +49,10 @@ int main()
   // vs
   encoder.write(src[0], src[0] + 256);
   encoder.write(src[1], src[1] + 256);
+  // vs
+  encoder.write_n(src[0], 256);
+  encoder.write_n(src[1], 256);
+
 
   encoder.end_symbol();
 
