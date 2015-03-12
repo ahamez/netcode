@@ -27,28 +27,33 @@ protected:
   /// @brief Tag to discriminate the constructor which reserves a size.
   struct reserve_only{};
 
+  /// @brief Zero-out the buffer.
+  /// @param buffer_size The buffer size.
   symbol_base(std::size_t buffer_size)
     : buffer_(buffer_size, 0)
   {}
 
+  /// @brief Reserve memory for the buffer.
+  /// @param reserve_size The size to reserve.
   symbol_base(std::size_t reserve_size, reserve_only)
     : buffer_()
   {
     buffer_.reserve(reserve_size);
   }
 
+  /// @brief Initialize the buffer with a copy of a memory location.
+  /// @param len The size of the data.
+  /// @param src The data to copy.
   symbol_base(std::size_t len, const char* src)
-    : buffer_{}
-  {
-    buffer_.reserve(len);
-    std::copy_n(src, len, buffer_.begin());
-  }
+    : buffer_(src, src + len)
+  {}
 
   /// @brief Can't delete through this base class.
   ~symbol_base(){}
 
 private:
 
+  /// @brief The buffer storage.
   symbol_buffer_type buffer_;
 };
 

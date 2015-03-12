@@ -31,7 +31,6 @@ using write_fn = void (std::size_t /*bytes to write*/,const char* /*buffer to re
 /*------------------------------------------------------------------------------------------------*/
 
 enum class packet_type : std::uint8_t {ack = 0, repair, source};
-//static constexpr std::uint8_t ack_type_value = static_cast<std::underlying_type<packet_type>>(packet_type::ack);
 
 /*------------------------------------------------------------------------------------------------*/
 

@@ -24,16 +24,16 @@ public:
     return id_;
   }
 
-  /// @internal
   void
   write(const std::function<write_fn>& writer)
   const noexcept
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
-    writer(sizeof(std::uint8_t), reinterpret_cast<const char*>(&packet_ty));
     const auto network_id = htonl(id_);
-    writer(sizeof(id_type), reinterpret_cast<const char*>(&network_id));
     const auto sz = htons(static_cast<std::uint16_t>(symbol_buffer_.size()));
+
+    writer(sizeof(std::uint8_t) , reinterpret_cast<const char*>(&packet_ty));
+    writer(sizeof(id_type)      , reinterpret_cast<const char*>(&network_id));
     writer(sizeof(std::uint16_t), reinterpret_cast<const char*>(&sz));
     writer(symbol_buffer_.size(), symbol_buffer_.data());
   }
