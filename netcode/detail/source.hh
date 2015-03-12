@@ -3,8 +3,9 @@
 #include <arpa/inet.h> // htonl
 
 #include "netcode/types.hh"
+#include "netcode/detail/types.hh"
 
-namespace ntc {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -25,7 +26,7 @@ public:
   }
 
   void
-  write(const std::function<write_fn>& writer)
+  write(const std::function<writer_fn>& writer)
   const noexcept
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
@@ -46,4 +47,4 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace ntc
+}} // namespace ntc::detail

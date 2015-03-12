@@ -1,24 +1,22 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
-#include <vector>
 
-namespace ntc {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Describe if a code is systematic or not.
-enum class code_type {systematic, non_systematic};
+/// @todo Ensure that the symbol is aligned on 16 bytes with a specific allocator.
+using symbol_buffer_type = std::vector<char>;
 
 /*------------------------------------------------------------------------------------------------*/
 
-using id_type = std::uint32_t;
+enum class packet_type : std::uint8_t {ack = 0, repair, source};
 
 /*------------------------------------------------------------------------------------------------*/
 
-using coding_coefficient_generator_t = std::function<id_type(id_type)>;
+using writer_fn = void (std::size_t /*bytes to write*/,const char* /*buffer to read from*/);
 
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace ntc
+}} // namespace ntc::detail

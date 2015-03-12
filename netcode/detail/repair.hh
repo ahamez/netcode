@@ -3,12 +3,13 @@
 #include <arpa/inet.h> // htonl
 #include <vector>
 
-#include "netcode/types.hh"
+#include "netcode/detail/types.hh"
 
-namespace ntc {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @internal
 class repair
 {
 public:
@@ -32,7 +33,7 @@ public:
   }
 
   void
-  write(const std::function<write_fn>& writer)
+  write(const std::function<writer_fn>& writer)
   const noexcept
   {
     const auto network_id = htonl(id_);
@@ -43,9 +44,9 @@ private:
 
   id_type id_;
   std::vector<id_type> sources_;
-  symbol_buffer_type symbol_;
+  detail::symbol_buffer_type symbol_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace ntc
+}} // namespace ntc::detail

@@ -1,11 +1,9 @@
 #pragma once
 
-#include <memory>
-
 #include "netcode/galois/field.hh"
 #include "netcode/types.hh"
 
-namespace ntc {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -46,4 +44,4 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace ntc
+}} // namespace ntc::detail

@@ -3,19 +3,19 @@
 #include <algorithm> // copy_n
 #include <iterator>  // back_inserter
 
-#include "netcode/source.hh"
-#include "netcode/types.hh"
+#include "netcode/detail/types.hh"
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief The base class for symbol, not intended for direct usage.
 class symbol_base
 {
 public:
 
   /// @internal
-  symbol_buffer_type&
+  detail::symbol_buffer_type&
   symbol_buffer()
   noexcept
   {
@@ -54,7 +54,7 @@ protected:
 private:
 
   /// @brief The buffer storage.
-  symbol_buffer_type buffer_;
+  detail::symbol_buffer_type buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ public:
   {}
 
   /// @brief An iterator to write in the symbol buffer.
-  using back_insert_iterator = std::back_insert_iterator<symbol_buffer_type>;
+  using back_insert_iterator = std::back_insert_iterator<detail::symbol_buffer_type>;
 
   /// @brief Get a back inserter iterator to the symbol buffer.
   back_insert_iterator

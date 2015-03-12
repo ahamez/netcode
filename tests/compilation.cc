@@ -64,11 +64,11 @@ int main()
   std::cout << encoder.window_size() << '\n';
 
   std::array<char, 1> in;
-  in[0] = static_cast<char>(ntc::packet_type::ack);
+  in[0] = static_cast<char>(ntc::detail::packet_type::ack);
   encoder.notify(in.data());
-  in[0] = static_cast<char>(ntc::packet_type::repair);
+  in[0] = static_cast<char>(ntc::detail::packet_type::repair);
   encoder.notify(in.data());
-  in[0] = static_cast<char>(ntc::packet_type::source);
+  in[0] = static_cast<char>(ntc::detail::packet_type::source);
   encoder.notify(in.data());
   in[0] = 42;
   encoder.notify(in.data());
