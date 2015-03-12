@@ -18,7 +18,10 @@ class encoder
 {
 public:
 
+  /// @brief Can't copy-construct an encoder.
   encoder(const encoder&) = delete;
+
+  /// @brief Cant' copy an encoder.
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor
