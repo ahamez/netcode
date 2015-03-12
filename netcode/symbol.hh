@@ -1,6 +1,7 @@
 #pragma once
 
-#include <algorithm>
+#include <algorithm> // copy_n
+#include <iterator>  // back_inserter
 
 #include "netcode/source.hh"
 #include "netcode/types.hh"
@@ -53,6 +54,7 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief A symbol to be encoded.
 class symbol
   : public symbol_base
 {
@@ -71,6 +73,7 @@ public:
     : symbol_base{len, src}
   {}
 
+  /// @brief Get the buffer where to write the symbol.
   char*
   buffer()
   noexcept
@@ -78,24 +81,31 @@ public:
     return symbol_buffer().data();
   }
 
+  /// @brief Resize the buffer.
+  /// @param size The new buffer size.
+  ///
+  /// May cause a copy.
   void
-  resize_buffer(std::size_t new_size)
+  resize_buffer(std::size_t size)
   {
-    symbol_buffer().resize(new_size);
+    symbol_buffer().resize(size);
   }
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief A symbol to be encoded which automatically grows as needed.
 class auto_symbol
   : public symbol_base
 {
 public:
 
+  /// @brief Construct with a pre-allocated buffer to avoid memory re-allocations.
   auto_symbol(std::size_t reserve_size)
     : symbol_base{reserve_size, reserve_only{}}
   {}
 
+  /// @brief Defaut constructor.
   auto_symbol()
     : auto_symbol{256}
   {}
@@ -103,6 +113,7 @@ public:
   /// @brief An iterator to write in the symbol buffer.
   using back_insert_iterator = std::back_insert_iterator<symbol_buffer_type>;
 
+  /// @brief Get a back inserter iterator to the symbol buffer.
   back_insert_iterator
   back_inserter()
   {

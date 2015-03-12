@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iterator>
 #include <list>
 
 #include "netcode/coding.hh"
@@ -48,6 +47,13 @@ public:
   bool
   notify(const char* data)
   {
+    switch (static_cast<packet_type>(data[0]))
+    {
+        case packet_type::ack    : std::cout << "ACK\n"; break;
+        case packet_type::repair : std::cout << "REP\n"; break;
+        case packet_type::source : std::cout << "SRC\n"; break;
+        default                  : std::cout << "???\n";
+    }
     return {};
   }
 
