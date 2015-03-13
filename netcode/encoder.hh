@@ -37,8 +37,8 @@ public:
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , handler_ptr_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
-    , serializer_{new detail::protocol::simple{*handler_ptr_}}
+    , handler_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
+    , serializer_{new detail::protocol::simple{*handler_}}
   {}
 
   /// @brief Constructor
@@ -130,7 +130,7 @@ private:
   detail::repair repair_;
 
   /// @brief The user's handler for various callbacks.
-  std::unique_ptr<detail::handler_base> handler_ptr_;
+  std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::serializer> serializer_;
