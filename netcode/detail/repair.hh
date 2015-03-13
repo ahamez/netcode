@@ -36,8 +36,11 @@ public:
   write(const std::function<writer_fn>& writer)
   const noexcept
   {
+    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
     const auto network_id = htonl(id_);
-    writer(sizeof(id_type), reinterpret_cast<const char*>(&network_id));
+
+    writer(sizeof(std::uint8_t), reinterpret_cast<const char*>(&packet_ty));
+    writer(sizeof(id_type)     , reinterpret_cast<const char*>(&network_id));
   }
 
 private:
