@@ -14,7 +14,7 @@ public:
 
   virtual ~handler_base(){}
 
-  virtual void write(std::size_t nb, const char* data) = 0;
+  virtual void on_ready_packet(std::size_t nb, const char* data) = 0;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -32,13 +32,14 @@ public:
   {}
 
   void
-  write(std::size_t nb, const char* data)
+  on_ready_packet(std::size_t nb, const char* data)
   {
-    handler_.write(nb, data);
+    handler_.on_ready_packet(nb, data);
   }
 
 private:
 
+  /// @brief The user's handler.
   Handler handler_;
 };
 

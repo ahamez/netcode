@@ -36,7 +36,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , handler_ptr_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
-    , writer_{[this](std::size_t nb, const char* data){handler_ptr_->write(nb, data);}}
+    , on_ready_packet_{[this](std::size_t nb, const char* data){handler_ptr_->on_ready_packet(nb, data);}}
   {}
 
   /// @brief Constructor
@@ -64,13 +64,13 @@ public:
   commit_symbol(symbol_base&& sym)
   {
     sources_.emplace_back(current_source_id_, std::move(sym.symbol_buffer()));
-    sources_.back().write(writer_);
+    sources_.back().write(on_ready_packet_);
 
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
       repair_.id() = current_repair_id_;
-      repair_.write(writer_);
+      repair_.write(on_ready_packet_);
     }
 
     current_source_id_ += 1;
@@ -119,7 +119,7 @@ private:
   std::unique_ptr<detail::handler_base> handler_ptr_;
 
   /// @brief Shortcut to the packet writer in the user's handler.
-  std::function<detail::writer_fn> writer_;
+  std::function<detail::on_ready_packet_fn> on_ready_packet_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

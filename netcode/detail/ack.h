@@ -22,7 +22,7 @@ public:
   }
 
   void
-  write(const std::function<writer_fn>& writer)
+  write(const std::function<on_ready_packet_fn>& writer)
   const noexcept
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);

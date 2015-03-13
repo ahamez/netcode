@@ -15,7 +15,7 @@ enum class packet_type : std::uint8_t {ack = 0, repair, source};
 
 /*------------------------------------------------------------------------------------------------*/
 
-using writer_fn = void (std::size_t /*bytes to write*/,const char* /*buffer to read from*/);
+using on_ready_packet_fn = void(std::size_t /*bytes to write*/,const char* /*buffer to read from*/);
 
 /*------------------------------------------------------------------------------------------------*/
 
