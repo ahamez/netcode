@@ -8,10 +8,8 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-class handler_base
+struct handler_base
 {
-public:
-
   /// @brief Can delete through this base class.
   virtual ~handler_base(){}
 
@@ -23,11 +21,10 @@ public:
 
 /// @internal
 template <typename Handler>
-class handler_derived final
+struct handler_derived final
   : public handler_base
 {
-public:
-
+  /// @brief Construct with a copy or a moved user handler.
   template <typename H>
   handler_derived(H&& h)
     : handler_(std::forward<H>(h))
@@ -39,8 +36,6 @@ public:
   {
     handler_.on_ready_packet(nb, data);
   }
-
-private:
 
   /// @brief The user's handler.
   Handler handler_;
