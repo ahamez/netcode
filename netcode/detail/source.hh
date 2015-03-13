@@ -9,7 +9,7 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief A source packet holding a user's symbol.
-class source
+class source final
 {
 public:
 

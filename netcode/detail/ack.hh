@@ -9,7 +9,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-class ack
+class ack final
 {
 public:
 

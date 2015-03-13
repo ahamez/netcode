@@ -12,8 +12,10 @@ class handler_base
 {
 public:
 
+  /// @brief Can delete through this base class.
   virtual ~handler_base(){}
 
+  /// @brief Called when a packet is ready to be sent.
   virtual void on_ready_packet(std::size_t nb, const char* data) = 0;
 };
 
@@ -21,7 +23,7 @@ public:
 
 /// @internal
 template <typename Handler>
-class handler_derived
+class handler_derived final
   : public handler_base
 {
 public:
@@ -33,6 +35,7 @@ public:
 
   void
   on_ready_packet(std::size_t nb, const char* data)
+  override
   {
     handler_.on_ready_packet(nb, data);
   }

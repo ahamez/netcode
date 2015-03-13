@@ -60,7 +60,7 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief A symbol to be encoded.
-class symbol
+class symbol final
   : public symbol_base
 {
 public:
@@ -100,7 +100,7 @@ public:
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief A symbol to be encoded which automatically grows as needed.
-class auto_symbol
+class auto_symbol final
   : public symbol_base
 {
 public:

@@ -9,7 +9,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-class repair
+class repair final
 {
 public:
 
