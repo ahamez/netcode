@@ -34,8 +34,8 @@ struct simple final
     std::for_each( begin(pkt.source_ids()), end(pkt.source_ids())
                  , [this](id_type id)
                    {
-                     const std::uint16_t network_id = htons(id);
-                     handler().on_ready_packet( sizeof(std::uint16_t)
+                     const std::uint32_t network_id = htonl(id);
+                     handler().on_ready_packet( sizeof(std::uint32_t)
                                                , reinterpret_cast<const char*>(&network_id));
                    });
   }
@@ -51,7 +51,7 @@ struct simple final
     data += sizeof(std::uint8_t);
 
     // Read size.
-    const std::uint16_t size = ntohs(*data);
+    const std::uint16_t size = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read source ids.
