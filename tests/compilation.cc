@@ -6,7 +6,6 @@
 #include "netcode/encoder.hh"
 
 struct handler
-
 {
   void
   on_ready_packet(std::size_t len, const char* data)

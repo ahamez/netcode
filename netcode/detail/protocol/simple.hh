@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>   // for_each, transform
 #include <arpa/inet.h> // htonl, htons
+#include <cassert>
 
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/types.hh"
@@ -18,19 +20,48 @@ struct simple final
   using serializer::serializer;
 
   void
-  write_ack(const ack& packet)
+  write_ack(const ack& pkt)
   override
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
+    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
+
     handler().on_ready_packet( sizeof(std::uint8_t)
                              , reinterpret_cast<const char*>(&packet_ty));
+    handler().on_ready_packet( sizeof(std::uint16_t)
+                             , reinterpret_cast<const char*>(&network_sz));
+
+    std::for_each( begin(pkt.source_ids()), end(pkt.source_ids())
+                 , [this](id_type id)
+                   {
+                     const std::uint16_t network_id = htons(id);
+                     handler().on_ready_packet( sizeof(std::uint16_t)
+                                               , reinterpret_cast<const char*>(&network_id));
+                   });
   }
 
   ack
-  read_ack(const char*)
+  read_ack(const char* data)
   override
   {
-    return {};
+    // Packet type should have been verified by the caller.
+    assert(data[0] == static_cast<std::uint8_t>(packet_type::ack));
+
+    // Skip packet type.
+    data += sizeof(std::uint8_t);
+
+    // Read size.
+    const std::uint16_t size = ntohs(*data);
+    data += sizeof(std::uint16_t);
+
+    // Read source ids.
+    const auto* data_as_ids = reinterpret_cast<const id_type*>(data);
+    std::vector<id_type> ids;
+    ids.reserve(size);
+    std::transform( data_as_ids, data_as_ids + size, std::back_inserter(ids)
+                  , [](id_type id){return ntohl(id);});
+
+    return {std::move(ids)};
   }
 
   void
@@ -59,14 +90,14 @@ struct simple final
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
     const auto network_id = htonl(pkt.id());
-    const auto sz = htons(static_cast<std::uint16_t>(pkt.symbol_buffer().size()));
+    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.symbol_buffer().size()));
 
     handler().on_ready_packet( sizeof(std::uint8_t)
                              , reinterpret_cast<const char*>(&packet_ty));
     handler().on_ready_packet( sizeof(id_type)
                              , reinterpret_cast<const char*>(&network_id));
     handler().on_ready_packet( sizeof(std::uint16_t)
-                             , reinterpret_cast<const char*>(&sz));
+                             , reinterpret_cast<const char*>(&network_sz));
     handler().on_ready_packet( pkt.symbol_buffer().size()
                              , pkt.symbol_buffer().data());
   }
