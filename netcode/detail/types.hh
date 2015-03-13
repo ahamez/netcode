@@ -1,16 +1,19 @@
 #pragma once
 
-#include <cstdint>
+#include <vector>
+
+#include "netcode/detail/allocator.hh"
 
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @todo Ensure that the symbol is aligned on 16 bytes with a specific allocator.
-using symbol_buffer_type = std::vector<char>;
+/// @brief An aligned buffer of bytes.
+using symbol_buffer_type = std::vector<char, default_init_aligned_alloc<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief Describe possible packet types.
 enum class packet_type : std::uint8_t {ack = 0, repair, source};
 
 /*------------------------------------------------------------------------------------------------*/

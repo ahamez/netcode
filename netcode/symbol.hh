@@ -1,7 +1,6 @@
 #pragma once
 
-#include <algorithm> // copy_n
-#include <iterator>  // back_inserter
+#include <iterator> // back_inserter
 
 #include "netcode/detail/types.hh"
 
@@ -27,10 +26,10 @@ protected:
   /// @brief Tag to discriminate the constructor which reserves a size.
   struct reserve_only{};
 
-  /// @brief Zero-out the buffer.
+  /// @brief Initialize the buffer.
   /// @param buffer_size The buffer size.
   symbol_base(std::size_t buffer_size)
-    : buffer_(buffer_size, 0)
+    : buffer_(buffer_size)
   {}
 
   /// @brief Reserve memory for the buffer.
@@ -65,8 +64,8 @@ class symbol final
 {
 public:
 
-  /// @brief Construct with a 0-initialized buffer.
-  /// @param size The size of the initialized buffer.
+  /// @brief Allocate a buffer.
+  /// @param size The size of the buffer.
   symbol(std::size_t size)
     : symbol_base{size}
   {}
@@ -106,11 +105,12 @@ class auto_symbol final
 public:
 
   /// @brief Construct with a pre-allocated buffer to avoid memory re-allocations.
+  /// @param reserve_size The size to reserve.
   auto_symbol(std::size_t reserve_size)
     : symbol_base{reserve_size, reserve_only{}}
   {}
 
-  /// @brief Defaut constructor.
+  /// @brief Defaut constructor with a size of 256 for the reserved buffer.
   auto_symbol()
     : auto_symbol{256}
   {}
