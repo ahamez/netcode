@@ -1,7 +1,9 @@
 #pragma once
 
-#include <iterator> // back_inserter
+#include <algorithm> // copy_n
+#include <iterator>  // back_inserter
 
+#include "netcode/detail/multiple.hh"
 #include "netcode/detail/types.hh"
 
 namespace ntc {
@@ -29,7 +31,7 @@ protected:
   /// @brief Initialize the buffer.
   /// @param buffer_size The buffer size.
   symbol_base(std::size_t buffer_size)
-    : buffer_(buffer_size)
+    : buffer_(detail::make_multiple(buffer_size, 16))
   {}
 
   /// @brief Reserve memory for the buffer.
@@ -37,15 +39,17 @@ protected:
   symbol_base(std::size_t reserve_size, reserve_only)
     : buffer_()
   {
-    buffer_.reserve(reserve_size);
+    buffer_.reserve(detail::make_multiple(reserve_size, 16));
   }
 
   /// @brief Initialize the buffer with a copy of a memory location.
   /// @param len The size of the data.
   /// @param src The data to copy.
   symbol_base(std::size_t len, const char* src)
-    : buffer_(src, src + len)
-  {}
+    : buffer_(detail::make_multiple(len, 16))
+  {
+    std::copy_n(src, len, begin(buffer_));
+  }
 
   /// @brief Can't delete through this base class.
   ~symbol_base(){}
@@ -104,13 +108,13 @@ class auto_symbol final
 {
 public:
 
-  /// @brief Construct with a pre-allocated buffer to avoid memory re-allocations.
+  /// @brief Construct with a reserved buffer to avoid memory re-allocations when growing.
   /// @param reserve_size The size to reserve.
   auto_symbol(std::size_t reserve_size)
-    : symbol_base{reserve_size, reserve_only{}}
+    : symbol_base{reserve_size < 256 ? 256 : reserve_size, reserve_only{}}
   {}
 
-  /// @brief Defaut constructor with a size of 256 for the reserved buffer.
+  /// @brief Defaut constructor with a default size for the reserved buffer.
   auto_symbol()
     : auto_symbol{256}
   {}
