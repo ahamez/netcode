@@ -1,6 +1,5 @@
 #pragma once
 
-#include <arpa/inet.h> // htonl
 #include <vector>
 
 #include "netcode/detail/types.hh"
@@ -19,14 +18,6 @@ public:
   noexcept
   {
     return sources_;
-  }
-
-  void
-  write(const std::function<on_ready_packet_fn>& writer)
-  const noexcept
-  {
-    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
-    writer(sizeof(std::uint8_t), reinterpret_cast<const char*>(&packet_ty));
   }
 
 private:

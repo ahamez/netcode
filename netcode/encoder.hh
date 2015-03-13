@@ -38,8 +38,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , handler_ptr_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
-    , on_ready_packet_{[this](std::size_t nb, const char* data){handler_ptr_->on_ready_packet(nb, data);}}
-    , serializer_{new detail::protocol::simple}
+    , serializer_{new detail::protocol::simple{*handler_ptr_}}
   {}
 
   /// @brief Constructor
@@ -63,17 +62,29 @@ public:
     return {};
   }
 
+  /// @brief Give the encoder a new symbol.
+  /// @param sym The symbol to add.
+  ///
+  /// @p sym won't be usable after this call.
   void
   commit_symbol(symbol_base&& sym)
   {
+    // Create a new source in-place at the end of the list of sources, "stealing" the symbol
+    // buffer from sym.
     sources_.emplace_back(current_source_id_, std::move(sym.symbol_buffer()));
-    (*serializer_)(sources_.back(), on_ready_packet_);
+
+    // Ask user to handle the bytes of the new source.
+    serializer_->write_source(sources_.back());
 
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
       repair_.id() = current_repair_id_;
-      (*serializer_)(repair_, on_ready_packet_);
+
+      /// @todo Create repair content.
+
+      // Ask user to handle the bytes of the new repair.
+      serializer_->write_repair(repair_);
     }
 
     current_source_id_ += 1;
@@ -120,9 +131,6 @@ private:
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_ptr_;
-
-  /// @brief Shortcut to the packet writer in the user's handler.
-  std::function<detail::on_ready_packet_fn> on_ready_packet_;
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::serializer> serializer_;

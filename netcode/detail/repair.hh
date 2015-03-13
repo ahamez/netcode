@@ -1,6 +1,5 @@
 #pragma once
 
-#include <arpa/inet.h> // htonl
 #include <vector>
 
 #include "netcode/detail/types.hh"
