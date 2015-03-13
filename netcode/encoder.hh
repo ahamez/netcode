@@ -1,6 +1,5 @@
 #pragma once
 
-#include <list>
 #include <memory>
 
 #include "netcode/coding.hh"
@@ -11,6 +10,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
+#include "netcode/detail/source_list.hh"
 
 namespace ntc {
 
@@ -54,7 +54,7 @@ public:
   {
     switch (static_cast<detail::packet_type>(data[0]))
     {
-        case detail::packet_type::ack    : clear_sources(); break;
+        case detail::packet_type::ack    : break;
         case detail::packet_type::repair : break;
         case detail::packet_type::source : break;
         default                          : break;
@@ -71,10 +71,10 @@ public:
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
-    sources_.emplace_back(current_source_id_, std::move(sym.symbol_buffer()));
+    sources_.emplace(current_source_id_, std::move(sym.symbol_buffer()));
 
     // Ask user to handle the bytes of the new source.
-    serializer_->write_source(sources_.back());
+    serializer_->write_source(sources_.last());
 
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
@@ -101,13 +101,6 @@ public:
 
 private:
 
-  /// @brief Delete sources which have been acknowledged.
-  void
-  clear_sources()
-  noexcept
-  {
-  }
-
   /// @brief The component that handles the coding process.
   coding coding_;
 
@@ -123,11 +116,11 @@ private:
   /// @brief The counter for repair packets identifiers.
   id_type current_repair_id_;
 
-  /// @brief The set of souces which have not yet been acknowledged.
-  std::list<detail::source> sources_;
-
   /// @brief Re-use the same memory to prepare a repair packet.
   detail::repair repair_;
+
+  /// @brief The set of souces which have not yet been acknowledged.
+  detail::source_list sources_;
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_;

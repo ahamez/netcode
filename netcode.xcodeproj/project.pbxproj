@@ -172,6 +172,7 @@
 		2BE31A0C1AB35D35001AA9DF /* throw_exception.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = throw_exception.hpp; sourceTree = "<group>"; };
 		2BE31A0D1AB35D35001AA9DF /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
 		2BE31A0E1AB35F8E001AA9DF /* multiple.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multiple.hh; sourceTree = "<group>"; };
+		2BE31A0F1AB3710F001AA9DF /* source_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_list.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +256,7 @@
 				2BE319701AB237CA001AA9DF /* repair.hh */,
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
+				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
 				2BE319721AB23910001AA9DF /* types.hh */,
 			);
 			path = detail;
