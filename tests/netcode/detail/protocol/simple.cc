@@ -1,7 +1,4 @@
-#include <algorithm>
-#include <array>
-
-#include <iostream>
+#include <algorithm> // copy_n
 
 #include "tests/catch.hpp"
 
@@ -12,6 +9,8 @@
 using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
+
+namespace {
 
 struct handler
 {
@@ -26,9 +25,11 @@ struct handler
   }
 };
 
+}
+
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE( "An ack is (de)serialized by protocol::simple", "[serialization]" )
+TEST_CASE("An ack is (de)serialized by protocol::simple", "[serialization]" )
 {
   detail::handler_derived<handler> h{handler{}};
   detail::protocol::simple serializer{h};
