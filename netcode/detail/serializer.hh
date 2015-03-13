@@ -17,7 +17,7 @@ public:
 
   /// @brief Constructor.
   serializer(handler_base& h)
-    : handler_{h}
+    : handler_(h)
   {}
 
   /// @brief Can delete through this base class.
