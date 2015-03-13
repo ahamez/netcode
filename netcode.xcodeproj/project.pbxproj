@@ -35,7 +35,9 @@
 		2BE319701AB237CA001AA9DF /* repair.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = repair.hh; sourceTree = "<group>"; };
 		2BE319711AB237CA001AA9DF /* source.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
 		2BE319721AB23910001AA9DF /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
-		2BE319731AB2CB1A001AA9DF /* ack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ack.h; sourceTree = "<group>"; };
+		2BE319731AB2CB1A001AA9DF /* ack.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ack.hh; sourceTree = "<group>"; };
+		2BE319741AB2E43A001AA9DF /* serializer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = serializer.hh; sourceTree = "<group>"; };
+		2BE319771AB2E672001AA9DF /* simple.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = simple.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,13 +101,23 @@
 		2BE3196E1AB2357F001AA9DF /* detail */ = {
 			isa = PBXGroup;
 			children = (
+				2BE319761AB2E652001AA9DF /* protocol */,
+				2BE319731AB2CB1A001AA9DF /* ack.hh */,
 				2BE3196F1AB2357F001AA9DF /* handler.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,
+				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
 				2BE319721AB23910001AA9DF /* types.hh */,
-				2BE319731AB2CB1A001AA9DF /* ack.h */,
 			);
 			path = detail;
+			sourceTree = "<group>";
+		};
+		2BE319761AB2E652001AA9DF /* protocol */ = {
+			isa = PBXGroup;
+			children = (
+				2BE319771AB2E672001AA9DF /* simple.hh */,
+			);
+			path = protocol;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

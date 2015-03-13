@@ -18,6 +18,13 @@ public:
     : id_{id}
   {}
 
+  id_type
+  id()
+  const noexcept
+  {
+    return id_;
+  }
+
   id_type&
   id()
   noexcept
@@ -30,17 +37,6 @@ public:
   noexcept
   {
     return sources_;
-  }
-
-  void
-  write(const std::function<on_ready_packet_fn>& writer)
-  const noexcept
-  {
-    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
-    const auto network_id = htonl(id_);
-
-    writer(sizeof(std::uint8_t), reinterpret_cast<const char*>(&packet_ty));
-    writer(sizeof(id_type)     , reinterpret_cast<const char*>(&network_id));
   }
 
 private:

@@ -7,7 +7,9 @@
 #include "netcode/symbol.hh"
 #include "netcode/types.hh"
 #include "netcode/detail/handler.hh"
+#include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/repair.hh"
+#include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 
 namespace ntc {
@@ -15,7 +17,7 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief
-class encoder
+class encoder final
 {
 public:
 
@@ -37,6 +39,7 @@ public:
     , repair_{current_repair_id_}
     , handler_ptr_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
     , on_ready_packet_{[this](std::size_t nb, const char* data){handler_ptr_->on_ready_packet(nb, data);}}
+    , serializer_{new detail::protocol::simple}
   {}
 
   /// @brief Constructor
@@ -64,13 +67,13 @@ public:
   commit_symbol(symbol_base&& sym)
   {
     sources_.emplace_back(current_source_id_, std::move(sym.symbol_buffer()));
-    sources_.back().write(on_ready_packet_);
+    (*serializer_)(sources_.back(), on_ready_packet_);
 
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
       repair_.id() = current_repair_id_;
-      repair_.write(on_ready_packet_);
+      (*serializer_)(repair_, on_ready_packet_);
     }
 
     current_source_id_ += 1;
@@ -120,6 +123,9 @@ private:
 
   /// @brief Shortcut to the packet writer in the user's handler.
   std::function<detail::on_ready_packet_fn> on_ready_packet_;
+
+  /// @brief How to serialize packets.
+  std::unique_ptr<detail::serializer> serializer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

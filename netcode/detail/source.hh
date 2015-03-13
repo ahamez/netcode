@@ -1,7 +1,5 @@
 #pragma once
 
-#include <arpa/inet.h> // htonl
-
 #include "netcode/types.hh"
 #include "netcode/detail/types.hh"
 
@@ -10,6 +8,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief A source packet holding a user's symbol.
 class source
 {
 public:
@@ -25,18 +24,11 @@ public:
     return id_;
   }
 
-  void
-  write(const std::function<on_ready_packet_fn>& writer)
+  const symbol_buffer_type&
+  symbol_buffer()
   const noexcept
   {
-    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
-    const auto network_id = htonl(id_);
-    const auto sz = htons(static_cast<std::uint16_t>(symbol_buffer_.size()));
-
-    writer(sizeof(std::uint8_t) , reinterpret_cast<const char*>(&packet_ty));
-    writer(sizeof(id_type)      , reinterpret_cast<const char*>(&network_id));
-    writer(sizeof(std::uint16_t), reinterpret_cast<const char*>(&sz));
-    writer(symbol_buffer_.size(), symbol_buffer_.data());
+    return symbol_buffer_;
   }
 
 private:
