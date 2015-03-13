@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "netcode/types.hh"
 #include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail {
