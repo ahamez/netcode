@@ -54,12 +54,17 @@ public:
   {
     switch (static_cast<detail::packet_type>(data[0]))
     {
-        case detail::packet_type::ack    : break;
-        case detail::packet_type::repair : break;
-        case detail::packet_type::source : break;
-        default                          : break;
+        case detail::packet_type::ack:
+        {
+          for (auto id : serializer_->read_ack(data).source_ids())
+          {
+            sources_.erase(id);
+          }
+          return true;
+        }
+
+        default: return false;
     }
-    return {};
   }
 
   /// @brief Give the encoder a new symbol.
