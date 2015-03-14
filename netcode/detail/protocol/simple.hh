@@ -2,6 +2,7 @@
 
 #include <algorithm>   // for_each, transform
 #include <arpa/inet.h> // htonl, htons
+#include <iterator>    // back_inserter
 #include <cassert>
 
 #include "netcode/detail/packet_type.hh"
@@ -30,13 +31,13 @@ struct simple final
     // Prepare number of source identifiers.
     const auto network_sz = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
-    // Packet type.
+    // Write packet type.
     write(sizeof(std::uint8_t), &packet_ty);
 
-    // Number of source identifiers.
+    // Write number of source identifiers.
     write(sizeof(std::uint16_t), &network_sz);
 
-    // Source identifiers.
+    // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const std::uint32_t network_id = htonl(id);
@@ -87,23 +88,23 @@ struct simple final
     // Packet type.
     write(sizeof(std::uint8_t), &packet_ty);
 
-    // Packet identifier.
+    // Write packet identifier.
     write(sizeof(id_type), &network_id);
 
-    // Number of source identifiers.
-    write(sizeof(std::uint16_t),&network_nb_ids);
+    // Write number of source identifiers.
+    write(sizeof(std::uint16_t), &network_nb_ids);
 
-    // Source identifiers.
+    // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const std::uint32_t network_id = htonl(id);
       write(sizeof(std::uint32_t), &network_id);
     }
 
-    // Size of the repair symbol.
+    // Write size of the repair symbol.
     write(sizeof(std::uint16_t), &network_sz);
 
-    // The repair symbol.
+    // Write repair symbol.
     write(pkt.buffer().size(), pkt.buffer().data());
   }
 
@@ -150,13 +151,25 @@ struct simple final
   write_source(const source& pkt)
   override
   {
+    // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
+
+    // Prepare packet identifier.
     const auto network_id = htonl(pkt.id());
+
+    // Prepare source symbol size.
     const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
 
+    // Write packet type.
     write(sizeof(std::uint8_t), &packet_ty);
+
+    // Write source identifier.
     write(sizeof(id_type), &network_id);
+
+    // Write source symbol size.
     write(sizeof(std::uint16_t), &network_sz);
+
+    // Write source symbol.
     write(pkt.buffer().size(), pkt.buffer().data());
   }
 
@@ -167,8 +180,23 @@ struct simple final
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::source);
 
+    // Skip packet type.
+    data += sizeof(std::uint8_t);
+
+    // Read identifier.
+    const auto id = ntohl(*reinterpret_cast<const std::uint32_t*>(data));
+    data += sizeof(std::uint32_t);
+
+    // Read size of the source symbol.
+    const auto sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
+    // Read the source symbol.
     symbol_buffer buffer;
-    return {0, std::move(buffer)};
+    buffer.reserve(sz);
+    std::copy_n(data, sz, std::back_inserter(buffer));
+
+    return {id, std::move(buffer)};
   }
 };
 

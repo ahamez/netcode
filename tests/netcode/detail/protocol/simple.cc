@@ -75,3 +75,26 @@ TEST_CASE("A repair is (de)serialized by protocol::simple", "[serialization][rep
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("A source is (de)serialized by protocol::simple", "[serialization][source][simple]" )
+{
+  detail::handler_derived<handler> h{handler{}};
+  detail::protocol::simple serializer{h};
+
+  const detail::source s_in{394839, detail::symbol_buffer{'a', 'b', 'c', 'd'}};
+
+  serializer.write_source(s_in);
+
+  REQUIRE(h.handler_.bytes_ == ( sizeof(std::uint8_t)      // type
+                               + sizeof(std::uint32_t)     // id
+                               + sizeof(std::uint16_t)     // symbol length
+                               + 4                         // symbol
+                               )
+         );
+
+  const auto s_out = serializer.read_source(h.handler_.data_);
+  REQUIRE(s_in.id() == s_out.id());
+  REQUIRE(s_in.buffer() == s_out.buffer());
+}
+
+/*------------------------------------------------------------------------------------------------*/
