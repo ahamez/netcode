@@ -34,6 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* coding.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coding.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319531AB0C550001AA9DF /* field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 		2BC3179E1AB0C53200C61FBB = {
 			isa = PBXGroup;
 			children = (
+				2B7526891AB41556008DEDAD /* CMakeLists.txt */,
 				2BE319691AB1DE32001AA9DF /* bin */,
 				2BE3198C1AB35D35001AA9DF /* ext */,
 				2BE3194F1AB0C550001AA9DF /* netcode */,
@@ -228,6 +231,7 @@
 		2BE319571AB0C550001AA9DF /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				2B75268A1AB41560008DEDAD /* CMakeLists.txt */,
 				2BE319831AB32DA0001AA9DF /* catch.hpp */,
 				2BE319841AB32DA0001AA9DF /* netcode */,
 				2BE319861AB32DA0001AA9DF /* tests.cc */,
@@ -812,6 +816,7 @@
 				2BE319821AB32D7F001AA9DF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
