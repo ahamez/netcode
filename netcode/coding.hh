@@ -15,6 +15,13 @@ public:
     : gf_{std::move(gf)}, coeff_generator_{coefficient_generator}
   {}
 
+  galois::field&
+  field()
+  noexcept
+  {
+    return gf_;
+  }
+
 private:
 
   galois::field gf_;

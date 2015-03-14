@@ -14,6 +14,9 @@ class source_list final
 {
 public:
 
+  /// @brief An iterator on sources.
+  using const_iterator = std::list<detail::source>::const_iterator;
+
   /// @brief Add a source packet in-place.
   template <typename... Args>
   void
@@ -43,6 +46,22 @@ public:
   const noexcept
   {
     return sources_.size();
+  }
+
+  /// @brief Get an iterator to the first source.
+  const_iterator
+  cbegin()
+  const noexcept
+  {
+    return sources_.cbegin();
+  }
+
+  /// @brief Get an iterator to the end of sources.
+  const_iterator
+  cend()
+  const noexcept
+  {
+    return sources_.cend();
   }
 
 private:

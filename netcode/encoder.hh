@@ -11,6 +11,7 @@
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
+#include "netcode/galois/multiply.hh"
 
 namespace ntc {
 
@@ -84,12 +85,45 @@ public:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      repair_.id() = current_repair_id_;
+      auto src_cit = sources_.cbegin();
+      auto src_end = sources_.cend();
 
-      /// @todo Create repair content.
+      /// @todo generate coefficients
+
+      // Resize the repair's symbol buffer to fit the first source symbol buffer.
+      // Memory allocations will occur upon each symbol commit, until a maximal size is reached.
+      repair_.symbol_buffer().resize(src_cit->symbol_buffer().size());
+
+      // Only multiply for the first source, no need to add with repair.
+      galois::multiply( coding_.field()
+                      , src_cit->symbol_buffer().size()
+                      , src_cit->symbol_buffer().data(), repair_.symbol_buffer().data()
+                      , 42 /* coeff to generate */);
+
+      // Then, for each remaining source, multiply it with a coefficient and add it with
+      // current repair.
+      for (++src_cit; src_cit != src_end; ++src_end)
+      {
+        // The current repair's symbol buffer might be too small for the current source.
+        if (src_cit->symbol_buffer().size() > repair_.symbol_buffer().size())
+        {
+          repair_.symbol_buffer().resize(src_cit->symbol_buffer().size());
+        }
+        galois::multiply_add( coding_.field()
+                            , src_cit->symbol_buffer().size()
+                            , src_cit->symbol_buffer().data(), repair_.symbol_buffer().data()
+                            , 42 /* coeff to generate */);
+      }
+
+      // Finally, set the identifier of the new repair.
+      repair_.id() = current_repair_id_;
 
       // Ask user to handle the bytes of the new repair.
       serializer_->write_repair(repair_);
+
+      // Reset repair's symbol size. It only reset the 'virtual' size of the buffer, the reserved
+      // memory is kept.
+      repair_.symbol_buffer().resize(0ul);
     }
 
     current_source_id_ += 1;

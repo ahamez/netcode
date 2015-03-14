@@ -9,12 +9,15 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief A repair packet.
 class repair final
 {
 public:
 
   repair(id_type id)
     : id_{id}
+    , sources_ids_{}
+    , symbol_{}
   {}
 
   id_type
@@ -35,13 +38,20 @@ public:
   sources()
   noexcept
   {
-    return sources_;
+    return sources_ids_;
+  }
+
+  detail::symbol_buffer_type&
+  symbol_buffer()
+  noexcept
+  {
+    return symbol_;
   }
 
 private:
 
   id_type id_;
-  std::vector<id_type> sources_;
+  std::vector<id_type> sources_ids_;
   detail::symbol_buffer_type symbol_;
 };
 
