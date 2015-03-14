@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <list>
 
 #include "netcode/detail/source.hh"
+#include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail {
 
@@ -10,6 +12,7 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief Hold a list of sources.
+/// @todo Compare with an unordered_set.
 class source_list final
 {
 public:
@@ -26,11 +29,28 @@ public:
     return sources_.emplace(sources_.cend(), std::forward<Args>(args)...);
   }
 
-  /// @brief Remove a source packet using its identifier.
+  /// @brief Remove source packets from a list of identifiers.
   void
-  erase(id_type id)
+  erase(source_id_list::const_iterator id_cit, source_id_list::const_iterator id_end)
   noexcept
   {
+    // sources_ is sorted by insertion (and thus by identifier).
+    auto source_cit = sources_.cbegin();
+    const auto source_end = sources_.cend();
+    while (source_cit != source_end and id_cit != id_end)
+    {
+      if (source_cit->id() == *id_cit)
+      {
+        const auto to_erase = source_cit;
+        ++source_cit;
+        ++id_cit;
+        sources_.erase(to_erase);
+      }
+      else
+      {
+        ++source_cit;
+      }
+    }
   }
 
   /// @brief The number of source packets.

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vector>
-
 #include "netcode/detail/symbol_buffer.hh"
+#include "netcode/detail/types.hh"
 #include "netcode/types.hh"
 
 namespace ntc { namespace detail {
@@ -46,7 +45,7 @@ public:
   }
 
   /// @brief This repair's list of source identifiers.
-  const std::vector<id_type>&
+  const source_id_list&
   source_ids()
   const noexcept
   {
@@ -54,7 +53,7 @@ public:
   }
 
   /// @brief This repair's list of source identifiers (mutable).
-  std::vector<id_type>&
+  source_id_list&
   source_ids()
   noexcept
   {
@@ -94,7 +93,7 @@ private:
   id_type id_;
 
   /// @brief The list of source identifiers.
-  std::vector<id_type> sources_ids_;
+  source_id_list sources_ids_;
 
   /// @brief This repair's symbol.
   detail::symbol_buffer buffer_;

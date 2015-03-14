@@ -31,7 +31,7 @@ public:
   {}
 
   /// @brief Get the list of acknowledged sources.
-  const std::vector<id_type>&
+  const source_id_list&
   source_ids()
   const noexcept
   {
@@ -39,7 +39,7 @@ public:
   }
 
   /// @brief Get the list of acknowledged sources.
-  std::vector<id_type>&
+  source_id_list&
   source_ids()
   noexcept
   {
@@ -49,7 +49,7 @@ public:
 private:
 
   /// @brief The list of acknowledged sources.
-  std::vector<id_type> source_ids_;
+  source_id_list source_ids_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
