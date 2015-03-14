@@ -39,6 +39,7 @@ public:
   /// @param add If true, perform a XOR with dst.
   void
   multiply_region_w32(const char* src, char* dst, uint32_t c, std::size_t len, bool add)
+  const noexcept
   {
     assert(reinterpret_cast<std::size_t>(src) % 4 == 0 && "src must be aligned on 4 bytes");
     assert(reinterpret_cast<std::size_t>(dst) % 4 == 0 && "dst must be aligned on 4 bytes");

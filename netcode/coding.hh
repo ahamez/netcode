@@ -19,6 +19,10 @@ public:
     : gf_{std::move(gf)}, coeff_generator_{coefficient_generator}
   {}
 
+  coding(const galois::field& gf, const coding_coefficient_generator& coefficient_generator)
+    : gf_{gf}, coeff_generator_{coefficient_generator}
+  {}
+
   /// @brief
   /// @todo generate coefficients
   void
