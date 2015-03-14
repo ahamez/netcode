@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <boost/align/aligned_allocator_adaptor.hpp>
 
 namespace ntc { namespace detail {
@@ -47,6 +49,11 @@ public:
 template <typename T, std::size_t Align>
 using default_init_aligned_alloc
   = boost::alignment::aligned_allocator_adaptor<default_init_allocator<T>, Align>;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief An aligned buffer of bytes.
+using symbol_buffer = std::vector<char, default_init_aligned_alloc<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 

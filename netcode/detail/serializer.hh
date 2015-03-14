@@ -4,7 +4,6 @@
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
-#include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail {
 

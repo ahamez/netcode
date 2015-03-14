@@ -26,16 +26,16 @@ public:
   /// @brief
   /// @todo generate coefficients
   void
-  operator()( detail::symbol_buffer_type& repair, detail::source_list::const_iterator src_cit
+  operator()( detail::symbol_buffer& repair, detail::source_list::const_iterator src_cit
             , detail::source_list::const_iterator src_end)
   {
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
-    repair.resize(src_cit->symbol_buffer().size());
+    repair.resize(src_cit->buffer().size());
 
     // Only multiply for the first source, no need to add with repair.
     multiply( gf_
-            , src_cit->symbol_buffer().size()
-            , src_cit->symbol_buffer().data(), repair.data()
+            , src_cit->buffer().size()
+            , src_cit->buffer().data(), repair.data()
             , 42 /* coeff to generate */);
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
@@ -43,13 +43,13 @@ public:
     for (++src_cit; src_cit != src_end; ++src_cit)
     {
       // The current repair's symbol buffer might be too small for the current source.
-      if (src_cit->symbol_buffer().size() > repair.size())
+      if (src_cit->buffer().size() > repair.size())
       {
-        repair.resize(src_cit->symbol_buffer().size());
+        repair.resize(src_cit->buffer().size());
       }
       multiply_add( gf_
-                  , src_cit->symbol_buffer().size()
-                  , src_cit->symbol_buffer().data(), repair.data()
+                  , src_cit->buffer().size()
+                  , src_cit->buffer().data(), repair.data()
                   , 42 /* coeff to generate */);
     }
   }

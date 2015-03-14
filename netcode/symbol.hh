@@ -4,7 +4,7 @@
 #include <iterator>  // back_inserter
 
 #include "netcode/detail/multiple.hh"
-#include "netcode/detail/types.hh"
+#include "netcode/detail/symbol_buffer.hh"
 
 namespace ntc {
 
@@ -16,8 +16,8 @@ class symbol_base
 public:
 
   /// @internal
-  detail::symbol_buffer_type&
-  symbol_buffer()
+  detail::symbol_buffer&
+  buffer()
   noexcept
   {
     return buffer_;
@@ -57,7 +57,7 @@ protected:
 private:
 
   /// @brief The buffer storage.
-  detail::symbol_buffer_type buffer_;
+  detail::symbol_buffer buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ public:
   buffer()
   noexcept
   {
-    return symbol_buffer().data();
+    return symbol_base::buffer().data();
   }
 
   /// @brief Resize the buffer.
@@ -96,7 +96,7 @@ public:
   void
   resize_buffer(std::size_t size)
   {
-    symbol_buffer().resize(size);
+    symbol_base::buffer().resize(size);
   }
 };
 
@@ -120,13 +120,13 @@ public:
   {}
 
   /// @brief An iterator to write in the symbol buffer.
-  using back_insert_iterator = std::back_insert_iterator<detail::symbol_buffer_type>;
+  using back_insert_iterator = std::back_insert_iterator<detail::symbol_buffer>;
 
   /// @brief Get a back inserter iterator to the symbol buffer.
   back_insert_iterator
   back_inserter()
   {
-    return std::back_inserter(symbol_buffer());
+    return std::back_inserter(symbol_base::buffer());
   }
 };
 

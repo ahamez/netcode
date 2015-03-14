@@ -1,20 +1,21 @@
 #pragma once
 
-#include <vector>
-
-#include "netcode/detail/allocator.hh"
-
 namespace ntc { namespace detail {
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @brief An aligned buffer of bytes.
-using symbol_buffer_type = std::vector<char, default_init_aligned_alloc<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Describe possible packet types.
 enum class packet_type : std::uint8_t {ack = 0, repair, source};
+
+/*------------------------------------------------------------------------------------------------*/
+
+inline
+packet_type
+get_packet_type(const char* data)
+noexcept
+{
+  return static_cast<detail::packet_type>(data[0]);
+}
 
 /*------------------------------------------------------------------------------------------------*/
 

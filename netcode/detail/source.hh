@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/detail/types.hh"
+#include "netcode/detail/symbol_buffer.hh"
 #include "netcode/types.hh"
 
 namespace ntc { namespace detail {
@@ -13,7 +13,7 @@ class source final
 {
 public:
 
-  source(id_type id, symbol_buffer_type&& buffer)
+  source(id_type id, symbol_buffer&& buffer)
     : id_{id}, symbol_buffer_{std::move(buffer)}
   {}
 
@@ -24,8 +24,8 @@ public:
     return id_;
   }
 
-  const symbol_buffer_type&
-  symbol_buffer()
+  const symbol_buffer&
+  buffer()
   const noexcept
   {
     return symbol_buffer_;
@@ -34,7 +34,7 @@ public:
 private:
 
   id_type id_;
-  symbol_buffer_type symbol_buffer_;
+  symbol_buffer symbol_buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

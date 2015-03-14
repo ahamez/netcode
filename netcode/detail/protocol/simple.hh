@@ -5,7 +5,7 @@
 #include <cassert>
 
 #include "netcode/detail/serializer.hh"
-#include "netcode/detail/types.hh"
+#include "netcode/detail/symbol_buffer.hh"
 
 namespace ntc { namespace detail { namespace protocol {
 
@@ -90,7 +90,7 @@ struct simple final
   {
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
     const auto network_id = htonl(pkt.id());
-    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.symbol_buffer().size()));
+    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
 
     handler().on_ready_packet( sizeof(std::uint8_t)
                              , reinterpret_cast<const char*>(&packet_ty));
@@ -98,15 +98,15 @@ struct simple final
                              , reinterpret_cast<const char*>(&network_id));
     handler().on_ready_packet( sizeof(std::uint16_t)
                              , reinterpret_cast<const char*>(&network_sz));
-    handler().on_ready_packet( pkt.symbol_buffer().size()
-                             , pkt.symbol_buffer().data());
+    handler().on_ready_packet( pkt.buffer().size()
+                             , pkt.buffer().data());
   }
 
   source
   read_source(const char*)
   override
   {
-    symbol_buffer_type buffer;
+    symbol_buffer buffer;
     return {0, std::move(buffer)};
   }
 };

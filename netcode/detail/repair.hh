@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "netcode/detail/types.hh"
+#include "netcode/detail/symbol_buffer.hh"
 #include "netcode/types.hh"
 
 namespace ntc { namespace detail {
@@ -42,7 +42,7 @@ public:
     return sources_ids_;
   }
 
-  detail::symbol_buffer_type&
+  detail::symbol_buffer&
   symbol_buffer()
   noexcept
   {
@@ -53,7 +53,7 @@ private:
 
   id_type id_;
   std::vector<id_type> sources_ids_;
-  detail::symbol_buffer_type symbol_;
+  detail::symbol_buffer symbol_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

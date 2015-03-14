@@ -36,6 +36,7 @@
 /* Begin PBXFileReference section */
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* coding.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coding.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319531AB0C550001AA9DF /* field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
@@ -47,7 +48,7 @@
 		2BE3196F1AB2357F001AA9DF /* handler.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = handler.hh; sourceTree = "<group>"; };
 		2BE319701AB237CA001AA9DF /* repair.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = repair.hh; sourceTree = "<group>"; };
 		2BE319711AB237CA001AA9DF /* source.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
-		2BE319721AB23910001AA9DF /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
+		2BE319721AB23910001AA9DF /* symbol_buffer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol_buffer.hh; sourceTree = "<group>"; };
 		2BE319731AB2CB1A001AA9DF /* ack.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ack.hh; sourceTree = "<group>"; };
 		2BE319741AB2E43A001AA9DF /* serializer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = serializer.hh; sourceTree = "<group>"; };
 		2BE319771AB2E672001AA9DF /* simple.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = simple.hh; sourceTree = "<group>"; };
@@ -55,7 +56,6 @@
 		2BE319831AB32DA0001AA9DF /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319861AB32DA0001AA9DF /* tests.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cc; sourceTree = "<group>"; };
 		2BE319891AB32E7F001AA9DF /* simple.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple.cc; sourceTree = "<group>"; };
-		2BE3198B1AB359BC001AA9DF /* allocator.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = allocator.hh; sourceTree = "<group>"; };
 		2BE3198F1AB35D35001AA9DF /* align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = align.hpp; sourceTree = "<group>"; };
 		2BE319901AB35D35001AA9DF /* aligned_alloc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = aligned_alloc.hpp; sourceTree = "<group>"; };
 		2BE319911AB35D35001AA9DF /* aligned_allocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = aligned_allocator.hpp; sourceTree = "<group>"; };
@@ -254,14 +254,14 @@
 			children = (
 				2BE319761AB2E652001AA9DF /* protocol */,
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
-				2BE3198B1AB359BC001AA9DF /* allocator.hh */,
 				2BE3196F1AB2357F001AA9DF /* handler.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
+				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
 				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
-				2BE319721AB23910001AA9DF /* types.hh */,
+				2BE319721AB23910001AA9DF /* symbol_buffer.hh */,
 			);
 			path = detail;
 			sourceTree = "<group>";

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "netcode/detail/handler.hh"
+#include "netcode/detail/packet_type.hh"
 #include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
@@ -55,19 +56,15 @@ public:
   bool
   notify(const char* data)
   {
-    switch (static_cast<detail::packet_type>(data[0]))
+    if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-        case detail::packet_type::ack:
-        {
-          for (auto id : serializer_->read_ack(data).source_ids())
-          {
-            sources_.erase(id);
-          }
-          return true;
-        }
-
-        default: return false;
+      for (auto id : serializer_->read_ack(data).source_ids())
+      {
+        sources_.erase(id);
+      }
+      return true;
     }
+    return false;
   }
 
   /// @brief Give the encoder a new symbol.
@@ -80,7 +77,7 @@ public:
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
-    sources_.emplace(current_source_id_, std::move(sym.symbol_buffer()));
+    sources_.emplace(current_source_id_, std::move(sym.buffer()));
 
     // Ask user to handle the bytes of the new source.
     serializer_->write_source(sources_.last());
