@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B75268F1AB4A0E0008DEDAD /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* encoder.cc */; };
 		2BE319651AB0E59E001AA9DF /* compilation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319581AB0C550001AA9DF /* compilation.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BE3198A1AB32E7F001AA9DF /* simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319891AB32E7F001AA9DF /* simple.cc */; };
@@ -39,6 +40,7 @@
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
 		2B75268C1AB475A0008DEDAD /* symbol_base.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol_base.hh; sourceTree = "<group>"; };
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
+		2B75268E1AB4A0E0008DEDAD /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* coding.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coding.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 			isa = PBXGroup;
 			children = (
 				2BE319851AB32DA0001AA9DF /* detail */,
+				2B75268E1AB4A0E0008DEDAD /* encoder.cc */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -609,6 +612,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BE319871AB32DA0001AA9DF /* tests.cc in Sources */,
+				2B75268F1AB4A0E0008DEDAD /* encoder.cc in Sources */,
 				2BE3198A1AB32E7F001AA9DF /* simple.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
