@@ -126,10 +126,11 @@ private:
 
       // Ask user to handle the bytes of the new repair.
       serializer_->write_repair(repair_);
+
+      current_repair_id_ += 1;
     }
 
     current_source_id_ += 1;
-    current_repair_id_ += 1;
   }
 
   /// @brief The component that handles the coding process.
