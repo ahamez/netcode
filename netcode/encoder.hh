@@ -97,12 +97,6 @@ public:
     return sources_.size();
   }
 
-
-
-
-
-
-
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.
@@ -137,8 +131,6 @@ private:
     current_source_id_ += 1;
     current_repair_id_ += 1;
   }
-
-private:
 
   /// @brief The component that handles the coding process.
   coding coding_;

@@ -38,6 +38,7 @@
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
 		2B75268C1AB475A0008DEDAD /* symbol_base.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol_base.hh; sourceTree = "<group>"; };
+		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* coding.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coding.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319531AB0C550001AA9DF /* field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 		2BC3179E1AB0C53200C61FBB = {
 			isa = PBXGroup;
 			children = (
+				2B75268D1AB48A18008DEDAD /* Doxyfile.in */,
 				2B7526891AB41556008DEDAD /* CMakeLists.txt */,
 				2BE319691AB1DE32001AA9DF /* bin */,
 				2BE3198C1AB35D35001AA9DF /* ext */,

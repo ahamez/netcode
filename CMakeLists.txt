@@ -14,6 +14,20 @@ endif ()
 
 #--------------------------------------------------------------------------------------------------#
 
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+  add_custom_target(doc
+                    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                    COMMENT "Generating API documentation with Doxygen" VERBATIM
+                    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+                   )
+endif(DOXYGEN_FOUND)
+
+#--------------------------------------------------------------------------------------------------#
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release")
