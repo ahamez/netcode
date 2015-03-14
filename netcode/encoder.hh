@@ -40,6 +40,7 @@ public:
     , repair_{current_repair_id_}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{new detail::protocol::simple{*handler_}}
+    , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
     repair_.buffer().reserve(512);
@@ -145,6 +146,7 @@ private:
       serializer_->write_repair(repair_);
 
       current_repair_id_ += 1;
+      nb_repairs_ += 1;
     }
 
     current_source_id_ += 1;
@@ -176,6 +178,9 @@ private:
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::serializer> serializer_;
+
+  /// @brief The number of generated repairs.
+  std::size_t nb_repairs_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
