@@ -18,7 +18,7 @@ public:
   repair(id_type id)
     : id_{id}
     , sources_ids_{}
-    , symbol_{}
+    , buffer_{}
   {}
 
   id_type
@@ -43,17 +43,25 @@ public:
   }
 
   detail::symbol_buffer&
-  symbol_buffer()
+  buffer()
   noexcept
   {
-    return symbol_;
+    return buffer_;
+  }
+
+  void
+  reset()
+  noexcept
+  {
+    sources_ids_.resize(0);
+    buffer_.resize(0);
   }
 
 private:
 
   id_type id_;
   std::vector<id_type> sources_ids_;
-  detail::symbol_buffer symbol_;
+  detail::symbol_buffer buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
