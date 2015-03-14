@@ -38,7 +38,7 @@ public:
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , handler_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
+    , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{new detail::protocol::simple{*handler_}}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -97,6 +97,12 @@ public:
     return sources_.size();
   }
 
+
+
+
+
+
+
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.
@@ -131,6 +137,8 @@ private:
     current_source_id_ += 1;
     current_repair_id_ += 1;
   }
+
+private:
 
   /// @brief The component that handles the coding process.
   coding coding_;
