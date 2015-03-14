@@ -30,14 +30,13 @@ public:
             , detail::source_list::const_iterator src_end)
   {
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
-    // Memory allocations will occur upon each symbol commit, until a maximal size is reached.
     repair.resize(src_cit->symbol_buffer().size());
 
     // Only multiply for the first source, no need to add with repair.
-    galois::multiply( gf_
-                    , src_cit->symbol_buffer().size()
-                    , src_cit->symbol_buffer().data(), repair.data()
-                    , 42 /* coeff to generate */);
+    multiply( gf_
+            , src_cit->symbol_buffer().size()
+            , src_cit->symbol_buffer().data(), repair.data()
+            , 42 /* coeff to generate */);
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
@@ -48,10 +47,10 @@ public:
       {
         repair.resize(src_cit->symbol_buffer().size());
       }
-      galois::multiply_add( gf_
-                          , src_cit->symbol_buffer().size()
-                          , src_cit->symbol_buffer().data(), repair.data()
-                          , 42 /* coeff to generate */);
+      multiply_add( gf_
+                  , src_cit->symbol_buffer().size()
+                  , src_cit->symbol_buffer().data(), repair.data()
+                  , 42 /* coeff to generate */);
     }
   }
 
