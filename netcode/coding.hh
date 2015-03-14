@@ -40,7 +40,7 @@ public:
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
-    for (++src_cit; src_cit != src_end; ++src_end)
+    for (++src_cit; src_cit != src_end; ++src_cit)
     {
       // The current repair's symbol buffer might be too small for the current source.
       if (src_cit->symbol_buffer().size() > repair.size())
