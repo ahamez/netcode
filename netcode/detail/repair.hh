@@ -35,11 +35,25 @@ public:
     return id_;
   }
 
+  const std::vector<id_type>&
+  source_ids()
+  const noexcept
+  {
+    return sources_ids_;
+  }
+
   std::vector<id_type>&
-  sources()
+  source_ids()
   noexcept
   {
     return sources_ids_;
+  }
+
+  const detail::symbol_buffer&
+  buffer()
+  const noexcept
+  {
+    return buffer_;
   }
 
   detail::symbol_buffer&

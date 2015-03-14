@@ -40,6 +40,14 @@ public:
   /// @brief Read source packets.
   virtual source read_source(const char*) = 0;
 
+  /// @brief Convenient method to write data using user's handler.
+  void
+  write(std::size_t len, const void* data)
+  noexcept
+  {
+    handler().on_ready_data(len, reinterpret_cast<const char*>(data));
+  }
+
 protected:
 
   handler_base&

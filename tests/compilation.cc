@@ -8,7 +8,7 @@
 struct handler
 {
   void
-  on_ready_packet(std::size_t len, const char* data)
+  on_ready_data(std::size_t len, const char* data)
   {
     std::cout << "write " << len << " bytes\n";
   }
