@@ -18,11 +18,12 @@ public:
   using const_iterator = std::list<detail::source>::const_iterator;
 
   /// @brief Add a source packet in-place.
+  /// @return The newly added source.
   template <typename... Args>
-  void
+  const_iterator
   emplace(Args&&... args)
   {
-    sources_.emplace_back(std::forward<Args>(args)...);
+    return sources_.emplace(sources_.cend(), std::forward<Args>(args)...);
   }
 
   /// @brief Remove a source packet using its identifier.
@@ -30,14 +31,6 @@ public:
   erase(id_type id)
   noexcept
   {
-  }
-
-  /// @brief Get the most recently added source.
-  const source&
-  last()
-  const noexcept
-  {
-    return sources_.back();
   }
 
   /// @brief The number of source packets.

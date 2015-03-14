@@ -79,10 +79,10 @@ public:
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
-    sources_.emplace(current_source_id_, std::move(sym.buffer()));
+    const auto insertion = sources_.emplace(current_source_id_, std::move(sym.buffer()));
 
     // Ask user to handle the bytes of the new source.
-    serializer_->write_source(sources_.last());
+    serializer_->write_source(*insertion);
 
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
