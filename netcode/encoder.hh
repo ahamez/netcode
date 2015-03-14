@@ -113,6 +113,14 @@ public:
     return rate_;
   }
 
+  /// @brief Get the number of generated repairs.
+  std::size_t
+  nb_repairs()
+  const noexcept
+  {
+    return nb_repairs_;
+  }
+
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.
