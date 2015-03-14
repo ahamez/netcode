@@ -97,6 +97,23 @@ public:
     return sources_.size();
   }
 
+  /// @brief Get the code rate.
+  unsigned int
+  rate()
+  const noexcept
+  {
+    return rate_;
+  }
+
+  /// @brief Set the code rate.
+  /// @todo Should a new inferior rate be treated specifically?.
+  unsigned int&
+  rate()
+  noexcept
+  {
+    return rate_;
+  }
+
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.
