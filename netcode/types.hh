@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <functional>
-#include <vector>
 
 namespace ntc {
 
@@ -17,7 +16,7 @@ using id_type = std::uint32_t;
 
 /*------------------------------------------------------------------------------------------------*/
 
-using coding_coefficient_generator_t = std::function<id_type(id_type)>;
+using coding_coefficient_generator = std::function<id_type(id_type)>;
 
 /*------------------------------------------------------------------------------------------------*/
 

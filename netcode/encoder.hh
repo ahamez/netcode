@@ -2,16 +2,15 @@
 
 #include <memory>
 
-#include "netcode/coding.hh"
-#include "netcode/symbol.hh"
-#include "netcode/types.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/galois/multiply.hh"
+#include "netcode/coding.hh"
+#include "netcode/symbol.hh"
+#include "netcode/types.hh"
 
 namespace ntc {
 
@@ -40,7 +39,10 @@ public:
     , repair_{current_repair_id_}
     , handler_{new detail::handler_derived<Handler>{std::forward<Handler>(h)}}
     , serializer_{new detail::protocol::simple{*handler_}}
-  {}
+  {
+    // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
+    repair_.symbol_buffer().reserve(512);
+  }
 
   /// @brief Constructor
   template <typename Handler>
@@ -70,6 +72,7 @@ public:
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
+  /// @todo Handle possible allocation errors.
   ///
   /// @p sym won't be usable after this call.
   void
@@ -85,45 +88,18 @@ public:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      auto src_cit = sources_.cbegin();
-      auto src_end = sources_.cend();
+      // Reset repair's symbol size. It only reset the 'virtual' size of the buffer, the reserved
+      // memory is kept.
+      repair_.symbol_buffer().resize(0ul);
 
-      /// @todo generate coefficients
+      // Create the repair packet from the list of sources.
+      coding_(repair_.symbol_buffer(), sources_.cbegin(), sources_.cend());
 
-      // Resize the repair's symbol buffer to fit the first source symbol buffer.
-      // Memory allocations will occur upon each symbol commit, until a maximal size is reached.
-      repair_.symbol_buffer().resize(src_cit->symbol_buffer().size());
-
-      // Only multiply for the first source, no need to add with repair.
-      galois::multiply( coding_.field()
-                      , src_cit->symbol_buffer().size()
-                      , src_cit->symbol_buffer().data(), repair_.symbol_buffer().data()
-                      , 42 /* coeff to generate */);
-
-      // Then, for each remaining source, multiply it with a coefficient and add it with
-      // current repair.
-      for (++src_cit; src_cit != src_end; ++src_end)
-      {
-        // The current repair's symbol buffer might be too small for the current source.
-        if (src_cit->symbol_buffer().size() > repair_.symbol_buffer().size())
-        {
-          repair_.symbol_buffer().resize(src_cit->symbol_buffer().size());
-        }
-        galois::multiply_add( coding_.field()
-                            , src_cit->symbol_buffer().size()
-                            , src_cit->symbol_buffer().data(), repair_.symbol_buffer().data()
-                            , 42 /* coeff to generate */);
-      }
-
-      // Finally, set the identifier of the new repair.
+      // Set the identifier of the new repair.
       repair_.id() = current_repair_id_;
 
       // Ask user to handle the bytes of the new repair.
       serializer_->write_repair(repair_);
-
-      // Reset repair's symbol size. It only reset the 'virtual' size of the buffer, the reserved
-      // memory is kept.
-      repair_.symbol_buffer().resize(0ul);
     }
 
     current_source_id_ += 1;
