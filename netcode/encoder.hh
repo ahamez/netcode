@@ -107,7 +107,7 @@ public:
   }
 
   /// @brief Set the code rate.
-  /// @todo Should a new inferior rate be treated specifically?.
+  /// @todo Should a new smaller rate be treated specifically?.
   unsigned int&
   rate()
   noexcept
@@ -133,23 +133,30 @@ private:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      // Only reset the 'virtual' size of the buffer, the reserved memory is kept.
-      repair_.reset();
-
-      // Create the repair packet from the list of sources.
-      coding_(repair_, sources_.cbegin(), sources_.cend());
-
-      // Set the identifier of the new repair.
-      repair_.id() = current_repair_id_;
-
-      // Ask user to handle the bytes of the new repair.
-      serializer_->write_repair(repair_);
-
-      current_repair_id_ += 1;
-      nb_repairs_ += 1;
+      make_repair();
     }
 
     current_source_id_ += 1;
+  }
+
+  /// @brief Order the generation of a repair.
+  void
+  make_repair()
+  {
+    // Only reset the 'virtual' size of the buffer, the reserved memory is kept.
+    repair_.reset();
+
+    // Create the repair packet from the list of sources.
+    coding_(repair_, sources_.cbegin(), sources_.cend());
+
+    // Set the identifier of the new repair.
+    repair_.id() = current_repair_id_;
+
+    // Ask user to handle the bytes of the new repair.
+    serializer_->write_repair(repair_);
+
+    current_repair_id_ += 1;
+    nb_repairs_ += 1;
   }
 
   /// @brief The component that handles the coding process.
