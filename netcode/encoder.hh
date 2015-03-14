@@ -42,7 +42,7 @@ public:
     , serializer_{new detail::protocol::simple{*handler_}}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
-    repair_.symbol_buffer().reserve(512);
+    repair_.buffer().reserve(512);
   }
 
   /// @brief Constructor
@@ -85,12 +85,11 @@ public:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      // Reset repair's symbol size. It only reset the 'virtual' size of the buffer, the reserved
-      // memory is kept.
-      repair_.symbol_buffer().resize(0ul);
+      // Only reset the 'virtual' size of the buffer, the reserved memory is kept.
+      repair_.reset();
 
       // Create the repair packet from the list of sources.
-      coding_(repair_.symbol_buffer(), sources_.cbegin(), sources_.cend());
+      coding_(repair_, sources_.cbegin(), sources_.cend());
 
       // Set the identifier of the new repair.
       repair_.id() = current_repair_id_;
