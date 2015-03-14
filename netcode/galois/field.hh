@@ -4,7 +4,7 @@
 #include <cstddef> // size_t
 
 extern "C" {
-#include <gf_complete.h>
+//#include <gf_complete.h>
 }
 
 namespace galois {
@@ -17,7 +17,7 @@ public:
 
   /// @brief Constructor.
   field(unsigned int w)
-    : gf_{}
+//    : gf_{}
   {
 //    if (gf_init_easy(&gf_, w) == 0)
 //    {
@@ -43,18 +43,18 @@ public:
     assert(reinterpret_cast<std::size_t>(src) % 4 == 0 && "src must be aligned on 4 bytes");
     assert(reinterpret_cast<std::size_t>(dst) % 4 == 0 && "dst must be aligned on 4 bytes");
     assert(len % 8 == 0 && "len must be a multiple of 8");
-    gf_.multiply_region.w32( &gf_
-                           , const_cast<char*>(src)
-                           , dst
-                           , c
-                           , static_cast<int>(len)
-                           , add);
+//    gf_.multiply_region.w32( &gf_
+//                           , const_cast<char*>(src)
+//                           , dst
+//                           , c
+//                           , static_cast<int>(len)
+//                           , add);
   }
 
 private:
 
   /// @brief The real underlying galois field.
-  gf_t gf_;
+//  gf_t gf_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
