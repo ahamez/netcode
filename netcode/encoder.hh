@@ -43,6 +43,8 @@ public:
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
     repair_.buffer().reserve(512);
+    // The same for the list of source identifiers.
+    repair_.sources().reserve(64);
   }
 
   /// @brief Constructor

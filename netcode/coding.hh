@@ -32,6 +32,7 @@ public:
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
     repair.buffer().resize(src_cit->buffer().size());
 
+    repair.sources().emplace_back(src_cit->id());
     // Only multiply for the first source, no need to add with repair.
     multiply( gf_
             , src_cit->buffer().size()
@@ -47,6 +48,8 @@ public:
       {
         repair.buffer().resize(src_cit->buffer().size());
       }
+
+      repair.sources().emplace_back(src_cit->id());
       multiply_add( gf_
                   , src_cit->buffer().size()
                   , src_cit->buffer().data(), repair.buffer().data()
