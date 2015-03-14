@@ -26,13 +26,13 @@ int main()
     auto sym = ntc::symbol{512};
     std::copy(src      , src + 256, sym.buffer());
     std::copy(src + 256, src + 512, sym.buffer() + 256);
-    encoder.commit_symbol(std::move(sym));
+    encoder.commit(std::move(sym));
   }
   std::cout << "---------------\n";
   {
     auto sym = ntc::symbol{512};
     std::copy(src, src + 512, sym.buffer());
-    encoder.commit_symbol(std::move(sym));
+    encoder.commit(std::move(sym));
   }
   std::cout << "---------------\n";
   {
@@ -40,7 +40,7 @@ int main()
     std::copy(src      , src + 256, sym.buffer());
     sym.resize_buffer(512);
     std::copy(src + 256, src + 512, sym.buffer() + 256);
-    encoder.commit_symbol(std::move(sym));
+    encoder.commit(std::move(sym));
   }
   std::cout << "---------------\n";
   // Automatic symbol growing.
@@ -50,13 +50,13 @@ int main()
     std::copy(src, src + 256, inserter);
     std::copy(src, src + 256, inserter);
     std::copy(src, src + 256, inserter);
-    encoder.commit_symbol(std::move(sym));
+    encoder.commit(std::move(sym));
   }
   std::cout << "---------------\n";
   // Copy a buffer into the symbol.
   {
     auto sym = ntc::symbol{512, src};
-    encoder.commit_symbol(std::move(sym));
+    encoder.commit(std::move(sym));
   }
   std::cout << "---------------\n";
 

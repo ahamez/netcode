@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <memory> // unique_ptr
 
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/packet_type.hh"
@@ -17,7 +17,7 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief
+/// @brief The class to interact with on the sender side.
 class encoder final
 {
 public:
@@ -71,11 +71,39 @@ public:
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
-  /// @todo Handle possible allocation errors.
   ///
-  /// @p sym won't be usable after this call.
+  /// The symbol @p sym won't be usable after this call.
   void
-  commit_symbol(symbol_base&& sym)
+  commit(symbol&& sym)
+  {
+    commit_impl(std::move(sym));
+  }
+
+  /// @brief Give the encoder a new symbol.
+  /// @param sym The automatic symbol to add.
+  ///
+  /// The symbol @p sym won't be usable after this call.
+  void
+  commit(auto_symbol&& sym)
+  {
+    commit_impl(std::move(sym));
+  }
+
+  /// @brief The number of packets which have not been acknowledged.
+  std::size_t
+  window_size()
+  const noexcept
+  {
+    return sources_.size();
+  }
+
+private:
+
+  /// @brief Create a source from the given symbol and generate a repair if needed.
+  /// @param sym The symbol to add.
+  /// @todo Handle possible allocation errors.
+  void
+  commit_impl(detail::symbol_base&& sym)
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
@@ -103,16 +131,6 @@ public:
     current_source_id_ += 1;
     current_repair_id_ += 1;
   }
-
-  /// @brief The number of packets which have not been acknowledged.
-  std::size_t
-  window_size()
-  const noexcept
-  {
-    return sources_.size();
-  }
-
-private:
 
   /// @brief The component that handles the coding process.
   coding coding_;
