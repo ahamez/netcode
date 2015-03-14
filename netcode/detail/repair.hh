@@ -15,6 +15,12 @@ class repair final
 {
 public:
 
+  repair(id_type id, std::vector<id_type>&& ids, detail::symbol_buffer&& buffer)
+    : id_{id}
+    , sources_ids_{std::move(ids)}
+    , buffer_{std::move(buffer)}
+  {}
+
   repair(id_type id)
     : id_{id}
     , sources_ids_{}

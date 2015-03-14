@@ -24,12 +24,19 @@ struct simple final
   write_ack(const ack& pkt)
   override
   {
+    // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
+
+    // Prepare number of source identifiers.
     const auto network_sz = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
+    // Packet type.
     write(sizeof(std::uint8_t), &packet_ty);
+
+    // Number of source identifiers.
     write(sizeof(std::uint16_t), &network_sz);
 
+    // Source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const std::uint32_t network_id = htonl(id);
@@ -42,7 +49,7 @@ struct simple final
   override
   {
     // Packet type should have been verified by the caller.
-    assert(data[0] == static_cast<std::uint8_t>(packet_type::ack));
+    assert(get_packet_type(data) == packet_type::ack);
 
     // Skip packet type.
     data += sizeof(std::uint8_t);
@@ -65,28 +72,78 @@ struct simple final
   write_repair(const repair& pkt)
   override
   {
+    // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
+
+    // Prepare packet identifier.
     const auto network_id = htonl(pkt.id());
+
+    // Prepare number of source identifiers.
     const auto network_nb_ids = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
+
+    // Prepare repair symbol size.
     const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
 
+    // Packet type.
     write(sizeof(std::uint8_t), &packet_ty);
+
+    // Packet identifier.
     write(sizeof(id_type), &network_id);
+
+    // Number of source identifiers.
     write(sizeof(std::uint16_t),&network_nb_ids);
+
+    // Source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const std::uint32_t network_id = htonl(id);
       write(sizeof(std::uint32_t), &network_id);
     }
+
+    // Size of the repair symbol.
     write(sizeof(std::uint16_t), &network_sz);
+
+    // The repair symbol.
     write(pkt.buffer().size(), pkt.buffer().data());
   }
 
   repair
-  read_repair(const char*)
+  read_repair(const char* data)
   override
   {
-    return {0};
+    // Packet type should have been verified by the caller.
+    assert(get_packet_type(data) == packet_type::repair);
+
+    // Skip packet type.
+    data += sizeof(std::uint8_t);
+
+    // Read identifier.
+    const auto id = ntohl(*reinterpret_cast<const std::uint32_t*>(data));
+    data += sizeof(std::uint32_t);
+
+    // Read number of source identifiers
+    const auto nb_ids = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
+    // Read source ids.
+    std::vector<id_type> ids;
+    ids.reserve(nb_ids);
+    for (auto i = 0ul; i < nb_ids; ++i)
+    {
+      ids.push_back(ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
+      data += sizeof(std::uint32_t);
+    }
+
+    // Read size of the repair symbol.
+    const auto sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
+    // Read the repair symbol.
+    symbol_buffer buffer;
+    buffer.reserve(sz);
+    std::copy_n(data, sz, std::back_inserter(buffer));
+
+    return {id, std::move(ids), std::move(buffer)};
   }
 
   void
@@ -104,9 +161,12 @@ struct simple final
   }
 
   source
-  read_source(const char*)
+  read_source(const char* data)
   override
   {
+    // Packet type should have been verified by the caller.
+    assert(get_packet_type(data) == packet_type::source);
+
     symbol_buffer buffer;
     return {0, std::move(buffer)};
   }
