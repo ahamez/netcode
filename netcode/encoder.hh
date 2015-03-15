@@ -44,9 +44,9 @@ public:
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
-    repair_.buffer().reserve(512);
-    // The same for the list of source identifiers.
-    repair_.source_ids().reserve(64);
+    repair_.buffer().reserve(1024);
+    // Same thing for the list of source identifiers.
+    repair_.source_ids().reserve(128);
   }
 
   /// @brief Constructor
