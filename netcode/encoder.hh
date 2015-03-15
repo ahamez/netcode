@@ -211,11 +211,11 @@ private:
   /// @brief The counter for repair packets identifiers.
   std::uint32_t current_repair_id_;
 
-  /// @brief Re-use the same memory to prepare a repair packet.
-  detail::repair repair_;
-
   /// @brief The set of souces which have not yet been acknowledged.
   detail::source_list sources_;
+
+  /// @brief Re-use the same memory to prepare a repair packet.
+  detail::repair repair_;
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_;
