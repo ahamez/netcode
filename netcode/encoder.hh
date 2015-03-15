@@ -60,6 +60,7 @@ public:
   bool
   notify(const char* data)
   {
+    assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
       const auto source_ids = serializer_->read_ack(data).source_ids();

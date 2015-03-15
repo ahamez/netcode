@@ -45,6 +45,7 @@ public:
   bool
   notify(const char* data)
   {
+    assert(data != nullptr);
     switch (detail::get_packet_type(data))
     {
         case detail::packet_type::repair:
