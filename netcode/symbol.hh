@@ -49,7 +49,7 @@ public:
 
   /// @brief Tell the library how many bytes were written in the buffer.
   void
-  set_user_size(std::size_t sz)
+  set_nb_written_bytes(std::size_t sz)
   noexcept
   {
     symbol_base::user_size_ = sz;
