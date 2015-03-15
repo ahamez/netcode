@@ -42,6 +42,7 @@
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
+		2B92226A1AB55B5F009A2843 /* protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = protocol.hh; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* coding.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coding.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319531AB0C550001AA9DF /* field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
@@ -221,6 +222,7 @@
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
 				2BE319561AB0C550001AA9DF /* types.hh */,
 				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
+				2B92226A1AB55B5F009A2843 /* protocol.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";

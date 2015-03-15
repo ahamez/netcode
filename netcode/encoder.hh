@@ -10,6 +10,7 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
 #include "netcode/coding.hh"
+#include "netcode/protocol.hh"
 #include "netcode/symbol.hh"
 #include "netcode/types.hh"
 
@@ -30,7 +31,7 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  encoder(Handler&& h, const coding& c, unsigned int code_rate, code_type type)
+  encoder(Handler&& h, const coding& c, unsigned int code_rate, code_type type, protocol prot)
     : coding_{c}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
@@ -39,7 +40,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , serializer_{new detail::protocol::simple{*handler_}}
+    , serializer_{mk_protocol(prot, *handler_)}
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -51,7 +52,7 @@ public:
   /// @brief Constructor
   template <typename Handler>
   encoder(Handler&& h, const coding& c, unsigned int code_rate)
-    : encoder{std::forward<Handler>(h), c, code_rate, code_type::systematic}
+    : encoder{std::forward<Handler>(h), c, code_rate, code_type::systematic, protocol::simple}
   {}
 
   /// @brief Notify the encoder that some data has been received.
@@ -163,6 +164,17 @@ private:
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;
+  }
+
+  static
+  std::unique_ptr<detail::serializer>
+  mk_protocol(protocol p, detail::handler_base& h)
+  {
+    switch (p)
+    {
+      case protocol::simple :
+        return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
+    }
   }
 
   /// @brief The component that handles the coding process.
