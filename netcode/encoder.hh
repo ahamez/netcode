@@ -31,8 +31,8 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  encoder(Handler&& h, const coding& coder, unsigned int code_rate, code_type type, protocol prot)
-    : coder_{coder}
+  encoder(Handler&& h, coding&& coder, unsigned int code_rate, code_type type, protocol prot)
+    : coder_{std::move(coder)}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
     , current_source_id_{0}
@@ -51,8 +51,9 @@ public:
 
   /// @brief Constructor for a systematic encoder using the simple protocol.
   template <typename Handler>
-  encoder(Handler&& h, const coding& coder, unsigned int code_rate)
-    : encoder{std::forward<Handler>(h), coder, code_rate, code_type::systematic, protocol::simple}
+  encoder(Handler&& h, coding&& coder, unsigned int code_rate)
+    : encoder{ std::forward<Handler>(h), std::move(coder), code_rate, code_type::systematic
+             , protocol::simple}
   {}
 
   /// @brief Notify the encoder that some data has been received.

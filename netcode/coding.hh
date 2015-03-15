@@ -20,10 +20,6 @@ public:
     : gf_{std::move(gf)}, coeff_generator_{coefficient_generator}
   {}
 
-  coding(const galois::field& gf, const coding_coefficient_generator& coefficient_generator)
-    : gf_{gf}, coeff_generator_{coefficient_generator}
-  {}
-
   /// @brief Fill a @ref detail::repair from a set of detail::source.
   /// @param repair The repair to fill.
   /// @param src_cit The beginning of the container of @ref detail::source.

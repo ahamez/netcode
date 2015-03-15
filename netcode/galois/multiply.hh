@@ -8,7 +8,7 @@ namespace galois {
 
 inline
 void
-multiply(const field& f, std::size_t len, const char* src, char* dst, uint32_t coefficient)
+multiply(field& f, std::size_t len, const char* src, char* dst, uint32_t coefficient)
 {
   f.multiply_region_w32(src, dst, coefficient, len, false /* dont't add in dst with xor */);
 }
@@ -18,7 +18,7 @@ multiply(const field& f, std::size_t len, const char* src, char* dst, uint32_t c
 
 inline
 void
-multiply_add(const field& f, std::size_t len, const char* src, char* dst, uint32_t coefficient)
+multiply_add(field& f, std::size_t len, const char* src, char* dst, uint32_t coefficient)
 {
   f.multiply_region_w32(src, dst, coefficient, len, true /* add in dst with xor */);
 }

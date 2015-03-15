@@ -28,8 +28,7 @@ const auto dummy_generator = [](std::uint32_t x){return x;};
 
 TEST_CASE("Encoder's window size", "[encoder]" )
 {
-  ntc::coding coding{galois::field{8}, dummy_generator};
-  ntc::encoder encoder{handler{}, coding, 3};
+  ntc::encoder encoder{handler{}, {galois::field{8}, dummy_generator}, 3};
 
   SECTION("Ever growing window size")
   {
@@ -47,8 +46,7 @@ TEST_CASE("Encoder's window size", "[encoder]" )
 
 TEST_CASE("Encoder generate repairs", "[encoder]" )
 {
-  ntc::coding coding{galois::field{8}, dummy_generator};
-  ntc::encoder encoder{handler{}, coding, 5};
+  ntc::encoder encoder{handler{}, {galois::field{8}, dummy_generator}, 5};
 
   SECTION("Fixed code rate")
   {

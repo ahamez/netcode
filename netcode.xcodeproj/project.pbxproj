@@ -586,6 +586,8 @@
 					/usr/local/include,
 					"$(SRCROOT)/ext",
 				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lgf_complete";
 			};
 			name = Debug;
 		};
@@ -599,6 +601,8 @@
 					/usr/local/include,
 					"$(SRCROOT)/ext",
 				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lgf_complete";
 			};
 			name = Release;
 		};
