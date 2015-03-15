@@ -158,8 +158,11 @@ struct simple final
     // Prepare packet identifier.
     const auto network_id = htonl(pkt.id());
 
-    // Prepare source symbol size.
+    // Prepare real source symbol size.
     const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
+
+    // Prepare user symbol size.
+    const auto network_user_sz = htons(static_cast<std::uint16_t>(pkt.user_size()));
 
     // Write packet type.
     write(sizeof(std::uint8_t), &packet_ty);
@@ -167,8 +170,11 @@ struct simple final
     // Write source identifier.
     write(sizeof(std::uint32_t), &network_id);
 
-    // Write source symbol size.
+    // Write real source symbol size.
     write(sizeof(std::uint16_t), &network_sz);
+
+    // Write user size of the repair symbol.
+    write(sizeof(std::uint16_t), &network_user_sz);
 
     // Write source symbol.
     write(pkt.buffer().size(), pkt.buffer().data());
@@ -188,8 +194,12 @@ struct simple final
     const auto id = ntohl(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
 
-    // Read size of the source symbol.
+    // Read real size of the source symbol.
     const auto sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
+    // Read user size of the source symbol.
+    const auto user_sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read the source symbol.
@@ -197,7 +207,7 @@ struct simple final
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
-    return {id, std::move(buffer)};
+    return {id, std::move(buffer), user_sz};
   }
 };
 

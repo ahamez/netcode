@@ -76,6 +76,7 @@ public:
   void
   commit(symbol&& sym)
   {
+    assert(sym.user_size() != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
     commit_impl(std::move(sym));
   }
 
@@ -85,6 +86,22 @@ public:
   /// The symbol @p sym won't be usable after this call.
   void
   commit(auto_symbol&& sym)
+  {
+    sym.user_size_ = sym.buffer().size();
+    if ((sym.buffer().size() % 16) != 0)
+    {
+      // The automatic buffer has a size which is not a multiple of 16.
+      sym.buffer().resize(detail::make_multiple(sym.buffer().size(), 16));
+    }
+    commit_impl(std::move(sym));
+  }
+
+  /// @brief Give the encoder a new symbol.
+  /// @param sym The symbol to add.
+  ///
+  /// The symbol @p sym won't be usable after this call.
+  void
+  commit(copy_symbol&& sym)
   {
     commit_impl(std::move(sym));
   }
@@ -132,7 +149,8 @@ private:
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
-    const auto insertion = sources_.emplace(current_source_id_, std::move(sym.buffer()));
+    const auto insertion
+      = sources_.emplace(current_source_id_, std::move(sym.buffer()), sym.user_size());
 
     // Ask user to handle the bytes of the new source.
     serializer_->write_source(*insertion);
@@ -140,17 +158,20 @@ private:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      make_repair();
+      mk_repair();
+      // Ask user to handle the bytes of the new repair.
+      serializer_->write_repair(repair_);
     }
 
     current_source_id_ += 1;
   }
 
-  /// @brief Order the generation of a repair.
+  /// @brief Launch the generation of a repair.
   void
-  make_repair()
+  mk_repair()
   {
-    // Only reset the 'virtual' size of the buffer, the reserved memory is kept.
+    // Only reset the 'virtual' size of the buffer, the reserved memory is kept, so
+    // no memory re-allocation occurs.
     repair_.reset();
 
     // Create the repair packet from the list of sources.
@@ -158,9 +179,6 @@ private:
 
     // Set the identifier of the new repair.
     repair_.id() = current_repair_id_;
-
-    // Ask user to handle the bytes of the new repair.
-    serializer_->write_repair(repair_);
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;

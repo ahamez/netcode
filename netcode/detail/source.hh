@@ -13,8 +13,10 @@ class source final
 {
 public:
 
-  source(std::uint32_t id, symbol_buffer&& buffer)
-    : id_{id}, symbol_buffer_{std::move(buffer)}
+  source(std::uint32_t id, symbol_buffer&& buffer, std::size_t user_size)
+    : id_{id}
+    , symbol_buffer_{std::move(buffer)}
+    , user_size_{user_size}
   {}
 
   std::uint32_t
@@ -31,10 +33,23 @@ public:
     return symbol_buffer_;
   }
 
+  std::size_t
+  user_size()
+  const noexcept
+  {
+    return user_size_;
+  }
+
 private:
 
+  ///
   std::uint32_t id_;
+
+  ///
   symbol_buffer symbol_buffer_;
+
+  ///
+  std::size_t user_size_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

@@ -36,6 +36,7 @@ TEST_CASE("Encoder's window size", "[encoder]" )
     for (auto i = 0ul; i < 100; ++i)
     {
       auto sym = ntc::symbol{512};
+      sym.set_user_size(300);
       encoder.commit(std::move(sym));
       REQUIRE(encoder.window_size() == (i + 1));
     }
@@ -54,6 +55,7 @@ TEST_CASE("Encoder generate repairs", "[encoder]" )
     for (auto i = 0ul; i < 100; ++i)
     {
       auto sym = ntc::symbol{512};
+      sym.set_user_size(512);
       encoder.commit(std::move(sym));
     }
     REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
