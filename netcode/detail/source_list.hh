@@ -23,10 +23,10 @@ public:
   /// @brief Add a source packet in-place.
   /// @return The newly added source.
   template <typename... Args>
-  const_iterator
+  const detail::source&
   emplace(Args&&... args)
   {
-    return sources_.emplace(sources_.cend(), std::forward<Args>(args)...);
+    return *sources_.emplace(sources_.cend(), std::forward<Args>(args)...);
   }
 
   /// @brief Remove source packets from a list of identifiers.
