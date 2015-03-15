@@ -195,6 +195,8 @@ private:
     {
       case protocol::simple :
         return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
+
+      default: __builtin_unreachable();
     }
   }
 
