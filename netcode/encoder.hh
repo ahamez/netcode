@@ -162,9 +162,13 @@ private:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      mk_repair();
-      // Ask user to handle the bytes of the new repair.
-      serializer_->write_repair(repair_);
+      // Don't create a repair if the window is empty.
+      if (window_size() > 0)
+      {
+        mk_repair();
+        // Ask user to handle the bytes of the new repair.
+        serializer_->write_repair(repair_);
+      }
     }
 
     current_source_id_ += 1;
