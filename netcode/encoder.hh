@@ -76,7 +76,7 @@ public:
   void
   commit(symbol&& sym)
   {
-    assert(sym.user_size() != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
+    assert(sym.user_size_ != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
     commit_impl(std::move(sym));
   }
 
@@ -87,11 +87,11 @@ public:
   void
   commit(auto_symbol&& sym)
   {
-    sym.user_size_ = sym.buffer().size();
-    if ((sym.buffer().size() % 16) != 0)
+    sym.user_size_ = sym.buffer_.size();
+    if ((sym.buffer_.size() % 16) != 0)
     {
       // The automatic buffer has a size which is not a multiple of 16.
-      sym.buffer().resize(detail::make_multiple(sym.buffer().size(), 16));
+      sym.buffer_.resize(detail::make_multiple(sym.buffer_.size(), 16));
     }
     commit_impl(std::move(sym));
   }
@@ -144,13 +144,14 @@ private:
   /// @brief Create a source from the given symbol and generate a repair if needed.
   /// @param sym The symbol to add.
   /// @todo Handle possible allocation errors.
+  template <typename Symbol>
   void
-  commit_impl(detail::symbol_base&& sym)
+  commit_impl(Symbol&& sym)
   {
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
     const auto insertion
-      = sources_.emplace(current_source_id_, std::move(sym.buffer()), sym.user_size());
+      = sources_.emplace(current_source_id_, std::move(sym.buffer_), sym.user_size_);
 
     // Ask user to handle the bytes of the new source.
     serializer_->write_source(*insertion);

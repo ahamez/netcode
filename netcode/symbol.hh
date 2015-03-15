@@ -4,7 +4,6 @@
 #include <iterator>  // back_inserter
 
 #include "netcode/detail/multiple.hh"
-#include "netcode/detail/symbol_base.hh"
 #include "netcode/detail/symbol_buffer.hh"
 
 namespace ntc {
@@ -19,14 +18,14 @@ namespace ntc {
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
 class symbol final
-  : public detail::symbol_base
 {
 public:
 
   /// @brief Constructor.
   /// @param size The size of the buffer to allocate.
   symbol(std::size_t size)
-    : symbol_base{size}
+    : user_size_{0}
+    , buffer_(detail::make_multiple(size, 16))
   {}
 
   /// @brief Get the buffer where to write the symbol.
@@ -34,7 +33,7 @@ public:
   buffer()
   noexcept
   {
-    return symbol_base::buffer().data();
+    return buffer_.data();
   }
 
   /// @brief Resize the buffer.
@@ -44,7 +43,7 @@ public:
   void
   resize_buffer(std::size_t size)
   {
-    symbol_base::buffer().resize(size);
+    buffer_.resize(size);
   }
 
   /// @brief Tell the library how many bytes were written in the buffer.
@@ -52,8 +51,19 @@ public:
   set_nb_written_bytes(std::size_t sz)
   noexcept
   {
-    symbol_base::user_size_ = sz;
+    user_size_ = sz;
   }
+
+private:
+
+  /// @brief The size of the symbol given by the user.
+  std::size_t user_size_;
+
+  /// @brief The buffer storage.
+  detail::symbol_buffer buffer_;
+
+  /// @brief The encoder needs to set the user size and to access the buffer.
+  friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -62,15 +72,17 @@ public:
 ///
 /// It provides the easiest way to avoid copying, and can be used with STL algorithms.
 class auto_symbol final
-  : public detail::symbol_base
 {
 public:
 
   /// @brief Construct with a reserved buffer to avoid memory re-allocations when growing.
   /// @param reserve_size The size to reserve.
   auto_symbol(std::size_t reserve_size)
-    : symbol_base{reserve_size, reserve_only{}}
-  {}
+    : user_size_{0}
+    , buffer_()
+  {
+    buffer_.reserve(reserve_size);
+  }
 
   /// @brief Default constructor with a default size (512 bytes) for the reserved buffer.
   auto_symbol()
@@ -89,10 +101,18 @@ public:
   back_insert_iterator
   back_inserter()
   {
-    return std::back_inserter(symbol_base::buffer());
+    return std::back_inserter(buffer_);
   }
 
-  /// @brief The encoder needs to set the user size.
+private:
+
+  /// @brief The size of the symbol given by the user.
+  std::size_t user_size_;
+
+  /// @brief The buffer storage.
+  detail::symbol_buffer buffer_;
+
+  /// @brief The encoder needs to set the user size and to access the buffer.
   friend class encoder;
 };
 
@@ -103,7 +123,6 @@ public:
 /// Use this symbol when the data already exists and must be copied, otherwise auto_symbol and
 /// @ref symbol sould be prefered.
 class copy_symbol final
-  : public detail::symbol_base
 {
 public:
 
@@ -111,8 +130,22 @@ public:
   /// @param len The size of the data to copy.
   /// @param src The address of the data to copy.
   copy_symbol(std::size_t len, const char* src)
-    : symbol_base{len, src}
-  {}
+    : user_size_{len}
+    , buffer_(detail::make_multiple(len, 16))
+  {
+    std::copy_n(src, len, buffer_.begin());
+  }
+
+private:
+
+  /// @brief The size of the symbol given by the user.
+  std::size_t user_size_;
+
+  /// @brief The buffer storage.
+  detail::symbol_buffer buffer_;
+
+  /// @brief The encoder needs to access the buffer.
+  friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

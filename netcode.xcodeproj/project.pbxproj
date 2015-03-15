@@ -39,7 +39,6 @@
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
-		2B75268C1AB475A0008DEDAD /* symbol_base.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol_base.hh; sourceTree = "<group>"; };
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
@@ -271,7 +270,6 @@
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
 				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
-				2B75268C1AB475A0008DEDAD /* symbol_base.hh */,
 				2BE319721AB23910001AA9DF /* symbol_buffer.hh */,
 				2B7526921AB4ABE9008DEDAD /* types.hh */,
 			);
