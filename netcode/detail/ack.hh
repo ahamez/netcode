@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "netcode/detail/types.hh"
 #include "netcode/types.hh"
 
 namespace ntc { namespace detail {
@@ -9,6 +10,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief An acknowledgement packet.
 class ack final
 {
 public:
