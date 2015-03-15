@@ -4,6 +4,7 @@
 
 #include "netcode/galois/field.hh"
 #include "netcode/encoder.hh"
+#include "netcode/decoder.hh"
 
 struct handler
 {

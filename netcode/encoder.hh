@@ -31,8 +31,8 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  encoder(Handler&& h, const coding& c, unsigned int code_rate, code_type type, protocol prot)
-    : coding_{c}
+  encoder(Handler&& h, const coding& coder, unsigned int code_rate, code_type type, protocol prot)
+    : coder_{coder}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
     , current_source_id_{0}
@@ -51,8 +51,8 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  encoder(Handler&& h, const coding& c, unsigned int code_rate)
-    : encoder{std::forward<Handler>(h), c, code_rate, code_type::systematic, protocol::simple}
+  encoder(Handler&& h, const coding& coder, unsigned int code_rate)
+    : encoder{std::forward<Handler>(h), coder, code_rate, code_type::systematic, protocol::simple}
   {}
 
   /// @brief Notify the encoder that some data has been received.
@@ -178,7 +178,7 @@ private:
     repair_.reset();
 
     // Create the repair packet from the list of sources.
-    coding_(repair_, sources_.cbegin(), sources_.cend());
+    coder_(repair_, sources_.cbegin(), sources_.cend());
 
     // Set the identifier of the new repair.
     repair_.id() = current_repair_id_;
@@ -199,7 +199,7 @@ private:
   }
 
   /// @brief The component that handles the coding process.
-  coding coding_;
+  coding coder_;
 
   /// @brief The number of source packets to send before sending a repair packet.
   unsigned int rate_;

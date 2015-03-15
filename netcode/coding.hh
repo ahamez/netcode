@@ -11,7 +11,7 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The component responsible for the encoding and decoding of @ref source.
+/// @brief The component responsible for the encoding and decoding of @ref detail::source.
 class coding final
 {
 public:
