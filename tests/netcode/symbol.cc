@@ -13,7 +13,7 @@ using namespace ntc;
 
 TEST_CASE("manual symbol", "[symbol]" )
 {
-  std::array<char, 5> tab = {'a', 'b', 'c', 'd', 'e'};
+  std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
 
   auto s = symbol{128};
   std::copy_n(begin(tab), 5, s.buffer());
@@ -27,7 +27,7 @@ TEST_CASE("manual symbol", "[symbol]" )
 
 TEST_CASE("auto symbol", "[symbol]" )
 {
-  std::array<char, 5> tab = {'a', 'b', 'c', 'd', 'e'};
+  std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
 
   auto s = auto_symbol{};
   std::copy_n(begin(tab), 4, s.back_inserter());
@@ -37,7 +37,7 @@ TEST_CASE("auto symbol", "[symbol]" )
 
 TEST_CASE("copy symbol", "[symbol]" )
 {
-  std::array<char, 5> tab = {'a', 'b', 'c', 'd', 'e'};
+  std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
   auto s = copy_symbol(3, tab.data());
 }
 
