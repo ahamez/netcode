@@ -26,7 +26,8 @@ public:
   const detail::source&
   emplace(Args&&... args)
   {
-    return *sources_.emplace(sources_.cend(), std::forward<Args>(args)...);
+    sources_.emplace_back(std::forward<Args>(args)...);
+    return sources_.back();
   }
 
   /// @brief Remove source packets from a list of identifiers.
@@ -35,20 +36,20 @@ public:
   noexcept
   {
     // sources_ is sorted by insertion (and thus by identifier).
-    auto source_cit = sources_.cbegin();
-    const auto source_end = sources_.cend();
-    while (source_cit != source_end and id_cit != id_end)
+    auto source_it = sources_.begin();
+    const auto source_end = sources_.end();
+    while (source_it != source_end and id_cit != id_end)
     {
-      if (source_cit->id() == *id_cit)
+      if (source_it->id() == *id_cit)
       {
-        const auto to_erase = source_cit;
-        ++source_cit;
+        auto to_erase = source_it;
+        ++source_it;
         ++id_cit;
         sources_.erase(to_erase);
       }
       else
       {
-        ++source_cit;
+        ++source_it;
       }
     }
   }
