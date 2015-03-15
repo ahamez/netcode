@@ -6,3 +6,4 @@ set(SOURCES
    )
 
 add_executable(tests ${SOURCES})
+target_link_libraries(tests ${GF_COMPLETE_LIBRARY})

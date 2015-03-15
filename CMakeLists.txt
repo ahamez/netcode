@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.6)
+cmake_minimum_required (VERSION 3.0)
 
 #--------------------------------------------------------------------------------------------------#
 
@@ -8,7 +8,7 @@ project (netcode)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(NOT COMPILER_SUPPORTS_CXX11)
+if (NOT COMPILER_SUPPORTS_CXX11)
   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
 endif ()
 
@@ -24,14 +24,27 @@ if(DOXYGEN_FOUND)
                     COMMENT "Generating API documentation with Doxygen" VERBATIM
                     SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
                    )
-endif(DOXYGEN_FOUND)
+endif()
+
+#--------------------------------------------------------------------------------------------------#
+
+find_path(GF_COMPLETE_INCLUDE_DIR gf_complete.h)
+if (NOT GF_COMPLETE_INCLUDE_DIR)
+  message(FATAL_ERROR "gf-complete headers not found")
+endif ()
+
+find_library(GF_COMPLETE_LIBRARY libgf_complete.a)
+if (NOT GF_COMPLETE_LIBRARY)
+  message(FATAL_ERROR "gf-complete library not found")
+endif ()
+message(STATUS "Found ${GF_COMPLETE_LIBRARY}")
 
 #--------------------------------------------------------------------------------------------------#
 
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release")
-endif()
+endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
@@ -39,6 +52,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fvisibility=hidden")
 
 #--------------------------------------------------------------------------------------------------#
 
+include_directories("${GF_COMPLETE_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/ext")
 add_subdirectory(tests)
