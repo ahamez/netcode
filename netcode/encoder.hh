@@ -49,7 +49,7 @@ public:
     repair_.source_ids().reserve(128);
   }
 
-  /// @brief Constructor
+  /// @brief Constructor for a systematic encoder using the simple protocol.
   template <typename Handler>
   encoder(Handler&& h, const coding& coder, unsigned int code_rate)
     : encoder{std::forward<Handler>(h), coder, code_rate, code_type::systematic, protocol::simple}

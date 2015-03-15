@@ -11,7 +11,7 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The component responsible for the encoding and decoding of @ref detail::source.
+/// @brief The component responsible for the encoding and decoding of @ref detail::repair.
 class coding final
 {
 public:
@@ -24,12 +24,17 @@ public:
     : gf_{gf}, coeff_generator_{coefficient_generator}
   {}
 
-  /// @brief
+  /// @brief Fill a @ref detail::repair from a set of detail::source.
+  /// @param repair The repair to fill.
+  /// @param src_cit The beginning of the container of @ref detail::source.
+  /// @param src_end The end of the container @ref detail::source. Must be different of @p src_cit.
   /// @todo generate coefficients
   void
   operator()( detail::repair& repair, detail::source_list::const_iterator src_cit
             , detail::source_list::const_iterator src_end)
   {
+    assert(src_cit != src_end);
+
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
     repair.buffer().resize(src_cit->buffer().size());
 
