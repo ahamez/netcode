@@ -8,6 +8,7 @@
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/symbol_buffer.hh"
+#include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail { namespace protocol {
 
@@ -60,11 +61,11 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read source ids.
-    const auto* data_as_ids = reinterpret_cast<const id_type*>(data);
-    std::vector<id_type> ids;
+    const auto* data_as_ids = reinterpret_cast<const std::uint32_t*>(data);
+    source_id_list ids;
     ids.reserve(size);
     std::transform( data_as_ids, data_as_ids + size, std::back_inserter(ids)
-                  , [](id_type id){return ntohl(id);});
+                  , [](std::uint32_t id){return ntohl(id);});
 
     return {std::move(ids)};
   }
@@ -89,7 +90,7 @@ struct simple final
     write(sizeof(std::uint8_t), &packet_ty);
 
     // Write packet identifier.
-    write(sizeof(id_type), &network_id);
+    write(sizeof(std::uint32_t), &network_id);
 
     // Write number of source identifiers.
     write(sizeof(std::uint16_t), &network_nb_ids);
@@ -127,7 +128,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read source ids.
-    std::vector<id_type> ids;
+    source_id_list ids;
     ids.reserve(nb_ids);
     for (auto i = 0ul; i < nb_ids; ++i)
     {
@@ -164,7 +165,7 @@ struct simple final
     write(sizeof(std::uint8_t), &packet_ty);
 
     // Write source identifier.
-    write(sizeof(id_type), &network_id);
+    write(sizeof(std::uint32_t), &network_id);
 
     // Write source symbol size.
     write(sizeof(std::uint16_t), &network_sz);

@@ -15,21 +15,21 @@ class repair final
 public:
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair(id_type id, std::vector<id_type>&& ids, detail::symbol_buffer&& buffer)
+  repair(std::uint32_t id, source_id_list&& ids, detail::symbol_buffer&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
     , buffer_{std::move(buffer)}
   {}
 
   /// @brief Construct a default repair, with a given identifier.
-  repair(id_type id)
+  repair(std::uint32_t id)
     : id_{id}
     , sources_ids_{}
     , buffer_{}
   {}
 
   /// @brief This repair's identifier.
-  id_type
+  std::uint32_t
   id()
   const noexcept
   {
@@ -37,7 +37,7 @@ public:
   }
 
   /// @brief This repair's identifier (mutable).
-  id_type&
+  std::uint32_t&
   id()
   noexcept
   {
@@ -90,7 +90,7 @@ public:
 private:
 
   /// @brief This repair's unique identifier.
-  id_type id_;
+  std::uint32_t id_;
 
   /// @brief The list of source identifiers.
   source_id_list sources_ids_;

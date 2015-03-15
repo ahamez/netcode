@@ -28,7 +28,7 @@ public:
   ack& operator=(ack&&) = default;
 
   /// @brief Constructor.
-  ack(std::vector<id_type>&& source_ids)
+  ack(source_id_list&& source_ids)
     : source_ids_{std::move(source_ids)}
   {}
 

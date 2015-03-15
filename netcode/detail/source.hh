@@ -13,11 +13,11 @@ class source final
 {
 public:
 
-  source(id_type id, symbol_buffer&& buffer)
+  source(std::uint32_t id, symbol_buffer&& buffer)
     : id_{id}, symbol_buffer_{std::move(buffer)}
   {}
 
-  id_type
+  std::uint32_t
   id()
   const noexcept
   {
@@ -33,7 +33,7 @@ public:
 
 private:
 
-  id_type id_;
+  std::uint32_t id_;
   symbol_buffer symbol_buffer_;
 };
 

@@ -18,7 +18,7 @@ int main()
 {
   char src[1024];
 
-  ntc::coding coding{galois::field{8}, [](ntc::id_type x){return x;}};
+  ntc::coding coding{galois::field{8}, [](std::uint32_t x){return x;}};
   ntc::encoder encoder{handler{}, coding, 3};
 
   std::cout << "---------------\n";

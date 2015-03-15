@@ -20,7 +20,7 @@ struct handler
   }
 };
 
-const auto dummy_generator = [](ntc::id_type x){return x;};
+const auto dummy_generator = [](std::uint32_t x){return x;};
 
 } // namespace unnamed
 

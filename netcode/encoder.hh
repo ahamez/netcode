@@ -187,10 +187,10 @@ private:
   code_type type_;
 
   /// @brief The counter for source packets identifiers.
-  id_type current_source_id_;
+  std::uint32_t current_source_id_;
 
   /// @brief The counter for repair packets identifiers.
-  id_type current_repair_id_;
+  std::uint32_t current_repair_id_;
 
   /// @brief Re-use the same memory to prepare a repair packet.
   detail::repair repair_;

@@ -12,11 +12,7 @@ enum class code_type {systematic, non_systematic};
 
 /*------------------------------------------------------------------------------------------------*/
 
-using id_type = std::uint32_t;
-
-/*------------------------------------------------------------------------------------------------*/
-
-using coding_coefficient_generator = std::function<id_type(id_type)>;
+using coding_coefficient_generator = std::function<std::uint32_t(std::uint32_t)>;
 
 /*------------------------------------------------------------------------------------------------*/
 
