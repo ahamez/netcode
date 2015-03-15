@@ -4,6 +4,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief Round up @p value to a multiple @p mult.
 inline
 std::size_t
 make_multiple(std::size_t value, std::size_t mult)

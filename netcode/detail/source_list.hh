@@ -11,8 +11,8 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief Hold a list of sources.
-/// @todo Compare with an unordered_set.
+/// @brief Hold a list of @ref source.
+/// @todo Compare with an std::unordered_set.
 class source_list final
 {
 public:

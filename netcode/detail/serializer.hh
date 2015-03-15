@@ -10,6 +10,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief The base class for any serialization of @ref ack, @ref repair and @ref source.
 class serializer
 {
 public:
@@ -50,6 +51,7 @@ public:
 
 protected:
 
+  /// @brief Provide access to the user's handler for derived classes.
   handler_base&
   handler()
   noexcept

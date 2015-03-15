@@ -10,17 +10,17 @@ namespace ntc { namespace detail {
 
 /// @brief Allocator to avoid value initialization.
 /// @see http://stackoverflow.com/a/21028912/21584
-template <typename T, typename A = std::allocator<T>>
+template <typename T, typename Alloc = std::allocator<T>>
 class default_init_allocator
-  : public A
+  : public Alloc
 {
 private:
 
-  using a_t = std::allocator_traits<A>;
+  using a_t = std::allocator_traits<Alloc>;
 
 public:
 
-  using A::A;
+  using Alloc::Alloc;
 
   template <typename U>
   struct rebind
@@ -39,7 +39,7 @@ public:
   void
   construct(U* ptr, Args&&... args)
   {
-    a_t::construct(static_cast<A&>(*this), ptr, std::forward<Args>(args)...);
+    a_t::construct(static_cast<Alloc&>(*this), ptr, std::forward<Args>(args)...);
   }
 };
 

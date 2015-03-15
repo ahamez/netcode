@@ -11,6 +11,7 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief The component responsible for the encoding and decoding of @ref source.
 class coding final
 {
 public:
@@ -59,7 +60,10 @@ public:
 
 private:
 
+  /// @brief An implementation of Galois fields.
   galois::field gf_;
+
+  /// @brief How to generate coefficients.
   coding_coefficient_generator coeff_generator_;
 };
 

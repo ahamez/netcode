@@ -8,6 +8,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief Base class to erase the type of an handler.
 struct handler_base
 {
   /// @brief Can delete through this base class.
@@ -20,6 +21,7 @@ struct handler_base
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief Hold the concrete type of a user's handler.
 template <typename Handler>
 struct handler_derived final
   : public handler_base
