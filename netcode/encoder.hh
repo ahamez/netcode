@@ -162,13 +162,9 @@ private:
     // Should we generate a repair?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      // Don't create a repair if the window is empty.
-      if (window_size() > 0)
-      {
-        mk_repair();
-        // Ask user to handle the bytes of the new repair.
-        serializer_->write_repair(repair_);
-      }
+      mk_repair();
+      // Ask user to handle the bytes of the new repair.
+      serializer_->write_repair(repair_);
     }
 
     current_source_id_ += 1;
@@ -183,6 +179,7 @@ private:
     repair_.reset();
 
     // Create the repair packet from the list of sources.
+    assert(sources_.size() > 0);
     coder_(repair_, sources_.cbegin(), sources_.cend());
 
     // Set the identifier of the new repair.
