@@ -121,7 +121,7 @@ private:
 /// @brief A symbol that copies the input data.
 ///
 /// Use this symbol when the data already exists and must be copied, otherwise auto_symbol and
-/// @ref symbol sould be prefered.
+/// @ref symbol should be prefered.
 class copy_symbol final
 {
 public:
