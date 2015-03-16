@@ -183,7 +183,7 @@ struct simple final
     write(sizeof(std::uint16_t), &network_user_sz);
 
     // Write source symbol.
-    write(pkt.buffer().size(), pkt.buffer().data());
+    write(pkt.user_size(), pkt.buffer().data());
   }
 
   source
