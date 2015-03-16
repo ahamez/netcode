@@ -25,7 +25,7 @@ struct dummy_handler
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Encoder's window size", "[encoder]" )
+TEST_CASE("Encoder's window size", "[encoder]")
 {
   ntc::encoder encoder{dummy_handler{}, 3};
 
@@ -43,7 +43,7 @@ TEST_CASE("Encoder's window size", "[encoder]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Encoder generates repairs", "[encoder][repair]" )
+TEST_CASE("Encoder generates repairs", "[encoder][repair]")
 {
   ntc::encoder encoder{dummy_handler{}, 5};
 
@@ -61,7 +61,7 @@ TEST_CASE("Encoder generates repairs", "[encoder][repair]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Encoder erases sources when an ack is received", "[encoder][ack]" )
+TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
 {
   ntc::encoder encoder{dummy_handler{}, code{8}, 5, code_type::systematic, protocol::simple};
 
@@ -73,11 +73,8 @@ TEST_CASE("Encoder erases sources when an ack is received", "[encoder][ack]" )
   }
   REQUIRE(encoder.window_size() == 4);
 
-  // Then create an ack for some sources, with a wrong id, just to try.
-  const auto ack = detail::ack{{0,2,9}};
-
-  // Serialize the ack.
-  char data[2048]; // will hold the bytes of the serialized ack.
+  // Will hold the bytes of the serialized ack.
+  char data[2048];
   struct handler
   {
     char* data;
@@ -91,15 +88,57 @@ TEST_CASE("Encoder erases sources when an ack is received", "[encoder][ack]" )
     }
   };
 
+  // Directly use the serializer that would have been called by the sender.
   detail::handler_derived<handler> h{handler{data, 0}};
   detail::protocol::simple serializer{h};
-  serializer.write_ack(ack);
 
-  // Finally, notify the encoder.
-  encoder.notify(data);
+  SECTION("incoming ack")
+  {
+    // Create an ack for some sources, with a wrong id, just to try.
+    const auto ack = detail::ack{{0,2,9}};
 
-  // The number of sources should have decreased.
-  REQUIRE(encoder.window_size() == 2);
+    // Serialize the ack.
+    serializer.write_ack(ack);
+
+    // Finally, notify the encoder.
+    const auto result = encoder.notify(data);
+    REQUIRE(result);
+
+    // The number of sources should have decreased.
+    REQUIRE(encoder.window_size() == 2);
+  }
+
+  SECTION("incoming  repair")
+  {
+    // Create a repair.
+    const auto repair = detail::repair{0};
+
+    // Serialize the repair.
+    serializer.write_repair(repair);
+
+    // Finally, notify the encoder.
+    const auto result = encoder.notify(data);
+    REQUIRE(not result);
+
+    // The number of sources should not have decreased.
+    REQUIRE(encoder.window_size() == 4);
+  }
+
+  SECTION("incoming source")
+  {
+    // Create a source.
+    const auto source = detail::source{0, {}, 0};
+
+    // Serialize the source.
+    serializer.write_source(source);
+
+    // Finally, notify the encoder.
+    const auto result = encoder.notify(data);
+    REQUIRE(not result);
+
+    // The number of sources should not have decreased.
+    REQUIRE(encoder.window_size() == 4);
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
