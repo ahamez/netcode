@@ -19,8 +19,14 @@ namespace ntc { namespace detail { namespace protocol {
 struct simple final
   : public serializer
 {
-  // Inherit constructors.
-  using serializer::serializer;
+  /// @brief Constructor. Forward to base clase constructor.
+  ///
+  /// @note @code using serializer::serializer @endcode would be the right way to write it,
+  /// but GCC 4.7 doesn't recognize this feature.
+  template <typename... Args>
+  simple(Args&&... args)
+    : serializer{std::forward<Args>(args)...}
+  {}
 
   void
   write_ack(const ack& pkt)
