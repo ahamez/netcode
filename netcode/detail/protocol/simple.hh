@@ -1,9 +1,9 @@
 #pragma once
 
-#include <algorithm>   // for_each, transform
+#include <algorithm>   // transform
 #include <arpa/inet.h> // htonl, htons
-#include <iterator>    // back_inserter
 #include <cassert>
+#include <iterator>    // back_inserter
 
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/serializer.hh"

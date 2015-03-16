@@ -46,22 +46,12 @@ public:
   write(std::size_t len, const void* data)
   noexcept
   {
-    handler().on_ready_data(len, reinterpret_cast<const char*>(data));
-  }
-
-protected:
-
-  /// @brief Provide access to the user's handler for derived classes.
-  handler_base&
-  handler()
-  noexcept
-  {
-    return handler_;
+    handler_.on_ready_data(len, reinterpret_cast<const char*>(data));
   }
 
 private:
 
-  /// @brief The handler which will write serialized packets.
+  /// @brief The handler which writes serialized packets.
   handler_base& handler_;
 };
 

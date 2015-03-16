@@ -6,9 +6,9 @@
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/serializer.hh"
-#include "netcode/coding.hh"
+#include "netcode/code.hh"
+#include "netcode/code_type.hh"
 #include "netcode/protocol.hh"
-#include "netcode/types.hh"
 
 namespace ntc {
 

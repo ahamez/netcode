@@ -2,7 +2,6 @@
 
 #include "netcode/detail/symbol_buffer.hh"
 #include "netcode/detail/types.hh"
-#include "netcode/types.hh"
 
 namespace ntc { namespace detail {
 

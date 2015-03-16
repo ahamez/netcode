@@ -1,7 +1,6 @@
 #pragma once
 
 #include "netcode/galois/field.hh"
-#include "netcode/types.hh"
 
 namespace ntc { namespace detail {
 

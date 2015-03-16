@@ -5,7 +5,6 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/galois/field.hh"
 #include "netcode/galois/multiply.hh"
-#include "netcode/types.hh"
 
 namespace ntc {
 

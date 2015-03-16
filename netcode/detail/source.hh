@@ -1,7 +1,6 @@
 #pragma once
 
 #include "netcode/detail/symbol_buffer.hh"
-#include "netcode/types.hh"
 
 namespace ntc { namespace detail {
 

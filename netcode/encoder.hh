@@ -10,9 +10,9 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
 #include "netcode/code.hh"
+#include "netcode/code_type.hh"
 #include "netcode/protocol.hh"
 #include "netcode/symbol.hh"
-#include "netcode/types.hh"
 
 namespace ntc {
 

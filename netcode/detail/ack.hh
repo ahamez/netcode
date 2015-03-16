@@ -1,9 +1,6 @@
 #pragma once
 
-#include <vector>
-
 #include "netcode/detail/types.hh"
-#include "netcode/types.hh"
 
 namespace ntc { namespace detail {
 
