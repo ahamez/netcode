@@ -32,6 +32,7 @@ public:
   /// @brief Constructor.
   field(unsigned int w)
     : gf_{new gf_t}
+    , size_{w}
   {
     if (gf_init_easy(gf_.get(), w) == 0)
     {
@@ -46,6 +47,14 @@ public:
     {
       gf_free(gf_.get(), 0 /* non-recursive */);
     }
+  }
+
+  /// @brief Get the size of this Galois field
+  unsigned int
+  size()
+  const noexcept
+  {
+    return size_;
   }
 
   /// @brief Multiply a region with a constant.
@@ -73,6 +82,9 @@ private:
 
   /// @brief The real underlying galois field.
   std::unique_ptr<gf_t> gf_;
+
+  /// @brief This field size.
+  unsigned int size_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

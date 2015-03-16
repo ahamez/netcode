@@ -12,22 +12,22 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The component responsible for the encoding and decoding of @ref detail::repair.
-class coding final
+class code final
 {
 public:
 
-  coding(galois::field&& gf, const coding_coefficient_generator& coefficient_generator)
-    : gf_{std::move(gf)}, coeff_generator_{coefficient_generator}
+  /// @brief Constructor.
+  code(unsigned int galois_field_size)
+    : gf_{galois::field{galois_field_size}}
   {}
 
   /// @brief Fill a @ref detail::repair from a set of detail::source.
   /// @param repair The repair to fill.
   /// @param src_cit The beginning of the container of @ref detail::source.
   /// @param src_end The end of the container @ref detail::source. Must be different of @p src_cit.
-  /// @todo generate coefficients
   void
-  operator()( detail::repair& repair, detail::source_list::const_iterator src_cit
-            , detail::source_list::const_iterator src_end)
+  encode( detail::repair& repair, detail::source_list::const_iterator src_cit
+        , detail::source_list::const_iterator src_end)
   {
     assert(src_cit != src_end);
 
@@ -39,7 +39,7 @@ public:
     multiply( gf_
             , src_cit->buffer().size()
             , src_cit->buffer().data(), repair.buffer().data()
-            , 42 /* coeff to generate */);
+            , mk_coefficient(repair.id(), src_cit->id()));
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
@@ -55,17 +55,21 @@ public:
       multiply_add( gf_
                   , src_cit->buffer().size()
                   , src_cit->buffer().data(), repair.buffer().data()
-                  , 42 /* coeff to generate */);
+                  , mk_coefficient(repair.id(), src_cit->id()));
     }
   }
 
 private:
 
+  /// @brief Compute the coefficient for the repair being built.
+  std::uint32_t
+  mk_coefficient(std::uint32_t repair_id, std::uint32_t src)
+  {
+    return ((repair_id + 1) * (src + 1)) % gf_.size();
+  }
+
   /// @brief An implementation of Galois fields.
   galois::field gf_;
-
-  /// @brief How to generate coefficients.
-  coding_coefficient_generator coeff_generator_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

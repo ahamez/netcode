@@ -9,7 +9,7 @@
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/coding.hh"
+#include "netcode/code.hh"
 #include "netcode/protocol.hh"
 #include "netcode/symbol.hh"
 #include "netcode/types.hh"
@@ -31,7 +31,7 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  encoder(Handler&& h, coding&& coder, unsigned int code_rate, code_type type, protocol prot)
+  encoder(Handler&& h, code&& coder, unsigned int code_rate, code_type type, protocol prot)
     : coder_{std::move(coder)}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
@@ -51,9 +51,13 @@ public:
 
   /// @brief Constructor for a systematic encoder using the simple protocol.
   template <typename Handler>
-  encoder(Handler&& h, coding&& coder, unsigned int code_rate)
-    : encoder{ std::forward<Handler>(h), std::move(coder), code_rate, code_type::systematic
-             , protocol::simple}
+  encoder(Handler&& h, unsigned int code_rate)
+    : encoder{ std::forward<Handler>(h)
+             , code{8}
+             , code_rate
+             , code_type::systematic
+             , protocol::simple
+             }
   {}
 
   /// @brief Notify the encoder that some data has been received.
@@ -125,7 +129,6 @@ public:
   }
 
   /// @brief Set the code rate.
-  /// @todo Should a new smaller rate be treated specifically?.
   unsigned int&
   rate()
   noexcept
@@ -160,7 +163,7 @@ private:
     // Ask user to handle the bytes of the new source.
     serializer_->write_source(insertion);
 
-    // Should we generate a repair?
+    /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
       mk_repair();
@@ -179,12 +182,12 @@ private:
     // no memory re-allocation occurs.
     repair_.reset();
 
-    // Create the repair packet from the list of sources.
-    assert(sources_.size() > 0);
-    coder_(repair_, sources_.cbegin(), sources_.cend());
-
-    // Set the identifier of the new repair.
+    // Set the identifier of the new repair (needed by the coder to generate coefficients).
     repair_.id() = current_repair_id_;
+
+    // Create the repair packet from the list of sources.
+    assert(sources_.size() > 0 && "Empty source list");
+    coder_.encode(repair_, sources_.cbegin(), sources_.cend());
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;
@@ -204,7 +207,7 @@ private:
   }
 
   /// @brief The component that handles the coding process.
-  coding coder_;
+  code coder_;
 
   /// @brief The number of source packets to send before sending a repair packet.
   unsigned int rate_;
