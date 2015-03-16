@@ -56,8 +56,7 @@ public:
              , code{8}
              , code_rate
              , code_type::systematic
-             , protocol::simple
-             }
+             , protocol::simple}
   {}
 
   /// @brief Notify the encoder that some data has been received.
