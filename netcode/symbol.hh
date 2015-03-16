@@ -107,6 +107,8 @@ public:
 private:
 
   /// @brief The size of the symbol given by the user.
+  ///
+  /// Will be set by encoder::commit().
   std::size_t user_size_;
 
   /// @brief The buffer storage.
@@ -139,6 +141,8 @@ public:
 private:
 
   /// @brief The size of the symbol given by the user.
+  ///
+  /// Will be set by encoder::commit().
   std::size_t user_size_;
 
   /// @brief The buffer storage.
