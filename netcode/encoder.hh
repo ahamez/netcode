@@ -194,6 +194,8 @@ private:
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
       const auto source_ids = serializer_->read_ack(data).source_ids();
+      // Identifiers should be sorted.
+      assert(std::is_sorted(begin(source_ids), end(source_ids)));
       sources_.erase(begin(source_ids), end(source_ids));
       return true;
     }
