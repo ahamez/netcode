@@ -1,6 +1,7 @@
 #pragma once
 
-#include <memory> // unique_ptr
+#include <algorithm> // is_sorted
+#include <memory>    // unique_ptr
 
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
@@ -213,6 +214,9 @@ private:
     // Create the repair packet from the list of sources.
     assert(sources_.size() > 0 && "Empty source list");
     coder_.encode(repair_, sources_.cbegin(), sources_.cend());
+
+    // By construction, the list of source identifiers should be sorted.
+    assert(std::is_sorted(begin(repair_.source_ids()), end(repair_.source_ids())));
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;
