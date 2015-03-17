@@ -3,6 +3,7 @@
 #include <memory> // unique_ptr
 
 #include "netcode/detail/handler.hh"
+#include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/serializer.hh"
