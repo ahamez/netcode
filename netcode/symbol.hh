@@ -17,6 +17,7 @@ namespace ntc {
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
+/// This class is meant to be used with encoder::commit().
 class symbol final
 {
 public:
@@ -70,6 +71,7 @@ private:
 
 /// @brief A symbol which automatically grows as needed.
 ///
+/// This class is meant to be used with encoder::commit().
 /// It provides the easiest way to avoid copying, and can be used with STL algorithms.
 class auto_symbol final
 {
@@ -134,6 +136,7 @@ private:
 
 /// @brief A symbol that copies the input data.
 ///
+/// This class is meant to be used with encoder::commit().
 /// Use this symbol when the data already exists and must be copied, otherwise @ref auto_symbol and
 /// @ref symbol should be prefered.
 class copy_symbol final
