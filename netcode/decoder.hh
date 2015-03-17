@@ -46,7 +46,11 @@ public:
   /// @brief Constructor
   template <typename Handler>
   decoder(Handler&& h, unsigned int ack_rate)
-    : decoder{std::forward<Handler>(h), code{8}, ack_rate, code_type::systematic, protocol::simple}
+    : decoder{ std::forward<Handler>(h)
+             , code{8}
+             , ack_rate
+             , code_type::systematic
+             , protocol::simple}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -99,12 +103,13 @@ private:
     {
       case detail::packet_type::repair:
       {
+        handle_incoming(serializer_->read_repair(data));
         return true;
       }
 
       case detail::packet_type::source:
       {
-        handle_incoming_source(serializer_->read_source(data));
+        handle_incoming(serializer_->read_source(data));
         return true;
       }
 
@@ -116,7 +121,13 @@ private:
   }
 
   void
-  handle_incoming_source(detail::source&& src)
+  handle_incoming(detail::repair&&)
+  {
+
+  }
+
+  void
+  handle_incoming(detail::source&& src)
   {
     // Insertion sort of the source identifier in the list of acknowledged source.
     const auto ids_end = end(ack_.source_ids());
@@ -127,10 +138,13 @@ private:
       ack_.source_ids().insert(lb, src.id());
     }
 
+    // Ask user to handle the bytes of the new src.
+    handler_->on_ready_symbol(src.user_size(), src.buffer().data());
+
     // Do we need to send an ack?
     if ((received_sources_ + 1) % ack_rate_ == 0)
     {
-      // Ask user to handle the bytes of the new ack.
+      // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
       serializer_->write_ack(ack_);
       nb_acks_ += 1;
 

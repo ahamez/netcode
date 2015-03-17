@@ -17,6 +17,10 @@ struct dummy_handler
   void
   on_ready_data(std::size_t, const char*)
   {}
+
+  void
+  on_ready_symbol(std::size_t, const char*)
+  {}
 };
 
 } // namespace unnamed

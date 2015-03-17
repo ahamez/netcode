@@ -23,6 +23,10 @@ struct handler
     std::copy_n(data, len, data_ + bytes_);
     bytes_ += len;
   }
+
+  void
+  on_ready_symbol(std::size_t, const char*)
+  {}
 };
 
 } // namespace unnamed

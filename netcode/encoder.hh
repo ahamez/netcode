@@ -171,7 +171,7 @@ private:
     const auto& insertion
       = sources_.emplace(current_source_id_, std::move(sym.buffer_), sym.user_size_);
 
-    // Ask user to handle the bytes of the new source.
+    // Ask serializer to handle the bytes of the new source (will be routed to user's handler).
     serializer_->write_source(insertion);
 
     /// @todo Should we generate a repair if window_size() == 1?
@@ -182,7 +182,7 @@ private:
       repair_.reset();
 
       mk_repair();
-      // Ask user to handle the bytes of the new repair.
+      // Ask serializer to handle the bytes of the new repair (will be routed to user's handler).
       serializer_->write_repair(repair_);
     }
 

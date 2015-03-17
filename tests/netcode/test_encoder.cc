@@ -17,6 +17,10 @@ struct dummy_handler
   void
   on_ready_data(std::size_t, const char*)
   {}
+
+  void
+  on_ready_symbol(std::size_t, const char*)
+  {}
 };
 
 } // namespace unnamed
@@ -84,6 +88,9 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
       std::copy_n(src, len, data + written);
       written += len;
     }
+    void
+    on_ready_symbol(std::size_t, const char*)
+    {}
   };
 
   // Directly use the serializer that would have been called by the sender.
