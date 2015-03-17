@@ -74,7 +74,7 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
   REQUIRE(encoder.window_size() == 4);
 
   // Will hold the bytes of the serialized ack.
-  char data[2048];
+  packet data{2048};
   struct handler
   {
     char* data;
@@ -89,7 +89,7 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
   };
 
   // Directly use the serializer that would have been called by the sender.
-  detail::handler_derived<handler> h{handler{data, 0}};
+  detail::handler_derived<handler> h{handler{data.buffer(), 0}};
   detail::protocol::simple serializer{h};
 
   SECTION("incoming ack")

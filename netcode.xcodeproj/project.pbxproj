@@ -26,6 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
@@ -205,6 +206,7 @@
 				2BE319561AB0C550001AA9DF /* code_type.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
+				2B282BB81AB81ABA00640FF8 /* packet.hh */,
 				2B92226A1AB55B5F009A2843 /* protocol.hh */,
 				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
 			);

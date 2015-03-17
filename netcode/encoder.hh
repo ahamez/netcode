@@ -11,6 +11,7 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/code.hh"
 #include "netcode/code_type.hh"
+#include "netcode/packet.hh"
 #include "netcode/protocol.hh"
 #include "netcode/symbol.hh"
 
@@ -59,21 +60,6 @@ public:
              , protocol::simple}
   {}
 
-  /// @brief Notify the encoder that some data has been received.
-  /// @return false if the data could not have been decoded, true otherwise.
-  bool
-  notify(const char* data)
-  {
-    assert(data != nullptr);
-    if (detail::get_packet_type(data) == detail::packet_type::ack)
-    {
-      const auto source_ids = serializer_->read_ack(data).source_ids();
-      sources_.erase(begin(source_ids), end(source_ids));
-      return true;
-    }
-    return false;
-  }
-
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
   ///
@@ -109,6 +95,33 @@ public:
   commit(copy_symbol&& sym)
   {
     commit_impl(std::move(sym));
+  }
+
+  /// @brief Notify the encoder with a new packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  bool
+  notify(const packet& p)
+  {
+    return notify_impl(p.buffer());
+  }
+
+  /// @brief Notify the encoder with a new packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  bool
+  notify(const auto_packet& p)
+  {
+    return notify_impl(p.buffer_.data());
+  }
+
+  /// @brief Notify the encoder with a new packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  bool
+  notify(const copy_packet& p)
+  {
+    return notify_impl(p.buffer_.data());
   }
 
   /// @brief The number of packets which have not been acknowledged.
@@ -171,6 +184,21 @@ private:
     }
 
     current_source_id_ += 1;
+  }
+
+  /// @brief Notify the encoder that some data has been received.
+  /// @return false if the data could not have been decoded, true otherwise.
+  bool
+  notify_impl(const char* data)
+  {
+    assert(data != nullptr);
+    if (detail::get_packet_type(data) == detail::packet_type::ack)
+    {
+      const auto source_ids = serializer_->read_ack(data).source_ids();
+      sources_.erase(begin(source_ids), end(source_ids));
+      return true;
+    }
+    return false;
   }
 
   /// @brief Launch the generation of a repair.
