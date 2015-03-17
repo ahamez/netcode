@@ -4,7 +4,7 @@
 #include <iterator>  // back_inserter
 
 #include "netcode/detail/multiple.hh"
-#include "netcode/detail/buffer.hh"
+#include "netcode/detail/raw_buffer.hh"
 
 namespace ntc {
 
@@ -53,7 +53,7 @@ public:
 private:
 
   /// @brief The buffer storage.
-  detail::buffer_t buffer_;
+  detail::raw_buffer buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ public:
   {}
 
   /// @brief An iterator to write in the packet buffer.
-  using back_insert_iterator = std::back_insert_iterator<detail::buffer_t>;
+  using back_insert_iterator = std::back_insert_iterator<detail::raw_buffer>;
 
   /// @brief Get a back inserter iterator to the packet buffer.
   ///
@@ -109,7 +109,7 @@ public:
 private:
 
   /// @brief The buffer storage.
-  detail::buffer_t buffer_;
+  detail::raw_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
   friend class encoder;
@@ -141,7 +141,7 @@ public:
 private:
 
   /// @brief The buffer storage.
-  detail::buffer_t buffer_;
+  detail::raw_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
   friend class encoder;

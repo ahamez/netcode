@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/detail/buffer.hh"
+#include "netcode/detail/raw_buffer.hh"
 
 namespace ntc { namespace detail {
 
@@ -13,7 +13,7 @@ class source final
 public:
 
   /// @brief Constructor.
-  source(std::uint32_t id, buffer_t&& buf, std::size_t user_size)
+  source(std::uint32_t id, raw_buffer&& buf, std::size_t user_size)
     : id_{id}
     , symbol_buffer_{std::move(buf)}
     , user_size_{user_size}
@@ -28,7 +28,7 @@ public:
   }
 
   /// @brief Get the bytes of the symbol.
-  const buffer_t&
+  const raw_buffer&
   buffer()
   const noexcept
   {
@@ -49,7 +49,7 @@ private:
   std::uint32_t id_;
 
   /// @brief This source's symbol.
-  buffer_t symbol_buffer_;
+  raw_buffer symbol_buffer_;
 
   /// @brief The number of bytes really used by the user's symbol in the buffer.
   std::size_t user_size_;

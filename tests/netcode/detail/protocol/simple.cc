@@ -55,7 +55,7 @@ TEST_CASE("A repair is (de)serialized by protocol::simple", "[serialization][rep
   detail::handler_derived<handler> h{handler{}};
   detail::protocol::simple serializer{h};
 
-  const detail::repair r_in{42, {0,1,2,3}, detail::buffer_t{'a', 'b', 'c'}};
+  const detail::repair r_in{42, {0,1,2,3}, detail::raw_buffer{'a', 'b', 'c'}};
 
   serializer.write_repair(r_in);
 
@@ -81,7 +81,7 @@ TEST_CASE("A source is (de)serialized by protocol::simple", "[serialization][sou
   detail::handler_derived<handler> h{handler{}};
   detail::protocol::simple serializer{h};
 
-  const detail::source s_in{394839, detail::buffer_t{'a', 'b', 'c', 'd'}, 4};
+  const detail::source s_in{394839, detail::raw_buffer{'a', 'b', 'c', 'd'}, 4};
 
   serializer.write_source(s_in);
 

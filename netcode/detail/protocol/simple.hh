@@ -5,8 +5,8 @@
 #include <cassert>
 #include <iterator>    // back_inserter
 
-#include "netcode/detail/buffer.hh"
 #include "netcode/detail/packet_type.hh"
+#include "netcode/detail/raw_buffer.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/types.hh"
 
@@ -147,7 +147,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read the repair symbol.
-    buffer_t buffer;
+    raw_buffer buffer;
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
@@ -209,7 +209,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read the source symbol.
-    buffer_t buffer;
+    raw_buffer buffer;
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
