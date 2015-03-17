@@ -24,6 +24,11 @@ public:
   /// @brief Can move an ack.
   ack& operator=(ack&&) = default;
 
+  /// @brief Constructor
+  ack()
+    : source_ids_{}
+  {}
+
   /// @brief Constructor.
   ack(source_id_list&& source_ids)
     : source_ids_{std::move(source_ids)}
@@ -43,6 +48,16 @@ public:
   noexcept
   {
     return source_ids_;
+  }
+
+  /// @brief Reset this ack.
+  ///
+  /// List of source identifiers is resized to 0.
+  void
+  reset()
+  noexcept
+  {
+    source_ids_.resize(0);
   }
 
 private:
