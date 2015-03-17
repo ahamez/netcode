@@ -90,6 +90,8 @@ private:
     }
   }
 
+private:
+
   /// @brief The component that handles the coding process.
   code coder_;
 

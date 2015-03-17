@@ -218,6 +218,8 @@ private:
     nb_repairs_ += 1;
   }
 
+private:
+
   /// @brief The component that handles the coding process.
   code coder_;
 
