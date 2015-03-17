@@ -1,9 +1,9 @@
 set(SOURCES
    tests.cc
-   netcode/detail/protocol/simple.cc
-   netcode/decoder.cc
-   netcode/encoder.cc
-   netcode/symbol.cc
+   netcode/detail/protocol/test_simple.cc
+   netcode/test_decoder.cc
+   netcode/test_encoder.cc
+   netcode/test_symbol.cc
    )
 
 add_executable(tests ${SOURCES})

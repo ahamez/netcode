@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B282BBA1AB8514700640FF8 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* decoder.cc */; };
-		2B75268F1AB4A0E0008DEDAD /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* encoder.cc */; };
-		2B9222691AB4BCD4009A2843 /* symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* symbol.cc */; };
+		2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
+		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
+		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
-		2BE3198A1AB32E7F001AA9DF /* simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319891AB32E7F001AA9DF /* simple.cc */; };
+		2BE3198A1AB32E7F001AA9DF /* test_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319891AB32E7F001AA9DF /* test_simple.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,15 +28,15 @@
 
 /* Begin PBXFileReference section */
 		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
-		2B282BB91AB8514700640FF8 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
+		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B282BBC1AB8562E00640FF8 /* make_protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_protocol.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
-		2B75268E1AB4A0E0008DEDAD /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
+		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
-		2B9222681AB4BCD4009A2843 /* symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbol.cc; sourceTree = "<group>"; };
+		2B9222681AB4BCD4009A2843 /* test_symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_symbol.cc; sourceTree = "<group>"; };
 		2B92226A1AB55B5F009A2843 /* protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = protocol.hh; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2BE319501AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
@@ -55,7 +55,7 @@
 		2BE3197C1AB32D7F001AA9DF /* tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BE319831AB32DA0001AA9DF /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319861AB32DA0001AA9DF /* tests.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cc; sourceTree = "<group>"; };
-		2BE319891AB32E7F001AA9DF /* simple.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple.cc; sourceTree = "<group>"; };
+		2BE319891AB32E7F001AA9DF /* test_simple.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_simple.cc; sourceTree = "<group>"; };
 		2BE3198F1AB35D35001AA9DF /* align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = align.hpp; sourceTree = "<group>"; };
 		2BE319901AB35D35001AA9DF /* aligned_alloc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = aligned_alloc.hpp; sourceTree = "<group>"; };
 		2BE319911AB35D35001AA9DF /* aligned_allocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = aligned_allocator.hpp; sourceTree = "<group>"; };
@@ -275,9 +275,9 @@
 			isa = PBXGroup;
 			children = (
 				2BE319851AB32DA0001AA9DF /* detail */,
-				2B282BB91AB8514700640FF8 /* decoder.cc */,
-				2B75268E1AB4A0E0008DEDAD /* encoder.cc */,
-				2B9222681AB4BCD4009A2843 /* symbol.cc */,
+				2B282BB91AB8514700640FF8 /* test_decoder.cc */,
+				2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */,
+				2B9222681AB4BCD4009A2843 /* test_symbol.cc */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -293,7 +293,7 @@
 		2BE319881AB32E6D001AA9DF /* protocol */ = {
 			isa = PBXGroup;
 			children = (
-				2BE319891AB32E7F001AA9DF /* simple.cc */,
+				2BE319891AB32E7F001AA9DF /* test_simple.cc */,
 			);
 			path = protocol;
 			sourceTree = "<group>";
@@ -574,10 +574,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BE319871AB32DA0001AA9DF /* tests.cc in Sources */,
-				2B75268F1AB4A0E0008DEDAD /* encoder.cc in Sources */,
-				2BE3198A1AB32E7F001AA9DF /* simple.cc in Sources */,
-				2B282BBA1AB8514700640FF8 /* decoder.cc in Sources */,
-				2B9222691AB4BCD4009A2843 /* symbol.cc in Sources */,
+				2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */,
+				2BE3198A1AB32E7F001AA9DF /* test_simple.cc in Sources */,
+				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
+				2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
