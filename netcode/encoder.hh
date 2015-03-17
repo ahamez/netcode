@@ -3,6 +3,7 @@
 #include <memory> // unique_ptr
 
 #include "netcode/detail/handler.hh"
+#include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/repair.hh"
@@ -215,20 +216,6 @@ private:
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;
-  }
-
-  /// @brief Create a protocol to de/serialize packets.
-  static
-  std::unique_ptr<detail::serializer>
-  mk_protocol(protocol p, detail::handler_base& h)
-  {
-    switch (p)
-    {
-      case protocol::simple :
-        return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
-
-      default: __builtin_unreachable();
-    }
   }
 
   /// @brief The component that handles the coding process.

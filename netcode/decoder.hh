@@ -73,18 +73,6 @@ public:
 
 private:
 
-  /// @brief Create a protocol to de/serialize packets.
-  static
-  std::unique_ptr<detail::serializer>
-  mk_protocol(protocol p, detail::handler_base& h)
-  {
-    switch (p)
-    {
-      case protocol::simple :
-        return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
-    }
-  }
-
   /// @brief Notify the encoder that some data has been received.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
