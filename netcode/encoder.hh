@@ -177,6 +177,10 @@ private:
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
+      // Only reset the 'virtual' size of the buffer, the reserved memory is kept, so
+      // no memory re-allocation occurs.
+      repair_.reset();
+
       mk_repair();
       // Ask user to handle the bytes of the new repair.
       serializer_->write_repair(repair_);
@@ -206,10 +210,6 @@ private:
   void
   mk_repair()
   {
-    // Only reset the 'virtual' size of the buffer, the reserved memory is kept, so
-    // no memory re-allocation occurs.
-    repair_.reset();
-
     // Set the identifier of the new repair (needed by the coder to generate coefficients).
     repair_.id() = current_repair_id_;
 
