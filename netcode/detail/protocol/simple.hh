@@ -5,9 +5,9 @@
 #include <cassert>
 #include <iterator>    // back_inserter
 
+#include "netcode/detail/buffer.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/serializer.hh"
-#include "netcode/detail/symbol_buffer.hh"
 #include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail { namespace protocol {
@@ -147,7 +147,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read the repair symbol.
-    symbol_buffer buffer;
+    buffer_t buffer;
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
@@ -209,7 +209,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read the source symbol.
-    symbol_buffer buffer;
+    buffer_t buffer;
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 

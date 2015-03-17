@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/detail/symbol_buffer.hh"
+#include "netcode/detail/buffer.hh"
 #include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail {
@@ -14,7 +14,7 @@ class repair final
 public:
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair(std::uint32_t id, source_id_list&& ids, detail::symbol_buffer&& buffer)
+  repair(std::uint32_t id, source_id_list&& ids, detail::buffer_t&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
     , buffer_{std::move(buffer)}
@@ -60,7 +60,7 @@ public:
   }
 
   /// @brief This repair's symbol.
-  const detail::symbol_buffer&
+  const detail::buffer_t&
   buffer()
   const noexcept
   {
@@ -68,7 +68,7 @@ public:
   }
 
   /// @brief This repair's symbol (mutable).
-  detail::symbol_buffer&
+  detail::buffer_t&
   buffer()
   noexcept
   {
@@ -95,7 +95,7 @@ private:
   source_id_list sources_ids_;
 
   /// @brief This repair's symbol.
-  detail::symbol_buffer buffer_;
+  detail::buffer_t buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

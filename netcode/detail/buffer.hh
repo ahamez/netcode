@@ -60,7 +60,7 @@ using default_init_aligned_alloc
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief An aligned buffer of bytes.
-using symbol_buffer = std::vector<char, default_init_aligned_alloc<char, 16>>;
+using buffer_t = std::vector<char, default_init_aligned_alloc<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
