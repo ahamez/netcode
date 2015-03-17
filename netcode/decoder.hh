@@ -20,15 +20,15 @@ class decoder final
 public:
 
   /// @brief Can't copy-construct an encoder.
-  decoder(const encoder&) = delete;
+  decoder(const decoder&) = delete;
 
   /// @brief Can't copy an encoder.
-  decoder& operator=(const encoder&) = delete;
+  decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor
   template <typename Handler>
-  decoder(Handler&& h, const coding& coder, code_type type, protocol prot)
-    : coder_{coder}
+  decoder(Handler&& h, code&& coder, code_type type, protocol prot)
+    : coder_{std::move(coder)}
     , type_{type}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
@@ -36,8 +36,8 @@ public:
 
   /// @brief Constructor
   template <typename Handler>
-  decoder(Handler&& h, const coding& coder)
-    : encoder{std::forward<Handler>(h), coder, code_type::systematic, protocol::simple}
+  decoder(Handler&& h)
+    : decoder{std::forward<Handler>(h), code{8}, code_type::systematic, protocol::simple}
   {}
 
   /// @brief Notify the encoder that some data has been received.
@@ -70,7 +70,7 @@ private:
   }
 
   /// @brief The component that handles the coding process.
-  coding coder_;
+  code coder_;
 
   /// @brief Is the encoder systematic?
   code_type type_;

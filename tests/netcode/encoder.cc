@@ -2,8 +2,6 @@
 
 #include "tests/catch.hpp"
 
-#include "netcode/galois/field.hh"
-#include "netcode/code.hh"
 #include "netcode/encoder.hh"
 
 /*------------------------------------------------------------------------------------------------*/

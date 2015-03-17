@@ -1,6 +1,7 @@
 set(SOURCES
    tests.cc
    netcode/detail/protocol/simple.cc
+   netcode/decoder.cc
    netcode/encoder.cc
    netcode/symbol.cc
    )
