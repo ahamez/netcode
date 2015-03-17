@@ -104,6 +104,18 @@ public:
     return std::back_inserter(buffer_);
   }
 
+  /// @brief Reset the buffer.
+  /// @attention Any current back insert iterator will be invalidated. A new one must be created
+  /// with back_inserter().
+  ///
+  /// The reserved memory is kept.
+  void
+  reset()
+  noexcept
+  {
+    buffer_.resize(0);
+  }
+
 private:
 
   /// @brief The size of the symbol given by the user.
