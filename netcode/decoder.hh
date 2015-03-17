@@ -8,6 +8,7 @@
 #include "netcode/detail/serializer.hh"
 #include "netcode/code.hh"
 #include "netcode/code_type.hh"
+#include "netcode/packet.hh"
 #include "netcode/protocol.hh"
 
 namespace ntc {
@@ -40,10 +41,54 @@ public:
     : decoder{std::forward<Handler>(h), code{8}, code_type::systematic, protocol::simple}
   {}
 
+  /// @brief Notify the encoder of a new incoming packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
+  bool
+  notify(packet&& p)
+  {
+    return notify_impl(p.buffer());
+  }
+
+  /// @brief Notify the encoder of a new incoming packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
+  bool
+  notify(auto_packet&& p)
+  {
+    return notify_impl(p.buffer_.data());
+  }
+
+  /// @brief Notify the encoder of a new incoming packet.
+  /// @param p The incoming packet.
+  /// @return false if the data could not have been decoded, true otherwise.
+  /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
+  bool
+  notify(copy_packet&& p)
+  {
+    return notify_impl(p.buffer_.data());
+  }
+
+private:
+
+  /// @brief Create a protocol to de/serialize packets.
+  static
+  std::unique_ptr<detail::serializer>
+  mk_protocol(protocol p, detail::handler_base& h)
+  {
+    switch (p)
+    {
+      case protocol::simple :
+        return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
+    }
+  }
+
   /// @brief Notify the encoder that some data has been received.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const char* data)
+  notify_impl(const char* data)
   {
     assert(data != nullptr);
     switch (detail::get_packet_type(data))
@@ -53,19 +98,6 @@ public:
         return true;
         default:
         return false;
-    }
-  }
-
-private:
-
-  static
-  std::unique_ptr<detail::serializer>
-  mk_protocol(protocol p, detail::handler_base& h)
-  {
-    switch (p)
-    {
-      case protocol::simple :
-        return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
     }
   }
 

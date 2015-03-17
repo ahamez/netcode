@@ -113,6 +113,9 @@ private:
 
   /// @brief The encoder needs to access the buffer.
   friend class encoder;
+
+  /// @brief The decoder needs to access the buffer.
+  friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -142,6 +145,9 @@ private:
 
   /// @brief The encoder needs to access the buffer.
   friend class encoder;
+
+  /// @brief The decoder needs to access the buffer.
+  friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

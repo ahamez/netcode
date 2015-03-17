@@ -62,8 +62,7 @@ public:
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
-  ///
-  /// The symbol @p sym won't be usable after this call.
+  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
   commit(symbol&& sym)
   {
@@ -73,8 +72,7 @@ public:
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The automatic symbol to add.
-  ///
-  /// The symbol @p sym won't be usable after this call.
+  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
   commit(auto_symbol&& sym)
   {
@@ -89,15 +87,14 @@ public:
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
-  ///
-  /// The symbol @p sym won't be usable after this call.
+  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
   commit(copy_symbol&& sym)
   {
     commit_impl(std::move(sym));
   }
 
-  /// @brief Notify the encoder with a new packet.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
@@ -106,7 +103,7 @@ public:
     return notify_impl(p.buffer());
   }
 
-  /// @brief Notify the encoder with a new packet.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
@@ -115,7 +112,7 @@ public:
     return notify_impl(p.buffer_.data());
   }
 
-  /// @brief Notify the encoder with a new packet.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
@@ -220,6 +217,7 @@ private:
     nb_repairs_ += 1;
   }
 
+  /// @brief Create a protocol to de/serialize packets.
   static
   std::unique_ptr<detail::serializer>
   mk_protocol(protocol p, detail::handler_base& h)
