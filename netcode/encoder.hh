@@ -6,7 +6,6 @@
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/protocol/simple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
@@ -32,7 +31,7 @@ public:
   /// @brief Can't copy an encoder.
   encoder& operator=(const encoder&) = delete;
 
-  /// @brief Constructor
+  /// @brief Constructor.
   template <typename Handler>
   encoder(Handler&& h, code&& coder, unsigned int code_rate, code_type type, protocol prot)
     : coder_{std::move(coder)}
@@ -251,7 +250,7 @@ private:
   std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::serializer> serializer_;
+  std::unique_ptr<detail::serializer_base> serializer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;

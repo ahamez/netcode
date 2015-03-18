@@ -177,7 +177,7 @@ private:
   std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::serializer> serializer_;
+  std::unique_ptr<detail::serializer_base> serializer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

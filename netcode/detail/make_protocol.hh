@@ -12,13 +12,13 @@ namespace ntc { namespace detail {
 
 /// @brief Create a protocol to de/serialize packets.
 inline
-std::unique_ptr<detail::serializer>
+std::unique_ptr<detail::serializer_base>
 mk_protocol(ntc::protocol p, handler_base& h)
 {
   switch (p)
   {
     case ntc::protocol::simple :
-      return std::unique_ptr<detail::serializer>{new detail::protocol::simple{h}};
+      return std::unique_ptr<detail::serializer_base>{new detail::protocol::simple{h}};
 
     default: __builtin_unreachable();
   }

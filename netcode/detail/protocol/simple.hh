@@ -17,7 +17,7 @@ namespace ntc { namespace detail { namespace protocol {
 /// @internal
 /// @brief A simple protocol with no optimization whatsoever.
 struct simple final
-  : public serializer
+  : public serializer_base
 {
   /// @brief Constructor. Forward to base clase constructor.
   ///
@@ -25,7 +25,7 @@ struct simple final
   /// but GCC 4.7 doesn't recognize this feature.
   template <typename... Args>
   simple(Args&&... args)
-    : serializer{std::forward<Args>(args)...}
+    : serializer_base{std::forward<Args>(args)...}
   {}
 
   void
