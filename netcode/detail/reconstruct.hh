@@ -16,8 +16,8 @@ class reconstruct final
 {
 public:
 
-  reconstruct(unsigned int ack_rate, handler_base& h)
-    : handler_{h}
+  reconstruct(handler_base& h)
+    : handler_(h)
     , sources_{}
     , repairs_{}
     , src_to_repairs_{}
@@ -64,7 +64,7 @@ public:
   }
 
   void
-  add(repair&& r)
+  add(repair&&)
   {
 
   }

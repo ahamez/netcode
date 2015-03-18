@@ -41,7 +41,7 @@ public:
     , nb_received_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
-    , reconstruct_{ack_rate, *handler_}
+    , reconstruct_{*handler_}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
