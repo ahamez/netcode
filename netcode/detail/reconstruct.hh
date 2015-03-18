@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>  // all_of
 #include <unordered_map>
 
 #include "netcode/detail/handler.hh"
@@ -58,14 +59,52 @@ public:
     // mapping src -> repairs.
     src_to_repairs_.erase(src.id());
 
-    // Finally, insert this new source in the set of sources.
+    // Finally, insert this new source in the set of known sources.
     const auto src_id = src.id(); // to force evaluation order in the following call.
     sources_.emplace(src_id, std::move(src));
   }
 
   void
-  add(repair&&)
+  add(repair&& r)
   {
+    /// First check if r is useless. Indeed, if all sources it references were correctly received,
+    /// then it's useless to remove them from this repair, which is a costly operation.
+    const auto useless = std::all_of( r.source_ids().begin(), r.source_ids().end()
+                                    , [this](std::uint32_t src_id)
+                                      {
+                                        return sources_.count(src_id);
+                                      });
+    if (useless)
+    {
+      return;
+    }
+
+    // Add this repair to the set of known repairs.
+    const auto r_id = r.id(); // to force evaluation order in the following call.
+    const auto insertion = repairs_.emplace(r_id, std::move(r));
+    assert(insertion.second && "Repair with the same id already processed");
+
+    auto* r_ptr = &insertion.first->second;
+
+    // Reverse loop as vector::erase() invalidates iterators past the one being erased.
+    for ( auto id_rcit = r_ptr->source_ids().rbegin(), end = r_ptr->source_ids().rend()
+        ; id_rcit != end; ++id_rcit)
+    {
+      if (sources_.count(*id_rcit))
+      {
+        /// @todo remove src from r.
+
+        // Get the iterator corresponding to the current reverse iterator.
+        const auto to_erase = std::next(id_rcit).base();
+        r_ptr->source_ids().erase(to_erase);
+      }
+      else
+      {
+        // Link this repair with the sources it references.
+        src_to_repairs_.emplace(*id_rcit, r_ptr);
+      }
+    }
+    assert(not r_ptr->source_ids().empty());
 
   }
 
