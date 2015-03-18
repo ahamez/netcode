@@ -12,6 +12,18 @@ class source final
 {
 public:
 
+  /// @brief Can't copy-construct a source.
+  source(const source&) = delete;
+
+  /// @brief Can't copy a source.
+  source& operator=(const source&) = delete;
+
+  /// @brief Can move-construct a source.
+  source(source&&) = default;
+
+  /// @brief Can move a source.
+  source& operator=(source&&) = delete;
+
   /// @brief Constructor.
   source(std::uint32_t id, raw_buffer&& buf, std::size_t user_size)
     : id_{id}

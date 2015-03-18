@@ -13,6 +13,18 @@ class repair final
 {
 public:
 
+  /// @brief Can't copy-construct a repair.
+  repair(const repair&) = delete;
+
+  /// @brief Can't copy a repair.
+  repair& operator=(const repair&) = delete;
+
+  /// @brief Can move-construct a repair.
+  repair(repair&&) = default;
+
+  /// @brief Can move a source.
+  repair& operator=(repair&&) = delete;
+
   /// @brief Construct with an existing list of source identifiers and a symbol.
   repair(std::uint32_t id, source_id_list&& ids, detail::raw_buffer&& buffer)
     : id_{id}
