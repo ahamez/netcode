@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
+		2B282BBF1AB861C200640FF8 /* test_reconstruct.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BBE1AB861C200640FF8 /* test_reconstruct.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
@@ -30,6 +31,8 @@
 		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
 		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B282BBC1AB8562E00640FF8 /* make_protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_protocol.hh; sourceTree = "<group>"; };
+		2B282BBD1AB8618800640FF8 /* reconstruct.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = reconstruct.hh; sourceTree = "<group>"; };
+		2B282BBE1AB861C200640FF8 /* test_reconstruct.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_reconstruct.cc; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
@@ -254,6 +257,7 @@
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
 				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
 				2BE319721AB23910001AA9DF /* raw_buffer.hh */,
+				2B282BBD1AB8618800640FF8 /* reconstruct.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
@@ -286,6 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				2BE319881AB32E6D001AA9DF /* protocol */,
+				2B282BBE1AB861C200640FF8 /* test_reconstruct.cc */,
 			);
 			path = detail;
 			sourceTree = "<group>";
@@ -575,6 +580,7 @@
 			files = (
 				2BE319871AB32DA0001AA9DF /* tests.cc in Sources */,
 				2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */,
+				2B282BBF1AB861C200640FF8 /* test_reconstruct.cc in Sources */,
 				2BE3198A1AB32E7F001AA9DF /* test_simple.cc in Sources */,
 				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
 				2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */,

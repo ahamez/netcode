@@ -6,8 +6,10 @@
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/protocol/simple.hh"
+#include "netcode/detail/reconstruct.hh"
+#include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
+#include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/code_type.hh"
 #include "netcode/packet.hh"
@@ -28,22 +30,24 @@ public:
   /// @brief Can't copy an encoder.
   decoder& operator=(const decoder&) = delete;
 
-  /// @brief Constructor
+  /// @brief Constructor.
   template <typename Handler>
   decoder(Handler&& h, code&& coder, unsigned int ack_rate, code_type type, protocol prot)
     : coder_{std::move(coder)}
-    , ack_rate_{ack_rate}
     , type_{type}
     , ack_{}
-    , received_sources_{0}
+    , ack_rate_{ack_rate}
+    , nb_received_repairs_{0}
+    , nb_received_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
+    , reconstruct_{ack_rate, *handler_}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
   }
 
-  /// @brief Constructor
+  /// @brief Constructor for a systematic decoder using the simple protocol.
   template <typename Handler>
   decoder(Handler&& h, unsigned int ack_rate)
     : decoder{ std::forward<Handler>(h)
@@ -83,14 +87,6 @@ public:
     return notify_impl(p.buffer_.data());
   }
 
-  /// @brief Get the number of generated ack.
-  std::size_t
-  nb_acks()
-  const noexcept
-  {
-    return nb_acks_;
-  }
-
 private:
 
   /// @brief Notify the encoder that some data has been received.
@@ -103,14 +99,19 @@ private:
     {
       case detail::packet_type::repair:
       {
-        handle_incoming(serializer_->read_repair(data));
-        return true;
+        nb_received_repairs_ += 1;
+        reconstruct_.add(serializer_->read_repair(data));
+        break;
       }
 
       case detail::packet_type::source:
       {
-        handle_incoming(serializer_->read_source(data));
-        return true;
+        nb_received_sources_ += 1;
+
+        auto src = serializer_->read_source(data);
+        insertion_sort(ack_.source_ids(), src.id());
+        reconstruct_.add(std::move(src));
+        break;
       }
 
       default:
@@ -118,38 +119,32 @@ private:
         return false;
       }
     }
-  }
-
-  void
-  handle_incoming(detail::repair&&)
-  {
-
-  }
-
-  void
-  handle_incoming(detail::source&& src)
-  {
-    // Insertion sort of the source identifier in the list of acknowledged source.
-    const auto ids_end = end(ack_.source_ids());
-    const auto lb = std::lower_bound(begin(ack_.source_ids()), ids_end, src.id());
-    if ((lb != ids_end and *lb != src.id()) or (lb == ids_end))
-    {
-      // src.id() doesn't exist in ack_.source_ids(), insert it.
-      ack_.source_ids().insert(lb, src.id());
-    }
-
-    // Ask user to handle the bytes of the new src.
-    handler_->on_ready_symbol(src.user_size(), src.buffer().data());
 
     // Do we need to send an ack?
-    if ((received_sources_ + 1) % ack_rate_ == 0)
+    if ((nb_received_repairs_ + nb_received_sources_) % ack_rate_ == 0)
     {
       // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
       serializer_->write_ack(ack_);
-      nb_acks_ += 1;
 
       // Start a fresh new ack.
       ack_.reset();
+    }
+
+    return true;
+  }
+
+  /// @brief Insert an identifier in a list of identifiers, keeping it sorted.
+  static
+  void
+  insertion_sort(detail::source_id_list& ids, std::uint32_t id)
+  {
+    const auto ids_end = end(ids);
+    // Return an iterator to the first element that is greater or equal than id.
+    const auto lb = std::lower_bound(begin(ids), ids_end, id);
+    // Check if id doesn't exist in ids.
+    if ((lb != ids_end and *lb != id) or (lb == ids_end))
+    {
+      ids.insert(lb, id);
     }
   }
 
@@ -158,26 +153,29 @@ private:
   /// @brief The component that handles the coding process.
   code coder_;
 
-  /// @brief The number of source packets to receive before sending an ack packet.
-  unsigned int ack_rate_;
-
   /// @brief Is the encoder systematic?
   code_type type_;
 
   /// @brief Re-use the same memory to prepare an ack packet.
   detail::ack ack_;
 
-  /// @brief The number of sent ack packets.
-  std::size_t nb_acks_;
+  /// @brief The number of source packets to receive before sending an ack packet.
+  unsigned int ack_rate_;
+
+  /// @brief The counter of received repairs.
+  std::size_t nb_received_repairs_;
 
   /// @brief The counter of received sources.
-  std::size_t received_sources_;
+  std::size_t nb_received_sources_;
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::serializer_base> serializer_;
+
+  /// @brief The component that rebuilds sources using repairs.
+  detail::reconstruct reconstruct_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
