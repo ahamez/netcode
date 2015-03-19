@@ -2,12 +2,14 @@
 
 #include <vector>
 
+#include <boost/align/aligned_allocator.hpp>
 #include <boost/align/aligned_allocator_adaptor.hpp>
 
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @internal
 /// @brief Allocator to avoid value initialization.
 /// @see http://stackoverflow.com/a/21028912/21584
 template <typename T, typename Alloc = std::allocator<T>>
@@ -52,6 +54,7 @@ public:
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @internal
 /// @brief An aligned allocator that aligns and avoid value initialization.
 template <typename T, std::size_t Align>
 using default_init_aligned_alloc
@@ -61,6 +64,15 @@ using default_init_aligned_alloc
 
 /// @brief An aligned buffer of bytes.
 using raw_buffer = std::vector<char, default_init_aligned_alloc<char, 16>>;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @internal
+/// @brief An aligned buffer of bytes.
+/// @note Will set new bytes to 0 when resized.
+///
+/// Use when a buffer with a default initialization is required.
+using zero_raw_buffer = std::vector<char, boost::alignment::aligned_allocator<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 

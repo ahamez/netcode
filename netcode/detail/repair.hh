@@ -26,7 +26,7 @@ public:
   repair& operator=(repair&&) = delete;
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair(std::uint32_t id, source_id_list&& ids, detail::raw_buffer&& buffer)
+  repair(std::uint32_t id, source_id_list&& ids, detail::zero_raw_buffer&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
     , buffer_{std::move(buffer)}
@@ -72,7 +72,7 @@ public:
   }
 
   /// @brief This repair's symbol.
-  const detail::raw_buffer&
+  const detail::zero_raw_buffer&
   buffer()
   const noexcept
   {
@@ -80,7 +80,7 @@ public:
   }
 
   /// @brief This repair's symbol (mutable).
-  detail::raw_buffer&
+  detail::zero_raw_buffer&
   buffer()
   noexcept
   {
@@ -107,7 +107,7 @@ private:
   source_id_list sources_ids_;
 
   /// @brief This repair's symbol.
-  detail::raw_buffer buffer_;
+  detail::zero_raw_buffer buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

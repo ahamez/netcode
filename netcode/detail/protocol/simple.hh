@@ -147,7 +147,7 @@ struct simple final
     data += sizeof(std::uint16_t);
 
     // Read the repair symbol.
-    raw_buffer buffer;
+    zero_raw_buffer buffer;
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 

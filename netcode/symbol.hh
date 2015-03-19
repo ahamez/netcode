@@ -109,8 +109,7 @@ public:
   /// @brief Reset the buffer.
   /// @attention Any current back insert iterator will be invalidated. A new one must be created
   /// with back_inserter().
-  ///
-  /// The reserved memory is kept.
+  /// @note The reserved memory is kept.
   void
   reset()
   noexcept
