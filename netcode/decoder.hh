@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm> // lower_bound
 #include <memory>    // unique_ptr
 
 #include "netcode/detail/handler.hh"
@@ -109,7 +108,7 @@ private:
         nb_received_sources_ += 1;
 
         auto src = serializer_->read_source(data);
-        insertion_sort(ack_.source_ids(), src.id());
+        detail::insertion_sort(ack_.source_ids(), src.id());
         reconstruct_.add(std::move(src));
         break;
       }
@@ -132,21 +131,6 @@ private:
     }
 
     return true;
-  }
-
-  /// @brief Insert an identifier in a list of identifiers, keeping it sorted.
-  static
-  void
-  insertion_sort(detail::source_id_list& ids, std::uint32_t id)
-  {
-    const auto ids_end = end(ids);
-    // Return an iterator to the first element that is greater or equal than id.
-    const auto lb = std::lower_bound(begin(ids), ids_end, id);
-    // Check if id doesn't exist in ids.
-    if ((lb != ids_end and *lb != id) or (lb == ids_end))
-    {
-      ids.insert(lb, id);
-    }
   }
 
 private:
