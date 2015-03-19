@@ -29,6 +29,7 @@ public:
   repair(std::uint32_t id, source_id_list&& ids, detail::zero_raw_buffer&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
+    , size_{}
     , buffer_{std::move(buffer)}
   {}
 
@@ -36,6 +37,7 @@ public:
   repair(std::uint32_t id)
     : id_{id}
     , sources_ids_{}
+    , size_{}
     , buffer_{}
   {}
 
@@ -105,6 +107,9 @@ private:
 
   /// @brief The list of source identifiers.
   source_id_list sources_ids_;
+
+  /// @brief The encoded sizes of all sources this repair contains.
+  std::size_t size_;
 
   /// @brief This repair's symbol.
   detail::zero_raw_buffer buffer_;
