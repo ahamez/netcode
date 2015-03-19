@@ -163,7 +163,8 @@ private:
   void
   commit_impl(Symbol&& sym)
   {
-    assert(sym.user_size_ <= sym.buffer_.size() && "More bytes are used than the buffer can hold.");
+    assert(sym.buffer_.size() % 16 == 0 && "symbol buffer size not a multiple of 16");
+    assert(sym.user_size_ <= sym.buffer_.size() && "More bytes are used than the buffer can hold");
 
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
