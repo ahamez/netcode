@@ -121,6 +121,7 @@ private:
     }
 
     // Do we need to send an ack?
+    /// @todo Also count decoded sources
     if ((nb_received_repairs_ + nb_received_sources_) % ack_rate_ == 0)
     {
       // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).

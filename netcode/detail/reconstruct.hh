@@ -1,6 +1,7 @@
 #pragma once
 
-#include <algorithm>  // all_of
+#include <algorithm>  // all_of, is_sorted
+#include <cassert>
 #include <unordered_map>
 
 #include "netcode/detail/handler.hh"
@@ -24,6 +25,7 @@ public:
     , src_to_repairs_{}
   {}
 
+  /// @todo Make sure we handle duplicate sources.
   void
   add(source&& src)
   {
@@ -53,6 +55,9 @@ public:
         // useful.
         repairs_.erase(r.id());
       }
+
+      /// @todo Check that it's possible to combine several repairs in order to reconstruct
+      /// missing sources.
     }
 
     // Now, there are no more repairs that reference the current source, thus we now update the
@@ -67,15 +72,38 @@ public:
   void
   add(repair&& r)
   {
-    /// First check if r is useless. Indeed, if all sources it references were correctly received,
-    /// then it's useless to remove them from this repair, which is a costly operation.
-    const auto useless = std::all_of( r.source_ids().begin(), r.source_ids().end()
+    // By construction, the list of source identifiers should be sorted.
+    assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
+
+    // Remove sources with an id smaller than the smallest the current repair encodes.
+    // Maybe not the smartest way to do it, we have to iterate _all_ sources. Maybe we should use
+    // a different container (Boost.MultiIndex, std::set, etc.).
+    const auto smallest_id = r.source_ids().front();
+    for (auto cit = begin(sources_), cend = end(sources_); cit != cend;)
+    {
+      if (cit->first < smallest_id)
+      {
+        const auto to_erase = cit;
+        ++cit;
+        src_to_repairs_.erase(to_erase->first);
+        sources_.erase(to_erase);
+      }
+      else
+      {
+        ++cit;
+      }
+    }
+
+    /// Check if r is useless. Indeed, if all sources it references were correctly received, then
+    /// it's useless to remove them from this repair, which is a costly operation.
+    const auto useless = std::all_of( begin(r.source_ids()), end(r.source_ids())
                                     , [this](std::uint32_t src_id)
                                       {
                                         return sources_.count(src_id);
                                       });
     if (useless)
     {
+      // Drop repair.
       return;
     }
 
@@ -84,6 +112,7 @@ public:
     const auto insertion = repairs_.emplace(r_id, std::move(r));
     assert(insertion.second && "Repair with the same id already processed");
 
+    // Don't use r beyond this point (as it was moved into repairs_), instead use r_ptr.
     auto* r_ptr = &insertion.first->second;
 
     // Reverse loop as vector::erase() invalidates iterators past the one being erased.
@@ -94,7 +123,8 @@ public:
       {
         /// @todo remove src from r.
 
-        // Get the iterator corresponding to the current reverse iterator.
+        // Get the 'normal' iterator corresponding to the current reverse iterator.
+        // http://stackoverflow.com/a/1830240/21584
         const auto to_erase = std::next(id_rcit).base();
         r_ptr->source_ids().erase(to_erase);
       }
@@ -106,20 +136,30 @@ public:
     }
     assert(not r_ptr->source_ids().empty());
 
+    if (r_ptr->source_ids().size() == 1)
+    {
+      /// @todo handle repair with only one source.
+
+      repairs_.erase(r_ptr->id());
+      return;
+    }
+
+    /// @todo Check that it's possible to combine several repairs in order to reconstruct
+    /// missing sources.
   }
 
 private:
 
-  /// @brief
+  /// @brief The user's handler for various callbacks.
   handler_base& handler_;
 
-  /// @brief
+  /// @brief The set of received sources.
   std::unordered_map<std::uint32_t, source> sources_;
 
-  /// @brief
+  /// @brief The set of received repairs.
   std::unordered_map<std::uint32_t, repair> repairs_;
 
-  /// @brief
+  /// @brief All sources that have not been yet received, but which are referenced by a repair.
   std::unordered_multimap<std::uint32_t, repair*> src_to_repairs_;
 };
 
