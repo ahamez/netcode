@@ -13,6 +13,7 @@
 		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BE3198A1AB32E7F001AA9DF /* test_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319891AB32E7F001AA9DF /* test_simple.cc */; };
+		2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -178,6 +179,7 @@
 		2BE31A0D1AB35D35001AA9DF /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
 		2BE31A0E1AB35F8E001AA9DF /* multiple.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multiple.hh; sourceTree = "<group>"; };
 		2BE31A0F1AB3710F001AA9DF /* source_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_list.hh; sourceTree = "<group>"; };
+		2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_source_list.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,6 +293,7 @@
 			children = (
 				2BE319881AB32E6D001AA9DF /* protocol */,
 				2B282BBE1AB861C200640FF8 /* test_reconstruct.cc */,
+				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 			);
 			path = detail;
 			sourceTree = "<group>";
@@ -578,6 +581,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */,
 				2BE319871AB32DA0001AA9DF /* tests.cc in Sources */,
 				2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */,
 				2B282BBF1AB861C200640FF8 /* test_reconstruct.cc in Sources */,
