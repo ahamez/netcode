@@ -1,10 +1,10 @@
 #pragma once
 
+#include "galois/field.hh"
+#include "galois/multiply.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/galois/field.hh"
-#include "netcode/galois/multiply.hh"
 
 namespace ntc {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/galois/field.hh"
+#include "galois/field.hh"
 
 namespace galois {
 
