@@ -77,10 +77,11 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
 
   // Will hold the bytes of the serialized ack.
   packet data{2048};
+  std::size_t nb_written = 0;
   struct handler
   {
     char* data;
-    std::size_t written;
+    std::size_t& written;
 
     void
     on_ready_data(std::size_t len, const char* src)
@@ -94,7 +95,7 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
   };
 
   // Directly use the serializer that would have been called by the sender.
-  detail::handler_derived<handler> h{handler{data.buffer(), 0}};
+  detail::handler_derived<handler> h{handler{data.buffer(), nb_written}};
   detail::protocol::simple serializer{h};
 
   SECTION("incoming ack")
@@ -113,7 +114,55 @@ TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
     REQUIRE(encoder.window_size() == 2);
   }
 
-  SECTION("incoming  repair")
+  SECTION("incoming ack 2")
+  {
+    // Create an ack for some sources, with a wrong id, just to try.
+    const auto ack0 = detail::ack{{0,2,9}};
+
+    // Serialize the ack.
+    serializer.write_ack(ack0);
+
+    // Finally, notify the encoder.
+    const auto result0 = encoder.notify(data);
+    REQUIRE(result0);
+
+    // The number of sources should have decreased.
+    REQUIRE(encoder.window_size() == 2);
+
+    /// Reset handler.
+    nb_written = 0;
+
+    // Create an ack for some sources, with an already deleted source.
+    const auto ack1 = detail::ack{{0}};
+
+    // Serialize the ack.
+    serializer.write_ack(ack1);
+
+    // Finally, notify the encoder.
+    const auto result1 = encoder.notify(data);
+    REQUIRE(result1);
+
+    // The number of sources should have decreased.
+    REQUIRE(encoder.window_size() == 2);
+
+    /// Reset handler.
+    nb_written = 0;
+    
+    // Create an ack for some sources, with a source that wasn't deleted before.
+    const auto ack2 = detail::ack{{1}};
+
+    // Serialize the ack.
+    serializer.write_ack(ack2);
+
+    // Finally, notify the encoder.
+    const auto result2 = encoder.notify(data);
+    REQUIRE(result2);
+
+    // The number of sources should have decreased.
+    REQUIRE(encoder.window_size() == 1);
+  }
+
+  SECTION("incoming repair")
   {
     // Create a repair.
     const auto repair = detail::repair{0};

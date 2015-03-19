@@ -10,7 +10,7 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-namespace {
+namespace /* unnamed */{
 
 bool
 contains_id(const detail::source_list& sl, std::size_t id)
@@ -20,11 +20,11 @@ contains_id(const detail::source_list& sl, std::size_t id)
         != sl.cend();
 }
 
+} // namespace unnamed
+
 /*------------------------------------------------------------------------------------------------*/
 
-}
-
-TEST_CASE("", "[source_list]")
+TEST_CASE("add and remove sources in source_list", "[source_list][source]")
 {
   auto sl = detail::source_list{};
 
