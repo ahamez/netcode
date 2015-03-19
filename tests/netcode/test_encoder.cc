@@ -65,7 +65,7 @@ TEST_CASE("Encoder generates repairs", "[encoder][repair]")
 
 TEST_CASE("Encoder correctly handles new incoming packets", "[encoder]")
 {
-  ntc::encoder encoder{dummy_handler{}, code{8}, 5, code_type::systematic, protocol::simple};
+  ntc::encoder encoder{dummy_handler{}, 5, code_type::systematic, protocol::simple};
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)

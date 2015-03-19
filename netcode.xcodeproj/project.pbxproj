@@ -44,7 +44,6 @@
 		2B9222681AB4BCD4009A2843 /* test_symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_symbol.cc; sourceTree = "<group>"; };
 		2B92226A1AB55B5F009A2843 /* protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = protocol.hh; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
-		2BE319501AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319561AB0C550001AA9DF /* code_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code_type.hh; sourceTree = "<group>"; };
 		2BE3196D1AB206FC001AA9DF /* symbol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol.hh; sourceTree = "<group>"; };
@@ -182,6 +181,7 @@
 		2BF1A63B1ABAFA07009C32B9 /* test_raw_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_raw_buffer.cc; sourceTree = "<group>"; };
 		2BF1A63E1ABB6A8C009C32B9 /* field.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
 		2BF1A63F1ABB6A8C009C32B9 /* multiply.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = multiply.hh; sourceTree = "<group>"; };
+		2BF1A6401ABB6CCC009C32B9 /* code.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +212,6 @@
 			isa = PBXGroup;
 			children = (
 				2BE3196E1AB2357F001AA9DF /* detail */,
-				2BE319501AB0C550001AA9DF /* code.hh */,
 				2BE319561AB0C550001AA9DF /* code_type.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
@@ -247,6 +246,7 @@
 			children = (
 				2BE319761AB2E652001AA9DF /* protocol */,
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
+				2BF1A6401ABB6CCC009C32B9 /* code.hh */,
 				2BE3196F1AB2357F001AA9DF /* handler.hh */,
 				2B282BBC1AB8562E00640FF8 /* make_protocol.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,

@@ -2,6 +2,7 @@
 
 #include <memory>    // unique_ptr
 
+#include "netcode/detail/code.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
@@ -9,7 +10,6 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
-#include "netcode/code.hh"
 #include "netcode/code_type.hh"
 #include "netcode/packet.hh"
 #include "netcode/protocol.hh"
@@ -31,8 +31,8 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  decoder(Handler&& h, code&& coder, unsigned int ack_rate, code_type type, protocol prot)
-    : coder_{std::move(coder)}
+  decoder(Handler&& h, unsigned int ack_rate, code_type type, protocol prot)
+    : coder_{detail::code{8}}
     , type_{type}
     , ack_{}
     , ack_rate_{ack_rate}
@@ -50,7 +50,6 @@ public:
   template <typename Handler>
   decoder(Handler&& h, unsigned int ack_rate)
     : decoder{ std::forward<Handler>(h)
-             , code{8}
              , ack_rate
              , code_type::systematic
              , protocol::simple}
@@ -136,7 +135,7 @@ private:
 private:
 
   /// @brief The component that handles the coding process.
-  code coder_;
+  detail::code coder_;
 
   /// @brief Is the encoder systematic?
   code_type type_;

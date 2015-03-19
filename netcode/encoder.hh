@@ -3,6 +3,7 @@
 #include <algorithm> // is_sorted
 #include <memory>    // unique_ptr
 
+#include "netcode/detail/code.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
@@ -10,7 +11,6 @@
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/code.hh"
 #include "netcode/code_type.hh"
 #include "netcode/packet.hh"
 #include "netcode/protocol.hh"
@@ -33,8 +33,8 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  encoder(Handler&& h, code&& coder, unsigned int code_rate, code_type type, protocol prot)
-    : coder_{std::move(coder)}
+  encoder(Handler&& h, unsigned int code_rate, code_type type, protocol prot)
+    : coder_{detail::code{8}}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
     , current_source_id_{0}
@@ -55,7 +55,6 @@ public:
   template <typename Handler>
   encoder(Handler&& h, unsigned int code_rate)
     : encoder{ std::forward<Handler>(h)
-             , code{8}
              , code_rate
              , code_type::systematic
              , protocol::simple}
@@ -227,7 +226,7 @@ private:
 private:
 
   /// @brief The component that handles the coding process.
-  code coder_;
+  detail::code coder_;
 
   /// @brief The number of source packets to send before sending a repair packet.
   unsigned int rate_;

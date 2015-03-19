@@ -6,7 +6,7 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
 
-namespace ntc {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -25,8 +25,7 @@ public:
   /// @param src_cit The beginning of the container of @ref detail::source.
   /// @param src_end The end of the container @ref detail::source. Must be different of @p src_cit.
   void
-  encode( detail::repair& repair, detail::source_list::const_iterator src_cit
-        , detail::source_list::const_iterator src_end)
+  encode(repair& repair, source_list::const_iterator src_cit, source_list::const_iterator src_end)
   {
     assert(src_cit != src_end);
 
@@ -75,4 +74,4 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-} // namespace ntc
+}} // namespace ntc::detail
