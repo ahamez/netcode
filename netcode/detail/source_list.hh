@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <list>
 
 #include "netcode/detail/source.hh"
