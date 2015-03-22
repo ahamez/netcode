@@ -14,27 +14,27 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-class reconstruct final
+class decoder final
 {
 public:
 
-  reconstruct(handler_base& h)
+  decoder(handler_base& h)
     : handler_(h)
     , sources_{}
     , repairs_{}
-    , src_to_repairs_{}
+    , missing_sources_{}
   {}
 
   /// @todo Make sure we handle duplicate sources.
   void
-  add(source&& src)
+  operator()(source&& src)
   {
     // Ask user to read the bytes of this new source.
     handler_.on_ready_symbol(src.user_size(), src.buffer().data());
 
     // First, look for all repairs that contain this incoming source in order to remove it
     // from these repairs.
-    const auto search_range = src_to_repairs_.equal_range(src.id());
+    const auto search_range = missing_sources_.equal_range(src.id());
     for (auto cit = search_range.first; cit != search_range.second; ++cit)
     {
       // A reference to the current repair.
@@ -62,7 +62,7 @@ public:
 
     // Now, there are no more repairs that reference the current source, thus we now update the
     // mapping src -> repairs.
-    src_to_repairs_.erase(src.id());
+    missing_sources_.erase(src.id());
 
     // Finally, insert this new source in the set of known sources.
     const auto src_id = src.id(); // to force evaluation order in the following call.
@@ -70,7 +70,7 @@ public:
   }
 
   void
-  add(repair&& r)
+  operator()(repair&& r)
   {
     // By construction, the list of source identifiers should be sorted.
     assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
@@ -85,7 +85,7 @@ public:
       {
         const auto to_erase = cit;
         ++cit;
-        src_to_repairs_.erase(to_erase->first);
+        missing_sources_.erase(to_erase->first);
         sources_.erase(to_erase);
       }
       else
@@ -131,7 +131,7 @@ public:
       else
       {
         // Link this repair with the sources it references.
-        src_to_repairs_.emplace(*id_rcit, r_ptr);
+        missing_sources_.emplace(*id_rcit, r_ptr);
       }
     }
     assert(not r_ptr->source_ids().empty());
@@ -160,7 +160,7 @@ private:
   std::unordered_map<std::uint32_t, repair> repairs_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  std::unordered_multimap<std::uint32_t, repair*> src_to_repairs_;
+  std::unordered_multimap<std::uint32_t, repair*> missing_sources_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
