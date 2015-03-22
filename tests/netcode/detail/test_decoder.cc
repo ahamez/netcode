@@ -2,7 +2,7 @@
 
 #include "tests/catch.hpp"
 
-#include "netcode/detail/reconstruct.hh"
+#include "netcode/detail/decoder.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -10,7 +10,7 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Reconstruct", "[reconstruct]")
+TEST_CASE("Decoder", "[decoder]")
 {
 
 }

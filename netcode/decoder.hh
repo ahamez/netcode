@@ -2,10 +2,10 @@
 
 #include <memory>    // unique_ptr
 
+#include "netcode/detail/decoder.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/reconstruct.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
@@ -38,7 +38,7 @@ public:
     , nb_received_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
-    , reconstruct_{*handler_}
+    , decoder_{*handler_}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
@@ -96,7 +96,7 @@ private:
       case detail::packet_type::repair:
       {
         nb_received_repairs_ += 1;
-        reconstruct_.add(serializer_->read_repair(data));
+        decoder_(serializer_->read_repair(data));
         break;
       }
 
@@ -106,7 +106,7 @@ private:
 
         auto src = serializer_->read_source(data);
         detail::insertion_sort(ack_.source_ids(), src.id());
-        reconstruct_.add(std::move(src));
+        decoder_(std::move(src));
         break;
       }
 
@@ -154,7 +154,7 @@ private:
   std::unique_ptr<detail::serializer_base> serializer_;
 
   /// @brief The component that rebuilds sources using repairs.
-  detail::reconstruct reconstruct_;
+  detail::decoder decoder_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

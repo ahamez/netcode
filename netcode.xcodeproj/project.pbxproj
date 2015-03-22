@@ -33,7 +33,7 @@
 		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
 		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B282BBC1AB8562E00640FF8 /* make_protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_protocol.hh; sourceTree = "<group>"; };
-		2B282BBD1AB8618800640FF8 /* reconstruct.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = reconstruct.hh; sourceTree = "<group>"; };
+		2B282BBD1AB8618800640FF8 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B282BBE1AB861C200640FF8 /* test_reconstruct.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_reconstruct.cc; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -246,13 +246,13 @@
 			children = (
 				2BE319761AB2E652001AA9DF /* protocol */,
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
+				2B282BBD1AB8618800640FF8 /* decoder.hh */,
 				2BF1A6401ABB6CCC009C32B9 /* encoder.hh */,
 				2BE3196F1AB2357F001AA9DF /* handler.hh */,
 				2B282BBC1AB8562E00640FF8 /* make_protocol.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
 				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
 				2BE319721AB23910001AA9DF /* raw_buffer.hh */,
-				2B282BBD1AB8618800640FF8 /* reconstruct.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
