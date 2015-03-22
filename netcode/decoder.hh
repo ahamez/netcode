@@ -36,9 +36,10 @@ public:
     , ack_rate_{ack_rate}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
+    , nb_decoded_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
-    , decoder_{*handler_}
+    , decoder_{[this](const detail::source& src){source_decoded(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
@@ -96,29 +97,49 @@ private:
       case detail::packet_type::repair:
       {
         nb_received_repairs_ += 1;
+        // Give the decoder this received repair.
         decoder_(serializer_->read_repair(data));
-        break;
+        return true;
       }
 
       case detail::packet_type::source:
       {
         nb_received_sources_ += 1;
-
         auto src = serializer_->read_source(data);
-        detail::insertion_sort(ack_.source_ids(), src.id());
+        // Ask user to read the bytes of this new source.
+        handler_->on_ready_symbol(src.user_size(), src.buffer().data());
+        // Send an ack if necessary.
+        ack(src.id());
+        // Give the decoder this received source.
         decoder_(std::move(src));
-        break;
+        return true;
       }
 
-      default:
-      {
-        return false;
-      }
+      default: return false;
     }
+  }
+
+  /// @brief Callback given to the real encoder to be notify when a source has been decoded.
+  void
+  source_decoded(const detail::source& src)
+  {
+    nb_decoded_sources_ += 1;
+
+    // Ask user to read the bytes of this new source.
+    handler_->on_ready_symbol(src.user_size(), src.buffer().data());
+
+    // Send an ack if necessary.
+    ack(src.id());
+  }
+
+  /// @brief Create and send an ack if needed.
+  void
+  ack(std::uint32_t src_id)
+  {
+    detail::insertion_sort(ack_.source_ids(), src_id);
 
     // Do we need to send an ack?
-    /// @todo Also count decoded sources
-    if ((nb_received_repairs_ + nb_received_sources_) % ack_rate_ == 0)
+    if ((nb_received_repairs_ + nb_received_sources_ + nb_decoded_sources_) % ack_rate_ == 0)
     {
       // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
       serializer_->write_ack(ack_);
@@ -126,8 +147,6 @@ private:
       // Start a fresh new ack.
       ack_.reset();
     }
-
-    return true;
   }
 
 private:
@@ -146,6 +165,9 @@ private:
 
   /// @brief The counter of received sources.
   std::size_t nb_received_sources_;
+
+  /// @brief The counter of decoded sources.
+  std::size_t nb_decoded_sources_;
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_;

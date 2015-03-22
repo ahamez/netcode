@@ -4,7 +4,6 @@
 #include <cassert>
 #include <unordered_map>
 
-#include "netcode/detail/handler.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
@@ -18,8 +17,8 @@ class decoder final
 {
 public:
 
-  decoder(handler_base& h)
-    : handler_(h)
+  decoder(std::function<void(const source&)> h)
+    : callback_(h)
     , sources_{}
     , repairs_{}
     , missing_sources_{}
@@ -29,9 +28,6 @@ public:
   void
   operator()(source&& src)
   {
-    // Ask user to read the bytes of this new source.
-    handler_.on_ready_symbol(src.user_size(), src.buffer().data());
-
     // First, look for all repairs that contain this incoming source in order to remove it
     // from these repairs.
     const auto search_range = missing_sources_.equal_range(src.id());
@@ -72,6 +68,8 @@ public:
   void
   operator()(repair&& r)
   {
+    /// @todo Call callback_() when a source has been decoded.
+
     // By construction, the list of source identifiers should be sorted.
     assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
 
@@ -150,8 +148,8 @@ public:
 
 private:
 
-  /// @brief The user's handler for various callbacks.
-  handler_base& handler_;
+  /// @brief The callback to call when a source has been decoded.
+  std::function<void(const source&)> callback_;
 
   /// @brief The set of received sources.
   std::unordered_map<std::uint32_t, source> sources_;
