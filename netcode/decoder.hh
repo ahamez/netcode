@@ -2,7 +2,6 @@
 
 #include <memory>    // unique_ptr
 
-#include "netcode/detail/code.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
@@ -32,8 +31,7 @@ public:
   /// @brief Constructor.
   template <typename Handler>
   decoder(Handler&& h, unsigned int ack_rate, code_type type, protocol prot)
-    : coder_{detail::code{8}}
-    , type_{type}
+    : type_{type}
     , ack_{}
     , ack_rate_{ack_rate}
     , nb_received_repairs_{0}
@@ -133,9 +131,6 @@ private:
   }
 
 private:
-
-  /// @brief The component that handles the coding process.
-  detail::code coder_;
 
   /// @brief Is the encoder systematic?
   code_type type_;

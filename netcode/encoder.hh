@@ -3,7 +3,7 @@
 #include <algorithm> // is_sorted
 #include <memory>    // unique_ptr
 
-#include "netcode/detail/code.hh"
+#include "netcode/detail/encoder.hh"
 #include "netcode/detail/handler.hh"
 #include "netcode/detail/make_protocol.hh"
 #include "netcode/detail/packet_type.hh"
@@ -34,7 +34,7 @@ public:
   /// @brief Constructor.
   template <typename Handler>
   encoder(Handler&& h, unsigned int code_rate, code_type type, protocol prot)
-    : coder_{detail::code{8}}
+    : encoder_{detail::encoder{8}}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
     , current_source_id_{0}
@@ -214,7 +214,7 @@ private:
 
     // Create the repair packet from the list of sources.
     assert(sources_.size() > 0 && "Empty source list");
-    coder_.encode(repair_, sources_.cbegin(), sources_.cend());
+    encoder_(repair_, sources_.cbegin(), sources_.cend());
 
     // By construction, the list of source identifiers should be sorted.
     assert(std::is_sorted(begin(repair_.source_ids()), end(repair_.source_ids())));
@@ -226,7 +226,7 @@ private:
 private:
 
   /// @brief The component that handles the coding process.
-  detail::code coder_;
+  detail::encoder encoder_;
 
   /// @brief The number of source packets to send before sending a repair packet.
   unsigned int rate_;

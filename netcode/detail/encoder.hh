@@ -10,13 +10,13 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The component responsible for the encoding and decoding of @ref detail::repair.
-class code final
+/// @brief The component responsible for the encoding of @ref detail::repair.
+class encoder final
 {
 public:
 
   /// @brief Constructor.
-  code(unsigned int galois_field_size)
+  encoder(unsigned int galois_field_size)
     : gf_{galois::field{galois_field_size}}
   {}
 
@@ -25,7 +25,8 @@ public:
   /// @param src_cit The beginning of the container of @ref detail::source.
   /// @param src_end The end of the container @ref detail::source. Must be different of @p src_cit.
   void
-  encode(repair& repair, source_list::const_iterator src_cit, source_list::const_iterator src_end)
+  operator()( repair& repair, source_list::const_iterator src_cit
+            , source_list::const_iterator src_end)
   {
     assert(src_cit != src_end);
 

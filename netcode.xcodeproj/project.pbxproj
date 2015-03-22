@@ -181,7 +181,7 @@
 		2BF1A63B1ABAFA07009C32B9 /* test_raw_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_raw_buffer.cc; sourceTree = "<group>"; };
 		2BF1A63E1ABB6A8C009C32B9 /* field.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = field.hh; sourceTree = "<group>"; };
 		2BF1A63F1ABB6A8C009C32B9 /* multiply.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = multiply.hh; sourceTree = "<group>"; };
-		2BF1A6401ABB6CCC009C32B9 /* code.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
+		2BF1A6401ABB6CCC009C32B9 /* encoder.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,7 +246,7 @@
 			children = (
 				2BE319761AB2E652001AA9DF /* protocol */,
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
-				2BF1A6401ABB6CCC009C32B9 /* code.hh */,
+				2BF1A6401ABB6CCC009C32B9 /* encoder.hh */,
 				2BE3196F1AB2357F001AA9DF /* handler.hh */,
 				2B282BBC1AB8562E00640FF8 /* make_protocol.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
