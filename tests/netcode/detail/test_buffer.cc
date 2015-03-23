@@ -8,7 +8,7 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A raw_buffer is aligned on 16 bytes", "[alignment][buffer]" )
+TEST_CASE("A byte_buffer is aligned on 16 bytes", "[alignment][buffer]" )
 {
   const auto b0 = detail::byte_buffer{};
   REQUIRE((reinterpret_cast<std::size_t>(&b0[0]) % 16ul) == 0ul);
@@ -19,9 +19,9 @@ TEST_CASE("A raw_buffer is aligned on 16 bytes", "[alignment][buffer]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A zero_raw_buffer is aligned on 16 bytes", "[alignment][buffer]" )
+TEST_CASE("A zero_byte_buffer is aligned on 16 bytes", "[alignment][buffer]" )
 {
-  const auto b0 = detail::zero_raw_buffer{};
+  const auto b0 = detail::zero_byte_buffer{};
   REQUIRE((reinterpret_cast<std::size_t>(&b0[0]) % 16ul) == 0ul);
 
   const auto b1 = b0;
@@ -30,7 +30,7 @@ TEST_CASE("A zero_raw_buffer is aligned on 16 bytes", "[alignment][buffer]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A raw_buffer is not 0-out when resized ", "[buffer]" )
+TEST_CASE("A byte_buffer is not 0-out when resized ", "[buffer]" )
 {
   auto b = detail::byte_buffer{0,1,2,3,4,5,6,7,8,9};
   REQUIRE(b.size() == 10);
@@ -57,9 +57,9 @@ TEST_CASE("A raw_buffer is not 0-out when resized ", "[buffer]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A zero_raw_buffer is 0-out when resized ", "[buffer]" )
+TEST_CASE("A zero_byte_buffer is 0-out when resized ", "[buffer]" )
 {
-  auto b = detail::zero_raw_buffer{0,1,2,3,4,5,6,7,8,9};
+  auto b = detail::zero_byte_buffer{0,1,2,3,4,5,6,7,8,9};
   REQUIRE(b.size() == 10);
 
   for (char i = 0; i < 10; ++i)

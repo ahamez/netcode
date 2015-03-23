@@ -78,7 +78,7 @@ using byte_buffer = buffer<char>;
 /// @note Will set new bytes to 0 when resized.
 ///
 /// Use when a buffer with a default initialization is required.
-using zero_raw_buffer = std::vector<char, boost::alignment::aligned_allocator<char, 16>>;
+using zero_byte_buffer = std::vector<char, boost::alignment::aligned_allocator<char, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
