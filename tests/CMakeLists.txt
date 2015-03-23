@@ -1,9 +1,9 @@
 set(SOURCES
    tests.cc
    netcode/detail/protocol/test_simple.cc
+   netcode/detail/test_buffer.cc
    netcode/detail/test_decoder.cc
    netcode/detail/test_galois_field.cc
-   netcode/detail/test_raw_buffer.cc
    netcode/detail/test_source_list.cc
    netcode/test_decoder.cc
    netcode/test_encoder.cc

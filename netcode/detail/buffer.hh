@@ -62,8 +62,14 @@ using default_init_aligned_alloc
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief An aligned buffer of bytes.
-using raw_buffer = std::vector<char, default_init_aligned_alloc<char, 16>>;
+/// @brief A generic buffer aligned on 16 bytes.
+template <typename T>
+using buffer = std::vector<T, default_init_aligned_alloc<T, 16>>;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief An buffer of bytes on 16 bytes.
+using byte_buffer = buffer<char>;
 
 /*------------------------------------------------------------------------------------------------*/
 

@@ -85,7 +85,7 @@ TEST_CASE("A source is (de)serialized by protocol::simple", "[serialization][sou
   detail::handler_derived<handler> h{handler{}};
   detail::protocol::simple serializer{h};
 
-  const detail::source s_in{394839, detail::raw_buffer{'a', 'b', 'c', 'd'}, 4};
+  const detail::source s_in{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4};
 
   serializer.write_source(s_in);
 

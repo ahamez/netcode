@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/detail/raw_buffer.hh"
+#include "netcode/detail/buffer.hh"
 #include "netcode/detail/types.hh"
 
 namespace ntc { namespace detail {

@@ -3,8 +3,8 @@
 #include <algorithm> // copy_n
 #include <iterator>  // back_inserter
 
+#include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
-#include "netcode/detail/raw_buffer.hh"
 
 namespace ntc {
 
@@ -61,7 +61,7 @@ private:
   std::size_t user_size_;
 
   /// @brief The buffer storage.
-  detail::raw_buffer buffer_;
+  detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to set the user size and to access the buffer.
   friend class encoder;
@@ -92,7 +92,7 @@ public:
   {}
 
   /// @brief An iterator to write in the symbol buffer.
-  using back_insert_iterator = std::back_insert_iterator<detail::raw_buffer>;
+  using back_insert_iterator = std::back_insert_iterator<detail::byte_buffer>;
 
   /// @brief Get a back inserter iterator to the symbol buffer.
   ///
@@ -125,7 +125,7 @@ private:
   std::size_t user_size_;
 
   /// @brief The buffer storage.
-  detail::raw_buffer buffer_;
+  detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to set the user size and to access the buffer.
   friend class encoder;
@@ -160,7 +160,7 @@ private:
   std::size_t user_size_;
 
   /// @brief The buffer storage.
-  detail::raw_buffer buffer_;
+  detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
   friend class encoder;

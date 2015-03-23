@@ -29,10 +29,10 @@ TEST_CASE("add and remove sources in source_list", "[source_list][source]")
   auto sl = detail::source_list{};
 
   // Push some sources.
-  sl.emplace(0, detail::raw_buffer{}, 0);
-  sl.emplace(1, detail::raw_buffer{}, 0);
-  sl.emplace(2, detail::raw_buffer{}, 0);
-  sl.emplace(3, detail::raw_buffer{}, 0);
+  sl.emplace(0, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{}, 0);
+  sl.emplace(2, detail::byte_buffer{}, 0);
+  sl.emplace(3, detail::byte_buffer{}, 0);
 
   REQUIRE(sl.size() == 4);
 
