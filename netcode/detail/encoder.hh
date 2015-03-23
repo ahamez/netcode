@@ -1,7 +1,6 @@
 #pragma once
 
-#include "galois/field.hh"
-#include "galois/multiply.hh"
+#include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
@@ -17,7 +16,7 @@ public:
 
   /// @brief Constructor.
   encoder(unsigned int galois_field_size)
-    : gf_{galois::field{galois_field_size}}
+    : gf_{detail::galois_field{galois_field_size}}
   {}
 
   /// @brief Fill a @ref detail::repair from a set of detail::source.
@@ -37,10 +36,8 @@ public:
 
     repair.source_ids().emplace_back(src_cit->id());
     // Only multiply for the first source, no need to add with repair.
-    multiply( gf_
-            , src_cit->buffer().size()
-            , src_cit->buffer().data(), repair.buffer().data()
-            , mk_coefficient(repair.id(), src_cit->id()));
+    gf_.multiply( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
+                , mk_coefficient(repair.id(), src_cit->id()));
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
@@ -53,10 +50,8 @@ public:
       }
 
       repair.source_ids().emplace_back(src_cit->id());
-      multiply_add( gf_
-                  , src_cit->buffer().size()
-                  , src_cit->buffer().data(), repair.buffer().data()
-                  , mk_coefficient(repair.id(), src_cit->id()));
+      gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
+                      , mk_coefficient(repair.id(), src_cit->id()));
     }
   }
 
@@ -70,7 +65,7 @@ private:
   }
 
   /// @brief An implementation of Galois fields.
-  galois::field gf_;
+  detail::galois_field gf_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

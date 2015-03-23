@@ -1,7 +1,5 @@
 #pragma once
 
-#include "galois/field.hh"
-
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
