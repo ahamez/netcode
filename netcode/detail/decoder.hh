@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "netcode/detail/repair.hh"
-#include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 
 namespace ntc { namespace detail {
