@@ -4,6 +4,7 @@ set(SOURCES
    netcode/detail/test_buffer.cc
    netcode/detail/test_decoder.cc
    netcode/detail/test_galois_field.cc
+   netcode/detail/test_invert_matrix.cc
    netcode/detail/test_source_list.cc
    netcode/detail/test_square_matrix.cc
    netcode/test_decoder.cc
