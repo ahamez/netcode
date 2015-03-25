@@ -27,7 +27,7 @@ TEST_CASE("compile a galois_field", "[galois]")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("", "[galois]")
+TEST_CASE("Verify operations on single elements", "[galois]")
 {
   SECTION("(x*y/x == y) and (x*y/y == x)")
   {
@@ -55,6 +55,19 @@ TEST_CASE("", "[galois]")
     detail::galois_field gf{8};
     const auto inv = gf.divide(1, 5);
     REQUIRE(gf.multiply(inv, 5) == 1);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Verify operations on regions", "[galois]")
+{
+//  SECTION("(x*y/x == y) and (x*y/y == x)")
+  {
+    detail::galois_field gf{8};
+    const auto mult = gf.multiply(4, 5);
+    REQUIRE(gf.divide(mult, 4) == 5);
+    REQUIRE(gf.divide(mult, 5) == 4);
   }
 }
 

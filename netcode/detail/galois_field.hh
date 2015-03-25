@@ -91,7 +91,6 @@ public:
                                   , 1 /* add to src */);
   }
 
-
   std::uint32_t
   multiply(std::uint32_t x, std::uint32_t y)
   noexcept
