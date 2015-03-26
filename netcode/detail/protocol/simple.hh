@@ -6,6 +6,7 @@
 #include <iterator>    // back_inserter
 
 #include "netcode/detail/buffer.hh"
+#include "netcode/detail/multiple.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/serializer.hh"
 #include "netcode/detail/types.hh"
