@@ -100,6 +100,20 @@ public:
     buffer_.resize(0);
   }
 
+  std::size_t
+  size()
+  const noexcept
+  {
+    return size_;
+  }
+
+  std::size_t&
+  size()
+  noexcept
+  {
+    return size_;
+  }
+
 private:
 
   /// @brief This repair's unique identifier.
