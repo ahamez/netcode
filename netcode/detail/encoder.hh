@@ -29,17 +29,25 @@ public:
   operator()( repair& repair, source_list::const_iterator src_cit
             , source_list::const_iterator src_end)
   {
-    assert(src_cit != src_end);
+    assert(src_cit != src_end && "Empty source list");
 
     /// @todo Encode the sizes of the sources.
 
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
     repair.buffer().resize(src_cit->buffer().size());
 
+    // Add the current source id to the list of encoded sources by this repair.
     repair.source_ids().emplace_back(src_cit->id());
+
+    // The coefficient for this repair and source.
+    auto coeff = coefficient(gf_, repair.id(), src_cit->id());
+
     // Only multiply for the first source, no need to add with repair.
     gf_.multiply( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
-                , coefficient(gf_, repair.id(), src_cit->id()));
+                , coeff);
+
+    // Initialize the user's size.
+    repair.size() = gf_.multiply(coeff, static_cast<std::uint32_t>(src_cit->user_size()));
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
@@ -51,9 +59,18 @@ public:
         repair.buffer().resize(src_cit->buffer().size());
       }
 
+      // The coefficient for this repair and source.
+      coeff = coefficient(gf_, repair.id(), src_cit->id());
+
+      // Add the current source id to the list of encoded sources by this repair.
       repair.source_ids().emplace_back(src_cit->id());
+
+      // Multiply and add for all following sources.
       gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
-                      , coefficient(gf_, repair.id(), src_cit->id()));
+                      , coeff);
+
+      // Finally, add the user size.
+      repair.size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src_cit->user_size()));
     }
   }
 
