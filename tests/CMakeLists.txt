@@ -9,6 +9,7 @@ set(SOURCES
    netcode/detail/test_square_matrix.cc
    netcode/test_decoder.cc
    netcode/test_encoder.cc
+   netcode/test_reconstruction.cc
    netcode/test_symbol.cc
    )
 
