@@ -148,7 +148,7 @@ struct simple final
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
-    buffer.reserve(sz);
+    buffer.reserve(make_multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 
     return {id, std::move(ids), std::move(buffer)};
@@ -210,7 +210,7 @@ struct simple final
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(sz);
+    buffer.reserve(make_multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 
     return {id, std::move(buffer), user_sz};
