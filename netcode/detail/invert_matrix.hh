@@ -13,7 +13,7 @@ namespace ntc { namespace detail {
 /// @internal
 /// @brief Invert a matrix using a Galois fiels.
 /// @attention @p mat will be overwritten
-/// @note This is the algorithm provided by jerasure (http://jerasure.org)
+/// @note This is the algorithm provided by jerasure ( http://jerasure.org )
 /// @related square_matrix
 inline
 std::size_t

@@ -38,6 +38,7 @@
 		2B282BBC1AB8562E00640FF8 /* make_protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_protocol.hh; sourceTree = "<group>"; };
 		2B282BBD1AB8618800640FF8 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B282BBE1AB861C200640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
+		2B4977FE1AC4137500A76CF8 /* coefficient.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coefficient.hh; sourceTree = "<group>"; };
 		2B4E310A1AC0761C0002E97C /* square_matrix.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = square_matrix.hh; sourceTree = "<group>"; };
 		2B4E310B1AC07DA10002E97C /* galois_field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = galois_field.hh; sourceTree = "<group>"; };
 		2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_galois_field.cc; sourceTree = "<group>"; };
@@ -267,6 +268,7 @@
 				2BE319711AB237CA001AA9DF /* source.hh */,
 				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
 				2B7526921AB4ABE9008DEDAD /* types.hh */,
+				2B4977FE1AC4137500A76CF8 /* coefficient.hh */,
 			);
 			path = detail;
 			sourceTree = "<group>";

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
@@ -9,6 +10,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @internal
 /// @brief The component responsible for the encoding of @ref detail::repair.
 class encoder final
 {
@@ -37,7 +39,7 @@ public:
     repair.source_ids().emplace_back(src_cit->id());
     // Only multiply for the first source, no need to add with repair.
     gf_.multiply( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
-                , mk_coefficient(repair.id(), src_cit->id()));
+                , coefficient(gf_, repair.id(), src_cit->id()));
 
     // Then, for each remaining source, multiply it with a coefficient and add it with
     // current repair.
@@ -51,18 +53,11 @@ public:
 
       repair.source_ids().emplace_back(src_cit->id());
       gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()
-                      , mk_coefficient(repair.id(), src_cit->id()));
+                      , coefficient(gf_, repair.id(), src_cit->id()));
     }
   }
 
 private:
-
-  /// @brief Compute the coefficient for the repair being built.
-  std::uint32_t
-  mk_coefficient(std::uint32_t repair_id, std::uint32_t src)
-  {
-    return ((repair_id + 1) * (src + 1)) % gf_.size();
-  }
 
   /// @brief An implementation of Galois fields.
   detail::galois_field gf_;
