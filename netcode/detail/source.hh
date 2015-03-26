@@ -47,6 +47,14 @@ public:
     return symbol_buffer_;
   }
 
+  /// @brief Get the bytes of the symbol.
+  byte_buffer&
+  buffer()
+  noexcept
+  {
+    return symbol_buffer_;
+  }
+
   /// @brief Get the number of bytes really used by the user's symbol.
   std::size_t
   user_size()
