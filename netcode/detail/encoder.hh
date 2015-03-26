@@ -2,6 +2,7 @@
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
+#include "netcode/detail/multiple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
@@ -32,7 +33,7 @@ public:
     assert(src_cit != src_end && "Empty source list");
 
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
-    repair.buffer().resize(src_cit->buffer().size());
+    repair.buffer().resize(make_multiple(src_cit->buffer().size(), 16));
 
     // Add the current source id to the list of encoded sources by this repair.
     repair.source_ids().emplace_back(src_cit->id());
@@ -54,7 +55,7 @@ public:
       // The current repair's symbol buffer might be too small for the current source.
       if (src_cit->buffer().size() > repair.buffer().size())
       {
-        repair.buffer().resize(src_cit->buffer().size());
+        repair.buffer().resize(make_multiple(src_cit->buffer().size(), 16));
       }
 
       // The coefficient for this repair and source.
