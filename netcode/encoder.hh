@@ -34,7 +34,7 @@ public:
   /// @brief Constructor.
   template <typename Handler>
   encoder(Handler&& h, unsigned int code_rate, code_type type, protocol prot)
-    : encoder_{detail::encoder{8}}
+    : encoder_{8}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , type_{type}
     , current_source_id_{0}
