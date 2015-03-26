@@ -31,8 +31,6 @@ public:
   {
     assert(src_cit != src_end && "Empty source list");
 
-    /// @todo Encode the sizes of the sources.
-
     // Resize the repair's symbol buffer to fit the first source symbol buffer.
     repair.buffer().resize(src_cit->buffer().size());
 
