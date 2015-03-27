@@ -11,7 +11,14 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief Invert a matrix using a Galois fiels.
+/// @brief Compare this value with the result of detail::invert to know if inversion was successful.
+/// @related square_matrix
+static constexpr auto inverted_pos = std::numeric_limits<std::size_t>::max();
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @internal
+/// @brief Invert a matrix using a Galois field.
 /// @attention @p mat will be overwritten
 /// @note This is the algorithm provided by jerasure ( http://jerasure.org )
 /// @related square_matrix
@@ -134,7 +141,7 @@ noexcept
   }
 
   // Everything went OK.
-  return std::numeric_limits<std::size_t>::max();
+  return inverted_pos;
 }
 
 /*------------------------------------------------------------------------------------------------*/
