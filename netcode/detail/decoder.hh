@@ -2,6 +2,7 @@
 
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
+#include <vector>
 
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
@@ -51,22 +52,22 @@ public:
     callback_(src);
 
     // First, look for all repairs that contain this incoming source in order to remove it.
-    const auto search_range = missing_sources_.equal_range(src.id());
-    for (auto cit = search_range.first; cit != search_range.second; ++cit)
+    const auto search = missing_sources_.find(src.id());
+    if (search != missing_sources_.end())
     {
-      // A reference to the current repair.
-      auto& r = *cit->second;
-
-      remove_source_from_repair(src, r);
-
-      if (r.source_ids().size() == 1)
+      for (auto r_ptr : search->second)
       {
-        // Create missing source and give it back to the decoder.
-        (*this)(create_source_from_repair(r));
+        remove_source_from_repair(src, *r_ptr);
 
-        // Source reconstructed, we can now safely erase the current repair as it is no longer
-        // useful.
-        repairs_.erase(r.id());
+        if (r_ptr->source_ids().size() == 1)
+        {
+          // Create missing source and give it back to the decoder.
+          (*this)(create_source_from_repair(*r_ptr));
+
+          // Source reconstructed, we can now safely erase the current repair as it is no longer
+          // useful.
+          repairs_.erase(r_ptr->id());
+        }
       }
     }
 
@@ -134,7 +135,15 @@ public:
       else
       {
         // Link this repair with the missing sources it references.
-        missing_sources_.emplace(*id_rcit, r_ptr);
+        auto search_src_id = missing_sources_.find(*id_rcit);
+        if (search_src_id == missing_sources_.end())
+        {
+          missing_sources_.emplace(*id_rcit, std::vector<repair*>{r_ptr});
+        }
+        else
+        {
+          search_src_id->second.emplace_back(r_ptr);
+        }
       }
     }
     assert(not r_ptr->source_ids().empty());
@@ -235,16 +244,18 @@ public:
     boost::container::flat_set<std::uint32_t> repairs_to_erase;
     for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
-      const auto& r = *cit->second;
-      assert(not r.source_ids().empty());
-      assert(    (r.source_ids().front() < id and r.source_ids().back() < id)
-              or (r.source_ids().front() >= id and r.source_ids().back() >= id)
-            );
-      if (r.source_ids().back() < id)
+      for (const auto& r_ptr : cit->second)
       {
-        // We found a repair for which all encoded sources have an identifier smaller than id,
-        // thus it is outdated.
-        repairs_to_erase.insert(r.id());
+        assert(not r_ptr->source_ids().empty());
+        assert(    (r_ptr->source_ids().front() < id and r_ptr->source_ids().back() < id)
+                or (r_ptr->source_ids().front() >= id and r_ptr->source_ids().back() >= id)
+              );
+        if (r_ptr->source_ids().back() < id)
+        {
+          // We found a repair for which all encoded sources have an identifier smaller than id,
+          // thus it is outdated.
+          repairs_to_erase.insert(r_ptr->id());
+        }
       }
     }
 
@@ -273,7 +284,7 @@ public:
   }
 
   /// @brief Get the current set of missing sources,
-  const boost::container::flat_multimap<std::uint32_t, repair*>&
+  const boost::container::flat_map<std::uint32_t, std::vector<repair*>>&
   missing_sources()
   const noexcept
   {
@@ -303,7 +314,7 @@ private:
   boost::container::flat_map<std::uint32_t, source> sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  boost::container::flat_multimap<std::uint32_t, repair*> missing_sources_;
+  boost::container::flat_map<std::uint32_t, std::vector<repair*>> missing_sources_;
 
   ///
   std::size_t nb_useless_repairs_;
