@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <memory>    // unique_ptr
 
 #include "netcode/detail/decoder.hh"
@@ -30,10 +31,11 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  decoder(Handler&& h, unsigned int ack_rate, code_type type, protocol prot)
+  decoder(Handler&& h, code_type type, protocol prot)
     : type_{type}
     , ack_{}
-    , ack_rate_{ack_rate}
+    , ack_frequency_{100 /*ms*/}
+    , last_ack_date_(std::chrono::steady_clock::now())
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
@@ -47,11 +49,8 @@ public:
 
   /// @brief Constructor for a systematic decoder using the simple protocol.
   template <typename Handler>
-  decoder(Handler&& h, unsigned int ack_rate)
-    : decoder{ std::forward<Handler>(h)
-             , ack_rate
-             , code_type::systematic
-             , protocol::simple}
+  decoder(Handler&& h)
+    : decoder{std::forward<Handler>(h), code_type::systematic, protocol::simple}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -87,7 +86,7 @@ public:
 private:
 
   /// @brief Notify the encoder that some data has been received.
-  /// @return false if the data could not have been decoded, true otherwise.
+  /// @return false if the data could not have been read, true otherwise.
   bool
   notify_impl(const char* data)
   {
@@ -134,14 +133,23 @@ private:
     detail::insertion_sort(ack_.source_ids(), src_id);
 
     // Do we need to send an ack?
-    if ((nb_received_repairs_ + nb_received_sources_ + nb_handled_sources_) % ack_rate_ == 0)
+    const auto now = std::chrono::steady_clock::now();
+    if ((now - last_ack_date_) >= ack_frequency_)
     {
-      // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
-      serializer_->write_ack(ack_);
-
-      // Start a fresh new ack.
-      ack_.reset();
+      send_ack();
+      last_ack_date_ = now;
     }
+  }
+
+  /// @brief Force the sending an ack.
+  void
+  send_ack()
+  {
+    // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
+    serializer_->write_ack(ack_);
+
+    // Start a fresh new ack.
+    ack_.reset();
   }
 
 private:
@@ -152,8 +160,12 @@ private:
   /// @brief Re-use the same memory to prepare an ack packet.
   detail::ack ack_;
 
-  /// @brief The number of source packets to receive before sending an ack packet.
-  unsigned int ack_rate_;
+  /// @brief The frequency of sent ack.
+  /// @note It's a lower bound, the maximal bound is not guaranteed.
+  std::chrono::milliseconds ack_frequency_;
+
+  /// @brief The last time an ack was sent.
+  std::chrono::steady_clock::time_point last_ack_date_;
 
   /// @brief The counter of received repairs.
   std::size_t nb_received_repairs_;

@@ -29,7 +29,7 @@ struct dummy_handler
 
 TEST_CASE("Decoder construction", "[decoder]")
 {
-  ntc::decoder decoder{dummy_handler{}, 10u};
+  ntc::decoder decoder{dummy_handler{}};
 }
 
 /*------------------------------------------------------------------------------------------------*/
