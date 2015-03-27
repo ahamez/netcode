@@ -4,8 +4,8 @@
 #include <cassert>
 #include <vector>
 
-#include <boost/container/map.hpp>
 #include <boost/container/flat_set.hpp>
+#include <boost/container/map.hpp>
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
