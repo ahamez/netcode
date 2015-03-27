@@ -2,8 +2,9 @@
 
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
-#include <map>
-#include <set>
+
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
@@ -231,7 +232,7 @@ public:
 
     // Then, remove repairs which references this id.
     // We can't delete repairs on the fly as they are referenced by several missing sources.
-    std::set<std::uint32_t> repairs_to_erase;
+    boost::container::flat_set<std::uint32_t> repairs_to_erase;
     for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
       const auto& r = *cit->second;
@@ -256,7 +257,7 @@ public:
   }
 
   /// @brief Get the current set of repairs, indexed by identifier.
-  const std::map<std::uint32_t, repair>&
+  const boost::container::flat_map<std::uint32_t, repair>&
   repairs()
   const noexcept
   {
@@ -264,7 +265,7 @@ public:
   }
 
   /// @brief Get the current set of sources, indexed by identifier.
-  const std::map<std::uint32_t, source>&
+  const boost::container::flat_map<std::uint32_t, source>&
   sources()
   const noexcept
   {
@@ -272,7 +273,7 @@ public:
   }
 
   /// @brief Get the current set of missing sources,
-  const std::multimap<std::uint32_t, repair*>&
+  const boost::container::flat_multimap<std::uint32_t, repair*>&
   missing_sources()
   const noexcept
   {
@@ -296,13 +297,13 @@ private:
   std::function<void(const source&)> callback_;
 
   /// @brief The set of received repairs.
-  std::map<std::uint32_t, repair> repairs_;
+  boost::container::flat_map<std::uint32_t, repair> repairs_;
 
   /// @brief The set of received sources.
-  std::map<std::uint32_t, source> sources_;
+  boost::container::flat_map<std::uint32_t, source> sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  std::multimap<std::uint32_t, repair*> missing_sources_;
+  boost::container::flat_multimap<std::uint32_t, repair*> missing_sources_;
 
   ///
   std::size_t nb_useless_repairs_;
