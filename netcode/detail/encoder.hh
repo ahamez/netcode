@@ -12,7 +12,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief The component responsible for the encoding of @ref detail::repair.
+/// @brief The component responsible for the encoding of detail::repair.
 class encoder final
 {
 public:
@@ -75,7 +75,7 @@ public:
 
 private:
 
-  /// @brief An implementation of Galois fields.
+  /// @brief The implementation of a Galois field.
   detail::galois_field gf_;
 };
 
