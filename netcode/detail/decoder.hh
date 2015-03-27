@@ -274,9 +274,21 @@ public:
     // First, find the upper bound of missing sources with an identifier smaller than id.
     const auto missing_lb = missing_sources_.lower_bound(id);
 
+    // We need a total order on repairs_set_type::iterator.
+    struct cmp
+    {
+      bool
+      operator()(const repairs_set_type::iterator& lhs, const repairs_set_type::iterator& rhs)
+      const noexcept
+      {
+        return lhs->first < rhs->first;
+      }
+    };
+
     // Then, remove repairs which references this id.
-    // We can't delete repairs on the fly as they are referenced by several missing sources.
-    boost::container::flat_set<repairs_set_type::iterator> repairs_to_erase;
+    // We can't delete repairs on the fly as they are referenced by several other missing sources.
+    boost::container::flat_set<repairs_set_type::iterator, cmp> repairs_to_erase;
+    repairs_to_erase.reserve(32);
     for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
       for (const auto& r_cit : cit->second)
@@ -319,7 +331,7 @@ public:
     return sources_;
   }
 
-  /// @brief Get the current set of missing sources,
+  /// @brief Get the current set of missing sources.
   const missing_sources_type&
   missing_sources()
   const noexcept
@@ -360,7 +372,6 @@ private:
 
   /// @brief Re-use the same memory for the inverted matrix of coefficients.
   square_matrix inv_;
-
 };
 
 /*------------------------------------------------------------------------------------------------*/
