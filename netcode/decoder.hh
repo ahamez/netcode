@@ -141,7 +141,7 @@ private:
     }
   }
 
-  /// @brief Force the sending an ack.
+  /// @brief Force the sending of an ack.
   void
   send_ack()
   {

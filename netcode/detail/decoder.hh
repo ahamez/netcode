@@ -69,8 +69,7 @@ public:
     const auto src_id = src.id(); // to force evaluation order in the following call.
     sources_.emplace(src_id, std::move(src));
 
-    /// @todo Check that it's possible to combine several repairs in order to reconstruct
-    /// missing sources.
+    attempt_full_decoding();
   }
 
   /// @brief What to do when a repair is received.
@@ -83,6 +82,10 @@ public:
 
     // Remove sources with an id smaller than the smallest the current repair encodes.
     drop_old_sources(r.source_ids().front());
+
+    // Remove repairs which encodes sources with an id smaller than the smallest the current repair
+    /// encodes.
+    drop_old_repairs(r.source_ids().front());
 
     /// Check if r is useless. Indeed, if all sources it references were correctly received, then
     /// it's useless to remove them from this repair, which is a costly operation.
@@ -145,8 +148,17 @@ public:
       return;
     }
 
-    /// @todo Check that it's possible to combine several repairs in order to reconstruct
-    /// missing sources.
+    attempt_full_decoding();
+  }
+
+  /// @brief Try to construct missing sources from the set of repairs.
+  void
+  attempt_full_decoding()
+  {
+    if (repairs_.empty())
+    {
+      return;
+    }
   }
 
   /// @brief Decode a source contained in a repair.
@@ -218,6 +230,35 @@ public:
         ++cit;
         missing_sources_.erase(to_erase->first);
         sources_.erase(to_erase);
+      }
+      else
+      {
+        ++cit;
+      }
+    }
+  }
+
+  /// @brief Drop repairs which encode sources with id smaller than @p id.
+  void
+  drop_old_repairs(std::uint32_t id)
+  noexcept
+  {
+    // Maybe not the smartest way to do it, we have to iterate _all_ repairs. Maybe we should use
+    // a different container (Boost.MultiIndex, std::set, etc.).
+    for (auto cit = begin(repairs_), cend = end(repairs_); cit != cend;)
+    {
+      if (cit->second.source_ids().back() < id)
+      {
+#ifdef DEBUG
+        const auto& r = cit->second;
+        for (const auto src_id : r.source_ids())
+        {
+          assert(missing_sources().count(src_id) == 0);
+        }
+#endif
+        const auto to_erase = cit;
+        ++cit;
+        repairs_.erase(to_erase);
       }
       else
       {
