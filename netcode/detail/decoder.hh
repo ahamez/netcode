@@ -4,7 +4,7 @@
 #include <cassert>
 #include <vector>
 
-#include <boost/container/flat_map.hpp>
+#include <boost/container/map.hpp>
 #include <boost/container/flat_set.hpp>
 
 #include "netcode/detail/coefficient.hh"
@@ -26,15 +26,14 @@ class decoder final
 public:
 
   /// @brief
-  using repairs_set_type = boost::container::flat_map<std::uint32_t, repair>;
+  using repairs_set_type = boost::container::map<std::uint32_t, repair>;
 
   /// @brief
-  using sources_set_type = boost::container::flat_map<std::uint32_t, source>;
+  using sources_set_type = boost::container::map<std::uint32_t, source>;
 
   /// @brief
-  using missing_sources_type = boost::container::flat_map< std::uint32_t
-                                                         , std::vector<repairs_set_type::iterator>>;
-
+  using missing_sources_type = boost::container::map< std::uint32_t
+                                                    , std::vector<repairs_set_type::iterator>>;
 
   /// @brief
   decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
