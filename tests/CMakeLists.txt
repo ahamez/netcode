@@ -3,6 +3,7 @@ set(SOURCES
    netcode/detail/protocol/test_simple.cc
    netcode/detail/test_buffer.cc
    netcode/detail/test_decoder.cc
+   netcode/detail/test_encoder.cc
    netcode/detail/test_galois_field.cc
    netcode/detail/test_invert_matrix.cc
    netcode/detail/test_source_list.cc
