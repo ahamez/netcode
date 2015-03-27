@@ -2,6 +2,7 @@
 
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
+#include <map>
 #include <unordered_map>
 
 #include "netcode/detail/coefficient.hh"
@@ -25,7 +26,6 @@ public:
     , repairs_{}
     , sources_{}
     , missing_sources_{}
-    , first_non_decoded_source_{-1}
     , nb_useless_repairs_{0}
   {}
 
@@ -33,10 +33,18 @@ public:
   void
   operator()(source&& src)
   {
-//    if (src.id() <= first_non_decoded_source_)
-//    {
-//      return;
-//    }
+    if (sources_.count(src.id()))
+    {
+      // This source exists in the set of received sources.
+      return;
+    }
+
+    if (not missing_sources().empty() and src.id() < missing_sources_.begin()->first)
+    {
+      // This source has an id smaller than the id of the oldest missing source, thus it means
+      // that it was already decoded, received or abandoned.
+      return;
+    }
 
     // Notify netcode::encoder.
     callback_(src);
@@ -284,7 +292,7 @@ public:
   }
 
   /// @brief Get the current set of missing sources,
-  const std::unordered_multimap<std::uint32_t, repair*>&
+  const std::multimap<std::uint32_t, repair*>&
   missing_sources()
   const noexcept
   {
@@ -314,10 +322,7 @@ private:
   std::unordered_map<std::uint32_t, source> sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  std::unordered_multimap<std::uint32_t, repair*> missing_sources_;
-
-  ///
-  std::int64_t first_non_decoded_source_;
+  std::multimap<std::uint32_t, repair*> missing_sources_;
 
   ///
   std::size_t nb_useless_repairs_;
