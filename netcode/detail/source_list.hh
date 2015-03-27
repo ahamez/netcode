@@ -77,6 +77,14 @@ public:
     return sources_.cend();
   }
 
+  /// @brief Drop the first source.
+  void
+  pop_front()
+  noexcept
+  {
+    sources_.pop_front();
+  }
+
 private:
 
   /// @brief The real container of source packets.

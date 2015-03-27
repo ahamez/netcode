@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm> // is_sorted
+#include <limits>    // numeric_limits
 #include <memory>    // unique_ptr
 
 #include "netcode/detail/encoder.hh"
@@ -33,9 +34,10 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  encoder(Handler&& h, unsigned int code_rate, code_type type, protocol prot)
+  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code_type type, protocol prot)
     : encoder_{8}
     , rate_{code_rate == 0 ? 1 : code_rate}
+    , max_window_size_{max_window}
     , type_{type}
     , current_source_id_{0}
     , current_repair_id_{0}
@@ -53,9 +55,10 @@ public:
 
   /// @brief Constructor for a systematic encoder using the simple protocol.
   template <typename Handler>
-  encoder(Handler&& h, unsigned int code_rate)
+  encoder(Handler&& h, std::size_t code_rate)
     : encoder{ std::forward<Handler>(h)
              , code_rate
+             , std::numeric_limits<std::size_t>::max()
              , code_type::systematic
              , protocol::simple}
   {}
@@ -130,7 +133,7 @@ public:
   }
 
   /// @brief Get the code rate.
-  unsigned int
+  std::size_t
   rate()
   const noexcept
   {
@@ -138,7 +141,7 @@ public:
   }
 
   /// @brief Set the code rate.
-  unsigned int&
+  std::size_t&
   rate()
   noexcept
   {
@@ -164,6 +167,11 @@ private:
   {
     assert(sym.buffer_.size() % 16 == 0 && "symbol buffer size not a multiple of 16");
     assert(sym.user_size_ <= sym.buffer_.size() && "More bytes are used than the buffer can hold");
+
+    if (sources_.size() == max_window_size_)
+    {
+      sources_.pop_front();
+    }
 
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
@@ -229,7 +237,10 @@ private:
   detail::encoder encoder_;
 
   /// @brief The number of source packets to send before sending a repair packet.
-  unsigned int rate_;
+  std::size_t rate_;
+
+  /// @brief The maximum size the window is allowed to grow to.
+  std::size_t max_window_size_;
 
   /// @brief Is the encoder systematic?
   code_type type_;
