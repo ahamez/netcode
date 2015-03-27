@@ -124,9 +124,10 @@ public:
     for ( auto id_rcit = r_ptr->source_ids().rbegin(), end = r_ptr->source_ids().rend()
         ; id_rcit != end; ++id_rcit)
     {
-      if (sources_.count(*id_rcit))
+      const auto search = sources_.find(*id_rcit);
+      if (search != sources_.end())
       {
-        /// @todo remove src from r.
+        remove_source_from_repair(search->second /* source */, *r_ptr);
 
         // Get the 'normal' iterator corresponding to the current reverse iterator.
         // http://stackoverflow.com/a/1830240/21584
@@ -135,7 +136,7 @@ public:
       }
       else
       {
-        // Link this repair with the sources it references.
+        // Link this repair with the missing sources it references.
         missing_sources_.emplace(*id_rcit, r_ptr);
       }
     }
@@ -143,8 +144,14 @@ public:
 
     if (r_ptr->source_ids().size() == 1)
     {
-      // Create missing source and give it back to the decoder.
-      (*this)(create_source_from_repair(*r_ptr));
+      // Create missing source.
+      auto src = create_source_from_repair(*r_ptr);
+
+      // Source is no longer missing.
+      missing_sources_.erase(src.id());
+
+      // Give back the decode source to the decoder.
+      (*this)(std::move(src));
 
       // This repair is no longer needed.
       repairs_.erase(r_ptr->id());
@@ -179,7 +186,7 @@ public:
     return src;
   }
 
-  /// @brief
+  /// @brief Remove a source from a repair.
   void
   remove_source_from_repair(const source& src, repair& r)
   noexcept
