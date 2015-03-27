@@ -9,19 +9,34 @@
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
+#include "netcode/detail/invert_matrix.hh"
 #include "netcode/detail/multiple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
+#include "netcode/detail/square_matrix.hh"
 
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief The component responsible for the decoding of detail::source from detail::repair.
 class decoder final
 {
 public:
 
+  /// @brief
+  using repairs_set_type = boost::container::flat_map<std::uint32_t, repair>;
+
+  /// @brief
+  using sources_set_type = boost::container::flat_map<std::uint32_t, source>;
+
+  /// @brief
+  using missing_sources_type = boost::container::flat_map< std::uint32_t
+                                                         , std::vector<repairs_set_type::iterator>>;
+
+
+  /// @brief
   decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
     : gf_{galois_field_size}
     , callback_(h)
@@ -29,6 +44,8 @@ public:
     , sources_{}
     , missing_sources_{}
     , nb_useless_repairs_{0}
+    , coefficients_{16}
+    , inv_{16}
   {}
 
   /// @brief What to do when a source is received or decoded.
@@ -55,18 +72,19 @@ public:
     const auto search = missing_sources_.find(src.id());
     if (search != missing_sources_.end())
     {
-      for (auto r_ptr : search->second)
+      for (auto r_cit : search->second)
       {
-        remove_source_from_repair(src, *r_ptr);
+        auto& r = r_cit->second;
+        remove_source_from_repair(src, r);
 
-        if (r_ptr->source_ids().size() == 1)
+        if (r.source_ids().size() == 1)
         {
           // Create missing source and give it back to the decoder.
-          (*this)(create_source_from_repair(*r_ptr));
+          (*this)(create_source_from_repair(r));
 
           // Source reconstructed, we can now safely erase the current repair as it is no longer
           // useful.
-          repairs_.erase(r_ptr->id());
+          repairs_.erase(r_cit);
         }
       }
     }
@@ -84,20 +102,20 @@ public:
 
   /// @brief What to do when a repair is received.
   void
-  operator()(repair&& r)
+  operator()(repair&& incoming_r)
   {
     // By construction, the list of source identifiers should be sorted.
-    assert(not r.source_ids().empty());
-    assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
+    assert(not incoming_r.source_ids().empty());
+    assert(std::is_sorted(begin(incoming_r.source_ids()), end(incoming_r.source_ids())));
 
     // Remove sources with an id smaller than the smallest the current repair encodes.
     // Remove repairs which encodes sources with an id smaller than the smallest the current repair
     /// encodes.
-    drop_outdated(r.source_ids().front());
+    drop_outdated(incoming_r.source_ids().front());
 
-    /// Check if r is useless. Indeed, if all sources it references were correctly received, then
-    /// it's useless to remove them from this repair, which is a costly operation.
-    const auto useless = std::all_of( begin(r.source_ids()), end(r.source_ids())
+    /// Check if incoming_r is useless. Indeed, if all sources it references were correctly
+    /// received, then it's useless to remove them from this repair, which is a costly operation.
+    const auto useless = std::all_of( begin(incoming_r.source_ids()), end(incoming_r.source_ids())
                                     , [this](std::uint32_t src_id)
                                       {
                                         return sources_.count(src_id);
@@ -110,27 +128,28 @@ public:
     }
 
     // Add this repair to the set of known repairs.
-    const auto r_id = r.id(); // to force evaluation order in the following call.
-    const auto insertion = repairs_.emplace(r_id, std::move(r));
+    const auto r_id = incoming_r.id(); // to force evaluation order in the following call.
+    const auto insertion = repairs_.emplace(r_id, std::move(incoming_r));
     assert(insertion.second && "Repair with the same id already processed");
 
-    // Don't use r beyond this point (as it was moved into repairs_), instead use r_ptr.
-    auto* r_ptr = &insertion.first->second;
+    // Don't use incoming_r beyond this point (as it was moved into repairs_), instead use r.
+    auto r_cit = insertion.first;
+    auto& r = insertion.first->second;
 
     // Reverse loop as vector::erase() invalidates iterators past the one being erased.
-    for ( auto id_rcit = r_ptr->source_ids().rbegin(), end = r_ptr->source_ids().rend()
-        ; id_rcit != end; ++id_rcit)
+    for ( auto id_rcit = r.source_ids().rbegin(), end = r.source_ids().rend(); id_rcit != end
+        ; ++id_rcit)
     {
       const auto search = sources_.find(*id_rcit);
       if (search != sources_.end())
       {
         // The source has already been received.
-        remove_source_data_from_repair(search->second /* source */, *r_ptr);
+        remove_source_data_from_repair(search->second /* source */, r);
 
         // Get the 'normal' iterator corresponding to the current reverse iterator.
         // http://stackoverflow.com/a/1830240/21584
         const auto to_erase = std::next(id_rcit).base();
-        r_ptr->source_ids().erase(to_erase);
+        r.source_ids().erase(to_erase);
       }
       else
       {
@@ -138,20 +157,21 @@ public:
         auto search_src_id = missing_sources_.find(*id_rcit);
         if (search_src_id == missing_sources_.end())
         {
-          missing_sources_.emplace(*id_rcit, std::vector<repair*>{r_ptr});
+          missing_sources_.emplace( *id_rcit
+                                  , std::vector<repairs_set_type::iterator>{r_cit});
         }
         else
         {
-          search_src_id->second.emplace_back(r_ptr);
+          search_src_id->second.emplace_back(r_cit);
         }
       }
     }
-    assert(not r_ptr->source_ids().empty());
+    assert(not r.source_ids().empty());
 
-    if (r_ptr->source_ids().size() == 1)
+    if (r.source_ids().size() == 1)
     {
       // Create missing source.
-      auto src = create_source_from_repair(*r_ptr);
+      auto src = create_source_from_repair(r);
 
       // Source is no longer missing.
       missing_sources_.erase(src.id());
@@ -160,7 +180,7 @@ public:
       (*this)(std::move(src));
 
       // This repair is no longer needed.
-      repairs_.erase(r_ptr->id());
+      repairs_.erase(r_cit);
       return;
     }
 
@@ -171,9 +191,24 @@ public:
   void
   attempt_full_decoding()
   {
-    if (repairs_.empty())
+    if (repairs_.empty() or missing_sources_.empty())
     {
       return;
+    }
+
+    // Do we have enough repairs to try to decode missing sources?
+    if (missing_sources_.size() <= repairs().size())
+    {
+      // Build coefficient matrix.
+      coefficients_.resize(repairs_.size());
+
+      // Invert it.
+      inv_.resize(coefficients_.dimension());
+      const auto r_col = invert(gf_, coefficients_, inv_);
+      if (r_col != inverted_pos)
+      {
+        // Inversion failed, remove the faulty repair.
+      }
     }
   }
 
@@ -241,34 +276,35 @@ public:
 
     // Then, remove repairs which references this id.
     // We can't delete repairs on the fly as they are referenced by several missing sources.
-    boost::container::flat_set<std::uint32_t> repairs_to_erase;
+    boost::container::flat_set<repairs_set_type::iterator> repairs_to_erase;
     for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
-      for (const auto& r_ptr : cit->second)
+      for (const auto& r_cit : cit->second)
       {
-        assert(not r_ptr->source_ids().empty());
-        assert(    (r_ptr->source_ids().front() < id and r_ptr->source_ids().back() < id)
-                or (r_ptr->source_ids().front() >= id and r_ptr->source_ids().back() >= id)
+        const auto& r = r_cit->second;
+        assert(not r.source_ids().empty());
+        assert(    (r.source_ids().front() < id  and r.source_ids().back() < id)
+                or (r.source_ids().front() >= id and r.source_ids().back() >= id)
               );
-        if (r_ptr->source_ids().back() < id)
+        if (r.source_ids().back() < id)
         {
           // We found a repair for which all encoded sources have an identifier smaller than id,
           // thus it is outdated.
-          repairs_to_erase.insert(r_ptr->id());
+          repairs_to_erase.insert(r_cit);
         }
       }
     }
 
     sources_.erase(sources_.begin(), sources_.lower_bound(id));
     missing_sources_.erase(missing_sources_.begin(), missing_lb);
-    for (const auto repair_id : repairs_to_erase)
+    for (const auto r_cit : repairs_to_erase)
     {
-      repairs_.erase(repair_id);
+      repairs_.erase(r_cit);
     }
   }
 
   /// @brief Get the current set of repairs, indexed by identifier.
-  const boost::container::flat_map<std::uint32_t, repair>&
+  const repairs_set_type&
   repairs()
   const noexcept
   {
@@ -276,7 +312,7 @@ public:
   }
 
   /// @brief Get the current set of sources, indexed by identifier.
-  const boost::container::flat_map<std::uint32_t, source>&
+  const sources_set_type&
   sources()
   const noexcept
   {
@@ -284,7 +320,7 @@ public:
   }
 
   /// @brief Get the current set of missing sources,
-  const boost::container::flat_map<std::uint32_t, std::vector<repair*>>&
+  const missing_sources_type&
   missing_sources()
   const noexcept
   {
@@ -301,23 +337,30 @@ public:
 
 private:
 
-  ///
+  /// @brief The implementation of a Galois field.
   galois_field gf_;
 
   /// @brief The callback to call when a source has been decoded.
   std::function<void(const source&)> callback_;
 
   /// @brief The set of received repairs.
-  boost::container::flat_map<std::uint32_t, repair> repairs_;
+  repairs_set_type repairs_;
 
   /// @brief The set of received sources.
-  boost::container::flat_map<std::uint32_t, source> sources_;
+  sources_set_type sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  boost::container::flat_map<std::uint32_t, std::vector<repair*>> missing_sources_;
+  missing_sources_type missing_sources_;
 
-  ///
+  /// @brief The number of repairs which were dropped because they were useless.
   std::size_t nb_useless_repairs_;
+
+  /// @brief Re-use the same memory for the matrix of coefficients.
+  square_matrix coefficients_;
+
+  /// @brief Re-use the same memory for the inverted matrix of coefficients.
+  square_matrix inv_;
+
 };
 
 /*------------------------------------------------------------------------------------------------*/
