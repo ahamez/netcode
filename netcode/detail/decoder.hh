@@ -22,18 +22,18 @@ public:
   decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
     : gf_{galois_field_size}
     , callback_(h)
-    , sources_{}
     , repairs_{}
+    , sources_{}
     , missing_sources_{}
-    , latest_source_{-1}
+    , first_non_decoded_source_{-1}
+    , nb_useless_repairs_{0}
   {}
 
   /// @brief What to do when a source is received or decoded.
   void
   operator()(source&& src)
   {
-//    // Check if this source has already been received or decoded.
-//    if (src.id() <= latest_source_)
+//    if (src.id() <= first_non_decoded_source_)
 //    {
 //      return;
 //    }
@@ -78,26 +78,11 @@ public:
   operator()(repair&& r)
   {
     // By construction, the list of source identifiers should be sorted.
+    assert(not r.source_ids().empty());
     assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
 
     // Remove sources with an id smaller than the smallest the current repair encodes.
-    // Maybe not the smartest way to do it, we have to iterate _all_ sources. Maybe we should use
-    // a different container (Boost.MultiIndex, std::set, etc.).
-    const auto smallest_id = r.source_ids().front();
-    for (auto cit = begin(sources_), cend = end(sources_); cit != cend;)
-    {
-      if (cit->first < smallest_id)
-      {
-        const auto to_erase = cit;
-        ++cit;
-        missing_sources_.erase(to_erase->first);
-        sources_.erase(to_erase);
-      }
-      else
-      {
-        ++cit;
-      }
-    }
+    drop_old_sources(r.source_ids().front());
 
     /// Check if r is useless. Indeed, if all sources it references were correctly received, then
     /// it's useless to remove them from this repair, which is a costly operation.
@@ -109,6 +94,7 @@ public:
     if (useless)
     {
       // Drop repair.
+      ++nb_useless_repairs_;
       return;
     }
 
@@ -207,6 +193,61 @@ public:
     r.source_ids().erase(id_search);
   }
 
+  /// @brief Drop sources with an id smaller than @p id.
+  void
+  drop_old_sources(std::uint32_t id)
+  noexcept
+  {
+    // Maybe not the smartest way to do it, we have to iterate _all_ sources. Maybe we should use
+    // a different container (Boost.MultiIndex, std::set, etc.).
+    for (auto cit = begin(sources_), cend = end(sources_); cit != cend;)
+    {
+      if (cit->first < id)
+      {
+        const auto to_erase = cit;
+        ++cit;
+        missing_sources_.erase(to_erase->first);
+        sources_.erase(to_erase);
+      }
+      else
+      {
+        ++cit;
+      }
+    }
+  }
+
+  /// @brief Get the current set of repairs, indexed by identifier.
+  const std::unordered_map<std::uint32_t, repair>&
+  repairs()
+  const noexcept
+  {
+    return repairs_;
+  }
+
+  /// @brief Get the current set of sources, indexed by identifier.
+  const std::unordered_map<std::uint32_t, source>&
+  sources()
+  const noexcept
+  {
+    return sources_;
+  }
+
+  /// @brief Get the current set of missing sources,
+  const std::unordered_multimap<std::uint32_t, repair*>&
+  missing_sources()
+  const noexcept
+  {
+    return missing_sources_;
+  }
+
+  /// @brief Get the number of repairs that were dropped because they useless.
+  std::size_t
+  nb_useless_repairs()
+  const noexcept
+  {
+    return nb_useless_repairs_;
+  }
+
 private:
 
   ///
@@ -215,17 +256,20 @@ private:
   /// @brief The callback to call when a source has been decoded.
   std::function<void(const source&)> callback_;
 
-  /// @brief The set of received sources.
-  std::unordered_map<std::uint32_t, source> sources_;
-
   /// @brief The set of received repairs.
   std::unordered_map<std::uint32_t, repair> repairs_;
+
+  /// @brief The set of received sources.
+  std::unordered_map<std::uint32_t, source> sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   std::unordered_multimap<std::uint32_t, repair*> missing_sources_;
 
   ///
-  std::int64_t latest_source_;
+  std::int64_t first_non_decoded_source_;
+
+  ///
+  std::size_t nb_useless_repairs_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

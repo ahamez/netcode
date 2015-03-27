@@ -22,15 +22,12 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
   // Push the source.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  REQUIRE(sl.size() == 1);
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
-  REQUIRE(r0.source_ids().size() == 1);
-  REQUIRE(r0.source_ids()[0] == 0);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
@@ -58,7 +55,6 @@ TEST_CASE("Decoder: remove a source from a repair")
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
   sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
-  REQUIRE(sl.size() == 2);
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -106,11 +102,39 @@ TEST_CASE("Decoder: remove a source from a repair")
 
 TEST_CASE("Decoder: useless repair")
 {
+  detail::galois_field gf{8};
+
+  // Push two sources.
+  detail::source_list sl;
+  sl.emplace(0, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{}, 0);
+  sl.emplace(2, detail::byte_buffer{}, 0);
+  sl.emplace(3, detail::byte_buffer{}, 0);
+  sl.emplace(4, detail::byte_buffer{}, 0);
+
+  // A repair to store encoded sources
+  detail::repair r0{0 /* id */};
+
+  // We need an encoder to fill the repair.
+  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+
+  // Now test the decoder.
+  detail::decoder decoder{8, [](const detail::source&){}};
+  decoder(detail::source{0, detail::byte_buffer{}, 0});
+  decoder(detail::source{1, detail::byte_buffer{}, 0});
+  decoder(detail::source{2, detail::byte_buffer{}, 0});
+  decoder(detail::source{3, detail::byte_buffer{}, 0});
+  decoder(detail::source{4, detail::byte_buffer{}, 0});
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 5);
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+  REQUIRE(decoder.nb_useless_repairs() == 1);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder: one source lost encoded in one repair")
+TEST_CASE("Decoder: one source lost encoded in one received repair")
 {
   detail::galois_field gf{8};
 
@@ -120,15 +144,12 @@ TEST_CASE("Decoder: one source lost encoded in one repair")
   // Push the source.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  REQUIRE(sl.size() == 1);
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
-  REQUIRE(r0.source_ids().size() == 1);
-  REQUIRE(r0.source_ids()[0] == 0);
 
   // Now test the decoder.
   detail::decoder decoder{8, [&](const detail::source& s0)
@@ -136,7 +157,6 @@ TEST_CASE("Decoder: one source lost encoded in one repair")
                                   REQUIRE(s0.id() == 0);
                                   REQUIRE(s0.user_size() == s0_symbol.size());
                                   REQUIRE(std::equal( s0.buffer().begin()
-                                                     // The allocated buffer might be larger than the user size
                                                     , s0.buffer().begin() + s0.user_size()
                                                     , s0_symbol.begin()));
                                 }};
