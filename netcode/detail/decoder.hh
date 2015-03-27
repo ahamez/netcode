@@ -113,7 +113,8 @@ public:
       const auto search = sources_.find(*id_rcit);
       if (search != sources_.end())
       {
-        remove_source_from_repair(search->second /* source */, *r_ptr);
+        // The source has already been received.
+        remove_source_data_from_repair(search->second /* source */, *r_ptr);
 
         // Get the 'normal' iterator corresponding to the current reverse iterator.
         // http://stackoverflow.com/a/1830240/21584
@@ -172,9 +173,11 @@ public:
     return src;
   }
 
-  /// @brief Remove a source from a repair.
+  /// @brief Remove a source from a repair, but not the id from the list of source identifiers.
+  /// @attention The id of the removed src shall be removed from the repair's list of source
+  /// identifiers.
   void
-  remove_source_from_repair(const source& src, repair& r)
+  remove_source_data_from_repair(const source& src, repair& r)
   noexcept
   {
     assert(r.source_ids().size() > 1 && "Repair encodes only one source");
@@ -186,7 +189,14 @@ public:
 
     // Remove symbol.
     gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
+  }
 
+  /// @brief Remove a source from a repair.
+  void
+  remove_source_from_repair(const source& src, repair& r)
+  noexcept
+  {
+    remove_source_data_from_repair(src, r);
     // Remove src id of the list of the current repair source identifiers.
     const auto id_search = std::find(begin(r.source_ids()), end(r.source_ids()), src.id());
     assert(id_search != end(r.source_ids()) && "Source id not in current repair");

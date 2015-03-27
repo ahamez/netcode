@@ -134,6 +134,38 @@ TEST_CASE("Decoder: useless repair")
 
 /*------------------------------------------------------------------------------------------------*/
 
+TEST_CASE("Decoder: missing sources")
+{
+  detail::galois_field gf{8};
+
+  // Push two sources.
+  detail::source_list sl;
+  sl.emplace(0, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{}, 0);
+  sl.emplace(2, detail::byte_buffer{}, 0);
+  sl.emplace(3, detail::byte_buffer{}, 0);
+  sl.emplace(4, detail::byte_buffer{}, 0);
+
+  // A repair to store encoded sources
+  detail::repair r0{0 /* id */};
+
+  // We need an encoder to fill the repair.
+  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+
+  // Now test the decoder.
+  detail::decoder decoder{8, [](const detail::source&){}};
+  decoder(detail::source{0, detail::byte_buffer{}, 0});
+  decoder(detail::source{2, detail::byte_buffer{}, 0});
+  decoder(detail::source{4, detail::byte_buffer{}, 0});
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 3);
+  REQUIRE(decoder.missing_sources().size() == 2);
+  REQUIRE(decoder.repairs().size() == 1);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 TEST_CASE("Decoder: one source lost encoded in one received repair")
 {
   detail::galois_field gf{8};
