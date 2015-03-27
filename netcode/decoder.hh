@@ -36,10 +36,10 @@ public:
     , ack_rate_{ack_rate}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
-    , nb_decoded_sources_{0}
+    , nb_handled_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , serializer_{mk_protocol(prot, *handler_)}
-    , decoder_{[this](const detail::source& src){source_decoded(src);}}
+    , decoder_{8, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
@@ -105,13 +105,8 @@ private:
       case detail::packet_type::source:
       {
         nb_received_sources_ += 1;
-        auto src = serializer_->read_source(data);
-        // Ask user to read the bytes of this new source.
-        handler_->on_ready_symbol(src.user_size(), src.buffer().data());
-        // Send an ack if necessary.
-        ack(src.id());
         // Give the decoder this received source.
-        decoder_(std::move(src));
+        decoder_(serializer_->read_source(data));
         return true;
       }
 
@@ -119,11 +114,11 @@ private:
     }
   }
 
-  /// @brief Callback given to the real encoder to be notify when a source has been decoded.
+  /// @brief Callback given to the real encoder to be notify when a source is processed.
   void
-  source_decoded(const detail::source& src)
+  handle_source(const detail::source& src)
   {
-    nb_decoded_sources_ += 1;
+    nb_handled_sources_ += 1;
 
     // Ask user to read the bytes of this new source.
     handler_->on_ready_symbol(src.user_size(), src.buffer().data());
@@ -139,7 +134,7 @@ private:
     detail::insertion_sort(ack_.source_ids(), src_id);
 
     // Do we need to send an ack?
-    if ((nb_received_repairs_ + nb_received_sources_ + nb_decoded_sources_) % ack_rate_ == 0)
+    if ((nb_received_repairs_ + nb_received_sources_ + nb_handled_sources_) % ack_rate_ == 0)
     {
       // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
       serializer_->write_ack(ack_);
@@ -167,7 +162,7 @@ private:
   std::size_t nb_received_sources_;
 
   /// @brief The counter of decoded sources.
-  std::size_t nb_decoded_sources_;
+  std::size_t nb_handled_sources_;
 
   /// @brief The user's handler for various callbacks.
   std::unique_ptr<detail::handler_base> handler_;

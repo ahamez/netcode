@@ -4,6 +4,7 @@
 #include <cassert>
 #include <unordered_map>
 
+#include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 
@@ -16,8 +17,9 @@ class decoder final
 {
 public:
 
-  decoder(std::function<void(const source&)> h)
-    : callback_(h)
+  decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
+    : gf_{galois_field_size}
+    , callback_(h)
     , sources_{}
     , repairs_{}
     , missing_sources_{}
@@ -27,6 +29,8 @@ public:
   void
   operator()(source&& src)
   {
+    callback_(src);
+
     // First, look for all repairs that contain this incoming source in order to remove it
     // from these repairs.
     const auto search_range = missing_sources_.equal_range(src.id());
