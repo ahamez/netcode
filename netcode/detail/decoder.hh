@@ -4,7 +4,9 @@
 #include <cassert>
 #include <unordered_map>
 
+#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
+#include "netcode/detail/multiple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 
@@ -23,56 +25,58 @@ public:
     , sources_{}
     , repairs_{}
     , missing_sources_{}
+    , latest_source_{-1}
   {}
 
-  /// @todo Make sure we handle duplicate sources.
+  /// @brief What to do when a source is received or decoded.
   void
   operator()(source&& src)
   {
+//    // Check if this source has already been received or decoded.
+//    if (src.id() <= latest_source_)
+//    {
+//      return;
+//    }
+
+    // Notify netcode::encoder.
     callback_(src);
 
-    // First, look for all repairs that contain this incoming source in order to remove it
-    // from these repairs.
+    // First, look for all repairs that contain this incoming source in order to remove it.
     const auto search_range = missing_sources_.equal_range(src.id());
     for (auto cit = search_range.first; cit != search_range.second; ++cit)
     {
       // A reference to the current repair.
       auto& r = *cit->second;
 
-      /// @todo remove src from r.
-
-      // Remove src id of the list of the current repair source identifiers.
-      const auto id_search = std::find(begin(r.source_ids()), end(r.source_ids()), src.id());
-      assert(id_search != end(r.source_ids()) && "Source id not in current repair");
-      r.source_ids().erase(id_search);
+      remove_source_from_repair(src, r);
 
       if (r.source_ids().size() == 1)
       {
-        /// @todo handle repair with only one source.
+        // Create missing source and give it back to the decoder.
+        (*this)(create_source_from_repair(r));
 
         // Source reconstructed, we can now safely erase the current repair as it is no longer
         // useful.
         repairs_.erase(r.id());
       }
-
-      /// @todo Check that it's possible to combine several repairs in order to reconstruct
-      /// missing sources.
     }
 
     // Now, there are no more repairs that reference the current source, thus we now update the
     // mapping src -> repairs.
     missing_sources_.erase(src.id());
 
-    // Finally, insert this new source in the set of known sources.
+    // Finally, insert-move this new source in the set of known sources.
     const auto src_id = src.id(); // to force evaluation order in the following call.
     sources_.emplace(src_id, std::move(src));
+
+    /// @todo Check that it's possible to combine several repairs in order to reconstruct
+    /// missing sources.
   }
 
+  /// @brief What to do when a repair is received.
   void
   operator()(repair&& r)
   {
-    /// @todo Call callback_() when a source has been decoded.
-
     // By construction, the list of source identifiers should be sorted.
     assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
 
@@ -139,8 +143,10 @@ public:
 
     if (r_ptr->source_ids().size() == 1)
     {
-      /// @todo handle repair with only one source.
+      // Create missing source and give it back to the decoder.
+      (*this)(create_source_from_repair(*r_ptr));
 
+      // This repair is no longer needed.
       repairs_.erase(r_ptr->id());
       return;
     }
@@ -149,7 +155,55 @@ public:
     /// missing sources.
   }
 
+  /// @brief Decode a source contained in a repair.
+  /// @attention @p r shall encode exactly one source.
+  source
+  create_source_from_repair(const repair& r)
+  noexcept
+  {
+    assert(r.source_ids().size() == 1 && "Repair encodes more that 1 source");
+    const auto src_id = r.source_ids().front();
+
+    // The inverse of the coefficient which was used to encode the missing source.
+    const auto inv = gf_.divide(1, coefficient(gf_, r.id(), src_id));
+
+    // Reconstruct size.
+    const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.size()), inv);
+
+    // The source that will be reconstructed.
+    source src{src_id, byte_buffer(make_multiple(src_sz, 16)), src_sz};
+
+    // Reconstruct missing source.
+    gf_.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
+
+    return src;
+  }
+
+  /// @brief
+  void
+  remove_source_from_repair(const source& src, repair& r)
+  noexcept
+  {
+    assert(r.source_ids().size() > 1 && "Repair encodes only one source");
+
+    const auto coeff = coefficient(gf_, r.id(), src.id());
+
+    // Remove source size.
+    r.size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
+
+    // Remove symbol.
+    gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
+
+    // Remove src id of the list of the current repair source identifiers.
+    const auto id_search = std::find(begin(r.source_ids()), end(r.source_ids()), src.id());
+    assert(id_search != end(r.source_ids()) && "Source id not in current repair");
+    r.source_ids().erase(id_search);
+  }
+
 private:
+
+  ///
+  galois_field gf_;
 
   /// @brief The callback to call when a source has been decoded.
   std::function<void(const source&)> callback_;
@@ -162,6 +216,9 @@ private:
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   std::unordered_multimap<std::uint32_t, repair*> missing_sources_;
+
+  ///
+  std::int64_t latest_source_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
