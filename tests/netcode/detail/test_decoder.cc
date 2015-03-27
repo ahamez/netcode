@@ -118,7 +118,7 @@ TEST_CASE("Decoder: useless repair")
   decoder(detail::source{4, detail::byte_buffer{}, 0});
   decoder(std::move(r0));
   REQUIRE(decoder.sources().size() == 5);
-  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.missing_sources().empty());
   REQUIRE(decoder.repairs().size() == 0);
   REQUIRE(decoder.nb_useless_repairs() == 1);
 }
@@ -155,7 +155,7 @@ TEST_CASE("Decoder: missing sources")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder: drop old sources")
+TEST_CASE("Decoder: drop outdated sources")
 {
   // We need an encoder to fill repairs.
   detail::encoder encoder{8};
@@ -166,6 +166,7 @@ TEST_CASE("Decoder: drop old sources")
   // Send some sources to the decoder.
   decoder(detail::source{0, detail::byte_buffer{}, 0});
   decoder(detail::source{1, detail::byte_buffer{}, 0});
+  REQUIRE(decoder.sources().size() == 2);
 
   // Now create a repair that acknowledges the 2 first sources.
   detail::source_list sl;
@@ -183,9 +184,9 @@ TEST_CASE("Decoder: drop old sources")
     // Now test the decoder.
     REQUIRE(decoder.sources().size() == 0);
     REQUIRE(decoder.missing_sources().size() == 3);
-    REQUIRE(decoder.missing_sources().find(2) != decoder.missing_sources().end());
-    REQUIRE(decoder.missing_sources().find(3) != decoder.missing_sources().end());
-    REQUIRE(decoder.missing_sources().find(4) != decoder.missing_sources().end());
+    REQUIRE(decoder.missing_sources().count(2));
+    REQUIRE(decoder.missing_sources().count(3));
+    REQUIRE(decoder.missing_sources().count(4));
     REQUIRE(decoder.repairs().size() == 1);
     REQUIRE(decoder.nb_useless_repairs() == 0);
   }
@@ -202,12 +203,80 @@ TEST_CASE("Decoder: drop old sources")
 
     // Now test the decoder.
     REQUIRE(decoder.sources().size() == 3);
-    REQUIRE(decoder.sources().find(2) != decoder.sources().end());
-    REQUIRE(decoder.sources().find(3) != decoder.sources().end());
-    REQUIRE(decoder.sources().find(4) != decoder.sources().end());
+    REQUIRE(decoder.sources().count(2));
+    REQUIRE(decoder.sources().count(3));
+    REQUIRE(decoder.sources().count(4));
     REQUIRE(decoder.missing_sources().size() == 0);
     REQUIRE(decoder.repairs().size() == 0);
     REQUIRE(decoder.nb_useless_repairs() == 1);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: drop outdated lost sources")
+{
+  // We need an encoder to fill repairs.
+  detail::encoder encoder{8};
+
+  // The decoder to test
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // A repair with the first 2 sources.
+  detail::source_list sl0;
+  sl0.emplace(0, detail::byte_buffer{}, 0);
+  sl0.emplace(1, detail::byte_buffer{}, 0);
+  detail::repair r0{0};
+  encoder(r0, sl0.cbegin(), sl0.cend());
+
+  // First 2 sources are lost.
+  decoder(std::move(r0));
+  REQUIRE(decoder.missing_sources().size() == 2);
+  REQUIRE(decoder.missing_sources().count(0));
+  REQUIRE(decoder.missing_sources().count(1));
+  REQUIRE(decoder.repairs().count(0));
+  REQUIRE(decoder.repairs().find(0)->second.source_ids().size() > 0);
+
+  // Now create a repair that drops the 2 first sources due to a limited window size.
+  detail::source_list sl1;
+  sl1.emplace(2, detail::byte_buffer{}, 0);
+  sl1.emplace(3, detail::byte_buffer{}, 0);
+  detail::repair r1{1};
+  encoder(r1, sl1.cbegin(), sl1.cend());
+
+  SECTION("sources lost")
+  {
+    // Send repair.
+    decoder(std::move(r1));
+
+    // Now test the decoder.
+    REQUIRE(decoder.sources().empty());
+    // s2 and s3 are missing.
+    REQUIRE(decoder.missing_sources().size() == 2);
+    REQUIRE(decoder.missing_sources().count(2));
+    REQUIRE(decoder.missing_sources().count(3));
+    // r0 should have been dropped.
+    REQUIRE(decoder.repairs().size() == 1);
+    REQUIRE(decoder.nb_useless_repairs() == 0);
+  }
+
+  SECTION("sources received")
+  {
+    // Send sources
+    decoder(detail::source{2, detail::byte_buffer{}, 0});
+    decoder(detail::source{3, detail::byte_buffer{}, 0});
+
+    // Send repair.
+    decoder(std::move(r1));
+
+    // Now test the decoder.
+    REQUIRE(decoder.sources().size() == 2);
+    REQUIRE(decoder.sources().count(2));
+    REQUIRE(decoder.sources().count(3));
+    REQUIRE(decoder.missing_sources().empty());
+    REQUIRE(decoder.nb_useless_repairs() == 1);
+    // r0 should have been dropped and r1 is useless
+    REQUIRE(decoder.repairs().size() == 0);
   }
 }
 

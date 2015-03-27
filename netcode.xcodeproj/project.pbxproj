@@ -303,11 +303,11 @@
 				2BE319881AB32E6D001AA9DF /* protocol */,
 				2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */,
 				2B282BBE1AB861C200640FF8 /* test_decoder.cc */,
+				2B2A96261AC59120001B8F66 /* test_encoder.cc */,
 				2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */,
+				2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */,
 				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 				2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */,
-				2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */,
-				2B2A96261AC59120001B8F66 /* test_encoder.cc */,
 			);
 			path = detail;
 			sourceTree = "<group>";

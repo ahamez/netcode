@@ -3,7 +3,7 @@
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
 #include <map>
-#include <unordered_map>
+#include <set>
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
@@ -89,11 +89,9 @@ public:
     assert(std::is_sorted(begin(r.source_ids()), end(r.source_ids())));
 
     // Remove sources with an id smaller than the smallest the current repair encodes.
-    drop_old_sources(r.source_ids().front());
-
     // Remove repairs which encodes sources with an id smaller than the smallest the current repair
     /// encodes.
-    drop_old_repairs(r.source_ids().front());
+    drop_outdated(r.source_ids().front());
 
     /// Check if r is useless. Indeed, if all sources it references were correctly received, then
     /// it's useless to remove them from this repair, which is a costly operation.
@@ -223,60 +221,42 @@ public:
     r.source_ids().erase(id_search);
   }
 
-  /// @brief Drop sources with an id smaller than @p id.
+  /// @brief Drop outdated sources and repairs.
   void
-  drop_old_sources(std::uint32_t id)
+  drop_outdated(std::uint32_t id)
   noexcept
   {
-    // Maybe not the smartest way to do it, we have to iterate _all_ sources. Maybe we should use
-    // a different container (Boost.MultiIndex, std::set, etc.).
-    for (auto cit = begin(sources_), cend = end(sources_); cit != cend;)
+    // First, find the upper bound of missing sources with an identifier smaller than id.
+    const auto missing_lb = missing_sources_.lower_bound(id);
+
+    // Then, remove repairs which references this id.
+    // We can't delete repairs on the fly as they are referenced by several missing sources.
+    std::set<std::uint32_t> repairs_to_erase;
+    for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
-      if (cit->first < id)
+      const auto& r = *cit->second;
+      assert(not r.source_ids().empty());
+      assert(    (r.source_ids().front() < id and r.source_ids().back() < id)
+              or (r.source_ids().front() >= id and r.source_ids().back() >= id)
+            );
+      if (r.source_ids().back() < id)
       {
-        const auto to_erase = cit;
-        ++cit;
-        missing_sources_.erase(to_erase->first);
-        sources_.erase(to_erase);
-      }
-      else
-      {
-        ++cit;
+        // We found a repair for which all encoded sources have an identifier smaller than id,
+        // thus it is outdated.
+        repairs_to_erase.insert(r.id());
       }
     }
-  }
 
-  /// @brief Drop repairs which encode sources with id smaller than @p id.
-  void
-  drop_old_repairs(std::uint32_t id)
-  noexcept
-  {
-    // Maybe not the smartest way to do it, we have to iterate _all_ repairs. Maybe we should use
-    // a different container (Boost.MultiIndex, std::set, etc.).
-    for (auto cit = begin(repairs_), cend = end(repairs_); cit != cend;)
+    sources_.erase(sources_.begin(), sources_.lower_bound(id));
+    missing_sources_.erase(missing_sources_.begin(), missing_lb);
+    for (const auto repair_id : repairs_to_erase)
     {
-      if (cit->second.source_ids().back() < id)
-      {
-#ifdef DEBUG
-        const auto& r = cit->second;
-        for (const auto src_id : r.source_ids())
-        {
-          assert(missing_sources().count(src_id) == 0);
-        }
-#endif
-        const auto to_erase = cit;
-        ++cit;
-        repairs_.erase(to_erase);
-      }
-      else
-      {
-        ++cit;
-      }
+      repairs_.erase(repair_id);
     }
   }
 
   /// @brief Get the current set of repairs, indexed by identifier.
-  const std::unordered_map<std::uint32_t, repair>&
+  const std::map<std::uint32_t, repair>&
   repairs()
   const noexcept
   {
@@ -284,7 +264,7 @@ public:
   }
 
   /// @brief Get the current set of sources, indexed by identifier.
-  const std::unordered_map<std::uint32_t, source>&
+  const std::map<std::uint32_t, source>&
   sources()
   const noexcept
   {
@@ -316,10 +296,10 @@ private:
   std::function<void(const source&)> callback_;
 
   /// @brief The set of received repairs.
-  std::unordered_map<std::uint32_t, repair> repairs_;
+  std::map<std::uint32_t, repair> repairs_;
 
   /// @brief The set of received sources.
-  std::unordered_map<std::uint32_t, source> sources_;
+  std::map<std::uint32_t, source> sources_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   std::multimap<std::uint32_t, repair*> missing_sources_;
