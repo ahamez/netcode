@@ -51,7 +51,7 @@ TEST_CASE("Decoder: remove a source from a repair")
   detail::byte_buffer s0_symbol{'a','b','c','d'};
   detail::byte_buffer s1_symbol{'e','f','g','h','i'};
 
-  // Push two sources.
+  // Push 2 sources.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
   sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
@@ -61,9 +61,6 @@ TEST_CASE("Decoder: remove a source from a repair")
 
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
-  REQUIRE(r0.source_ids().size() == 2);
-  REQUIRE(r0.source_ids()[0] == 0);
-  REQUIRE(r0.source_ids()[1] == 1);
 
   SECTION("Remove s0, we should be able to reconstruct s1")
   {
@@ -104,7 +101,7 @@ TEST_CASE("Decoder: useless repair")
 {
   detail::galois_field gf{8};
 
-  // Push two sources.
+  // Push 5 sources.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{}, 0);
   sl.emplace(1, detail::byte_buffer{}, 0);
@@ -138,7 +135,7 @@ TEST_CASE("Decoder: missing sources")
 {
   detail::galois_field gf{8};
 
-  // Push two sources.
+  // Push 5 sources.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{}, 0);
   sl.emplace(1, detail::byte_buffer{}, 0);
@@ -162,6 +159,66 @@ TEST_CASE("Decoder: missing sources")
   REQUIRE(decoder.missing_sources().size() == 2);
   REQUIRE(decoder.repairs().size() == 1);
   REQUIRE(decoder.nb_useless_repairs() == 0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: drop old sources")
+{
+  detail::galois_field gf{8};
+
+  // We need an encoder to fill repairs.
+  detail::encoder encoder{8};
+
+  // The decoder to test
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // Send some sources to the decoder.
+  decoder(detail::source{0, detail::byte_buffer{}, 0});
+  decoder(detail::source{1, detail::byte_buffer{}, 0});
+
+  // Now create a repair that acknowledges the 2 first sources.
+  detail::source_list sl;
+  sl.emplace(2, detail::byte_buffer{}, 0);
+  sl.emplace(3, detail::byte_buffer{}, 0);
+  sl.emplace(4, detail::byte_buffer{}, 0);
+  detail::repair r0{0};
+  encoder(r0, sl.cbegin(), sl.cend());
+
+  SECTION("sources lost")
+  {
+    // Send repair.
+    decoder(std::move(r0));
+
+    // Now test the decoder.
+    REQUIRE(decoder.sources().size() == 0);
+    REQUIRE(decoder.missing_sources().size() == 3);
+    REQUIRE(decoder.missing_sources().find(2) != decoder.missing_sources().end());
+    REQUIRE(decoder.missing_sources().find(3) != decoder.missing_sources().end());
+    REQUIRE(decoder.missing_sources().find(4) != decoder.missing_sources().end());
+    REQUIRE(decoder.repairs().size() == 1);
+    REQUIRE(decoder.nb_useless_repairs() == 0);
+  }
+
+  SECTION("sources received")
+  {
+    // Send sources
+    decoder(detail::source{2, detail::byte_buffer{}, 0});
+    decoder(detail::source{3, detail::byte_buffer{}, 0});
+    decoder(detail::source{4, detail::byte_buffer{}, 0});
+
+    // Send repair.
+    decoder(std::move(r0));
+
+    // Now test the decoder.
+    REQUIRE(decoder.sources().size() == 3);
+    REQUIRE(decoder.sources().find(2) != decoder.sources().end());
+    REQUIRE(decoder.sources().find(3) != decoder.sources().end());
+    REQUIRE(decoder.sources().find(4) != decoder.sources().end());
+    REQUIRE(decoder.missing_sources().size() == 0);
+    REQUIRE(decoder.repairs().size() == 0);
+    REQUIRE(decoder.nb_useless_repairs() == 1);
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
