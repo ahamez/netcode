@@ -22,7 +22,7 @@ public:
   source(source&&) = default;
 
   /// @brief Can move a source.
-  source& operator=(source&&) = delete;
+  source& operator=(source&&) = default;
 
   /// @brief Constructor.
   source(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)

@@ -22,8 +22,8 @@ public:
   /// @brief Can move-construct a repair.
   repair(repair&&) = default;
 
-  /// @brief Can move a source.
-  repair& operator=(repair&&) = delete;
+  /// @brief Can move a repair.
+  repair& operator=(repair&&) = default;
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
   repair(std::uint32_t id, source_id_list&& ids, detail::zero_byte_buffer&& buffer)
