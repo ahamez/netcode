@@ -17,7 +17,7 @@ namespace ntc { namespace detail {
 /// @related square_matrix
 inline
 std::size_t
-invert(square_matrix& mat, square_matrix& inv, galois_field& gf)
+invert(galois_field& gf, square_matrix& mat, square_matrix& inv)
 noexcept
 {
   assert(mat.dimension() == inv.dimension());

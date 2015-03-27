@@ -137,7 +137,7 @@ TEST_CASE("Compare with jerasure matrix inversion", "[square_matrix][invert]" )
 
   // Matrix is invertible.
   REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == 0);
-  REQUIRE(detail::invert(m1, inv1, gf) == std::numeric_limits<std::size_t>::max());
+  REQUIRE(detail::invert(gf, m1, inv1) == std::numeric_limits<std::size_t>::max());
 
   // The result is the same as jerasure's.
   REQUIRE(inv0.vec() == inv1.vec());
@@ -164,7 +164,7 @@ TEST_CASE("Non-invertible matrix", "[square_matrix][invert]" )
   detail::square_matrix inv1{3};
 
   REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == -1);
-  REQUIRE(detail::invert(m1, inv1, gf) != std::numeric_limits<std::size_t>::max());
+  REQUIRE(detail::invert(gf, m1, inv1) != std::numeric_limits<std::size_t>::max());
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -189,7 +189,7 @@ TEST_CASE("Matrix is correctly inverted", "[square_matrix][invert]")
   detail::square_matrix inv{3};
 
   // Matrix is invertible.
-  REQUIRE(detail::invert(copy, inv, gf) == std::numeric_limits<std::size_t>::max());
+  REQUIRE(detail::invert(gf, copy, inv) == std::numeric_limits<std::size_t>::max());
 
   // Multiply m and inv
   detail::square_matrix identity{3};
