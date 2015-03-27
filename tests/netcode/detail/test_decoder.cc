@@ -14,8 +14,6 @@ using namespace ntc;
 
 TEST_CASE("Decoder: reconstruct a source from a repair")
 {
-  detail::galois_field gf{8};
-
   // The payloads that should be reconstructed.
   detail::byte_buffer s0_symbol{'a','b','c','d'};
 
@@ -45,8 +43,6 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
 
 TEST_CASE("Decoder: remove a source from a repair")
 {
-  detail::galois_field gf{8};
-
   // The payloads that should be reconstructed.
   detail::byte_buffer s0_symbol{'a','b','c','d'};
   detail::byte_buffer s1_symbol{'e','f','g','h','i'};
@@ -99,8 +95,6 @@ TEST_CASE("Decoder: remove a source from a repair")
 
 TEST_CASE("Decoder: useless repair")
 {
-  detail::galois_field gf{8};
-
   // Push 5 sources.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{}, 0);
@@ -133,8 +127,6 @@ TEST_CASE("Decoder: useless repair")
 
 TEST_CASE("Decoder: missing sources")
 {
-  detail::galois_field gf{8};
-
   // Push 5 sources.
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{}, 0);
@@ -165,8 +157,6 @@ TEST_CASE("Decoder: missing sources")
 
 TEST_CASE("Decoder: drop old sources")
 {
-  detail::galois_field gf{8};
-
   // We need an encoder to fill repairs.
   detail::encoder encoder{8};
 
@@ -225,8 +215,6 @@ TEST_CASE("Decoder: drop old sources")
 
 TEST_CASE("Decoder: one source lost encoded in one received repair")
 {
-  detail::galois_field gf{8};
-
   // The payloads that should be reconstructed.
   detail::byte_buffer s0_symbol{'a','b','c','d'};
 
