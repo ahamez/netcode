@@ -719,3 +719,71 @@ TEST_CASE("Decoder: duplicate repair 2")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: source after repair")
+{
+  detail::encoder encoder{8};
+  detail::decoder decoder{8, [&](const detail::source&){}};
+
+  // The payloads that should be reconstructed.
+  detail::byte_buffer s0_symbol{'a','b','c','d'};
+  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+
+  // Push 2 sources.
+  detail::source_list sl;
+  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
+  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+
+  // 2 repairs to store encoded sources
+  detail::repair r0{0};
+  detail::repair r1{1};
+  encoder(r0, sl.cbegin(), sl.cend());
+  encoder(r1, sl.cbegin(), sl.cend());
+
+  // r0 is received before s0 and s1
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 0);
+  REQUIRE(decoder.missing_sources().size() == 2);
+  REQUIRE(decoder.repairs().size() == 1);
+
+  // s0 is received
+  decoder({0, detail::byte_buffer{s0_symbol}, s0_symbol.size()});
+  REQUIRE(decoder.sources().size() == 2);
+  REQUIRE(decoder.sources().count(0));
+  REQUIRE(decoder.sources().count(1));
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: repair with only one source")
+{
+  // The payloads that should be reconstructed.
+  detail::byte_buffer s0_symbol{'a','b','c','d'};
+
+  // Push the source.
+  detail::source_list sl;
+  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
+
+  // A repair to store encoded sources
+  detail::repair r0{0};
+
+  // We need an encoder to fill the repair.
+  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+
+  // Now test the decoder.
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // r0 is received
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 1);
+  REQUIRE(decoder.sources().count(0));
+  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_symbol.size());
+  REQUIRE(std::equal( s0_symbol.begin(), s0_symbol.end()
+                    , decoder.sources().find(0)->second.buffer().begin()));
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
