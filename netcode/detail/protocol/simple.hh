@@ -1,8 +1,9 @@
 #pragma once
 
-#include <arpa/inet.h> // htonl, htons
 #include <cassert>
 #include <iterator>    // back_inserter
+
+#include <boost/endian/conversion.hpp>
 
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
@@ -32,11 +33,13 @@ struct simple final
   write_ack(const ack& pkt)
   override
   {
+    using namespace boost::endian;
+
     // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
 
     // Prepare number of source identifiers.
-    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
+    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
     // Write packet type.
     write(sizeof(std::uint8_t), &packet_ty);
@@ -47,7 +50,7 @@ struct simple final
     // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
-      const std::uint32_t network_id = htonl(id);
+      const auto network_id = native_to_big(id);
       write(sizeof(std::uint32_t), &network_id);
     }
   }
@@ -56,6 +59,8 @@ struct simple final
   read_ack(const char* data)
   override
   {
+    using namespace boost::endian;
+
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::ack);
 
@@ -63,7 +68,7 @@ struct simple final
     data += sizeof(std::uint8_t);
 
     // Read size.
-    const std::uint16_t nb_ids = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto nb_ids = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read source ids.
@@ -71,7 +76,7 @@ struct simple final
     ids.reserve(nb_ids);
     for (auto i = 0ul; i < nb_ids; ++i)
     {
-      ids.insert(ids.end(), ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
+      ids.insert(ids.end(), big_to_native(*reinterpret_cast<const std::uint32_t*>(data)));
       data += sizeof(std::uint32_t);
     }
 
@@ -82,17 +87,20 @@ struct simple final
   write_repair(const repair& pkt)
   override
   {
+    using namespace boost::endian;
+
     // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
 
     // Prepare packet identifier.
-    const auto network_id = htonl(pkt.id());
+    const auto network_id = native_to_big(pkt.id());
 
     // Prepare number of source identifiers.
-    const auto network_nb_ids = htons(static_cast<std::uint16_t>(pkt.source_ids().size()));
+    const auto network_nb_ids
+      = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
     // Prepare repair symbol size.
-    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
+    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
 
     // Packet type.
     write(sizeof(std::uint8_t), &packet_ty);
@@ -106,7 +114,7 @@ struct simple final
     // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
-      const std::uint32_t network_id = htonl(id);
+      const auto network_id = native_to_big(id);
       write(sizeof(std::uint32_t), &network_id);
     }
 
@@ -121,6 +129,8 @@ struct simple final
   read_repair(const char* data)
   override
   {
+    using namespace boost::endian;
+
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::repair);
 
@@ -128,11 +138,11 @@ struct simple final
     data += sizeof(std::uint8_t);
 
     // Read identifier.
-    const auto id = ntohl(*reinterpret_cast<const std::uint32_t*>(data));
+    const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
 
     // Read number of source identifiers
-    const auto nb_ids = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto nb_ids = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read source ids.
@@ -140,12 +150,12 @@ struct simple final
     ids.reserve(nb_ids);
     for (auto i = 0ul; i < nb_ids; ++i)
     {
-      ids.insert(ids.end(), ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
+      ids.insert(ids.end(), big_to_native(*reinterpret_cast<const std::uint32_t*>(data)));
       data += sizeof(std::uint32_t);
     }
 
     // Read size of the repair symbol.
-    const auto sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read the repair symbol.
@@ -160,17 +170,19 @@ struct simple final
   write_source(const source& pkt)
   override
   {
+    using namespace boost::endian;
+
     // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
 
     // Prepare packet identifier.
-    const auto network_id = htonl(pkt.id());
+    const auto network_id = native_to_big(pkt.id());
 
     // Prepare real source symbol size.
-    const auto network_sz = htons(static_cast<std::uint16_t>(pkt.buffer().size()));
+    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
 
     // Prepare user symbol size.
-    const auto network_user_sz = htons(static_cast<std::uint16_t>(pkt.user_size()));
+    const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(pkt.user_size()));
 
     // Write packet type.
     write(sizeof(std::uint8_t), &packet_ty);
@@ -192,6 +204,8 @@ struct simple final
   read_source(const char* data)
   override
   {
+    using namespace boost::endian;
+
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::source);
 
@@ -199,15 +213,15 @@ struct simple final
     data += sizeof(std::uint8_t);
 
     // Read identifier.
-    const auto id = ntohl(*reinterpret_cast<const std::uint32_t*>(data));
+    const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
 
     // Read real size of the source symbol.
-    const auto sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read user size of the source symbol.
-    const auto user_sz = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto user_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read the source symbol.

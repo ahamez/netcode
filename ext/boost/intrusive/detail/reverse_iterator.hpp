@@ -10,19 +10,22 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTRUSIVE_DETAIL_ITERATOR_HPP
-#define BOOST_INTRUSIVE_DETAIL_ITERATOR_HPP
+#ifndef BOOST_INTRUSIVE_DETAIL_REVERSE_ITERATOR_HPP
+#define BOOST_INTRUSIVE_DETAIL_REVERSE_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
 #include <boost/intrusive/detail/config_begin.hpp>
-#include <boost/intrusive/detail/iiterator.hpp>
+#include <boost/intrusive/detail/iterator.hpp>
 
 namespace boost {
 namespace intrusive {
-namespace detail {
 
 template<class It>
 class reverse_iterator
@@ -130,10 +133,9 @@ class reverse_iterator
    It m_current;   // the wrapped iterator
 };
 
-} //namespace detail
-} //namespace intrusive
-} //namespace boost
+} //namespace intrusive {
+} //namespace boost {
 
 #include <boost/intrusive/detail/config_end.hpp>
 
-#endif //BOOST_INTRUSIVE_DETAIL_ITERATOR_HPP
+#endif //BOOST_INTRUSIVE_DETAIL_REVERSE_ITERATOR_HPP
