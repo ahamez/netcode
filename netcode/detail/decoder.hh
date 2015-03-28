@@ -2,6 +2,7 @@
 
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
+#include <vector>
 
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
@@ -61,6 +62,7 @@ public:
     , sources_{}
     , missing_sources_{}
     , nb_useless_repairs_{0}
+    , nb_failed_full_decodings_{0}
     , coefficients_{16}
     , inv_{16}
   {}
@@ -215,18 +217,127 @@ public:
     }
 
     // Do we have enough repairs to try to decode missing sources?
-    if (missing_sources_.size() <= repairs().size())
+    if (missing_sources_.size() > repairs().size())
     {
-      // Build coefficient matrix.
-      coefficients_.resize(repairs_.size());
-
-      // Invert it.
-      inv_.resize(coefficients_.dimension());
-      if (const auto r_col = invert(gf_, coefficients_, inv_))
-      {
-        // Inversion failed, remove the faulty repair.
-      }
+      return;
     }
+
+    // Build coefficient matrix.
+    coefficients_.resize(repairs_.size());
+    auto col = 0ul;
+    for (const auto& r : repairs_)
+    {
+      auto row = 0ul;
+      for (const auto& missing : missing_sources_)
+      {
+        coefficients_(row, col) = [&,this]
+        {
+          // Check if repair encodes the missing source.
+          const auto search_repair = std::find( r.second.source_ids().begin()
+                                              , r.second.source_ids().end()
+                                              , missing.first);
+          return search_repair == r.second.source_ids().end()
+               ? 0u // repair doesn't encode the missing source.
+               : coefficient(gf_, r.first, missing.first);
+        }();
+        ++row;
+      }
+
+      // Empty row.
+      for (; row < repairs_.size(); ++row)
+      {
+        coefficients_(row, col) = 0;
+      }
+      ++col;
+    }
+
+    // Invert it.
+    inv_.resize(coefficients_.dimension());
+    if (const auto r_col = invert(gf_, coefficients_, inv_))
+    {
+      // Inversion failed, remove the faulty repair.
+      ++nb_failed_full_decodings_;
+
+      // Find the repair corresponding to r_col.
+      auto r_cit = repairs_.begin();
+      std::advance(r_cit, *r_col);
+
+      // Remove repair from missing sources that reference it.
+      for (const auto src : r_cit->second.source_ids())
+      {
+        missing_sources_[src].erase(r_cit);
+      }
+
+      // We can now effectively remove the repair.
+      repairs_.erase(r_cit);
+      return;
+    }
+
+    // Matrix successfully inverted, we can now decode missing sources. Phew!
+
+    // Build an index for fast retreiving of repairs from the inv_ matrix.
+    std::vector<repair*> index;
+    index.reserve(repairs_.size());
+    for (auto& rid_repair : repairs_)
+    {
+      index.emplace_back(&rid_repair.second);
+    }
+
+    auto src_col = 0u;
+    for (const auto& miss : missing_sources_)
+    {
+      // First, decode the size of the source.
+      const auto sz = [&,this]
+      {
+        auto res = 0ul;
+        for (auto repair_row = 0ul; repair_row < inv_.dimension(); ++repair_row)
+        {
+          const auto coeff = inv_(repair_row, src_col);
+          if (coeff != 0)
+          {
+            res ^= gf_.multiply(static_cast<std::uint32_t>(index[repair_row]->size()), coeff);
+          }
+        }
+        return res;
+      }();
+
+      // Now, decode symbol.
+      source src{miss.first, byte_buffer(make_multiple(sz, 16)), sz};
+      auto repair_row = 0ul;
+      auto coeff = 0u;
+
+      // Find first non-zero coefficient.
+      for (; repair_row < repairs().size(); ++repair_row)
+      {
+        coeff = inv_(repair_row, src_col);
+        if (coeff != 0)
+        {
+          break;
+        }
+      }
+      assert(repair_row != repairs_.size() && "No coefficients for missing source");
+
+      gf_.multiply( index[repair_row]->buffer().data(), src.buffer().data(), src.buffer().size()
+                  , coeff);
+
+      for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
+      {
+        coeff = inv_(repair_row, src_col);
+        if (coeff != 0)
+        {
+          gf_.multiply_add( index[repair_row]->buffer().data(), src.buffer().data()
+                          , src.buffer().size(), coeff);
+        }
+      }
+      ++src_col;
+
+      // Source decoded, add it to the set of known sources.
+      sources_.emplace(miss.first, std::move(src));
+    }
+
+    // Cleanup.
+    repairs_.clear();
+    missing_sources_.clear();
   }
 
   /// @brief Decode a source contained in a repair.
@@ -353,6 +464,14 @@ public:
     return nb_useless_repairs_;
   }
 
+  ///
+  std::size_t
+  nb_failed_full_decodings()
+  const noexcept
+  {
+    return nb_failed_full_decodings_;
+  }
+
 private:
 
   /// @brief The implementation of a Galois field.
@@ -372,6 +491,9 @@ private:
 
   /// @brief The number of repairs which were dropped because they were useless.
   std::size_t nb_useless_repairs_;
+
+  ///
+  std::size_t nb_failed_full_decodings_;
 
   /// @brief Re-use the same memory for the matrix of coefficients.
   square_matrix coefficients_;
