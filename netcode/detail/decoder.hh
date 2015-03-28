@@ -128,6 +128,13 @@ public:
     assert(not incoming_r.source_ids().empty());
     assert(std::is_sorted(begin(incoming_r.source_ids()), end(incoming_r.source_ids())));
 
+    if (last_id_ and incoming_r.source_ids().back() < *last_id_)
+    {
+      // It's a repair that provide outdated informations, drop it.
+      ++nb_useless_repairs_;
+      return;
+    }
+
     // Remove sources with an id smaller than the smallest the current repair encodes.
     // Remove repairs which encodes sources with an id smaller than the smallest the current repair
     /// encodes.

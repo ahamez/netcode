@@ -409,7 +409,7 @@ TEST_CASE("Decoder: several lost sources from several repairs")
   REQUIRE(std::equal( s1_symbol.begin(), s1_symbol.end()
                     , decoder.sources().find(1)->second.buffer().begin()));
 
-  SECTION("Don't ack")
+  SECTION("Sources are not outdated")
   {
     auto nb_failed_full_decodings = 0ul;
 
@@ -483,7 +483,7 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     }
   }
 
-  SECTION("Ack")
+  SECTION("Sources are outdated")
   {
     auto nb_failed_full_decodings = 0ul;
 
@@ -592,7 +592,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
   REQUIRE(decoder.sources().size() == 1);
   REQUIRE(decoder.sources().count(0));
 
-  SECTION("No ack")
+  SECTION("Lost source is not outdated")
   {
     // Eventually, the missing source is received.
     decoder(detail::source{0, detail::byte_buffer{}, 0});
@@ -600,7 +600,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
     REQUIRE(decoder.sources().count(0));
   }
 
-  SECTION("Ack")
+  SECTION("Lost source is outdated")
   {
     // No more s0 on encoder side.
     sl.pop_front();
@@ -619,6 +619,64 @@ TEST_CASE("Decoder: out-of-order source after repair")
     decoder(detail::source{0, detail::byte_buffer{}, 0});
     REQUIRE(decoder.sources().size() == 1);
     REQUIRE(decoder.sources().count(1));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: duplicate repair 1")
+{
+  // We'll need two encoders as we can't copy a repair.
+  detail::encoder encoder0{8};
+  detail::encoder encoder1{8};
+
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // A dummy lost source. Should be repaired immediatly.
+  detail::source_list sl;
+  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+
+  // Create original repair.
+  detail::repair r0{0};
+  encoder0(r0, sl.cbegin(), sl.cend());
+
+  // Create copy.
+  detail::repair r0_dup{0};
+  encoder1(r0_dup, sl.cbegin(), sl.cend());
+
+  // Send original repair.
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 1);
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+
+  SECTION("Reconstructed source is not outdated")
+  {
+    // Now send duplicate. Should be seen as useless.
+    decoder(std::move(r0_dup));
+    REQUIRE(decoder.sources().size() == 1);
+    REQUIRE(decoder.missing_sources().size() == 0);
+    REQUIRE(decoder.repairs().size() == 0);
+    REQUIRE(decoder.nb_useless_repairs() == 1);
+  }
+
+  SECTION("Reconstructed source is outdated")
+  {
+    sl.pop_front();
+    sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+    detail::repair r1{0};
+    encoder0(r1, sl.cbegin(), sl.cend());
+    // Send repair.
+    decoder(std::move(r1));
+
+    // Now send duplicate. Should be seen as useless.
+    decoder(std::move(r0_dup));
+    REQUIRE(decoder.sources().size() == 1);
+    REQUIRE(decoder.sources().count(1));
+    REQUIRE(decoder.missing_sources().size() == 0);
+    REQUIRE(decoder.repairs().size() == 0);
+    REQUIRE(decoder.nb_useless_repairs() == 1);
   }
 }
 
