@@ -248,6 +248,7 @@ public:
         coefficients_(row, col) = [&,this]
         {
           // Check if repair encodes the missing source.
+          /// @todo Use the fact that source_id is sorted.
           const auto search_repair = std::find( r.second.source_ids().begin()
                                               , r.second.source_ids().end()
                                               , missing.first);
