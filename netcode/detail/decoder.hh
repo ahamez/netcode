@@ -203,8 +203,7 @@ public:
 
       // Invert it.
       inv_.resize(coefficients_.dimension());
-      const auto r_col = invert(gf_, coefficients_, inv_);
-      if (r_col != inverted_pos)
+      if (const auto r_col = invert(gf_, coefficients_, inv_))
       {
         // Inversion failed, remove the faulty repair.
       }

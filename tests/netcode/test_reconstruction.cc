@@ -220,8 +220,7 @@ TEST_CASE("Two sources lost")
   // s1 = C*r0 + D*r1
 
   detail::square_matrix inv{mat.dimension()};
-  const auto inverted = detail::invert(gf, mat, inv);
-  REQUIRE(inverted == detail::inverted_pos);
+  REQUIRE(not detail::invert(gf, mat, inv));
 
   // Reconstruct s0.
 

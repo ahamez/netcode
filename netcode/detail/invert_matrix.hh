@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cassert>
-#include <limits> // numeric_limits
+
+#include <boost/optional.hpp>
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/square_matrix.hh"
@@ -11,19 +12,12 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief Compare this value with the result of detail::invert to know if inversion was successful.
-/// @related square_matrix
-static constexpr auto inverted_pos = std::numeric_limits<std::size_t>::max();
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @internal
 /// @brief Invert a matrix using a Galois field.
 /// @attention @p mat will be overwritten
 /// @note This is the algorithm provided by jerasure ( http://jerasure.org )
 /// @related square_matrix
 inline
-std::size_t
+boost::optional<std::size_t>
 invert(galois_field& gf, square_matrix& mat, square_matrix& inv)
 noexcept
 {
@@ -58,7 +52,7 @@ noexcept
       if (j == rows)
       {
         // Failure, matrix is not invertible.
-        return (j - 1);
+        return {j - 1};
       }
 
       const auto row_start2 = j * cols;
@@ -141,7 +135,7 @@ noexcept
   }
 
   // Everything went OK.
-  return inverted_pos;
+  return {};
 }
 
 /*------------------------------------------------------------------------------------------------*/
