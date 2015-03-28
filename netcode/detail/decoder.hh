@@ -131,7 +131,12 @@ public:
     if (last_id_ and incoming_r.source_ids().back() < *last_id_)
     {
       // It's a repair that provide outdated informations, drop it.
-      ++nb_useless_repairs_;
+      return;
+    }
+
+    if (repairs_.count(incoming_r.id()))
+    {
+      // A duplicate repair. Drop it.
       return;
     }
 

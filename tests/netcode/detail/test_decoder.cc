@@ -670,14 +670,52 @@ TEST_CASE("Decoder: duplicate repair 1")
     // Send repair.
     decoder(std::move(r1));
 
-    // Now send duplicate. Should be seen as useless.
+    // Now send duplicate.
     decoder(std::move(r0_dup));
     REQUIRE(decoder.sources().size() == 1);
     REQUIRE(decoder.sources().count(1));
     REQUIRE(decoder.missing_sources().size() == 0);
     REQUIRE(decoder.repairs().size() == 0);
-    REQUIRE(decoder.nb_useless_repairs() == 1);
+    REQUIRE(decoder.nb_useless_repairs() == 0);
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: duplicate repair 2")
+{
+  // We'll need two encoders as we can't copy a repair.
+  detail::encoder encoder0{8};
+  detail::encoder encoder1{8};
+
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // Some dummy lost sources.
+  detail::source_list sl;
+  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+  sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+
+  // Create original repair.
+  detail::repair r0{0};
+  encoder0(r0, sl.cbegin(), sl.cend());
+
+  // Create copy.
+  detail::repair r0_dup{0};
+  encoder1(r0_dup, sl.cbegin(), sl.cend());
+
+  // Send original repair.
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 0);
+  REQUIRE(decoder.missing_sources().size() == 2);
+  REQUIRE(decoder.repairs().size() == 1);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+
+  // Send duplicate.
+  decoder(std::move(r0_dup));
+  REQUIRE(decoder.sources().size() == 0);
+  REQUIRE(decoder.missing_sources().size() == 2);
+  REQUIRE(decoder.repairs().size() == 1);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
 }
 
 /*------------------------------------------------------------------------------------------------*/
