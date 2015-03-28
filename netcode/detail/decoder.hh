@@ -2,7 +2,6 @@
 
 #include <algorithm>  // all_of, is_sorted
 #include <cassert>
-#include <vector>
 
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
@@ -31,9 +30,28 @@ public:
   /// @brief
   using sources_set_type = boost::container::map<std::uint32_t, source>;
 
+private:
+
+  /// @brief We need a total order on repairs_set_type::iterator.
+  struct cmp_repairs_iterator
+  {
+    bool
+    operator()(const repairs_set_type::iterator& lhs, const repairs_set_type::iterator& rhs)
+    const noexcept
+    {
+      // Use identifiers to sort.
+      return lhs->first < rhs->first;
+    }
+  };
+
+public:
+
   /// @brief
-  using missing_sources_type = boost::container::map< std::uint32_t
-                                                    , std::vector<repairs_set_type::iterator>>;
+  using repairs_iterators_type = boost::container::flat_set< repairs_set_type::iterator
+                                                           , cmp_repairs_iterator>;
+
+  /// @brief
+  using missing_sources_type = boost::container::map<std::uint32_t, repairs_iterators_type>;
 
   /// @brief
   decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
@@ -156,12 +174,13 @@ public:
         auto search_src_id = missing_sources_.find(*id_rcit);
         if (search_src_id == missing_sources_.end())
         {
-          missing_sources_.emplace( *id_rcit
-                                  , std::vector<repairs_set_type::iterator>{r_cit});
+          // Create missing source.
+          missing_sources_.emplace(*id_rcit, repairs_iterators_type{r_cit});
         }
         else
         {
-          search_src_id->second.emplace_back(r_cit);
+          // The missing source already exists.
+          search_src_id->second.emplace(r_cit);
         }
       }
     }
@@ -272,20 +291,9 @@ public:
     // First, find the upper bound of missing sources with an identifier smaller than id.
     const auto missing_lb = missing_sources_.lower_bound(id);
 
-    // We need a total order on repairs_set_type::iterator.
-    struct cmp
-    {
-      bool
-      operator()(const repairs_set_type::iterator& lhs, const repairs_set_type::iterator& rhs)
-      const noexcept
-      {
-        return lhs->first < rhs->first;
-      }
-    };
-
     // Then, remove repairs which references this id.
     // We can't delete repairs on the fly as they are referenced by several other missing sources.
-    boost::container::flat_set<repairs_set_type::iterator, cmp> repairs_to_erase;
+    repairs_iterators_type repairs_to_erase;
     repairs_to_erase.reserve(32);
     for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
     {
