@@ -47,7 +47,7 @@ TEST_CASE("Encoder's window size")
 
 TEST_CASE("Encoder can limit the window size")
 {
-  ntc::encoder encoder{dummy_handler{}, 5, 4/*window*/, code_type::systematic, packetizer::simple};
+  ntc::encoder encoder{dummy_handler{}, 5, 4/*window*/, code::systematic, packetizer::simple};
 
   auto sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
@@ -98,7 +98,7 @@ TEST_CASE("Encoder generates repairs")
 
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
-  ntc::encoder encoder{dummy_handler{}, 5 /*rate*/, 100, code_type::systematic, packetizer::simple};
+  ntc::encoder encoder{dummy_handler{}, 5 /*rate*/, 100, code::systematic, packetizer::simple};
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)

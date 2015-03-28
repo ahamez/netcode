@@ -12,7 +12,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/code_type.hh"
+#include "netcode/code.hh"
 #include "netcode/packet.hh"
 #include "netcode/packetizer.hh"
 #include "netcode/symbol.hh"
@@ -34,11 +34,11 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code_type type, packetizer p)
+  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code type, packetizer p)
     : encoder_{8}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , max_window_size_{max_window}
-    , type_{type}
+    , code_type_{type}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
@@ -59,7 +59,7 @@ public:
     : encoder{ std::forward<Handler>(h)
              , code_rate
              , std::numeric_limits<std::size_t>::max()
-             , code_type::systematic
+             , code::systematic
              , packetizer::simple}
   {}
 
@@ -243,7 +243,7 @@ private:
   std::size_t max_window_size_;
 
   /// @brief Is the encoder systematic?
-  code_type type_;
+  code code_type_;
 
   /// @brief The counter for source packets identifiers.
   std::uint32_t current_source_id_;

@@ -10,7 +10,8 @@
 #include "netcode/detail/packetizer_base.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
-#include "netcode/code_type.hh"
+#include "netcode/code.hh"
+#include "netcode/configuration.hh"
 #include "netcode/packet.hh"
 #include "netcode/packetizer.hh"
 
@@ -31,8 +32,8 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  decoder(Handler&& h, code_type type, packetizer p)
-    : type_{type}
+  decoder(Handler&& h, code type, packetizer p)
+    : code_type_{type}
     , ack_{}
     , ack_frequency_{100 /*ms*/}
     , last_ack_date_(std::chrono::steady_clock::now())
@@ -50,7 +51,7 @@ public:
   /// @brief Constructor for a systematic decoder using the simple packetizer.
   template <typename Handler>
   decoder(Handler&& h)
-    : decoder{std::forward<Handler>(h), code_type::systematic, packetizer::simple}
+    : decoder{std::forward<Handler>(h), code::systematic, packetizer::simple}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -155,7 +156,7 @@ private:
 private:
 
   /// @brief Is the encoder systematic?
-  code_type type_;
+  code code_type_;
 
   /// @brief Re-use the same memory to prepare an ack packet.
   detail::ack ack_;
