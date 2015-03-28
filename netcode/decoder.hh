@@ -31,28 +31,22 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Handler>
-  decoder(Handler&& h, code type, packetizer p)
-    : code_type_{type}
+  template <typename Handler, typename Conf = default_configuration>
+  decoder(Handler&& h, Conf conf = Conf())
+    : code_type_{conf.code_type}
     , ack_{}
-    , ack_frequency_{100 /*ms*/}
+    , ack_frequency_{conf.ack_frequency}
     , last_ack_date_(std::chrono::steady_clock::now())
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , packetizer_{make_packetizer(p, *handler_)}
+    , packetizer_{make_packetizer(conf.packetizer_type, *handler_)}
     , decoder_{8, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
   }
-
-  /// @brief Constructor for a systematic decoder using the simple packetizer.
-  template <typename Handler>
-  decoder(Handler&& h)
-    : decoder{std::forward<Handler>(h), code::systematic, packetizer::simple}
-  {}
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.

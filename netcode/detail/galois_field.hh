@@ -30,11 +30,11 @@ public:
   galois_field& operator=(galois_field&&) = default;
 
   /// @brief Constructor.
-  galois_field(unsigned int w)
+  galois_field(std::size_t w)
     : gf_{new gf_t}
-    , size_{w}
+    , size_{static_cast<std::uint32_t>(w)}
   {
-    if (gf_init_easy(gf_.get(), w) == 0)
+    if (gf_init_easy(gf_.get(), size_) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
     }
@@ -115,7 +115,7 @@ private:
   std::unique_ptr<gf_t> gf_;
 
   /// @brief This field size.
-  unsigned int size_;
+  std::uint32_t size_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

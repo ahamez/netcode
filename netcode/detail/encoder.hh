@@ -18,7 +18,7 @@ class encoder final
 public:
 
   /// @brief Constructor.
-  encoder(unsigned int galois_field_size)
+  encoder(std::size_t galois_field_size)
     : gf_{detail::galois_field{galois_field_size}}
   {}
 

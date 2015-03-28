@@ -29,7 +29,9 @@ struct dummy_handler
 
 TEST_CASE("Encoder's window size")
 {
-  ntc::encoder encoder{dummy_handler{}, 3};
+  default_configuration conf;
+  conf.rate = 3;
+  ntc::encoder encoder{dummy_handler{}, conf};
 
   SECTION("Ever growing window size")
   {
@@ -47,7 +49,9 @@ TEST_CASE("Encoder's window size")
 
 TEST_CASE("Encoder can limit the window size")
 {
-  ntc::encoder encoder{dummy_handler{}, 5, 4/*window*/, code::systematic, packetizer::simple};
+  default_configuration conf;
+  conf.window = 4;
+  ntc::encoder encoder{dummy_handler{}, conf};
 
   auto sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
@@ -80,7 +84,9 @@ TEST_CASE("Encoder can limit the window size")
 
 TEST_CASE("Encoder generates repairs")
 {
-  ntc::encoder encoder{dummy_handler{}, 5};
+  default_configuration conf;
+  conf.rate = 5;
+  ntc::encoder encoder{dummy_handler{}, conf};
 
   SECTION("Fixed code rate")
   {
@@ -98,7 +104,9 @@ TEST_CASE("Encoder generates repairs")
 
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
-  ntc::encoder encoder{dummy_handler{}, 5 /*rate*/, 100, code::systematic, packetizer::simple};
+  default_configuration conf;
+  conf.rate = 5;
+  ntc::encoder encoder{dummy_handler{}, conf};
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)

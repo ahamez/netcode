@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm> // is_sorted
-#include <limits>    // numeric_limits
 #include <memory>    // unique_ptr
 
 #include "netcode/detail/encoder.hh"
@@ -12,6 +11,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
+#include "netcode/configuration.hh"
 #include "netcode/code.hh"
 #include "netcode/packet.hh"
 #include "netcode/packetizer.hh"
@@ -33,18 +33,18 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Handler>
-  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code type, packetizer p)
-    : encoder_{8}
-    , rate_{code_rate == 0 ? 1 : code_rate}
-    , max_window_size_{max_window}
-    , code_type_{type}
+  template <typename Handler, typename Conf = default_configuration>
+  encoder(Handler&& h, Conf conf = Conf())
+    : encoder_{conf.galois_field_size}
+    , rate_{conf.rate == 0 ? 1 : conf.rate}
+    , max_window_size_{conf.window}
+    , code_type_{conf.code_type}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , packetizer_{make_packetizer(p, *handler_)}
+    , packetizer_{make_packetizer(conf.packetizer_type, *handler_)}
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -52,16 +52,6 @@ public:
     // Same thing for the list of source identifiers.
     repair_.source_ids().reserve(128);
   }
-
-  /// @brief Constructor for a systematic encoder using the simple protocol.
-  template <typename Handler>
-  encoder(Handler&& h, std::size_t code_rate)
-    : encoder{ std::forward<Handler>(h)
-             , code_rate
-             , std::numeric_limits<std::size_t>::max()
-             , code::systematic
-             , packetizer::simple}
-  {}
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.
