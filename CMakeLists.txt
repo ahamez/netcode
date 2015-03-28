@@ -41,6 +41,16 @@ message(STATUS "Found ${GF_COMPLETE_LIBRARY}")
 
 #--------------------------------------------------------------------------------------------------#
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+if (COVERAGE AND CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX)
+  include(CodeCoverage)
+  SET(CMAKE_CXX_FLAGS_DEBUG "--coverage")
+  SET(LCOV_EXCLUDE "'/boost/*'" "'/c++/*'")
+  setup_target_for_coverage(coverage tests coverage)
+endif()
+
+#--------------------------------------------------------------------------------------------------#
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release")
