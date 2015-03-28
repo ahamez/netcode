@@ -340,6 +340,9 @@ public:
       }
       ++src_col;
 
+      // Notify netcode::encoder.
+      callback_(src);
+
       // Source decoded, add it to the set of known sources.
       sources_.emplace(miss.first, std::move(src));
     }
