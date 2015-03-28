@@ -6,15 +6,15 @@
 
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/handler.hh"
-#include "netcode/detail/make_protocol.hh"
+#include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
+#include "netcode/detail/packetizer_base.hh"
 #include "netcode/detail/repair.hh"
-#include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
 #include "netcode/code_type.hh"
 #include "netcode/packet.hh"
-#include "netcode/protocol.hh"
+#include "netcode/packetizer.hh"
 #include "netcode/symbol.hh"
 
 namespace ntc {
@@ -34,7 +34,7 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code_type type, protocol prot)
+  encoder(Handler&& h, std::size_t code_rate, std::size_t max_window, code_type type, packetizer p)
     : encoder_{8}
     , rate_{code_rate == 0 ? 1 : code_rate}
     , max_window_size_{max_window}
@@ -44,7 +44,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , serializer_{mk_protocol(prot, *handler_)}
+    , packetizer_{make_packetizer(p, *handler_)}
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -60,7 +60,7 @@ public:
              , code_rate
              , std::numeric_limits<std::size_t>::max()
              , code_type::systematic
-             , protocol::simple}
+             , packetizer::simple}
   {}
 
   /// @brief Give the encoder a new symbol.
@@ -178,8 +178,8 @@ private:
     const auto& insertion
       = sources_.emplace(current_source_id_, std::move(sym.buffer_), sym.user_size_);
 
-    // Ask serializer to handle the bytes of the new source (will be routed to user's handler).
-    serializer_->write_source(insertion);
+    // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
+    packetizer_->write_source(insertion);
 
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % rate_ == 0)
@@ -189,8 +189,8 @@ private:
       repair_.reset();
 
       mk_repair();
-      // Ask serializer to handle the bytes of the new repair (will be routed to user's handler).
-      serializer_->write_repair(repair_);
+      // Ask packetizer to handle the bytes of the new repair (will be routed to user's handler).
+      packetizer_->write_repair(repair_);
     }
 
     current_source_id_ += 1;
@@ -204,7 +204,7 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      const auto source_ids = serializer_->read_ack(data).source_ids();
+      const auto source_ids = packetizer_->read_ack(data).source_ids();
       // Identifiers should be sorted.
       assert(std::is_sorted(begin(source_ids), end(source_ids)));
       sources_.erase(begin(source_ids), end(source_ids));
@@ -261,7 +261,7 @@ private:
   std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::serializer_base> serializer_;
+  std::unique_ptr<detail::packetizer_base> packetizer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;

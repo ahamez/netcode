@@ -2,7 +2,7 @@
 
 #include "tests/catch.hpp"
 
-#include "netcode/detail/protocol/simple.hh"
+#include "netcode/detail/packetizer_simple.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -33,10 +33,10 @@ struct handler
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("An ack is (de)serialized by protocol::simple", "[serialization][ack][simple]" )
+TEST_CASE("An ack is (de)serialized by packetizer_simple")
 {
   detail::handler_derived<handler> h{handler{}};
-  detail::protocol::simple serializer{h};
+  detail::packetizer_simple serializer{h};
 
   const detail::ack a_in{{0,1,2,3}};
 
@@ -54,10 +54,10 @@ TEST_CASE("An ack is (de)serialized by protocol::simple", "[serialization][ack][
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A repair is (de)serialized by protocol::simple", "[serialization][repair][simple]" )
+TEST_CASE("A repair is (de)serialized by packetizer_simple")
 {
   detail::handler_derived<handler> h{handler{}};
-  detail::protocol::simple serializer{h};
+  detail::packetizer_simple serializer{h};
 
   const detail::repair r_in{42, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
 
@@ -80,10 +80,10 @@ TEST_CASE("A repair is (de)serialized by protocol::simple", "[serialization][rep
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A source is (de)serialized by protocol::simple", "[serialization][source][simple]" )
+TEST_CASE("A source is (de)serialized by packetizer_simple")
 {
   detail::handler_derived<handler> h{handler{}};
-  detail::protocol::simple serializer{h};
+  detail::packetizer_simple serializer{h};
 
   const detail::source s_in{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4};
 

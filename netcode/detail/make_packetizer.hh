@@ -2,23 +2,23 @@
 
 #include <memory> // unique_ptr
 
-#include "netcode/detail/protocol/simple.hh"
-#include "netcode/detail/serializer.hh"
-#include "netcode/protocol.hh"
+#include "netcode/detail/packetizer_base.hh"
+#include "netcode/detail/packetizer_simple.hh"
+#include "netcode/packetizer.hh"
 
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Create a protocol to de/serialize packets.
+/// @brief Create a packetizer to de/serialize packets.
 inline
-std::unique_ptr<detail::serializer_base>
-mk_protocol(ntc::protocol p, handler_base& h)
+std::unique_ptr<packetizer_base>
+make_packetizer(packetizer p, handler_base& h)
 {
   switch (p)
   {
-    case ntc::protocol::simple :
-      return std::unique_ptr<detail::serializer_base>{new detail::protocol::simple{h}};
+    case packetizer::simple :
+      return std::unique_ptr<packetizer_base>{new packetizer_simple{h}};
 
     default: __builtin_unreachable();
   }

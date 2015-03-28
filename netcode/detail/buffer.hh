@@ -25,7 +25,7 @@ public:
   /// @brief Constructor. Forward to base clase constructor.
   ///
   /// @note @code using Alloc::Alloc @endcode would be the right way to write it,
-  /// but GCC 4.7 doesn't recognize this feature.
+  /// but GCC 4.7 doesn't support this feature.
   template <typename... Args>
   default_init_allocator(Args&&... args)
     : Alloc{std::forward<Args>(args)...}

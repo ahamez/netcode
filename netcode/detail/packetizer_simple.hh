@@ -8,25 +8,25 @@
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/serializer.hh"
+#include "netcode/detail/packetizer_base.hh"
 #include "netcode/detail/source_id_list.hh"
 
-namespace ntc { namespace detail { namespace protocol {
+namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief A simple protocol with no optimization whatsoever.
-struct simple final
-  : public serializer_base
+/// @brief A simple packetizer with no optimization whatsoever.
+struct packetizer_simple final
+  : public packetizer_base
 {
   /// @brief Constructor. Forward to base clase constructor.
   ///
-  /// @note @code using serializer::serializer @endcode would be the right way to write it,
-  /// but GCC 4.7 doesn't recognize this feature.
+  /// @note @code using packetizer_simple::packetizer_simple @endcode would be the right way to
+  /// write it, but GCC 4.7 doesn't support this feature.
   template <typename... Args>
-  simple(Args&&... args)
-    : serializer_base{std::forward<Args>(args)...}
+  packetizer_simple(Args&&... args)
+    : packetizer_base{std::forward<Args>(args)...}
   {}
 
   void
@@ -235,4 +235,4 @@ struct simple final
 
 /*------------------------------------------------------------------------------------------------*/
 
-}}} // namespace ntc::detail::protocol
+}} // namespace ntc::detail

@@ -5,14 +5,14 @@
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/handler.hh"
-#include "netcode/detail/make_protocol.hh"
+#include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
+#include "netcode/detail/packetizer_base.hh"
 #include "netcode/detail/repair.hh"
-#include "netcode/detail/serializer.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/code_type.hh"
 #include "netcode/packet.hh"
-#include "netcode/protocol.hh"
+#include "netcode/packetizer.hh"
 
 namespace ntc {
 
@@ -31,7 +31,7 @@ public:
 
   /// @brief Constructor.
   template <typename Handler>
-  decoder(Handler&& h, code_type type, protocol prot)
+  decoder(Handler&& h, code_type type, packetizer p)
     : type_{type}
     , ack_{}
     , ack_frequency_{100 /*ms*/}
@@ -40,17 +40,17 @@ public:
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , serializer_{mk_protocol(prot, *handler_)}
+    , packetizer_{make_packetizer(p, *handler_)}
     , decoder_{8, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
   }
 
-  /// @brief Constructor for a systematic decoder using the simple protocol.
+  /// @brief Constructor for a systematic decoder using the simple packetizer.
   template <typename Handler>
   decoder(Handler&& h)
-    : decoder{std::forward<Handler>(h), code_type::systematic, protocol::simple}
+    : decoder{std::forward<Handler>(h), code_type::systematic, packetizer::simple}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -97,7 +97,7 @@ private:
       {
         nb_received_repairs_ += 1;
         // Give the decoder this received repair.
-        decoder_(serializer_->read_repair(data));
+        decoder_(packetizer_->read_repair(data));
         return true;
       }
 
@@ -105,7 +105,7 @@ private:
       {
         nb_received_sources_ += 1;
         // Give the decoder this received source.
-        decoder_(serializer_->read_source(data));
+        decoder_(packetizer_->read_source(data));
         return true;
       }
 
@@ -145,8 +145,8 @@ private:
   void
   send_ack()
   {
-    // Ask serializer to handle the bytes of the new ack (will be routed to user's handler).
-    serializer_->write_ack(ack_);
+    // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
+    packetizer_->write_ack(ack_);
 
     // Start a fresh new ack.
     ack_.reset();
@@ -180,7 +180,7 @@ private:
   std::unique_ptr<detail::handler_base> handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::serializer_base> serializer_;
+  std::unique_ptr<detail::packetizer_base> packetizer_;
 
   /// @brief The component that rebuilds sources using repairs.
   detail::decoder decoder_;

@@ -4,8 +4,8 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The available network protocols.
-enum class protocol {simple};
+/// @brief The available network packetizers.
+enum class packetizer {simple};
 
 /*------------------------------------------------------------------------------------------------*/
 

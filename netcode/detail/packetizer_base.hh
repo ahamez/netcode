@@ -10,18 +10,18 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief The base class for any serialization of @ref ack, @ref repair and @ref source.
-class serializer_base
+/// @brief The base class for any packetizer of @ref ack, @ref repair and @ref source.
+class packetizer_base
 {
 public:
 
   /// @brief Constructor.
-  serializer_base(handler_base& h)
+  packetizer_base(handler_base& h)
     : handler_(h)
   {}
 
   /// @brief Can delete through this base class.
-  virtual ~serializer_base() {}
+  virtual ~packetizer_base() {}
 
   /// @brief Write ack packets.
   virtual void write_ack(const ack&) = 0;
@@ -51,7 +51,7 @@ public:
 
 private:
 
-  /// @brief The handler which writes serialized packets.
+  /// @brief The handler which serializes packets.
   handler_base& handler_;
 };
 
