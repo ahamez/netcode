@@ -541,3 +541,24 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: duplicate source")
+{
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // Send source.
+  decoder(detail::source{0, detail::byte_buffer{}, 0});
+  REQUIRE(decoder.sources().size() == 1);
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+
+  // Send duplicate source.
+  decoder(detail::source{0, detail::byte_buffer{}, 0});
+  REQUIRE(decoder.sources().size() == 1);
+  REQUIRE(decoder.missing_sources().size() == 0);
+  REQUIRE(decoder.repairs().size() == 0);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+}
+
+/*------------------------------------------------------------------------------------------------*/
