@@ -31,11 +31,11 @@ TEST_CASE("Encoder: create repairs")
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
   REQUIRE(r0.source_ids().size() == 5);
-  REQUIRE(r0.source_ids()[0] == 0);
-  REQUIRE(r0.source_ids()[1] == 1);
-  REQUIRE(r0.source_ids()[2] == 2);
-  REQUIRE(r0.source_ids()[3] == 3);
-  REQUIRE(r0.source_ids()[4] == 4);
+  REQUIRE(*(r0.source_ids().begin() + 0) == 0);
+  REQUIRE(*(r0.source_ids().begin() + 1) == 1);
+  REQUIRE(*(r0.source_ids().begin() + 2) == 2);
+  REQUIRE(*(r0.source_ids().begin() + 3) == 3);
+  REQUIRE(*(r0.source_ids().begin() + 4) == 4);
 }
 
 /*------------------------------------------------------------------------------------------------*/

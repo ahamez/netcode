@@ -98,7 +98,8 @@ public:
     assert(not incoming_r.source_ids().empty());
     assert(std::is_sorted(begin(incoming_r.source_ids()), end(incoming_r.source_ids())));
 
-    if (last_id_ and incoming_r.source_ids().back() < *last_id_)
+    //                 last id in source_ids
+    if (last_id_ and *(incoming_r.source_ids().end() - 1) < *last_id_)
     {
       // It's a repair that provide outdated informations, drop it.
       return;
@@ -113,7 +114,7 @@ public:
     // Remove sources with an id smaller than the smallest the current repair encodes.
     // Remove repairs which encodes sources with an id smaller than the smallest the current repair
     /// encodes.
-    drop_outdated(incoming_r.source_ids().front());
+    drop_outdated(*incoming_r.source_ids().begin());
 
     /// Check if incoming_r is useless. Indeed, if all sources it references were correctly
     /// received, then it's useless to remove them from this repair, which is a costly operation.
@@ -332,7 +333,7 @@ public:
   noexcept
   {
     assert(r.source_ids().size() == 1 && "Repair encodes more that 1 source");
-    const auto src_id = r.source_ids().front();
+    const auto src_id = *r.source_ids().begin();
 
     // The inverse of the coefficient which was used to encode the missing source.
     const auto inv = gf_.divide(1, coefficient(gf_, r.id(), src_id));
@@ -494,9 +495,9 @@ private:
       {
         const auto& r = r_cit->second;
         assert(not r.source_ids().empty());
-        assert(    (r.source_ids().front() <  id and r.source_ids().back() <  id)
-                or (r.source_ids().front() >= id and r.source_ids().back() >= id));
-        if (r.source_ids().back() < id)
+        assert(    (*r.source_ids().begin() <  id and *(r.source_ids().end() - 1) <  id)
+                or (*r.source_ids().begin() >= id and *(r.source_ids().end() - 1) >= id));
+        if (*(r.source_ids().end() - 1) < id)
         {
           // We found a repair for which all encoded sources have an identifier smaller than id,
           // thus it is outdated.

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>   // transform
 #include <arpa/inet.h> // htonl, htons
 #include <cassert>
 #include <iterator>    // back_inserter
@@ -9,7 +8,7 @@
 #include "netcode/detail/multiple.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/serializer.hh"
-#include "netcode/detail/types.hh"
+#include "netcode/detail/source_id_list.hh"
 
 namespace ntc { namespace detail { namespace protocol {
 
@@ -64,15 +63,17 @@ struct simple final
     data += sizeof(std::uint8_t);
 
     // Read size.
-    const std::uint16_t size = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
+    const std::uint16_t nb_ids = ntohs(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read source ids.
-    const auto* data_as_ids = reinterpret_cast<const std::uint32_t*>(data);
     source_id_list ids;
-    ids.reserve(size);
-    std::transform( data_as_ids, data_as_ids + size, std::back_inserter(ids)
-                  , [](std::uint32_t id){return ntohl(id);});
+    ids.reserve(nb_ids);
+    for (auto i = 0ul; i < nb_ids; ++i)
+    {
+      ids.insert(ids.end(), ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
+      data += sizeof(std::uint32_t);
+    }
 
     return {std::move(ids)};
   }
@@ -139,7 +140,7 @@ struct simple final
     ids.reserve(nb_ids);
     for (auto i = 0ul; i < nb_ids; ++i)
     {
-      ids.push_back(ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
+      ids.insert(ids.end(), ntohl(*reinterpret_cast<const std::uint32_t*>(data)));
       data += sizeof(std::uint32_t);
     }
 

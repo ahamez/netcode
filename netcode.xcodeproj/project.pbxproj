@@ -1110,7 +1110,7 @@
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
-		2B7526921AB4ABE9008DEDAD /* types.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hh; sourceTree = "<group>"; };
+		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
 		2B9222681AB4BCD4009A2843 /* test_symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_symbol.cc; sourceTree = "<group>"; };
 		2B92226A1AB55B5F009A2843 /* protocol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = protocol.hh; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
@@ -3312,8 +3312,8 @@
 				2BE319741AB2E43A001AA9DF /* serializer.hh */,
 				2B4E310A1AC0761C0002E97C /* square_matrix.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
+				2B7526921AB4ABE9008DEDAD /* source_id_list.hh */,
 				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
-				2B7526921AB4ABE9008DEDAD /* types.hh */,
 				2B4977FE1AC4137500A76CF8 /* coefficient.hh */,
 			);
 			path = detail;

@@ -36,7 +36,7 @@ public:
     repair.buffer().resize(make_multiple(src_cit->buffer().size(), 16));
 
     // Add the current source id to the list of encoded sources by this repair.
-    repair.source_ids().emplace_back(src_cit->id());
+    repair.source_ids().insert(repair.source_ids().end(), src_cit->id());
 
     // The coefficient for this repair and source.
     auto coeff = coefficient(gf_, repair.id(), src_cit->id());
@@ -62,7 +62,7 @@ public:
       coeff = coefficient(gf_, repair.id(), src_cit->id());
 
       // Add the current source id to the list of encoded sources by this repair.
-      repair.source_ids().emplace_back(src_cit->id());
+      repair.source_ids().insert(repair.source_ids().end(), src_cit->id());
 
       // Multiply and add for all following sources.
       gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), src_cit->buffer().size()

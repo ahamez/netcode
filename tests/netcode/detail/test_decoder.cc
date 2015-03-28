@@ -64,7 +64,7 @@ TEST_CASE("Decoder: remove a source from a repair")
     const detail::source s0{0, detail::byte_buffer{s0_symbol}, s0_symbol.size()};
     decoder.remove_source_from_repair(s0, r0);
     REQUIRE(r0.source_ids().size() == 1);
-    REQUIRE(r0.source_ids().front() == 1);
+    REQUIRE(*(r0.source_ids().begin()) == 1);
 
     const auto s1 = decoder.create_source_from_repair(r0);
     REQUIRE(s1.user_size() == s1_symbol.size());
@@ -80,7 +80,7 @@ TEST_CASE("Decoder: remove a source from a repair")
     const detail::source s1{1, detail::byte_buffer{s1_symbol}, s1_symbol.size()};
     decoder.remove_source_from_repair(s1, r0);
     REQUIRE(r0.source_ids().size() == 1);
-    REQUIRE(r0.source_ids().front() == 0);
+    REQUIRE(*(r0.source_ids().begin()) == 0);
 
     const auto s0 = decoder.create_source_from_repair(r0);
     REQUIRE(s0.user_size() == s0_symbol.size());

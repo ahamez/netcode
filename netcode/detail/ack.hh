@@ -1,6 +1,6 @@
 #pragma once
 
-#include "netcode/detail/types.hh"
+#include "netcode/detail/source_id_list.hh"
 
 namespace ntc { namespace detail {
 
@@ -57,7 +57,7 @@ public:
   reset()
   noexcept
   {
-    source_ids_.resize(0);
+    source_ids_.clear();
   }
 
 private:

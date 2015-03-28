@@ -126,11 +126,11 @@ private:
     ack(src.id());
   }
 
-  /// @brief Create and send an ack if needed.
+  /// @brief Send an ack if needed.
   void
   ack(std::uint32_t src_id)
   {
-    detail::insertion_sort(ack_.source_ids(), src_id);
+    ack_.source_ids().insert(src_id);
 
     // Do we need to send an ack?
     const auto now = std::chrono::steady_clock::now();

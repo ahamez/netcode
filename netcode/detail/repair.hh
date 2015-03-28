@@ -1,7 +1,7 @@
 #pragma once
 
 #include "netcode/detail/buffer.hh"
-#include "netcode/detail/types.hh"
+#include "netcode/detail/source_id_list.hh"
 
 namespace ntc { namespace detail {
 
@@ -96,8 +96,8 @@ public:
   reset()
   noexcept
   {
-    sources_ids_.resize(0);
-    buffer_.resize(0);
+    sources_ids_.clear();
+    buffer_.clear();
   }
 
   std::size_t

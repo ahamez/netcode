@@ -3,7 +3,7 @@
 #include <list>
 
 #include "netcode/detail/source.hh"
-#include "netcode/detail/types.hh"
+#include "netcode/detail/source_id_list.hh"
 
 namespace ntc { namespace detail {
 

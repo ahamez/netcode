@@ -33,7 +33,7 @@ TEST_CASE("Encode one source")
 
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
-  REQUIRE(r0.source_ids()[0] == 0);
+  REQUIRE(*r0.source_ids().begin() == 0);
 
   // The inverse of the coefficient.
   const auto inv = gf.divide(1, detail::coefficient(gf, 0, 0));
@@ -116,8 +116,8 @@ TEST_CASE("Encode two sources")
 
   // We need an encoder to fill the repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
-  REQUIRE(r0.source_ids()[0] == 0);
-  REQUIRE(r0.source_ids()[1] == 1);
+  REQUIRE(*(r0.source_ids().begin() + 0) == 0);
+  REQUIRE(*(r0.source_ids().begin() + 1) == 1);
 
   SECTION("s0 is lost")
   {
@@ -184,14 +184,14 @@ TEST_CASE("Two sources lost")
   // Create first repair.
   detail::encoder{8}(r0, sl.cbegin(), sl.cend());
   REQUIRE(r0.source_ids().size() == 2);
-  REQUIRE(r0.source_ids()[0] == 0);
-  REQUIRE(r0.source_ids()[1] == 1);
+  REQUIRE(*(r0.source_ids().begin() + 0) == 0);
+  REQUIRE(*(r0.source_ids().begin() + 1) == 1);
 
   // Create second repair.
   detail::encoder{8}(r1, sl.cbegin(), sl.cend());
   REQUIRE(r1.source_ids().size() == 2);
-  REQUIRE(r1.source_ids()[0] == 0);
-  REQUIRE(r1.source_ids()[1] == 1);
+  REQUIRE(*(r1.source_ids().begin() + 0) == 0);
+  REQUIRE(*(r1.source_ids().begin() + 1) == 1);
 
   // Oops, s0 and s1 are lost, but not r0 and r1.
 
