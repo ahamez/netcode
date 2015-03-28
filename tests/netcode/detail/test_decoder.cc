@@ -403,11 +403,11 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
   // Now, check contents.
   REQUIRE(decoder.sources().find(0)->second.user_size() == s0_symbol.size());
-  REQUIRE( std::equal( s0_symbol.begin(), s0_symbol.end()
-                     , decoder.sources().find(0)->second.buffer().begin()));
+  REQUIRE(std::equal( s0_symbol.begin(), s0_symbol.end()
+                    , decoder.sources().find(0)->second.buffer().begin()));
   REQUIRE(decoder.sources().find(1)->second.user_size() == s1_symbol.size());
-  REQUIRE( std::equal( s1_symbol.begin(), s1_symbol.end()
-                     , decoder.sources().find(1)->second.buffer().begin()));
+  REQUIRE(std::equal( s1_symbol.begin(), s1_symbol.end()
+                    , decoder.sources().find(1)->second.buffer().begin()));
 
   SECTION("Don't ack")
   {
@@ -444,8 +444,21 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
     // Send 1 more repair, full decoding could take place.
     decoder(std::move(r4));
-    if (decoder.nb_failed_full_decodings() == nb_failed_full_decodings)
+    if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
     {
+      // Previous decoding attempt failed.
+      REQUIRE(decoder.repairs().size() == 2);
+
+      ++nb_failed_full_decodings;
+      // Try with a new repair.
+      detail::repair r5{5};
+      encoder(r5, sl.cbegin(), sl.cend());
+      decoder(std::move(r5));
+      if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
+      {
+        REQUIRE(false); // Failure to decode, again ?!!
+      }
+
       REQUIRE(decoder.sources().size() == 5);
       REQUIRE(decoder.sources().count(0));
       REQUIRE(decoder.sources().count(1));
@@ -454,25 +467,19 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       REQUIRE(decoder.sources().count(4));
       REQUIRE(decoder.missing_sources().size() == 0);
       REQUIRE(decoder.repairs().size() == 0);
-    }
-    else // decoding failed
-    {
-      ++nb_failed_full_decodings;
-      // Try with a new repair.
-      detail::repair r5{5};
-      encoder(r5, sl.cbegin(), sl.cend());
-      decoder(std::move(r5));
-      if (decoder.nb_failed_full_decodings() == nb_failed_full_decodings)
-      {
-        REQUIRE(decoder.sources().size() == 5);
-        REQUIRE(decoder.sources().count(0));
-        REQUIRE(decoder.sources().count(1));
-        REQUIRE(decoder.sources().count(2));
-        REQUIRE(decoder.sources().count(3));
-        REQUIRE(decoder.sources().count(4));
-        REQUIRE(decoder.missing_sources().size() == 0);
-        REQUIRE(decoder.repairs().size() == 0);
-      }
+
+
+      // Check contents.
+      REQUIRE(decoder.sources().find(2)->second.user_size() == s2_symbol.size());
+      REQUIRE(std::equal( s2_symbol.begin(), s2_symbol.end()
+                        , decoder.sources().find(2)->second.buffer().begin()));
+      REQUIRE(decoder.sources().find(3)->second.user_size() == s3_symbol.size());
+      REQUIRE(std::equal( s3_symbol.begin(), s3_symbol.end()
+                        , decoder.sources().find(3)->second.buffer().begin()));
+      REQUIRE(decoder.sources().find(4)->second.user_size() == s4_symbol.size());
+      REQUIRE(std::equal( s4_symbol.begin(), s4_symbol.end()
+                        , decoder.sources().find(4)->second.buffer().begin()));
+
     }
   }
 
@@ -511,32 +518,39 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
     // Send 1 more repair, full decoding could take place.
     decoder(std::move(r4));
-    if (decoder.nb_failed_full_decodings() == nb_failed_full_decodings)
+    if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
     {
-      REQUIRE(decoder.sources().size() == 3);
-      REQUIRE(decoder.sources().count(2));
-      REQUIRE(decoder.sources().count(3));
-      REQUIRE(decoder.sources().count(4));
-      REQUIRE(decoder.missing_sources().size() == 0);
-      REQUIRE(decoder.repairs().size() == 0);
-    }
-    else // decoding failed
-    {
+      // Previous decoding attempt failed.
+      REQUIRE(decoder.repairs().size() == 2);
+
       ++nb_failed_full_decodings;
       // Try with a new repair.
       detail::repair r5{5};
       encoder(r5, sl.cbegin(), sl.cend());
       decoder(std::move(r5));
-      if (decoder.nb_failed_full_decodings() == nb_failed_full_decodings)
+      if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
       {
-        REQUIRE(decoder.sources().size() == 3);
-        REQUIRE(decoder.sources().count(2));
-        REQUIRE(decoder.sources().count(3));
-        REQUIRE(decoder.sources().count(4));
-        REQUIRE(decoder.missing_sources().size() == 0);
-        REQUIRE(decoder.repairs().size() == 0);
+        REQUIRE(false); // Failure to decode, again ?!!
       }
     }
+
+    REQUIRE(decoder.sources().size() == 3);
+    REQUIRE(decoder.sources().count(2));
+    REQUIRE(decoder.sources().count(3));
+    REQUIRE(decoder.sources().count(4));
+    REQUIRE(decoder.missing_sources().size() == 0);
+    REQUIRE(decoder.repairs().size() == 0);
+
+    // Check contents.
+    REQUIRE(decoder.sources().find(2)->second.user_size() == s2_symbol.size());
+    REQUIRE(std::equal( s2_symbol.begin(), s2_symbol.end()
+                      , decoder.sources().find(2)->second.buffer().begin()));
+    REQUIRE(decoder.sources().find(3)->second.user_size() == s3_symbol.size());
+    REQUIRE(std::equal( s3_symbol.begin(), s3_symbol.end()
+                      , decoder.sources().find(3)->second.buffer().begin()));
+    REQUIRE(decoder.sources().find(4)->second.user_size() == s4_symbol.size());
+    REQUIRE(std::equal( s4_symbol.begin(), s4_symbol.end()
+                      , decoder.sources().find(4)->second.buffer().begin()));
   }
 }
 
