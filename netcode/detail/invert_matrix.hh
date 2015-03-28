@@ -38,7 +38,6 @@ noexcept
   for (auto i = 0ul; i < cols; ++i)
   {
     const auto row_start = i * cols;
-    const auto row = i;
 
     // Swap rows if we have a zero i,i element.
     // If we can't swap, then the matrix was not invertible.
