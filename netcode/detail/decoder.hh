@@ -6,6 +6,7 @@
 
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
+#include <boost/optional.hpp>
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"
@@ -60,6 +61,7 @@ public:
     , callback_(h)
     , repairs_{}
     , sources_{}
+    , last_id_{}
     , missing_sources_{}
     , nb_useless_repairs_{0}
     , nb_failed_full_decodings_{0}
@@ -71,16 +73,15 @@ public:
   void
   operator()(source&& src)
   {
-    if (sources_.count(src.id()))
+    if (last_id_ and src.id() < *last_id_)
     {
-      // This source exists in the set of received sources.
+      // This source has already been seen in the past.
       return;
     }
 
-    if (not missing_sources().empty() and src.id() < missing_sources_.begin()->first)
+    if (sources_.count(src.id()))
     {
-      // This source has an id smaller than the id of the oldest missing source, thus it means
-      // that it was already decoded, received or abandoned.
+      // This source exists in the set of received sources.
       return;
     }
 
@@ -399,6 +400,9 @@ public:
   drop_outdated(std::uint32_t id)
   noexcept
   {
+    // All sources with an identifier smaller than last_id_ are now considered outdated.
+    last_id_ = id;
+
     // First, find the upper bound of missing sources with an identifier smaller than id.
     const auto missing_lb = missing_sources_.lower_bound(id);
 
@@ -485,6 +489,11 @@ private:
 
   /// @brief The set of received sources.
   sources_set_type sources_;
+
+  /// @brief Remember the last source identifier.
+  ///
+  /// All sources with an identifier smaller than @p last_id_ were received or decoded in the past.
+  boost::optional<std::uint32_t> last_id_;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   missing_sources_type missing_sources_;

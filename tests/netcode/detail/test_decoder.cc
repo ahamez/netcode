@@ -562,3 +562,50 @@ TEST_CASE("Decoder: duplicate source")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: out-of-order source after repair")
+{
+  detail::encoder encoder{8};
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  detail::source_list sl;
+  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+  detail::repair r0{0};
+  encoder(r0, sl.cbegin(), sl.cend());
+
+  // Send repair
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 1);
+  REQUIRE(decoder.sources().count(0));
+
+  SECTION("No ack")
+  {
+    // Eventually, the missing source is received.
+    decoder(detail::source{0, detail::byte_buffer{}, 0});
+    REQUIRE(decoder.sources().size() == 1);
+    REQUIRE(decoder.sources().count(0));
+  }
+
+  SECTION("Ack")
+  {
+    // No more s0 on encoder side.
+    sl.pop_front();
+
+    // A new source along with a new repair.
+    sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+    detail::repair r1{0};
+    encoder(r1, sl.cbegin(), sl.cend());
+
+    // Send repair
+    decoder(std::move(r1));
+    REQUIRE(decoder.sources().size() == 1);
+    REQUIRE(decoder.sources().count(1));
+
+    // Eventually, the missing source is received.
+    decoder(detail::source{0, detail::byte_buffer{}, 0});
+    REQUIRE(decoder.sources().size() == 1);
+    REQUIRE(decoder.sources().count(1));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
