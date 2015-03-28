@@ -69,7 +69,7 @@ public:
     , inv_{16}
   {}
 
-  /// @brief What to do when a source is received or decoded.
+  /// @brief What to do when a source is received.
   void
   operator()(source&& src)
   {
@@ -85,37 +85,7 @@ public:
       return;
     }
 
-    // Notify netcode::encoder.
-    callback_(src);
-
-    // First, look for all repairs that contain this incoming source in order to remove it.
-    const auto search = missing_sources_.find(src.id());
-    if (search != missing_sources_.end())
-    {
-      for (auto r_cit : search->second)
-      {
-        auto& r = r_cit->second;
-        remove_source_from_repair(src, r);
-
-        if (r.source_ids().size() == 1)
-        {
-          // Create missing source and give it back to the decoder.
-          (*this)(create_source_from_repair(r));
-
-          // Source reconstructed, we can now safely erase the current repair as it is no longer
-          // useful.
-          repairs_.erase(r_cit);
-        }
-      }
-    }
-
-    // Now, there are no more repairs that reference the current source, thus we now update the
-    // mapping src -> repairs.
-    missing_sources_.erase(src.id());
-
-    // Finally, insert-move this new source in the set of known sources.
-    const auto src_id = src.id(); // to force evaluation order in the following call.
-    sources_.emplace(src_id, std::move(src));
+    add_source_recursive(std::move(src));
 
     attempt_full_decoding();
   }
@@ -209,11 +179,12 @@ public:
       // Source is no longer missing.
       missing_sources_.erase(src.id());
 
-      // Give back the decode source to the decoder.
-      (*this)(std::move(src));
-
       // This repair is no longer needed.
       repairs_.erase(r_cit);
+
+      // Give back the decoded source to the decoder.
+      add_source_recursive(std::move(src));
+
       return;
     }
 
@@ -236,6 +207,7 @@ public:
     }
 
     assert(missing_sources_.size() == repairs().size() && "More repairs than missing sources");
+    assert(missing_sources_.size() > 1 && "Trying to create a matrix for only one missing source.");
 
     // Build coefficient matrix.
     coefficients_.resize(repairs_.size());
@@ -377,24 +349,6 @@ public:
     return src;
   }
 
-  /// @brief Remove a source from a repair, but not the id from the list of source identifiers.
-  /// @attention The id of the removed src shall be removed from the repair's list of source
-  /// identifiers.
-  void
-  remove_source_data_from_repair(const source& src, repair& r)
-  noexcept
-  {
-    assert(r.source_ids().size() > 1 && "Repair encodes only one source");
-
-    const auto coeff = coefficient(gf_, r.id(), src.id());
-
-    // Remove source size.
-    r.size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
-
-    // Remove symbol.
-    gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
-  }
-
   /// @brief Remove a source from a repair.
   void
   remove_source_from_repair(const source& src, repair& r)
@@ -405,6 +359,118 @@ public:
     const auto id_search = std::find(begin(r.source_ids()), end(r.source_ids()), src.id());
     assert(id_search != end(r.source_ids()) && "Source id not in current repair");
     r.source_ids().erase(id_search);
+  }
+
+  /// @brief Get the current set of repairs, indexed by identifier.
+  const repairs_set_type&
+  repairs()
+  const noexcept
+  {
+    return repairs_;
+  }
+
+  /// @brief Get the current set of sources, indexed by identifier.
+  const sources_set_type&
+  sources()
+  const noexcept
+  {
+    return sources_;
+  }
+
+  /// @brief Get the current set of missing sources.
+  const missing_sources_type&
+  missing_sources()
+  const noexcept
+  {
+    return missing_sources_;
+  }
+
+  /// @brief Get the number of repairs that were dropped because they useless.
+  std::size_t
+  nb_useless_repairs()
+  const noexcept
+  {
+    return nb_useless_repairs_;
+  }
+
+  ///
+  std::size_t
+  nb_failed_full_decodings()
+  const noexcept
+  {
+    return nb_failed_full_decodings_;
+  }
+
+private:
+
+  /// @brief Recursively decode any repair that encodes only one source.
+  void
+  add_source_recursive(source&& src)
+  {
+    // Notify uppper decoder.
+    callback_(src);
+
+    // First, look for all repairs that encode this source.
+    const auto search = missing_sources_.find(src.id());
+    if (search != missing_sources_.end())
+    {
+      for (auto r_cit : search->second)
+      {
+        auto& r = r_cit->second;
+        remove_source_from_repair(src, r);
+      }
+
+      // It's no longer a missing source.
+      missing_sources_.erase(search);
+    }
+
+    // Now, look for repairs that encodes only one source. When one is found, the corresponding
+    // encoded source is decoded and the repair is erased.
+    for ( auto miss_cit = missing_sources_.begin(), miss_end = missing_sources_.end()
+        ; miss_cit != miss_end;)
+    {
+      const auto& repairs_cits = miss_cit->second;
+      // Does this missing source is references by multiple repairs?
+      if (repairs_cits.size() == 1)
+      {
+        // Some shortcuts.
+        const auto r_cit = *repairs_cits.begin();
+        const auto& r = r_cit->second;
+
+        // Does this repair encode only one source?
+        if (r.source_ids().size() == 1)
+        {
+          // This missing source is referenced by only repair and this repair reference only one
+          // missing source. Thus, we can reconstruct the missing source.
+          auto decoded_src = create_source_from_repair(r);
+
+          // We can erase this repair.
+          repairs_.erase(r_cit);
+
+          // It's no longer a missing source.
+          const auto to_erase = miss_cit;
+          ++miss_cit;
+          missing_sources_.erase(to_erase);
+
+          // This newly decoded source might triger the decoding of other sources.
+          add_source_recursive(std::move(decoded_src));
+        }
+        else
+        {
+          // This repair encodes too much sources. Try next missing source.
+          ++miss_cit;
+        }
+      }
+      else
+      {
+        // This missing source if referenced by multiple repairs. Try next missing source.
+        ++miss_cit;
+      }
+    }
+
+    // Finally, insert-move this new source in the set of known sources.
+    const auto src_id = src.id(); // to force evaluation order in the following call.
+    sources_.emplace(src_id, std::move(src));
   }
 
   /// @brief Drop outdated sources and repairs.
@@ -447,44 +513,22 @@ public:
     }
   }
 
-  /// @brief Get the current set of repairs, indexed by identifier.
-  const repairs_set_type&
-  repairs()
-  const noexcept
+  /// @brief Remove a source from a repair, but not the id from the list of source identifiers.
+  /// @attention The id of the removed src shall be removed from the repair's list of source
+  /// identifiers.
+  void
+  remove_source_data_from_repair(const source& src, repair& r)
+  noexcept
   {
-    return repairs_;
-  }
+    assert(r.source_ids().size() > 1 && "Repair encodes only one source");
 
-  /// @brief Get the current set of sources, indexed by identifier.
-  const sources_set_type&
-  sources()
-  const noexcept
-  {
-    return sources_;
-  }
+    const auto coeff = coefficient(gf_, r.id(), src.id());
 
-  /// @brief Get the current set of missing sources.
-  const missing_sources_type&
-  missing_sources()
-  const noexcept
-  {
-    return missing_sources_;
-  }
+    // Remove source size.
+    r.size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
 
-  /// @brief Get the number of repairs that were dropped because they useless.
-  std::size_t
-  nb_useless_repairs()
-  const noexcept
-  {
-    return nb_useless_repairs_;
-  }
-
-  ///
-  std::size_t
-  nb_failed_full_decodings()
-  const noexcept
-  {
-    return nb_failed_full_decodings_;
+    // Remove symbol.
+    gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
   }
 
 private:
