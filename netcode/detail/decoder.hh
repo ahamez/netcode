@@ -257,12 +257,6 @@ public:
         }();
         ++row;
       }
-
-      // Empty row.
-      for (; row < repairs_.size(); ++row)
-      {
-        coefficients_(row, col) = 0;
-      }
       ++col;
     }
 
