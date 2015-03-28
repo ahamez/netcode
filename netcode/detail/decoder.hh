@@ -223,6 +223,8 @@ public:
       return;
     }
 
+    assert(missing_sources_.size() == repairs().size() && "More repairs than missing sources");
+
     // Build coefficient matrix.
     coefficients_.resize(repairs_.size());
     auto col = 0ul;
@@ -416,9 +418,8 @@ public:
       {
         const auto& r = r_cit->second;
         assert(not r.source_ids().empty());
-        assert(    (r.source_ids().front() < id  and r.source_ids().back() < id)
-                or (r.source_ids().front() >= id and r.source_ids().back() >= id)
-              );
+        assert(    (r.source_ids().front() <  id and r.source_ids().back() <  id)
+                or (r.source_ids().front() >= id and r.source_ids().back() >= id));
         if (r.source_ids().back() < id)
         {
           // We found a repair for which all encoded sources have an identifier smaller than id,
