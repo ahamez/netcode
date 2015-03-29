@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <thread>
 
 #include "tests/catch.hpp"
 
@@ -93,6 +94,7 @@ TEST_CASE("Decoder generate correct ack")
 {
   default_configuration conf;
   conf.rate = 100; // Make sure no repairs are sent.
+  conf.ack_frequency = std::chrono::milliseconds{100};
 
   ntc::encoder enc{my_handler{}, conf};
   ntc::decoder dec{my_handler{}, my_handler{}};
@@ -108,13 +110,28 @@ TEST_CASE("Decoder generate correct ack")
   // Send source to decoder.
   REQUIRE(dec.notify(copy_packet(enc_handler.data, enc_handler.written)));
 
-  // Now force the sending of an ack.
-  dec.send_ack();
-  REQUIRE(dec.nb_sent_ack() == 1);
+  SECTION("Force ack")
+  {
+    // Now force the sending of an ack.
+    dec.send_ack();
+    REQUIRE(dec.nb_sent_ack() == 1);
 
-  // Sent it to the encoder.
-  REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
-  REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
+    // Sent it to the encoder.
+    REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
+  }
+
+  SECTION("Wait for trigger")
+  {
+    // Wait long enough just to be sure.
+    std::this_thread::sleep_for(std::chrono::milliseconds{200});
+    dec.maybe_ack();
+    REQUIRE(dec.nb_sent_ack() == 1);
+
+    // Sent it to the encoder.
+    REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

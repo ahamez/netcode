@@ -155,6 +155,19 @@ public:
     ack_.reset();
   }
 
+  /// @brief Send an ack if needed.
+  void
+  maybe_ack()
+  {
+    // Do we need to send an ack?
+    const auto now = std::chrono::steady_clock::now();
+    if ((now - last_ack_date_) >= ack_frequency_)
+    {
+      send_ack();
+      last_ack_date_ = now;
+    }
+  }
+
 private:
 
   /// @brief Notify the encoder that some data has been received.
@@ -203,14 +216,7 @@ private:
   maybe_ack(std::uint32_t src_id)
   {
     ack_.source_ids().insert(src_id);
-
-    // Do we need to send an ack?
-    const auto now = std::chrono::steady_clock::now();
-    if ((now - last_ack_date_) >= ack_frequency_)
-    {
-      send_ack();
-      last_ack_date_ = now;
-    }
+    maybe_ack();
   }
 
 private:
