@@ -5,33 +5,30 @@
 
 #include <boost/endian/conversion.hpp>
 
+#include "netcode/detail/ack.hh"
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/packetizer_base.hh"
+#include "netcode/detail/source.hh"
 #include "netcode/detail/source_id_list.hh"
+#include "netcode/detail/repair.hh"
+#include "netcode/handler.hh"
 
 namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief A simple packetizer with no optimization whatsoever.
-struct packetizer_simple final
-  : public packetizer_base
+/// @brief Prepare and construct ack/repair/source for network.
+struct packetizer final
 {
-  /// @brief Constructor. Forward to base clase constructor.
-  ///
-  /// @note @code using packetizer_simple::packetizer_simple @endcode would be the right way to
-  /// write it, but GCC 4.7 doesn't support this feature.
-  template <typename... Args>
-  packetizer_simple(Args&&... args)
-    : packetizer_base{std::forward<Args>(args)...}
+  /// @brief Constructor.
+  packetizer(handler& h)
+    : data_handler_(h)
   {}
 
   void
   write_ack(const ack& pkt)
-  override
   {
     using namespace boost::endian;
 
@@ -60,7 +57,6 @@ struct packetizer_simple final
 
   ack
   read_ack(const char* data)
-  override
   {
     using namespace boost::endian;
 
@@ -88,7 +84,6 @@ struct packetizer_simple final
 
   void
   write_repair(const repair& pkt)
-  override
   {
     using namespace boost::endian;
 
@@ -139,7 +134,6 @@ struct packetizer_simple final
 
   repair
   read_repair(const char* data)
-  override
   {
     using namespace boost::endian;
 
@@ -184,7 +178,6 @@ struct packetizer_simple final
 
   void
   write_source(const source& src)
-  override
   {
     using namespace boost::endian;
 
@@ -215,7 +208,6 @@ struct packetizer_simple final
 
   source
   read_source(const char* data)
-  override
   {
     using namespace boost::endian;
 
@@ -240,6 +232,19 @@ struct packetizer_simple final
 
     return {id, std::move(buffer), user_sz};
   }
+
+private:
+
+  /// @brief Convenient method to write data using user's handler.
+  void
+  write(const void* data, std::size_t len)
+  noexcept
+  {
+    data_handler_(reinterpret_cast<const char*>(data), len);
+  }
+
+  /// @brief The handler which serializes packets.
+  handler& data_handler_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

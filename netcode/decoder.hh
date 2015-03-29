@@ -3,16 +3,14 @@
 #include <chrono>
 
 #include "netcode/detail/decoder.hh"
-#include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/packetizer_base.hh"
+#include "netcode/detail/packetizer.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
 #include "netcode/handler.hh"
 #include "netcode/packet.hh"
-#include "netcode/packetizer.hh"
 
 namespace ntc {
 
@@ -41,7 +39,7 @@ public:
     , nb_sent_ack_{0}
     , data_handler_{data_handler}
     , symbol_handler_{symbol_handler}
-    , packetizer_{detail::make_packetizer(conf.packetizer_type, data_handler_)}
+    , packetizer_{data_handler_}
     , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
@@ -152,7 +150,7 @@ public:
   send_ack()
   {
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
-    packetizer_->write_ack(ack_);
+    packetizer_.write_ack(ack_);
     nb_sent_ack_ +=1;
 
     // Start a fresh new ack.
@@ -186,7 +184,7 @@ private:
       {
         nb_received_repairs_ += 1;
         // Give the decoder this received repair.
-        decoder_(packetizer_->read_repair(data));
+        decoder_(packetizer_.read_repair(data));
         return true;
       }
 
@@ -194,7 +192,7 @@ private:
       {
         nb_received_sources_ += 1;
         // Give the decoder this received source.
-        decoder_(packetizer_->read_source(data));
+        decoder_(packetizer_.read_source(data));
         return true;
       }
 
@@ -257,7 +255,7 @@ private:
   handler symbol_handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::packetizer_base> packetizer_;
+  detail::packetizer packetizer_;
 
   /// @brief The component that rebuilds sources using repairs.
   detail::decoder decoder_;

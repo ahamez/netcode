@@ -133,7 +133,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 
   // Directly use the serializer that would have been called by the sender.
   handler h = my_handler{data.buffer(), nb_written};
-  detail::packetizer_simple serializer{h};
+  detail::packetizer serializer{h};
 
   SECTION("incoming ack")
   {
@@ -270,7 +270,6 @@ TEST_CASE("Encoder sends correct sources")
   const auto s0 = {'A', 'B', 'C'};
 
   enc.commit(copy_symbol{begin(s0), end(s0)});
-  // Test specific to packetizer_simple.
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
                                  + sizeof(std::uint16_t)     // user symbol size
@@ -297,7 +296,6 @@ TEST_CASE("Encoder sends repairs")
   const auto s0 = {'a', 'b', 'c'};
 
   enc.commit(copy_symbol{begin(s0), end(s0)});
-  // Test specific to packetizer_simple.
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
                     + sizeof(std::uint16_t)     // user symbol size

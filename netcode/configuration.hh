@@ -4,7 +4,6 @@
 #include <limits> // numeric_limits
 
 #include "netcode/code.hh"
-#include "netcode/packetizer.hh"
 
 namespace ntc {
 
@@ -18,9 +17,6 @@ struct configuration
 
   /// @brief
   code code_type = code::systematic;
-
-  /// @brief
-  packetizer packetizer_type = packetizer::simple;
 
   /// @brief
   std::size_t rate = 5;

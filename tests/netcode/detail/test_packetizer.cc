@@ -2,7 +2,7 @@
 
 #include "tests/catch.hpp"
 
-#include "netcode/detail/packetizer_simple.hh"
+#include "netcode/detail/packetizer.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -40,10 +40,10 @@ target(const handler& h)
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("An ack is (de)serialized by packetizer_simple")
+TEST_CASE("An ack is (de)serialized by packetizer")
 {
   handler h = my_handler{};
-  detail::packetizer_simple serializer{h};
+  detail::packetizer serializer{h};
 
   const detail::ack a_in{{0,1,2,3}};
 
@@ -60,10 +60,10 @@ TEST_CASE("An ack is (de)serialized by packetizer_simple")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A repair is (de)serialized by packetizer_simple")
+TEST_CASE("A repair is (de)serialized by packetizer")
 {
   handler h = my_handler{};
-  detail::packetizer_simple serializer{h};
+  detail::packetizer serializer{h};
 
   // The values in the constructor are completely meaningless for this test.
   const detail::repair r_in{42, 3, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
@@ -87,10 +87,10 @@ TEST_CASE("A repair is (de)serialized by packetizer_simple")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("A source is (de)serialized by packetizer_simple")
+TEST_CASE("A source is (de)serialized by packetizer")
 {
   handler h = my_handler{};
-  detail::packetizer_simple serializer{h};
+  detail::packetizer serializer{h};
 
   const detail::source s_in{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4};
 

@@ -3,9 +3,8 @@
 #include <algorithm> // is_sorted
 
 #include "netcode/detail/encoder.hh"
-#include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
-#include "netcode/detail/packetizer_base.hh"
+#include "netcode/detail/packetizer.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
@@ -13,7 +12,6 @@
 #include "netcode/code.hh"
 #include "netcode/handler.hh"
 #include "netcode/packet.hh"
-#include "netcode/packetizer.hh"
 #include "netcode/symbol.hh"
 
 namespace ntc {
@@ -42,7 +40,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , data_handler_{data_handler}
-    , packetizer_{detail::make_packetizer(conf.packetizer_type, data_handler_)}
+    , packetizer_{data_handler_}
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -188,7 +186,7 @@ private:
       = sources_.emplace(current_source_id_, std::move(sym.buffer_), sym.user_size_);
 
     // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-    packetizer_->write_source(insertion);
+    packetizer_.write_source(insertion);
 
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % rate_ == 0)
@@ -199,7 +197,7 @@ private:
 
       mk_repair();
       // Ask packetizer to handle the bytes of the new repair (will be routed to user's handler).
-      packetizer_->write_repair(repair_);
+      packetizer_.write_repair(repair_);
     }
 
     current_source_id_ += 1;
@@ -213,7 +211,7 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      const auto source_ids = packetizer_->read_ack(data).source_ids();
+      const auto source_ids = packetizer_.read_ack(data).source_ids();
       // Identifiers should be sorted.
       assert(std::is_sorted(begin(source_ids), end(source_ids)));
       sources_.erase(begin(source_ids), end(source_ids));
@@ -270,7 +268,7 @@ private:
   handler data_handler_;
 
   /// @brief How to serialize packets.
-  std::unique_ptr<detail::packetizer_base> packetizer_;
+  detail::packetizer packetizer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;

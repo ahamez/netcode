@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B272C521AC75C1800E6FEDC /* test_packetizer_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B272C511AC75C1800E6FEDC /* test_packetizer_simple.cc */; };
+		2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B272C511AC75C1800E6FEDC /* test_packetizer.cc */; };
 		2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BBE1AB861C200640FF8 /* test_decoder.cc */; };
 		2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B2A96261AC59120001B8F66 /* test_encoder.cc */; };
@@ -565,11 +565,10 @@
 		2B272C4D1AC74A8C00E6FEDC /* declval.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = declval.hpp; sourceTree = "<group>"; };
 		2B272C4E1AC74A8C00E6FEDC /* enable_if.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = enable_if.hpp; sourceTree = "<group>"; };
 		2B272C4F1AC74A8C00E6FEDC /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
-		2B272C501AC75A1E00E6FEDC /* packetizer_simple.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer_simple.hh; sourceTree = "<group>"; };
-		2B272C511AC75C1800E6FEDC /* test_packetizer_simple.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_packetizer_simple.cc; sourceTree = "<group>"; };
+		2B272C501AC75A1E00E6FEDC /* packetizer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer.hh; sourceTree = "<group>"; };
+		2B272C511AC75C1800E6FEDC /* test_packetizer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_packetizer.cc; sourceTree = "<group>"; };
 		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
 		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
-		2B282BBC1AB8562E00640FF8 /* make_packetizer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = make_packetizer.hh; sourceTree = "<group>"; };
 		2B282BBD1AB8618800640FF8 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B282BBE1AB861C200640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B2A96261AC59120001B8F66 /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
@@ -590,7 +589,6 @@
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
 		2B9222681AB4BCD4009A2843 /* test_symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_symbol.cc; sourceTree = "<group>"; };
-		2B92226A1AB55B5F009A2843 /* packetizer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer.hh; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319561AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
@@ -599,7 +597,6 @@
 		2BE319711AB237CA001AA9DF /* source.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
 		2BE319721AB23910001AA9DF /* buffer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = buffer.hh; sourceTree = "<group>"; };
 		2BE319731AB2CB1A001AA9DF /* ack.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ack.hh; sourceTree = "<group>"; };
-		2BE319741AB2E43A001AA9DF /* packetizer_base.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer_base.hh; sourceTree = "<group>"; };
 		2BE3197C1AB32D7F001AA9DF /* tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BE319831AB32DA0001AA9DF /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319861AB32DA0001AA9DF /* tests.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cc; sourceTree = "<group>"; };
@@ -1780,7 +1777,6 @@
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
 				2B6F62451AC7FAE900A34953 /* handler.hh */,
 				2B282BB81AB81ABA00640FF8 /* packet.hh */,
-				2B92226A1AB55B5F009A2843 /* packetizer.hh */,
 				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
 			);
 			path = netcode;
@@ -1814,11 +1810,9 @@
 				2BF1A6401ABB6CCC009C32B9 /* encoder.hh */,
 				2B4E310B1AC07DA10002E97C /* galois_field.hh */,
 				2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */,
-				2B282BBC1AB8562E00640FF8 /* make_packetizer.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
 				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
-				2BE319741AB2E43A001AA9DF /* packetizer_base.hh */,
-				2B272C501AC75A1E00E6FEDC /* packetizer_simple.hh */,
+				2B272C501AC75A1E00E6FEDC /* packetizer.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,
 				2B4E310A1AC0761C0002E97C /* square_matrix.hh */,
 				2BE319711AB237CA001AA9DF /* source.hh */,
@@ -1849,7 +1843,7 @@
 				2B2A96261AC59120001B8F66 /* test_encoder.cc */,
 				2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */,
 				2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */,
-				2B272C511AC75C1800E6FEDC /* test_packetizer_simple.cc */,
+				2B272C511AC75C1800E6FEDC /* test_packetizer.cc */,
 				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 				2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */,
 			);
@@ -1920,7 +1914,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */,
-				2B272C521AC75C1800E6FEDC /* test_packetizer_simple.cc in Sources */,
+				2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */,
 				2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */,
 				2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */,
 				2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */,
