@@ -307,6 +307,11 @@ private:
         // Does this repair encode only 1 source?
         if (r.source_ids().size() == 1)
         {
+          // Check that this source wasn't decoded in the past.
+          assert(last_id_ ? *r.source_ids().begin() >= *last_id_ : true);
+          // Check that this source doesn't belong to the set of current sources.
+          assert(not sources_.count(*r.source_ids().begin()));
+
           // This missing source is referenced by only 1 repair and this repair reference only 1
           // missing source. Thus, we can reconstruct the missing source.
           auto decoded_src = create_source_from_repair(r);
@@ -330,18 +335,14 @@ private:
       }
       else
       {
-        // This missing source if referenced by multiple repairs. Try next missing source.
+        // This missing source is referenced by multiple repairs. Try next missing source.
         ++miss_cit;
       }
     }
 
     // Finally, insert-move this new source in the set of known sources.
     const auto src_id = src.id(); // to force evaluation order in the following call.
-#ifdef DEBUG
-    const auto insertion =
-#endif
     sources_.emplace(src_id, std::move(src));
-    assert(insertion.second && "Adding an already existing source");
   }
 
   /// @brief Drop outdated sources and repairs.
