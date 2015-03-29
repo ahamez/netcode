@@ -114,7 +114,7 @@ public:
   reset()
   noexcept
   {
-    buffer_.resize(0);
+    buffer_.clear();
   }
 
 private:
