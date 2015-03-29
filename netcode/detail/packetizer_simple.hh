@@ -194,9 +194,6 @@ struct packetizer_simple final
     // Prepare packet identifier.
     const auto network_id = native_to_big(src.id());
 
-    // Prepare real source symbol size.
-    const auto network_sz = native_to_big(static_cast<std::uint16_t>(src.buffer().size()));
-
     // Prepare user symbol size.
     const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(src.user_size()));
 
@@ -205,9 +202,6 @@ struct packetizer_simple final
 
     // Write source identifier.
     write(&network_id, sizeof(std::uint32_t));
-
-    // Write real source symbol size.
-    write(&network_sz, sizeof(std::uint16_t));
 
     // Write user size of the repair symbol.
     write(&network_user_sz, sizeof(std::uint16_t));
@@ -234,10 +228,6 @@ struct packetizer_simple final
     // Read identifier.
     const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
-
-    // Read real size of the source symbol.
-    const auto sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
 
     // Read user size of the source symbol.
     const auto user_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));

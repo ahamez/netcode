@@ -73,7 +73,6 @@ TEST_CASE("Decoder repairs a lost source")
 
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
-                    + sizeof(std::uint16_t)     // real symbol size
                     + sizeof(std::uint16_t)     // user symbol size
                     + s0.size();                // symbol
 

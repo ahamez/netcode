@@ -98,7 +98,6 @@ TEST_CASE("A source is (de)serialized by packetizer_simple")
 
   REQUIRE(target(h).bytes_ == ( sizeof(std::uint8_t)      // type
                               + sizeof(std::uint32_t)     // id
-                              + sizeof(std::uint16_t)     // real symbol size
                               + sizeof(std::uint16_t)     // user symbol size
                               + 4                         // symbol
                               ));

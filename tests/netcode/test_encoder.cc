@@ -273,13 +273,12 @@ TEST_CASE("Encoder sends correct sources")
   // Test specific to packetizer_simple.
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
-                                 + sizeof(std::uint16_t)     // real symbol size
                                  + sizeof(std::uint16_t)     // user symbol size
                                  + s0.size()                 // symbol
                                  ));
   REQUIRE(std::equal( begin(s0), end(s0)
                     , enc_handler.data + sizeof(std::uint8_t) + sizeof(std::uint32_t)
-                                       + sizeof(std::uint16_t) + sizeof(std::uint16_t)
+                                       + sizeof(std::uint16_t)
                     ));
 
 }
@@ -301,7 +300,6 @@ TEST_CASE("Encoder sends repairs")
   // Test specific to packetizer_simple.
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
-                    + sizeof(std::uint16_t)     // real symbol size
                     + sizeof(std::uint16_t)     // user symbol size
                     + s0.size();                // symbol
 
