@@ -55,8 +55,8 @@ public:
   /// @brief
   using missing_sources_type = boost::container::map<std::uint32_t, repairs_iterators_type>;
 
-  /// @brief
-  decoder(unsigned int galois_field_size, std::function<void(const source&)> h)
+  /// @brief Constructor.
+  decoder(std::size_t galois_field_size, std::function<void(const source&)> h)
     : gf_{galois_field_size}
     , callback_(h)
     , repairs_{}
@@ -337,7 +337,11 @@ private:
 
     // Finally, insert-move this new source in the set of known sources.
     const auto src_id = src.id(); // to force evaluation order in the following call.
+#ifdef DEBUG
+    const auto insertion =
+#endif
     sources_.emplace(src_id, std::move(src));
+    assert(insertion.second && "Adding an already existing source");
   }
 
   /// @brief Drop outdated sources and repairs.
