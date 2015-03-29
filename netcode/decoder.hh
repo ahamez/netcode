@@ -110,6 +110,30 @@ public:
     return symbol_handler_;
   }
 
+  /// @brief The number of received repairs.
+  std::size_t
+  nb_received_repairs()
+  const noexcept
+  {
+    return nb_received_repairs_;
+  }
+
+  /// @brief The number of received sources.
+  std::size_t
+  nb_received_sources()
+  const noexcept
+  {
+    return nb_received_sources_;
+  }
+
+  /// @brief The number of decoded sources.
+  std::size_t
+  nb_decoded_sources()
+  const noexcept
+  {
+    return nb_handled_sources_ - nb_received_sources_;
+  }
+
 private:
 
   /// @brief Notify the encoder that some data has been received.
