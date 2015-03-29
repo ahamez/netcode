@@ -113,11 +113,11 @@ public:
 
     // Remove sources with an id smaller than the smallest the current repair encodes.
     // Remove repairs which encodes sources with an id smaller than the smallest the current repair
-    /// encodes.
+    // encodes.
     drop_outdated(*incoming_r.source_ids().begin());
 
-    /// Check if incoming_r is useless. Indeed, if all sources it references were correctly
-    /// received, then it's useless to remove them from this repair, which is a costly operation.
+    // Check if incoming_r is useless. Indeed, if all sources it references were correctly
+    // received, then it's useless to remove them from this repair, which is a costly operation.
     const auto useless = std::all_of( begin(incoming_r.source_ids()), end(incoming_r.source_ids())
                                     , [this](std::uint32_t src_id)
                                       {
@@ -139,7 +139,7 @@ public:
     auto r_cit = insertion.first;
     auto& r = insertion.first->second;
 
-    // Reverse loop as vector::erase() invalidates iterators past the one being erased.
+    // Reverse loop as flat_set::erase() invalidates iterators past the one being erased.
     for ( auto id_rcit = r.source_ids().rbegin(), end = r.source_ids().rend(); id_rcit != end
         ; ++id_rcit)
     {
