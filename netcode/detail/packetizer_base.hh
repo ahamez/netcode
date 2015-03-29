@@ -1,9 +1,9 @@
 #pragma once
 
 #include "netcode/detail/ack.hh"
-#include "netcode/detail/handler.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
+#include "netcode/handler.hh"
 
 namespace ntc { namespace detail {
 
@@ -16,8 +16,8 @@ class packetizer_base
 public:
 
   /// @brief Constructor.
-  packetizer_base(handler_base& h)
-    : handler_(h)
+  packetizer_base(handler& h)
+    : data_handler_(h)
   {}
 
   /// @brief Can delete through this base class.
@@ -46,13 +46,13 @@ public:
   write(const void* data, std::size_t len)
   noexcept
   {
-    handler_.on_data(reinterpret_cast<const char*>(data), len);
+    data_handler_(reinterpret_cast<const char*>(data), len);
   }
 
 private:
 
   /// @brief The handler which serializes packets.
-  handler_base& handler_;
+  handler& data_handler_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

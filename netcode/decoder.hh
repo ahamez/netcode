@@ -1,10 +1,8 @@
 #pragma once
 
 #include <chrono>
-#include <memory>    // unique_ptr
 
 #include "netcode/detail/decoder.hh"
-#include "netcode/detail/handler.hh"
 #include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/packetizer_base.hh"
@@ -12,6 +10,7 @@
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
+#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 #include "netcode/packetizer.hh"
 
@@ -31,8 +30,8 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Handler, typename Conf = default_configuration>
-  decoder(Handler&& h, Conf conf = Conf())
+  template <typename Conf = default_configuration>
+  decoder(handler data_handler, handler symbol_handler, Conf conf = Conf())
     : code_type_{conf.code_type}
     , ack_{}
     , ack_frequency_{conf.ack_frequency}
@@ -40,8 +39,9 @@ public:
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
-    , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , packetizer_{make_packetizer(conf.packetizer_type, *handler_)}
+    , data_handler_{data_handler}
+    , symbol_handler_{symbol_handler}
+    , packetizer_{detail::make_packetizer(conf.packetizer_type, data_handler_)}
     , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
@@ -115,7 +115,7 @@ private:
     nb_handled_sources_ += 1;
 
     // Ask user to read the bytes of this new source.
-    handler_->on_symbol(src.buffer().data(), src.user_size());
+    symbol_handler_(src.buffer().data(), src.user_size());
 
     // Send an ack if necessary.
     ack(src.id());
@@ -171,8 +171,11 @@ private:
   /// @brief The counter of decoded sources.
   std::size_t nb_handled_sources_;
 
-  /// @brief The user's handler for various callbacks.
-  std::unique_ptr<detail::handler_base> handler_;
+  /// @brief The user's handler to output data on network.
+  handler data_handler_;
+
+  /// @brief The user's handler to read decoded symbols.
+  handler symbol_handler_;
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::packetizer_base> packetizer_;

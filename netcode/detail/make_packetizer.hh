@@ -4,6 +4,7 @@
 
 #include "netcode/detail/packetizer_base.hh"
 #include "netcode/detail/packetizer_simple.hh"
+#include "netcode/handler.hh"
 #include "netcode/packetizer.hh"
 
 namespace ntc { namespace detail {
@@ -13,7 +14,7 @@ namespace ntc { namespace detail {
 /// @brief Create a packetizer to de/serialize packets.
 inline
 std::unique_ptr<packetizer_base>
-make_packetizer(packetizer p, handler_base& h)
+make_packetizer(packetizer p, handler& h)
 {
   switch (p)
   {

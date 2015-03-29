@@ -13,19 +13,19 @@ using namespace ntc;
 
 namespace /* unnamed */ {
 
-struct handler
+struct my_handler
 {
   char* data;
-  std::size_t nb_written;
+  std::size_t written;
 
   void
-  on_data(const char*, std::size_t)
-  {}
-
-  void
-  on_symbol(const char*, std::size_t)
-  {}
+  operator()(const char* src, std::size_t len)
+  {
+    std::copy_n(src + written, len, data);
+    written += len;
+  }
 };
+
 
 } // namespace unnamed
 
@@ -33,12 +33,18 @@ struct handler
 
 TEST_CASE("")
 {
-  ntc::encoder encoder{handler{}};
-  ntc::decoder decoder{handler{}};
+  char network_to_decoder[2048];
+  char network_to_encoder[2048];
+  char decoded_symbol[2048];
+
+  ntc::encoder encoder{my_handler{network_to_decoder, 0ul}};
+  ntc::decoder decoder{my_handler{network_to_encoder, 0ul}, my_handler{decoded_symbol, 0ul}};
 
   const auto s0 = {'a', 'b', 'c'};
 
   encoder.commit(copy_symbol{begin(s0), end(s0)});
+
+//  decoder.notify(copy_packet(<#ntc::copy_packet &&#>))
 }
 
 /*------------------------------------------------------------------------------------------------*/

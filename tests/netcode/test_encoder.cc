@@ -15,11 +15,7 @@ namespace /* unnamed */ {
 struct dummy_handler
 {
   void
-  on_data(const char*, std::size_t)
-  {}
-
-  void
-  on_symbol(const char*, std::size_t)
+  operator()(const char*, std::size_t)
   {}
 };
 
@@ -119,24 +115,21 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   // Will hold the bytes of the serialized ack.
   packet data{2048};
   std::size_t nb_written = 0;
-  struct handler
+  struct my_handler
   {
     char* data;
     std::size_t& written;
 
     void
-    on_data(const char* src, std::size_t len)
+    operator()(const char* src, std::size_t len)
     {
       std::copy_n(src, len, data + written);
       written += len;
     }
-    void
-    on_symbol(const char*, std::size_t)
-    {}
   };
 
   // Directly use the serializer that would have been called by the sender.
-  detail::handler_derived<handler> h{handler{data.buffer(), nb_written}};
+  handler h = my_handler{data.buffer(), nb_written};
   detail::packetizer_simple serializer{h};
 
   SECTION("incoming ack")

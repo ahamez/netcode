@@ -1,10 +1,8 @@
 #pragma once
 
 #include <algorithm> // is_sorted
-#include <memory>    // unique_ptr
 
 #include "netcode/detail/encoder.hh"
-#include "netcode/detail/handler.hh"
 #include "netcode/detail/make_packetizer.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/packetizer_base.hh"
@@ -13,6 +11,7 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
+#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 #include "netcode/packetizer.hh"
 #include "netcode/symbol.hh"
@@ -33,8 +32,8 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Handler, typename Conf = default_configuration>
-  encoder(Handler&& h, Conf conf = Conf())
+  template <typename Conf = default_configuration>
+  encoder(handler data_handler, Conf conf = Conf())
     : encoder_{conf.galois_field_size}
     , rate_{conf.rate == 0 ? 1 : conf.rate}
     , max_window_size_{conf.window}
@@ -43,8 +42,8 @@ public:
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
-    , packetizer_{make_packetizer(conf.packetizer_type, *handler_)}
+    , data_handler_{data_handler}
+    , packetizer_{detail::make_packetizer(conf.packetizer_type, data_handler_)}
     , nb_repairs_{0ul}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -247,8 +246,8 @@ private:
   /// @brief Re-use the same memory to prepare a repair packet.
   detail::repair repair_;
 
-  /// @brief The user's handler for various callbacks.
-  std::unique_ptr<detail::handler_base> handler_;
+  /// @brief The user's handler.
+  handler data_handler_;
 
   /// @brief How to serialize packets.
   std::unique_ptr<detail::packetizer_base> packetizer_;
