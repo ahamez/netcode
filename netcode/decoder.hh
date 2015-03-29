@@ -30,8 +30,7 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Conf = default_configuration>
-  decoder(handler data_handler, handler symbol_handler, Conf conf = Conf())
+  decoder(handler data_handler, handler symbol_handler, configuration conf)
     : code_type_{conf.code_type}
     , ack_{}
     , ack_frequency_{conf.ack_frequency}
@@ -48,6 +47,11 @@ public:
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
   }
+
+  /// @brief Constructor with a default configuration.
+  decoder(handler data_handler, handler symbol_handler)
+    : decoder{data_handler, symbol_handler, configuration{}}
+  {}
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.

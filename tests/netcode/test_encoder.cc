@@ -25,7 +25,7 @@ struct dummy_handler
 
 TEST_CASE("Encoder's window size")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 3;
   ntc::encoder encoder{dummy_handler{}, conf};
 
@@ -45,7 +45,7 @@ TEST_CASE("Encoder's window size")
 
 TEST_CASE("Encoder can limit the window size")
 {
-  default_configuration conf;
+  configuration conf;
   conf.window = 4;
   ntc::encoder encoder{dummy_handler{}, conf};
 
@@ -80,7 +80,7 @@ TEST_CASE("Encoder can limit the window size")
 
 TEST_CASE("Encoder generates repairs")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 5;
   ntc::encoder encoder{dummy_handler{}, conf};
 
@@ -100,7 +100,7 @@ TEST_CASE("Encoder generates repairs")
 
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 5;
   ntc::encoder encoder{dummy_handler{}, conf};
 
@@ -287,7 +287,7 @@ TEST_CASE("Encoder sends correct sources")
 
 TEST_CASE("Encoder sends repairs")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 1; // A repair for a source
 
   ntc::encoder enc{my_handler{}, conf};

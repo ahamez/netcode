@@ -11,7 +11,7 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief
-struct default_configuration
+struct configuration
 {
   /// @brief
   std::size_t galois_field_size = 8;

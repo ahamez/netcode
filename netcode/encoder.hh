@@ -32,8 +32,7 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  template <typename Conf = default_configuration>
-  encoder(handler data_handler, Conf conf = Conf())
+  encoder(handler data_handler, configuration conf)
     : encoder_{conf.galois_field_size}
     , rate_{conf.rate == 0 ? 1 : conf.rate}
     , max_window_size_{conf.window}
@@ -51,6 +50,11 @@ public:
     // Same thing for the list of source identifiers.
     repair_.source_ids().reserve(128);
   }
+
+  /// @brief Constructor with a default configuration.
+  encoder(handler data_handler)
+    : encoder{data_handler, configuration{}}
+  {}
 
   /// @brief Give the encoder a new symbol.
   /// @param sym The symbol to add.

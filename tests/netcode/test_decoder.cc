@@ -58,7 +58,7 @@ TEST_CASE("Decoder gives a correct source to user")
 
 TEST_CASE("Decoder repairs a lost source")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 1; // A repair for a source.
 
   ntc::encoder enc{my_handler{}, conf};
@@ -91,7 +91,7 @@ TEST_CASE("Decoder repairs a lost source")
 
 TEST_CASE("Decoder generate correct ack")
 {
-  default_configuration conf;
+  configuration conf;
   conf.rate = 100; // Make sure no repairs are sent.
   conf.ack_frequency = std::chrono::milliseconds{100};
 
