@@ -65,8 +65,8 @@ public:
     , missing_sources_{}
     , nb_useless_repairs_{0}
     , nb_failed_full_decodings_{0}
-    , coefficients_{16}
-    , inv_{16}
+    , coefficients_{32}
+    , inv_{32}
   {}
 
   /// @brief What to do when a source is received.
