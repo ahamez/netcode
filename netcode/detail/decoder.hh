@@ -425,7 +425,7 @@ private:
       missing_sources_.erase(search);
     }
 
-    // Now, look for repairs that encodes only one source. When one is found, the corresponding
+    // Now, look for repairs that encodes only 1 source. When one is found, the corresponding
     // encoded source is decoded and the repair is erased.
     for ( auto miss_cit = missing_sources_.begin(), miss_end = missing_sources_.end()
         ; miss_cit != miss_end;)
@@ -438,10 +438,10 @@ private:
         const auto r_cit = *repairs_cits.begin();
         const auto& r = r_cit->second;
 
-        // Does this repair encode only one source?
+        // Does this repair encode only 1 source?
         if (r.source_ids().size() == 1)
         {
-          // This missing source is referenced by only repair and this repair reference only one
+          // This missing source is referenced by only 1 repair and this repair reference only 1
           // missing source. Thus, we can reconstruct the missing source.
           auto decoded_src = create_source_from_repair(r);
 
@@ -482,40 +482,33 @@ private:
     // All sources with an identifier smaller than last_id_ are now considered outdated.
     last_id_ = id;
 
-    // First, find the upper bound of missing sources with an identifier smaller than id.
-    const auto missing_lb = missing_sources_.lower_bound(id);
-
-    // Then, remove repairs which references this id.
-    // We can't delete repairs on the fly as they are referenced by several other missing sources.
-    repairs_iterators_type repairs_to_erase;
-    repairs_to_erase.reserve(32);
-    for (auto cit = missing_sources_.begin(); cit != missing_lb; ++cit)
+    // Remove repairs which references this id.
+    for (auto cit = repairs_.begin(), end = repairs_.end(); cit != end;)
     {
-      for (const auto& r_cit : cit->second)
+      const auto& r = cit->second;
+      assert(not r.source_ids().empty());
+      assert(    (*r.source_ids().begin() <  id and *(r.source_ids().end() - 1) <  id)
+              or (*r.source_ids().begin() >= id and *(r.source_ids().end() - 1) >= id));
+      // Last source encoded by r has an identifier smaller than id.
+      if (*(r.source_ids().end() - 1) < id)
       {
-        const auto& r = r_cit->second;
-        assert(not r.source_ids().empty());
-        assert(    (*r.source_ids().begin() <  id and *(r.source_ids().end() - 1) <  id)
-                or (*r.source_ids().begin() >= id and *(r.source_ids().end() - 1) >= id));
-        if (*(r.source_ids().end() - 1) < id)
-        {
-          // We found a repair for which all encoded sources have an identifier smaller than id,
-          // thus it is outdated.
-          repairs_to_erase.insert(r_cit);
-        }
+        const auto to_erase = cit;
+        ++cit;
+        repairs_.erase(to_erase);
+      }
+      else
+      {
+         ++cit;
       }
     }
 
+    // Erase all sources and missing sources with an identifer smaller (strict) than id.
     sources_.erase(sources_.begin(), sources_.lower_bound(id));
-    missing_sources_.erase(missing_sources_.begin(), missing_lb);
-    for (const auto r_cit : repairs_to_erase)
-    {
-      repairs_.erase(r_cit);
-    }
+    missing_sources_.erase(missing_sources_.begin(), missing_sources_.lower_bound(id));
   }
 
   /// @brief Remove a source from a repair, but not the id from the list of source identifiers.
-  /// @attention The id of the removed src shall be removed from the repair's list of source
+  /// @attention The id of the removed src must be removed from the repair's list of source
   /// identifiers.
   void
   remove_source_data_from_repair(const source& src, repair& r)
