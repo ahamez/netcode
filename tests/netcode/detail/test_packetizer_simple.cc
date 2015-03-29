@@ -21,8 +21,11 @@ struct my_handler
   operator()(const char* data, std::size_t len)
   noexcept
   {
-    std::copy_n(data, len, data_ + bytes_);
-    bytes_ += len;
+    if (data)
+    {
+      std::copy_n(data, len, data_ + bytes_);
+      bytes_ += len;
+    }
   }
 };
 

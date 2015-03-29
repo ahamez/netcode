@@ -123,8 +123,11 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     void
     operator()(const char* src, std::size_t len)
     {
-      std::copy_n(src, len, data + written);
-      written += len;
+      if (src)
+      {
+        std::copy_n(src, len, data + written);
+        written += len;
+      }
     }
   };
 
@@ -241,8 +244,11 @@ struct my_handler
   void
   operator()(const char* src, std::size_t len)
   {
-    std::copy_n(src, len, data + written);
-    written += len;
+    if (src)
+    {
+      std::copy_n(src, len, data + written);
+      written += len;
+    }
   }
 };
 

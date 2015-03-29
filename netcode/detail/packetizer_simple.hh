@@ -53,6 +53,9 @@ struct packetizer_simple final
       const auto network_id = native_to_big(id);
       write(&network_id, sizeof(std::uint32_t));
     }
+
+    // End of data.
+    write(nullptr, 0);
   }
 
   ack
@@ -123,6 +126,9 @@ struct packetizer_simple final
 
     // Write repair symbol.
     write(pkt.buffer().data(), pkt.buffer().size());
+
+    // End of data.
+    write(nullptr, 0);
   }
 
   repair
@@ -198,6 +204,9 @@ struct packetizer_simple final
 
     // Write source symbol.
     write(pkt.buffer().data(), pkt.user_size());
+
+    // End of data.
+    write(nullptr, 0);
   }
 
   source
