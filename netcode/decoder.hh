@@ -42,7 +42,7 @@ public:
     , nb_handled_sources_{0}
     , handler_{new detail::handler_derived<Handler>(std::forward<Handler>(h))}
     , packetizer_{make_packetizer(conf.packetizer_type, *handler_)}
-    , decoder_{8, [this](const detail::source& src){handle_source(src);}}
+    , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
