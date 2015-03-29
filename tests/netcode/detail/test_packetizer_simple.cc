@@ -18,14 +18,14 @@ struct handler
   char data_[2048];
 
   void
-  on_ready_data(std::size_t len, const char* data)
+  on_data(const char* data, std::size_t len)
   {
     std::copy_n(data, len, data_ + bytes_);
     bytes_ += len;
   }
 
   void
-  on_ready_symbol(std::size_t, const char*)
+  on_symbol(const char*, std::size_t)
   {}
 };
 

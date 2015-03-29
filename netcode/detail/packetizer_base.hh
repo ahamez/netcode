@@ -43,10 +43,10 @@ public:
 
   /// @brief Convenient method to write data using user's handler.
   void
-  write(std::size_t len, const void* data)
+  write(const void* data, std::size_t len)
   noexcept
   {
-    handler_.on_ready_data(len, reinterpret_cast<const char*>(data));
+    handler_.on_data(reinterpret_cast<const char*>(data), len);
   }
 
 private:

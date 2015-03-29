@@ -42,16 +42,16 @@ struct packetizer_simple final
     const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
     // Write packet type.
-    write(sizeof(std::uint8_t), &packet_ty);
+    write(&packet_ty, sizeof(std::uint8_t));
 
     // Write number of source identifiers.
-    write(sizeof(std::uint16_t), &network_sz);
+    write(&network_sz, sizeof(std::uint16_t));
 
     // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const auto network_id = native_to_big(id);
-      write(sizeof(std::uint32_t), &network_id);
+      write(&network_id, sizeof(std::uint32_t));
     }
   }
 
@@ -103,26 +103,26 @@ struct packetizer_simple final
     const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
 
     // Packet type.
-    write(sizeof(std::uint8_t), &packet_ty);
+    write(&packet_ty, sizeof(std::uint8_t));
 
     // Write packet identifier.
-    write(sizeof(std::uint32_t), &network_id);
+    write(&network_id, sizeof(std::uint32_t));
 
     // Write number of source identifiers.
-    write(sizeof(std::uint16_t), &network_nb_ids);
+    write(&network_nb_ids, sizeof(std::uint16_t));
 
     // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
       const auto network_id = native_to_big(id);
-      write(sizeof(std::uint32_t), &network_id);
+      write(&network_id, sizeof(std::uint32_t));
     }
 
     // Write size of the repair symbol.
-    write(sizeof(std::uint16_t), &network_sz);
+    write(&network_sz, sizeof(std::uint16_t));
 
     // Write repair symbol.
-    write(pkt.buffer().size(), pkt.buffer().data());
+    write(pkt.buffer().data(), pkt.buffer().size());
   }
 
   repair
@@ -185,19 +185,19 @@ struct packetizer_simple final
     const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(pkt.user_size()));
 
     // Write packet type.
-    write(sizeof(std::uint8_t), &packet_ty);
+    write(&packet_ty, sizeof(std::uint8_t));
 
     // Write source identifier.
-    write(sizeof(std::uint32_t), &network_id);
+    write(&network_id, sizeof(std::uint32_t));
 
     // Write real source symbol size.
-    write(sizeof(std::uint16_t), &network_sz);
+    write(&network_sz, sizeof(std::uint16_t));
 
     // Write user size of the repair symbol.
-    write(sizeof(std::uint16_t), &network_user_sz);
+    write(&network_user_sz, sizeof(std::uint16_t));
 
     // Write source symbol.
-    write(pkt.user_size(), pkt.buffer().data());
+    write(pkt.buffer().data(), pkt.user_size());
   }
 
   source

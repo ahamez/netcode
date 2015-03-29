@@ -12,10 +12,10 @@ struct handler_base
   virtual ~handler_base(){}
 
   /// @brief Called when a packet is ready to be sent.
-  virtual void on_ready_data(std::size_t nb, const char* data) = 0;
+  virtual void on_data(const char* data, std::size_t nb) = 0;
 
   /// @brief Called when a symbol is ready to be read.
-  virtual void on_ready_symbol(std::size_t nb, const char* data) = 0;
+  virtual void on_symbol(const char* data, std::size_t nb) = 0;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -33,17 +33,17 @@ struct handler_derived final
   {}
 
   void
-  on_ready_data(std::size_t nb, const char* data)
+  on_data(const char* data, std::size_t nb)
   override
   {
-    handler_.on_ready_data(nb, data);
+    handler_.on_data(data, nb);
   }
 
   void
-  on_ready_symbol(std::size_t nb, const char* data)
+  on_symbol(const char* data, std::size_t nb)
   override
   {
-    handler_.on_ready_symbol(nb, data);
+    handler_.on_symbol(data, nb);
   }
 
   /// @brief The user's handler.

@@ -3,6 +3,7 @@
 #include "tests/catch.hpp"
 
 #include "netcode/decoder.hh"
+#include "netcode/encoder.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -12,14 +13,17 @@ using namespace ntc;
 
 namespace /* unnamed */ {
 
-struct dummy_handler
+struct handler
 {
+  char* data;
+  std::size_t nb_written;
+
   void
-  on_ready_data(std::size_t, const char*)
+  on_data(const char*, std::size_t)
   {}
 
   void
-  on_ready_symbol(std::size_t, const char*)
+  on_symbol(const char*, std::size_t)
   {}
 };
 
@@ -27,9 +31,14 @@ struct dummy_handler
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder construction", "[decoder]")
+TEST_CASE("")
 {
-  ntc::decoder decoder{dummy_handler{}};
+  ntc::encoder encoder{handler{}};
+  ntc::decoder decoder{handler{}};
+
+  const auto s0 = {'a', 'b', 'c'};
+
+  encoder.commit(copy_symbol{begin(s0), end(s0)});
 }
 
 /*------------------------------------------------------------------------------------------------*/

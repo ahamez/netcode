@@ -15,11 +15,11 @@ namespace /* unnamed */ {
 struct dummy_handler
 {
   void
-  on_ready_data(std::size_t, const char*)
+  on_data(const char*, std::size_t)
   {}
 
   void
-  on_ready_symbol(std::size_t, const char*)
+  on_symbol(const char*, std::size_t)
   {}
 };
 
@@ -125,13 +125,13 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     std::size_t& written;
 
     void
-    on_ready_data(std::size_t len, const char* src)
+    on_data(const char* src, std::size_t len)
     {
       std::copy_n(src, len, data + written);
       written += len;
     }
     void
-    on_ready_symbol(std::size_t, const char*)
+    on_symbol(const char*, std::size_t)
     {}
   };
 

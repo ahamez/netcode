@@ -115,7 +115,7 @@ private:
     nb_handled_sources_ += 1;
 
     // Ask user to read the bytes of this new source.
-    handler_->on_ready_symbol(src.user_size(), src.buffer().data());
+    handler_->on_symbol(src.buffer().data(), src.user_size());
 
     // Send an ack if necessary.
     ack(src.id());
