@@ -31,15 +31,15 @@ public:
 
   /// @brief Constructor.
   encoder(handler data_handler, configuration conf)
-    : encoder_{conf.galois_field_size}
+    : code_type_{conf.code_type}
     , rate_{conf.rate == 0 ? 1 : conf.rate}
     , max_window_size_{conf.window}
-    , code_type_{conf.code_type}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
     , data_handler_{data_handler}
+    , encoder_{conf.galois_field_size}
     , packetizer_{data_handler_}
     , nb_repairs_{0ul}
   {
@@ -240,17 +240,14 @@ private:
 
 private:
 
-  /// @brief The component that handles the coding process.
-  detail::encoder encoder_;
+  /// @brief Is the encoder systematic?
+  code code_type_;
 
   /// @brief The number of source packets to send before sending a repair packet.
   std::size_t rate_;
 
   /// @brief The maximum size the window is allowed to grow to.
   std::size_t max_window_size_;
-
-  /// @brief Is the encoder systematic?
-  code code_type_;
 
   /// @brief The counter for source packets identifiers.
   std::uint32_t current_source_id_;
@@ -266,6 +263,9 @@ private:
 
   /// @brief The user's handler.
   handler data_handler_;
+
+  /// @brief The component that handles the coding process.
+  detail::encoder encoder_;
 
   /// @brief How to serialize packets.
   detail::packetizer packetizer_;

@@ -30,17 +30,17 @@ public:
   /// @brief Constructor.
   decoder(handler data_handler, handler symbol_handler, configuration conf)
     : code_type_{conf.code_type}
-    , ack_{}
     , ack_frequency_{conf.ack_frequency}
     , last_ack_date_(std::chrono::steady_clock::now())
+    , ack_{}
+    , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
+    , data_handler_{data_handler}
+    , symbol_handler_{symbol_handler}
+    , packetizer_{data_handler_}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
     , nb_sent_ack_{0}
-    , data_handler_{data_handler}
-    , symbol_handler_{symbol_handler}
-    , packetizer_{data_handler_}
-    , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     ack_.source_ids().reserve(128);
@@ -226,15 +226,27 @@ private:
   /// @brief Is the encoder systematic?
   code code_type_;
 
-  /// @brief Re-use the same memory to prepare an ack packet.
-  detail::ack ack_;
-
   /// @brief The frequency of sent ack.
   /// @note It's a lower bound, the maximal bound is not guaranteed.
   std::chrono::milliseconds ack_frequency_;
 
   /// @brief The last time an ack was sent.
   std::chrono::steady_clock::time_point last_ack_date_;
+
+  /// @brief Re-use the same memory to prepare an ack packet.
+  detail::ack ack_;
+
+  /// @brief The component that rebuilds sources using repairs.
+  detail::decoder decoder_;
+
+  /// @brief The user's handler to output data on network.
+  handler data_handler_;
+
+  /// @brief The user's handler to read decoded symbols.
+  handler symbol_handler_;
+
+  /// @brief How to serialize packets.
+  detail::packetizer packetizer_;
 
   /// @brief The counter of received repairs.
   std::size_t nb_received_repairs_;
@@ -247,18 +259,6 @@ private:
 
   /// @brief The number of ack sent back to the encoder.
   std::size_t nb_sent_ack_;
-
-  /// @brief The user's handler to output data on network.
-  handler data_handler_;
-
-  /// @brief The user's handler to read decoded symbols.
-  handler symbol_handler_;
-
-  /// @brief How to serialize packets.
-  detail::packetizer packetizer_;
-
-  /// @brief The component that rebuilds sources using repairs.
-  detail::decoder decoder_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
