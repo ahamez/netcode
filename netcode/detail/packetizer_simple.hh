@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include <iterator>    // back_inserter
+#include <iterator> // back_inserter
 
 #include <boost/endian/conversion.hpp>
 
@@ -102,6 +102,9 @@ struct packetizer_simple final
     const auto network_nb_ids
       = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
+    // Prepare user size.
+    const auto networ_user_sz = native_to_big(static_cast<std::uint16_t>(pkt.size()));
+
     // Prepare repair symbol size.
     const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
 
@@ -120,6 +123,9 @@ struct packetizer_simple final
       const auto network_id = native_to_big(id);
       write(&network_id, sizeof(std::uint32_t));
     }
+
+    // Write user size.
+    write(&networ_user_sz, sizeof(std::uint16_t));
 
     // Write size of the repair symbol.
     write(&network_sz, sizeof(std::uint16_t));
@@ -160,6 +166,10 @@ struct packetizer_simple final
       data += sizeof(std::uint32_t);
     }
 
+    // Read user size.
+    const auto user_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
     // Read size of the repair symbol.
     const auto sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
@@ -169,7 +179,7 @@ struct packetizer_simple final
     buffer.reserve(make_multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 
-    return {id, std::move(ids), std::move(buffer)};
+    return {id, user_sz, std::move(ids), std::move(buffer)};
   }
 
   void
