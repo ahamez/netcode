@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <limits> // numeric_limits
 
 #include "netcode/code.hh"
@@ -25,7 +26,7 @@ struct default_configuration
   std::size_t rate = 5;
 
   /// @brief
-  std::size_t ack_frequency = 100; /*ms*/
+  std::chrono::milliseconds ack_frequency = std::chrono::milliseconds{100};
 
   /// @brief
   std::size_t window = std::numeric_limits<std::size_t>::max();
