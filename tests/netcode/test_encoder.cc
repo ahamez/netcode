@@ -240,6 +240,7 @@ struct my_handler
 {
   char data[2048];
   std::size_t written = 0;
+  std::size_t nb_packets = 0;
 
   void
   operator()(const char* src, std::size_t len)
@@ -249,10 +250,16 @@ struct my_handler
       std::copy_n(src, len, data + written);
       written += len;
     }
+    else
+    {
+      nb_packets += 1;
+    }
   }
 };
 
 } // namespace unnamed
+
+/*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Encoder sends correct sources")
 {
@@ -275,6 +282,31 @@ TEST_CASE("Encoder sends correct sources")
                                        + sizeof(std::uint16_t) + sizeof(std::uint16_t)
                     ));
 
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Encoder sends repairs")
+{
+  default_configuration conf;
+  conf.rate = 1; // A repair for a source
+
+  ntc::encoder enc{my_handler{}, conf};
+
+  auto& enc_handler = *enc.data_handler().target<my_handler>();
+
+  const auto s0 = {'a', 'b', 'c'};
+
+  enc.commit(copy_symbol{begin(s0), end(s0)});
+  // Test specific to packetizer_simple.
+  const auto src_sz = sizeof(std::uint8_t)      // type
+                    + sizeof(std::uint32_t)     // id
+                    + sizeof(std::uint16_t)     // real symbol size
+                    + sizeof(std::uint16_t)     // user symbol size
+                    + s0.size();                // symbol
+
+  REQUIRE(enc_handler.nb_packets == 2 /* 1 source +  1 repair */);
+  REQUIRE(detail::get_packet_type(enc_handler.data + src_sz) == detail::packet_type::repair);
 }
 
 /*------------------------------------------------------------------------------------------------*/
