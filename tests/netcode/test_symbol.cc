@@ -38,7 +38,7 @@ TEST_CASE("auto symbol", "[symbol]" )
 TEST_CASE("copy symbol", "[symbol]" )
 {
   std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
-  auto s = copy_symbol(3, tab.data());
+  auto s = copy_symbol{tab.data(), 3};
 }
 
 /*------------------------------------------------------------------------------------------------*/

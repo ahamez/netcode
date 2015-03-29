@@ -145,6 +145,22 @@ public:
     return nb_repairs_;
   }
 
+  /// @brief Get the data handler.
+  const handler&
+  data_handler()
+  const noexcept
+  {
+    return data_handler_;
+  }
+
+  /// @brief Get the data handler.
+  handler&
+  data_handler()
+  noexcept
+  {
+    return data_handler_;
+  }
+
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.

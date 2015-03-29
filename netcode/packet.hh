@@ -130,9 +130,9 @@ class copy_packet final
 public:
 
   /// @brief Constructor.
-  /// @param len The size of the data to copy.
   /// @param src The address of the data to copy.
-  copy_packet(std::size_t len, const char* src)
+  /// @param len The size of the data to copy.
+  copy_packet(const char* src, std::size_t len)
     : buffer_(detail::make_multiple(len, 16))
   {
     std::copy_n(src, len, buffer_.begin());

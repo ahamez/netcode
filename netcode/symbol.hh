@@ -143,9 +143,9 @@ class copy_symbol final
 public:
 
   /// @brief Constructor.
-  /// @param len The size of the data to copy.
   /// @param src The address of the data to copy.
-  copy_symbol(std::size_t len, const char* src)
+  /// @param len The size of the data to copy.
+  copy_symbol(const char* src, std::size_t len)
     : user_size_{len}
     , buffer_(detail::make_multiple(len, 16))
   {

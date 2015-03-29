@@ -230,3 +230,45 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+namespace /* unnamed */ {
+
+struct my_handler
+{
+  char data[2048];
+  std::size_t written = 0;
+
+  void
+  operator()(const char* src, std::size_t len)
+  {
+    std::copy_n(src, len, data + written);
+    written += len;
+  }
+};
+
+} // namespace unnamed
+
+TEST_CASE("Encoder sends correct sources")
+{
+  ntc::encoder enc{my_handler{}};
+
+  auto& enc_handler = *enc.data_handler().target<my_handler>();
+
+  const auto s0 = {'A', 'B', 'C'};
+
+  enc.commit(copy_symbol{begin(s0), end(s0)});
+  // Test specific to packetizer_simple.
+  REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
+                                 + sizeof(std::uint32_t)     // id
+                                 + sizeof(std::uint16_t)     // real symbol size
+                                 + sizeof(std::uint16_t)     // user symbol size
+                                 + s0.size()                 // symbol
+                                 ));
+  REQUIRE(std::equal( begin(s0), end(s0)
+                    , enc_handler.data + sizeof(std::uint8_t) + sizeof(std::uint32_t)
+                                       + sizeof(std::uint16_t) + sizeof(std::uint16_t)
+                    ));
+
+}
+
+/*------------------------------------------------------------------------------------------------*/

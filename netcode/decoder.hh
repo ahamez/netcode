@@ -78,6 +78,38 @@ public:
     return notify_impl(p.buffer_.data());
   }
 
+  /// @brief Get the data handler.
+  const handler&
+  data_handler()
+  const noexcept
+  {
+    return data_handler_;
+  }
+
+  /// @brief Get the data handler.
+  handler&
+  data_handler()
+  noexcept
+  {
+    return data_handler_;
+  }
+
+  /// @brief Get the symbol handler.
+  const handler&
+  symbol_handler()
+  const noexcept
+  {
+    return symbol_handler_;
+  }
+
+  /// @brief Get the symbol handler.
+  handler&
+  symbol_handler()
+  noexcept
+  {
+    return symbol_handler_;
+  }
+
 private:
 
   /// @brief Notify the encoder that some data has been received.

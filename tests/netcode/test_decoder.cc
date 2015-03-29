@@ -15,13 +15,13 @@ namespace /* unnamed */ {
 
 struct my_handler
 {
-  char* data;
-  std::size_t written;
+  char data[2048];
+  std::size_t written = 0;
 
   void
   operator()(const char* src, std::size_t len)
   {
-    std::copy_n(src + written, len, data);
+    std::copy_n(src, len, data + written);
     written += len;
   }
 };
@@ -31,20 +31,23 @@ struct my_handler
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("")
+TEST_CASE("Decoder gives a correct source to user")
 {
-  char network_to_decoder[2048];
-  char network_to_encoder[2048];
-  char decoded_symbol[2048];
+  ntc::encoder enc{my_handler{}};
+  ntc::decoder dec{my_handler{}, my_handler{}};
 
-  ntc::encoder encoder{my_handler{network_to_decoder, 0ul}};
-  ntc::decoder decoder{my_handler{network_to_encoder, 0ul}, my_handler{decoded_symbol, 0ul}};
+  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& dec_handler = *dec.symbol_handler().target<my_handler>();
 
   const auto s0 = {'a', 'b', 'c'};
 
-  encoder.commit(copy_symbol{begin(s0), end(s0)});
+  enc.commit(copy_symbol{begin(s0), end(s0)});
 
-//  decoder.notify(copy_packet(<#ntc::copy_packet &&#>))
+  // Send serialized data to decoder.
+  dec.notify(copy_packet{enc_handler.data, enc_handler.written});
+
+  REQUIRE(dec_handler.written == s0.size());
+  REQUIRE(std::equal(begin(s0), end(s0), dec_handler.data));
 }
 
 /*------------------------------------------------------------------------------------------------*/
