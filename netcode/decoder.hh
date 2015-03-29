@@ -134,6 +134,17 @@ public:
     return nb_handled_sources_ - nb_received_sources_;
   }
 
+  /// @brief Force the sending of an ack.
+  void
+  send_ack()
+  {
+    // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
+    packetizer_->write_ack(ack_);
+
+    // Start a fresh new ack.
+    ack_.reset();
+  }
+
 private:
 
   /// @brief Notify the encoder that some data has been received.
@@ -174,12 +185,12 @@ private:
     symbol_handler_(src.buffer().data(), src.user_size());
 
     // Send an ack if necessary.
-    ack(src.id());
+    maybe_ack(src.id());
   }
 
   /// @brief Send an ack if needed.
   void
-  ack(std::uint32_t src_id)
+  maybe_ack(std::uint32_t src_id)
   {
     ack_.source_ids().insert(src_id);
 
@@ -190,17 +201,6 @@ private:
       send_ack();
       last_ack_date_ = now;
     }
-  }
-
-  /// @brief Force the sending of an ack.
-  void
-  send_ack()
-  {
-    // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
-    packetizer_->write_ack(ack_);
-
-    // Start a fresh new ack.
-    ack_.reset();
   }
 
 private:
