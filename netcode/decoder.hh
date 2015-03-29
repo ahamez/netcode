@@ -39,6 +39,7 @@ public:
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
+    , nb_sent_ack_{0}
     , data_handler_{data_handler}
     , symbol_handler_{symbol_handler}
     , packetizer_{detail::make_packetizer(conf.packetizer_type, data_handler_)}
@@ -134,12 +135,21 @@ public:
     return nb_handled_sources_ - nb_received_sources_;
   }
 
+  /// @brief The number of sent ack.
+  std::size_t
+  nb_sent_ack()
+  const noexcept
+  {
+    return nb_sent_ack_;
+  }
+
   /// @brief Force the sending of an ack.
   void
   send_ack()
   {
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
     packetizer_->write_ack(ack_);
+    nb_sent_ack_ +=1;
 
     // Start a fresh new ack.
     ack_.reset();
@@ -226,6 +236,9 @@ private:
 
   /// @brief The counter of decoded sources.
   std::size_t nb_handled_sources_;
+
+  /// @brief The number of ack sent back to the encoder.
+  std::size_t nb_sent_ack_;
 
   /// @brief The user's handler to output data on network.
   handler data_handler_;

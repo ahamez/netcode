@@ -58,16 +58,16 @@ TEST_CASE("Decoder gives a correct source to user")
 TEST_CASE("Decoder repairs a lost source")
 {
   default_configuration conf;
-  conf.rate = 1; // A repair for a source
+  conf.rate = 1; // A repair for a source.
 
   ntc::encoder enc{my_handler{}, conf};
   ntc::decoder dec{my_handler{}, my_handler{}};
 
   auto& enc_handler = *enc.data_handler().target<my_handler>();
-  auto& dec_handler = *dec.symbol_handler().target<my_handler>();
+  auto& dec_symbol_handler = *dec.symbol_handler().target<my_handler>();
 
+  // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-
   enc.commit(copy_symbol{begin(s0), end(s0)});
 
   const auto src_sz = sizeof(std::uint8_t)      // type
@@ -80,12 +80,41 @@ TEST_CASE("Decoder repairs a lost source")
   auto repair = copy_packet(enc_handler.data + src_sz, enc_handler.written - src_sz);
 
   // Send repair to decoder.
-  const auto read = dec.notify(std::move(repair));
-  REQUIRE(read /* decoder could read the repair */);
+  REQUIRE(dec.notify(std::move(repair)));
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded_sources() == 1);
-  REQUIRE(dec_handler.written == s0.size());
+  REQUIRE(dec_symbol_handler.written == s0.size());
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder generate correct ack")
+{
+  default_configuration conf;
+  conf.rate = 100; // Make sure no repairs are sent.
+
+  ntc::encoder enc{my_handler{}, conf};
+  ntc::decoder dec{my_handler{}, my_handler{}};
+
+  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& dec_data_handler = *dec.data_handler().target<my_handler>();
+
+  // Give a source to the encoder.
+  const auto s0 = {'a', 'b', 'c'};
+  enc.commit(copy_symbol{begin(s0), end(s0)});
+  REQUIRE(enc.window_size() == 1);
+
+  // Send source to decoder.
+  REQUIRE(dec.notify(copy_packet(enc_handler.data, enc_handler.written)));
+
+  // Now force the sending of an ack.
+  dec.send_ack();
+  REQUIRE(dec.nb_sent_ack() == 1);
+
+  // Sent it to the encoder.
+  REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+  REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
 }
 
 /*------------------------------------------------------------------------------------------------*/
