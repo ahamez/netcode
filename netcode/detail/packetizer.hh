@@ -20,8 +20,10 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief Prepare and construct ack/repair/source for network.
-struct packetizer final
+class packetizer final
 {
+public:
+
   /// @brief Constructor.
   packetizer(handler& h)
     : data_handler_(h)

@@ -26,10 +26,10 @@ class decoder final
 {
 public:
 
-  /// @brief
+  /// @brief Type of an ordered container of repairs.
   using repairs_set_type = boost::container::map<std::uint32_t, repair>;
 
-  /// @brief
+  /// @brief Type of an ordered container of sources.
   using sources_set_type = boost::container::map<std::uint32_t, source>;
 
 private:
@@ -48,12 +48,14 @@ private:
 
 public:
 
-  /// @brief
+  /// @brief Type of a sorted container of repair iterators.
   using repairs_iterators_type = boost::container::flat_set< repairs_set_type::iterator
                                                            , cmp_repairs_iterator>;
 
-  /// @brief
+  /// @brief Type of an ordered container of missing sources.
   using missing_sources_type = boost::container::map<std::uint32_t, repairs_iterators_type>;
+
+public:
 
   /// @brief Constructor.
   decoder(std::size_t galois_field_size, std::function<void(const source&)> h)
@@ -86,7 +88,6 @@ public:
     }
 
     add_source_recursive(std::move(src));
-
     attempt_full_decoding();
   }
 
@@ -217,6 +218,7 @@ public:
   }
 
   /// @brief Remove a source from a repair.
+  /// @attention @p r shall encode more than one source.
   void
   remove_source_from_repair(const source& src, repair& r)
   noexcept
@@ -260,7 +262,7 @@ public:
     return nb_useless_repairs_;
   }
 
-  ///
+  /// @brief Get the number of times the full decodong failed.
   std::size_t
   nb_failed_full_decodings()
   const noexcept
@@ -380,7 +382,8 @@ private:
 
   /// @brief Remove a source from a repair, but not the id from the list of source identifiers.
   /// @attention The id of the removed src must be removed from the repair's list of source
-  /// identifiers.
+  /// identifiers afterwards.
+  /// @attention @p r shall encode more than one source.
   void
   remove_source_data_from_repair(const source& src, repair& r)
   noexcept
@@ -547,7 +550,7 @@ private:
   /// @brief The number of repairs which were dropped because they were useless.
   std::size_t nb_useless_repairs_;
 
-  ///
+  /// @brief The number of time a full decoding failed.
   std::size_t nb_failed_full_decodings_;
 
   /// @brief Re-use the same memory for the matrix of coefficients.
