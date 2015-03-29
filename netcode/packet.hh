@@ -1,6 +1,6 @@
 #pragma once
 
-#include <algorithm> // copy_n
+#include <algorithm> // copy, copy_n
 #include <iterator>  // back_inserter
 
 #include "netcode/detail/buffer.hh"
@@ -137,6 +137,14 @@ public:
   {
     std::copy_n(src, len, buffer_.begin());
   }
+
+  /// @brief Constructor.
+  /// @param begin The beginning of the data to copy.
+  /// @param end The end of the data to copy.
+  template <typename InputIterator>
+  copy_packet(InputIterator begin, InputIterator end)
+    : buffer_(begin, end)
+  {}
 
 private:
 

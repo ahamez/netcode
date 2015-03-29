@@ -1,7 +1,7 @@
 #pragma once
 
-#include <algorithm> // copy_n
-#include <iterator>  // back_inserter
+#include <algorithm> // copy, copy_n
+#include <iterator>  // back_inserter, distance
 
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
@@ -150,6 +150,17 @@ public:
     , buffer_(detail::make_multiple(len, 16))
   {
     std::copy_n(src, len, buffer_.begin());
+  }
+
+  /// @brief Constructor.
+  /// @param begin The beginning of the data to copy.
+  /// @param end The end of the data to copy.
+  template <typename InputIterator>
+  copy_symbol(InputIterator begin, InputIterator end)
+    : user_size_{static_cast<std::size_t>(std::distance(begin, end))}
+    , buffer_(detail::make_multiple(user_size_, 16))
+  {
+    std::copy(begin, end, buffer_.begin());
   }
 
 private:
