@@ -183,7 +183,7 @@ struct packetizer_simple final
   }
 
   void
-  write_source(const source& pkt)
+  write_source(const source& src)
   override
   {
     using namespace boost::endian;
@@ -192,13 +192,13 @@ struct packetizer_simple final
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
 
     // Prepare packet identifier.
-    const auto network_id = native_to_big(pkt.id());
+    const auto network_id = native_to_big(src.id());
 
     // Prepare real source symbol size.
-    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
+    const auto network_sz = native_to_big(static_cast<std::uint16_t>(src.buffer().size()));
 
     // Prepare user symbol size.
-    const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(pkt.user_size()));
+    const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(src.user_size()));
 
     // Write packet type.
     write(&packet_ty, sizeof(std::uint8_t));
@@ -213,7 +213,7 @@ struct packetizer_simple final
     write(&network_user_sz, sizeof(std::uint16_t));
 
     // Write source symbol.
-    write(pkt.buffer().data(), pkt.user_size());
+    write(src.buffer().data(), src.user_size());
 
     // End of data.
     write(nullptr, 0);
@@ -245,8 +245,8 @@ struct packetizer_simple final
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(make_multiple(sz, 16));
-    std::copy_n(data, sz, std::back_inserter(buffer));
+    buffer.reserve(make_multiple(user_sz, 16));
+    std::copy_n(data, user_sz, std::back_inserter(buffer));
 
     return {id, std::move(buffer), user_sz};
   }
