@@ -163,6 +163,15 @@ public:
     return data_handler_;
   }
 
+  /// @brief Force the sending of a repair.
+  void
+  send_repair()
+  {
+    repair_.reset();
+    mk_repair();
+    packetizer_.write_repair(repair_);
+  }
+
 private:
 
   /// @brief Create a source from the given symbol and generate a repair if needed.
@@ -191,13 +200,7 @@ private:
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % rate_ == 0)
     {
-      // Only reset the 'virtual' size of the buffer, the reserved memory is kept, so
-      // no memory re-allocation occurs.
-      repair_.reset();
-
-      mk_repair();
-      // Ask packetizer to handle the bytes of the new repair (will be routed to user's handler).
-      packetizer_.write_repair(repair_);
+      send_repair();
     }
 
     current_source_id_ += 1;
