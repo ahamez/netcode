@@ -9,24 +9,27 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief
+/// @brief The default configuration for ntc::encoder and ntc::decoder.
+///
+/// Each setting can be overwritten before passing the configuration to a ntc::encoder or
+/// ntc::decoder.
 struct configuration
 {
-  /// @brief
+  /// @brief The Galois field size is 2 ^ @p galois_field_size.
   std::size_t galois_field_size = 8;
 
-  /// @brief
+  /// @brief Tell if the code is systematic or not.
   code code_type = code::systematic;
 
-  /// @brief
+  /// @brief How many sources to send before a repair is generated.
   std::size_t rate = 5;
 
-  /// @brief
+  /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
   ///
   /// If 0, the user will take care of sending ack by calling decoder::send_ack() directly.
   std::chrono::milliseconds ack_frequency = std::chrono::milliseconds{100};
 
-  /// @brief
+  /// @brief The maximal number of sources to keep on the encoder side before discarding them.
   std::size_t window = std::numeric_limits<std::size_t>::max();
 };
 
