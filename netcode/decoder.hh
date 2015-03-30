@@ -9,7 +9,6 @@
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
-#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 
 namespace ntc {
@@ -17,8 +16,17 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the receiver side.
+template <typename DataHandler, typename SymbolHandler>
 class decoder final
 {
+public:
+
+  /// @brief The type of the handler that processes data ready to be sent on the network.
+  using data_handler_type = DataHandler;
+
+  /// @brief The type of the handler that processes decoded or received symbols.
+  using symbol_handler_type = SymbolHandler;
+
 public:
 
   /// @brief Can't copy-construct an encoder.
@@ -28,7 +36,8 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  decoder(handler data_handler, handler symbol_handler, configuration conf)
+  decoder( const data_handler_type& data_handler, const symbol_handler_type& symbol_handler
+         , configuration conf)
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
@@ -46,7 +55,7 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  decoder(handler data_handler, handler symbol_handler)
+  decoder(const data_handler_type& data_handler, const symbol_handler_type& symbol_handler)
     : decoder{data_handler, symbol_handler, configuration{}}
   {}
 
@@ -81,7 +90,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  const handler&
+  const data_handler_type&
   data_handler()
   const noexcept
   {
@@ -89,7 +98,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  handler&
+  data_handler_type&
   data_handler()
   noexcept
   {
@@ -97,7 +106,7 @@ public:
   }
 
   /// @brief Get the symbol handler.
-  const handler&
+  const symbol_handler_type&
   symbol_handler()
   const noexcept
   {
@@ -105,7 +114,7 @@ public:
   }
 
   /// @brief Get the symbol handler.
-  handler&
+  symbol_handler_type&
   symbol_handler()
   noexcept
   {
@@ -238,13 +247,13 @@ private:
   detail::decoder decoder_;
 
   /// @brief The user's handler to output data on network.
-  handler data_handler_;
+  data_handler_type data_handler_;
 
   /// @brief The user's handler to read decoded symbols.
-  handler symbol_handler_;
+  symbol_handler_type symbol_handler_;
 
   /// @brief How to serialize packets.
-  detail::packetizer packetizer_;
+  detail::packetizer<data_handler_type> packetizer_;
 
   /// @brief The counter of received repairs.
   std::size_t nb_received_repairs_;

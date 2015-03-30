@@ -64,7 +64,7 @@ private:
   detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to set the user size and to access the buffer.
-  friend class encoder;
+  template <typename DataHandler> friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ private:
   detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to set the user size and to access the buffer.
-  friend class encoder;
+  template <typename DataHandler> friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -174,7 +174,7 @@ private:
   detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
-  friend class encoder;
+  template <typename DataHandler> friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

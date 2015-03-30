@@ -14,7 +14,7 @@ using namespace ntc;
 
 namespace /* unnamed */ {
 
-struct my_handler
+struct handler
 {
   char data[2048];
   std::size_t written = 0;
@@ -37,11 +37,11 @@ struct my_handler
 
 TEST_CASE("Decoder gives a correct source to user")
 {
-  ntc::encoder enc{my_handler{}};
-  ntc::decoder dec{my_handler{}, my_handler{}};
+  encoder<handler> enc{handler{}};
+  decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
-  auto& dec_handler = *dec.symbol_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
+  auto& dec_handler = dec.symbol_handler();
 
   const auto s0 = {'a', 'b', 'c'};
 
@@ -61,11 +61,11 @@ TEST_CASE("Decoder repairs a lost source")
   configuration conf;
   conf.rate = 1; // A repair for a source.
 
-  ntc::encoder enc{my_handler{}, conf};
-  ntc::decoder dec{my_handler{}, my_handler{}};
+  encoder<handler> enc{handler{}, conf};
+  decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
-  auto& dec_symbol_handler = *dec.symbol_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
+  auto& dec_symbol_handler = dec.symbol_handler();
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
@@ -95,11 +95,11 @@ TEST_CASE("Decoder generate correct ack")
   conf.rate = 100; // Make sure no repairs are sent.
   conf.ack_frequency = std::chrono::milliseconds{100};
 
-  ntc::encoder enc{my_handler{}, conf};
-  ntc::decoder dec{my_handler{}, my_handler{}};
+  encoder<handler> enc{handler{}, conf};
+  decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
-  auto& dec_data_handler = *dec.data_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
+  auto& dec_data_handler = dec.data_handler();
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};

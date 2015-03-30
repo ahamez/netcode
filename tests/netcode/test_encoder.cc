@@ -27,7 +27,7 @@ TEST_CASE("Encoder's window size")
 {
   configuration conf;
   conf.rate = 3;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   SECTION("Ever growing window size")
   {
@@ -47,7 +47,7 @@ TEST_CASE("Encoder can limit the window size")
 {
   configuration conf;
   conf.window = 4;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   auto sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
@@ -82,7 +82,7 @@ TEST_CASE("Encoder generates repairs")
 {
   configuration conf;
   conf.rate = 5;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   SECTION("Fixed code rate")
   {
@@ -102,7 +102,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 {
   configuration conf;
   conf.rate = 5;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)
@@ -132,8 +132,8 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   };
 
   // Directly use the serializer that would have been called by the sender.
-  handler h = my_handler{data.buffer(), nb_written};
-  detail::packetizer serializer{h};
+  my_handler h{data.buffer(), nb_written};
+  detail::packetizer<my_handler> serializer{h};
 
   SECTION("incoming ack")
   {
@@ -263,9 +263,9 @@ struct my_handler
 
 TEST_CASE("Encoder sends correct sources")
 {
-  ntc::encoder enc{my_handler{}};
+  encoder<my_handler> enc{my_handler{}};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
 
   const auto s0 = {'A', 'B', 'C'};
 
@@ -289,9 +289,9 @@ TEST_CASE("Encoder sends repairs")
   configuration conf;
   conf.rate = 1; // A repair for a source
 
-  ntc::encoder enc{my_handler{}, conf};
+  encoder<my_handler> enc{my_handler{}, conf};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
 
   const auto s0 = {'a', 'b', 'c'};
 

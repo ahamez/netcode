@@ -586,7 +586,6 @@
 		2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
 		2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
 		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
-		2B6F62451AC7FAE900A34953 /* handler.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = handler.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
@@ -1781,7 +1780,6 @@
 				2B6F62431AC7604600A34953 /* configuration.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
-				2B6F62451AC7FAE900A34953 /* handler.hh */,
 				2B282BB81AB81ABA00640FF8 /* packet.hh */,
 				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
 			);

@@ -10,7 +10,6 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
-#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 #include "netcode/symbol.hh"
 
@@ -19,8 +18,14 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
+template <typename DataHandler>
 class encoder final
 {
+public:
+
+  /// @brief The type of the handler that processes data ready to be sent on the network.
+  using data_handler_type = DataHandler;
+
 public:
 
   /// @brief Can't copy-construct an encoder.
@@ -30,13 +35,13 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  encoder(handler data_handler, configuration conf)
+  encoder(const data_handler_type& data_handler, configuration conf)
     : conf_{conf}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , data_handler_{data_handler}
+    , data_handler_(data_handler)
     , encoder_{conf.galois_field_size}
     , packetizer_{data_handler_}
     , nb_repairs_{0ul}
@@ -49,7 +54,7 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  encoder(handler data_handler)
+  encoder(const data_handler_type& data_handler)
     : encoder{data_handler, configuration{}}
   {}
 
@@ -147,7 +152,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  const handler&
+  const data_handler_type&
   data_handler()
   const noexcept
   {
@@ -155,7 +160,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  handler&
+  data_handler_type&
   data_handler()
   noexcept
   {
@@ -258,13 +263,13 @@ private:
   detail::repair repair_;
 
   /// @brief The user's handler.
-  handler data_handler_;
+  data_handler_type data_handler_;
 
   /// @brief The component that handles the coding process.
   detail::encoder encoder_;
 
   /// @brief How to serialize packets.
-  detail::packetizer packetizer_;
+  detail::packetizer<data_handler_type> packetizer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;
