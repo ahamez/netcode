@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstddef> // size_t
+#include <stdexcept>
 
 extern "C" {
 #include <gf_complete.h>

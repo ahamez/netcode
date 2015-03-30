@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "netcode/detail/galois_field.hh"
 
 namespace ntc { namespace detail {

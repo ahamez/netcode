@@ -14,6 +14,8 @@
 		2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */; };
 		2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */; };
 		2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */; };
+		2B516BD31AC9126200133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD21AC9126200133F38 /* encoder.cc */; };
+		2B516BD51AC9134A00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD41AC9134A00133F38 /* decoder.cc */; };
 		2B5A273A1AC2FE9200F76A9E /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
@@ -578,6 +580,9 @@
 		2B4E310B1AC07DA10002E97C /* galois_field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = galois_field.hh; sourceTree = "<group>"; };
 		2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_galois_field.cc; sourceTree = "<group>"; };
 		2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_square_matrix.cc; sourceTree = "<group>"; };
+		2B516BD21AC9126200133F38 /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
+		2B516BD41AC9134A00133F38 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
+		2B516BD61AC9154D00133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
 		2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
 		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
@@ -1770,6 +1775,7 @@
 		2BE3194F1AB0C550001AA9DF /* netcode */ = {
 			isa = PBXGroup;
 			children = (
+				2B516BD61AC9154D00133F38 /* CMakeLists.txt */,
 				2BE3196E1AB2357F001AA9DF /* detail */,
 				2BE319561AB0C550001AA9DF /* code.hh */,
 				2B6F62431AC7604600A34953 /* configuration.hh */,
@@ -1807,7 +1813,9 @@
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
 				2BE319721AB23910001AA9DF /* buffer.hh */,
 				2B282BBD1AB8618800640FF8 /* decoder.hh */,
+				2B516BD41AC9134A00133F38 /* decoder.cc */,
 				2BF1A6401ABB6CCC009C32B9 /* encoder.hh */,
+				2B516BD21AC9126200133F38 /* encoder.cc */,
 				2B4E310B1AC07DA10002E97C /* galois_field.hh */,
 				2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
@@ -1913,8 +1921,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B516BD31AC9126200133F38 /* encoder.cc in Sources */,
 				2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */,
 				2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */,
+				2B516BD51AC9134A00133F38 /* decoder.cc in Sources */,
 				2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */,
 				2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */,
 				2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */,
