@@ -64,22 +64,7 @@ public:
   void
   operator()(symbol&& sym)
   {
-    assert(sym.user_size_ != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
-    commit_impl(std::move(sym));
-  }
-
-  /// @brief Give the encoder a new symbol.
-  /// @param sym The automatic symbol to add.
-  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
-  void
-  operator()(auto_symbol&& sym)
-  {
-    sym.user_size_ = sym.buffer_.size();
-    if ((sym.buffer_.size() % 16) != 0)
-    {
-      // The automatic buffer has a size which is not a multiple of 16.
-      sym.buffer_.resize(detail::make_multiple(sym.buffer_.size(), 16));
-    }
+    assert(sym.used_bytes() != 0 && "please use symbol::used_bytes()");
     commit_impl(std::move(sym));
   }
 
@@ -105,18 +90,9 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  operator()(const auto_packet& p)
-  {
-    return notify_impl(p.buffer_.data());
-  }
-
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
-  bool
   operator()(const copy_packet& p)
   {
-    return notify_impl(p.buffer_.data());
+    return notify_impl(p.buffer());
   }
 
   /// @brief The number of packets which have not been acknowledged.
@@ -185,8 +161,8 @@ private:
   void
   commit_impl(Symbol&& sym)
   {
-    assert(sym.buffer_.size() % 16 == 0 && "symbol buffer size not a multiple of 16");
-    assert(sym.user_size_ <= sym.buffer_.size() && "More bytes are used than the buffer can hold");
+    assert(sym.buffer_impl().size() % 16 == 0 && "symbol buffer size not a multiple of 16");
+    assert(sym.used_bytes() <= sym.buffer_impl().size() && "More bytes than the buffer can hold");
 
     if (sources_.size() == conf_.window)
     {
@@ -196,7 +172,7 @@ private:
     // Create a new source in-place at the end of the list of sources, "stealing" the symbol
     // buffer from sym.
     const auto& insertion
-      = sources_.emplace(current_source_id_, std::move(sym.buffer_), sym.user_size_);
+      = sources_.emplace(current_source_id_, std::move(sym.buffer_impl()), sym.used_bytes());
 
     // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
     packetizer_.write_source(insertion);

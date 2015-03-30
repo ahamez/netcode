@@ -76,19 +76,9 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  operator()(auto_packet&& p)
-  {
-    return notify_impl(p.buffer_.data());
-  }
-
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
-  /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
-  bool
   operator()(copy_packet&& p)
   {
-    return notify_impl(p.buffer_.data());
+    return notify_impl(p.buffer());
   }
 
   /// @brief Get the data handler.

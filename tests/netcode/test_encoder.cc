@@ -26,19 +26,23 @@ struct dummy_handler
 TEST_CASE("Encoder's window size")
 {
   configuration conf;
-  conf.rate = 3;
+  conf.rate = 1;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  SECTION("Ever growing window size")
-  {
-    for (auto i = 0ul; i < 100; ++i)
-    {
-      auto sym = ntc::symbol{512};
-      sym.set_nb_written_bytes(300);
-      encoder(std::move(sym));
-      REQUIRE(encoder.window_size() == (i + 1));
-    }
-  }
+  auto sym0 = ntc::symbol{512};
+  sym0.used_bytes() = 13;
+  encoder(std::move(sym0));
+  REQUIRE(encoder.window_size() == 1);
+
+  auto sym1 = ntc::symbol{512};
+  sym1.used_bytes() = 17;
+  encoder(std::move(sym1));
+  REQUIRE(encoder.window_size() == 2);
+
+  auto sym2 = ntc::symbol{512};
+  sym2.used_bytes() = 17;
+  encoder(std::move(sym2));
+  REQUIRE(encoder.window_size() == 3);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -50,28 +54,28 @@ TEST_CASE("Encoder can limit the window size")
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   auto sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
 
   sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
 
   sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
 
   sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
 
   sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 
   sym = ntc::symbol{512};
-  sym.set_nb_written_bytes(8);
+  sym.used_bytes() = 8;
   encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 }
@@ -89,7 +93,7 @@ TEST_CASE("Encoder generates repairs")
     for (auto i = 0ul; i < 100; ++i)
     {
       auto sym = ntc::symbol{512};
-      sym.set_nb_written_bytes(512);
+      sym.used_bytes() = 512;
       encoder(std::move(sym));
     }
     REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
@@ -107,7 +111,8 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)
   {
-    auto sym = ntc::auto_symbol{512};
+    auto sym = ntc::symbol{512};
+    sym.used_bytes() = 512;
     encoder(std::move(sym));
   }
   REQUIRE(encoder.window_size() == 4);

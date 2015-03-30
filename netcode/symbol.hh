@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm> // copy, copy_n
-#include <iterator>  // back_inserter, distance
+#include <iterator>  // distance
 
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
@@ -17,7 +17,6 @@ namespace ntc {
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
-/// This class is meant to be used with encoder::commit().
 class symbol final
 {
 public:
@@ -25,7 +24,7 @@ public:
   /// @brief Constructor.
   /// @param size The size of the buffer to allocate.
   symbol(std::size_t size)
-    : user_size_{0}
+    : used_bytes_{0}
     , buffer_(detail::make_multiple(size, 16))
   {}
 
@@ -42,100 +41,78 @@ public:
   ///
   /// May cause a copy.
   void
-  resize_buffer(std::size_t size)
+  resize(std::size_t size)
   {
     buffer_.resize(size);
   }
 
-  /// @brief Tell the library how many bytes were written in the buffer.
-  void
-  set_nb_written_bytes(std::size_t sz)
+  /// @brief Get the the number of used bytes in this symbol (read-only).
+  std::size_t
+  used_bytes()
+  const noexcept
+  {
+    return used_bytes_;
+  }
+
+  /// @brief Get the the number of used bytes in this symbol.
+  ///
+  /// When set, it must be smaller than the reserved size.
+  std::size_t&
+  used_bytes()
   noexcept
   {
-    user_size_ = sz;
+    return used_bytes_;
+  }
+
+  /// @brief Get the implementation-defined underlying buffer (read-only).
+  const detail::byte_buffer&
+  buffer_impl()
+  const noexcept
+  {
+    return buffer_;
+  }
+
+  /// @brief Get the implementation-defined underlying buffer.
+  detail::byte_buffer&
+  buffer_impl()
+  noexcept
+  {
+    return buffer_;
+  }
+
+  /// @brief The useable size of the underlying buffer.
+  /// @note It might be greater than the requested size at construction of by resize().
+  std::size_t
+  reserved_size()
+  const noexcept
+  {
+    return buffer_.size();
+  }
+
+  /// @brief Reset the symbol for further re-use.
+  ///
+  /// Can be used on a moved symbol.
+  void
+  reset(std::size_t size)
+  noexcept
+  {
+    used_bytes_ = 0;
+    buffer_.resize(detail::make_multiple(size, 16));
   }
 
 private:
 
   /// @brief The size of the symbol given by the user.
-  std::size_t user_size_;
+  std::size_t used_bytes_;
 
   /// @brief The buffer storage.
   detail::byte_buffer buffer_;
-
-  /// @brief The encoder needs to set the user size and to access the buffer.
-  template <typename DataHandler> friend class encoder;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @brief A symbol which automatically grows as needed.
-///
-/// This class is meant to be used with encoder::commit().
-/// It provides the easiest way to avoid copying, and can be used with STL algorithms.
-class auto_symbol final
-{
-public:
-
-  /// @brief Construct with a reserved buffer to avoid memory re-allocations when growing.
-  /// @param reserve_size The size to reserve.
-  auto_symbol(std::size_t reserve_size)
-    : user_size_{0}
-    , buffer_()
-  {
-    buffer_.reserve(reserve_size);
-  }
-
-  /// @brief Default constructor with a default size (512 bytes) for the reserved buffer.
-  auto_symbol()
-    : auto_symbol{512}
-  {}
-
-  /// @brief An iterator to write in the symbol buffer.
-  using back_insert_iterator = std::back_insert_iterator<detail::byte_buffer>;
-
-  /// @brief Get a back inserter iterator to the symbol buffer.
-  ///
-  /// The returned iterator is usable as an output iterator with any STL algorithm.
-  /// @note Inserting a number of times greater than the reserved size will result in a new
-  /// allocation, and possibly a copy. Thus, the reserved size given at construction should be
-  /// large enough to avoid this situation.
-  back_insert_iterator
-  back_inserter()
-  {
-    return std::back_inserter(buffer_);
-  }
-
-  /// @brief Reset the buffer.
-  /// @attention Any current back insert iterator will be invalidated. A new one must be created
-  /// with back_inserter().
-  /// @note The reserved memory is kept.
-  void
-  reset()
-  noexcept
-  {
-    buffer_.clear();
-  }
-
-private:
-
-  /// @brief The size of the symbol given by the user.
-  ///
-  /// Will be set by encoder::commit().
-  std::size_t user_size_;
-
-  /// @brief The buffer storage.
-  detail::byte_buffer buffer_;
-
-  /// @brief The encoder needs to set the user size and to access the buffer.
-  template <typename DataHandler> friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief A symbol that copies the input data.
 ///
-/// This class is meant to be used with encoder::commit().
 /// Use this symbol when the data already exists and must be copied, otherwise @ref auto_symbol and
 /// @ref symbol should be prefered.
 class copy_symbol final
@@ -146,7 +123,7 @@ public:
   /// @param src The address of the data to copy.
   /// @param len The size of the data to copy.
   copy_symbol(const char* src, std::size_t len)
-    : user_size_{len}
+    : used_bytes_{len}
     , buffer_(detail::make_multiple(len, 16))
   {
     std::copy_n(src, len, buffer_.begin());
@@ -157,24 +134,71 @@ public:
   /// @param end The end of the data to copy.
   template <typename InputIterator>
   copy_symbol(InputIterator begin, InputIterator end)
-    : user_size_{static_cast<std::size_t>(std::distance(begin, end))}
-    , buffer_(detail::make_multiple(user_size_, 16))
+    : used_bytes_{static_cast<std::size_t>(std::distance(begin, end))}
+    , buffer_(detail::make_multiple(used_bytes_, 16))
   {
     std::copy(begin, end, buffer_.begin());
+  }
+
+  /// @brief Get the the number of used bytes in this symbol (read-only).
+  std::size_t
+  used_bytes()
+  const noexcept
+  {
+    return used_bytes_;
+  }
+
+  /// @brief Get the the number of used bytes in this symbol.
+  std::size_t&
+  used_bytes()
+  noexcept
+  {
+    return used_bytes_;
+  }
+
+  /// @brief Get the implementation-defined underlying buffer (read-only).
+  const detail::byte_buffer&
+  buffer_impl()
+  const noexcept
+  {
+    return buffer_;
+  }
+
+  /// @brief Get the implementation-defined underlying buffer.
+  detail::byte_buffer&
+  buffer_impl()
+  noexcept
+  {
+    return buffer_;
+  }
+
+  /// @brief The useable size of the underlying buffer.
+  /// @note It might be greater than the requested size at construction.
+  std::size_t
+  reserved_size()
+  const noexcept
+  {
+    return buffer_.size();
+  }
+
+  /// @brief Reset the symbol for further re-use.
+  ///
+  /// Can be used on a moved symbol.
+  void
+  reset(std::size_t size)
+  noexcept
+  {
+    used_bytes_ = 0;
+    buffer_.resize(size);
   }
 
 private:
 
   /// @brief The size of the symbol given by the user.
-  ///
-  /// Will be set by encoder::commit().
-  std::size_t user_size_;
+  std::size_t used_bytes_;
 
   /// @brief The buffer storage.
   detail::byte_buffer buffer_;
-
-  /// @brief The encoder needs to access the buffer.
-  template <typename DataHandler> friend class encoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

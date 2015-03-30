@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm> // copy, copy_n
-#include <iterator>  // back_inserter
 
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/multiple.hh"
@@ -45,77 +44,24 @@ public:
   ///
   /// May cause a copy.
   void
-  resize_buffer(std::size_t size)
+  resize(std::size_t size)
   {
     buffer_.resize(size);
   }
 
-private:
-
-  /// @brief The buffer storage.
-  detail::byte_buffer buffer_;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @brief A packet which automatically grows as needed.
-///
-/// This class is meant to be used with encoder::notify() and decoder::notify().
-/// It provides the easiest way to avoid copying, and can be used with STL algorithms.
-class auto_packet final
-{
-public:
-
-  /// @brief Construct with a reserved buffer to avoid memory re-allocations when growing.
-  /// @param reserve_size The size to reserve.
-  auto_packet(std::size_t reserve_size)
-    : buffer_()
+  /// @brief The useable size of the underlying buffer.
+  /// @note It might be greater than the requested size at construction.
+  std::size_t
+  reserved_size()
+  const noexcept
   {
-    buffer_.reserve(reserve_size);
-  }
-
-  /// @brief Default constructor with a default size (512 bytes) for the reserved buffer.
-  auto_packet()
-    : auto_packet{512}
-  {}
-
-  /// @brief An iterator to write in the packet buffer.
-  using back_insert_iterator = std::back_insert_iterator<detail::byte_buffer>;
-
-  /// @brief Get a back inserter iterator to the packet buffer.
-  ///
-  /// The returned iterator is usable as an output iterator with any STL algorithm.
-  /// @note Inserting a number of times greater than the reserved size will result in a new
-  /// allocation, and possibly a copy. Thus, the reserved size given at construction should be
-  /// large enough to avoid this situation.
-  back_insert_iterator
-  back_inserter()
-  {
-    return std::back_inserter(buffer_);
-  }
-
-  /// @brief Reset the buffer.
-  /// @attention Any current back insert iterator will be invalidated. A new one must be created
-  /// with back_inserter().
-  ///
-  /// The reserved memory is kept.
-  void
-  reset()
-  noexcept
-  {
-    buffer_.clear();
+    return buffer_.size();
   }
 
 private:
 
   /// @brief The buffer storage.
   detail::byte_buffer buffer_;
-
-  /// @brief The encoder needs to access the buffer.
-  template <typename DataHandler> friend class encoder;
-
-  /// @brief The decoder needs to access the buffer.
-  template <typename DataHandler, typename SymbolHandler> friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -146,16 +92,35 @@ public:
     : buffer_(begin, end)
   {}
 
+  /// @brief Get the buffer where to write the packet.
+  char*
+  buffer()
+  noexcept
+  {
+    return buffer_.data();
+  }
+
+  /// @brief Get the buffer (read-only).
+  const char*
+  buffer()
+  const noexcept
+  {
+    return buffer_.data();
+  }
+
+  /// @brief The useable size of the underlying buffer.
+  /// @note It might be greater than the requested size at construction.
+  std::size_t
+  reserved_size()
+  const noexcept
+  {
+    return buffer_.size();
+  }
+
 private:
 
   /// @brief The buffer storage.
   detail::byte_buffer buffer_;
-
-  /// @brief The encoder needs to access the buffer.
-  template <typename DataHandler> friend class encoder;
-
-  /// @brief The decoder needs to access the buffer.
-  template <typename DataHandler, typename SymbolHandler> friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

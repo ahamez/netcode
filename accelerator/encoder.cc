@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <iostream>
-//#include <memory>
 
 #define ASIO_STANDALONE
 #include <asio.hpp>
@@ -43,6 +42,7 @@ struct data_handler
     else
     {
       // End of data, we can now send it.
+      std::cout << "Will write " << written << " bytes\n";
       socket.send_to(asio::buffer(buffer, written), endpoint);
       written = 0;
     }
@@ -85,10 +85,10 @@ private:
                                             {
                                               throw std::runtime_error(err.message());
                                             }
-                                            symbol_.set_nb_written_bytes(sz);
+                                            symbol_.used_bytes() = sz;
                                             encoder_(std::move(symbol_));
                                             // Prepare symbol for next incoming.
-                                            symbol_ = ntc::symbol{sz};
+                                            symbol_.reset(max_len);
                                             start_server_handler();
                                           });
   }
