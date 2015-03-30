@@ -14,9 +14,20 @@
 		2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */; };
 		2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */; };
 		2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */; };
-		2B516A171AC87CF800133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516A161AC87CF800133F38 /* encoder.cc */; };
-		2B516BD11AC8884200133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* decoder.cc */; };
-		2B5A273A1AC2FE9200F76A9E /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */; };
+		2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
+		2B516BE31AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
+		2B516BE41AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
+		2B516BE51AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
+		2B516BE61AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
+		2B516BE71AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
+		2B516BE81AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
+		2B516BE91AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
+		2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
+		2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
+		2B516BEC1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
+		2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
+		2B516BEF1AC9453C00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516A161AC87CF800133F38 /* encoder.cc */; };
+		2B516BF01AC9454100133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* decoder.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
@@ -1008,8 +1019,13 @@
 		2B516BC41AC87DC700133F38 /* asio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = asio.hpp; sourceTree = "<group>"; };
 		2B516BC91AC8881C00133F38 /* accelerator_decoder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_decoder; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B516BD01AC8884200133F38 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
-		2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
-		2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
+		2B516BDD1AC944AE00133F38 /* coefficient.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coefficient.cc; sourceTree = "<group>"; };
+		2B516BDE1AC944AE00133F38 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
+		2B516BDF1AC944AE00133F38 /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
+		2B516BE01AC944AE00133F38 /* invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = invert_matrix.cc; sourceTree = "<group>"; };
+		2B516BE11AC944AE00133F38 /* invert_matrix.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
+		2B516BEE1AC944DD00133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B516BF11AC9566500133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -2201,6 +2217,7 @@
 		2B5169FF1AC87C4400133F38 /* accelerator */ = {
 			isa = PBXGroup;
 			children = (
+				2B516BF11AC9566500133F38 /* CMakeLists.txt */,
 				2B516BD01AC8884200133F38 /* decoder.cc */,
 				2B516A161AC87CF800133F38 /* encoder.cc */,
 			);
@@ -2812,7 +2829,7 @@
 		2BE3194F1AB0C550001AA9DF /* netcode */ = {
 			isa = PBXGroup;
 			children = (
-				2B516BD61AC9154D00133F38 /* CMakeLists.txt */,
+				2B516BEE1AC944DD00133F38 /* CMakeLists.txt */,
 				2BE3196E1AB2357F001AA9DF /* detail */,
 				2BE319561AB0C550001AA9DF /* code.hh */,
 				2B6F62431AC7604600A34953 /* configuration.hh */,
@@ -2851,14 +2868,14 @@
 				2BE319731AB2CB1A001AA9DF /* ack.hh */,
 				2BE319721AB23910001AA9DF /* buffer.hh */,
 				2B4977FE1AC4137500A76CF8 /* coefficient.hh */,
-				2B516BD91AC9256C00133F38 /* coefficient.cc */,
+				2B516BDD1AC944AE00133F38 /* coefficient.cc */,
 				2B282BBD1AB8618800640FF8 /* decoder.hh */,
-				2B516BD41AC9134A00133F38 /* decoder.cc */,
+				2B516BDE1AC944AE00133F38 /* decoder.cc */,
 				2BF1A6401ABB6CCC009C32B9 /* encoder.hh */,
-				2B516BD21AC9126200133F38 /* encoder.cc */,
+				2B516BDF1AC944AE00133F38 /* encoder.cc */,
 				2B4E310B1AC07DA10002E97C /* galois_field.hh */,
-				2B5A27381AC2FE3E00F76A9E /* invert_matrix.hh */,
-				2B516BD71AC924DD00133F38 /* invert_matrix.cc */,
+				2B516BE11AC944AE00133F38 /* invert_matrix.hh */,
+				2B516BE01AC944AE00133F38 /* invert_matrix.cc */,
 				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
 				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
 				2B272C501AC75A1E00E6FEDC /* packetizer.hh */,
@@ -2890,7 +2907,6 @@
 				2B282BBE1AB861C200640FF8 /* test_decoder.cc */,
 				2B2A96261AC59120001B8F66 /* test_encoder.cc */,
 				2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */,
-				2B5A27391AC2FE9200F76A9E /* test_invert_matrix.cc */,
 				2B272C511AC75C1800E6FEDC /* test_packetizer.cc */,
 				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 				2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */,
@@ -3004,7 +3020,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B516A171AC87CF800133F38 /* encoder.cc in Sources */,
+				2B516BEF1AC9453C00133F38 /* encoder.cc in Sources */,
+				2B516BEC1AC944AE00133F38 /* invert_matrix.cc in Sources */,
+				2B516BE61AC944AE00133F38 /* decoder.cc in Sources */,
+				2B516BE91AC944AE00133F38 /* encoder.cc in Sources */,
+				2B516BE31AC944AE00133F38 /* coefficient.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3012,7 +3032,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B516BD11AC8884200133F38 /* decoder.cc in Sources */,
+				2B516BF01AC9454100133F38 /* decoder.cc in Sources */,
+				2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */,
+				2B516BE71AC944AE00133F38 /* decoder.cc in Sources */,
+				2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */,
+				2B516BE41AC944AE00133F38 /* coefficient.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3020,23 +3044,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B516BD81AC924DD00133F38 /* invert_matrix.cc in Sources */,
-				2B516BD31AC9126200133F38 /* encoder.cc in Sources */,
+				2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */,
 				2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */,
+				2B516BE81AC944AE00133F38 /* encoder.cc in Sources */,
 				2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */,
-				2B516BD51AC9134A00133F38 /* decoder.cc in Sources */,
 				2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */,
 				2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */,
 				2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */,
 				2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */,
-				2B5A273A1AC2FE9200F76A9E /* test_invert_matrix.cc in Sources */,
 				2BE319871AB32DA0001AA9DF /* tests.cc in Sources */,
 				2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */,
 				2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */,
 				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
+				2B516BE51AC944AE00133F38 /* decoder.cc in Sources */,
 				2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */,
+				2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */,
 				2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */,
-				2B516BDA1AC9256C00133F38 /* coefficient.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3321,6 +3344,7 @@
 				2B516A151AC87CE500133F38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_decoder" */ = {
 			isa = XCConfigurationList;
@@ -3329,6 +3353,7 @@
 				2B516BCF1AC8881C00133F38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2BC317A21AB0C53200C61FBB /* Build configuration list for PBXProject "netcode" */ = {
 			isa = XCConfigurationList;

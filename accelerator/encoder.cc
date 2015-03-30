@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <iostream>
-#include <memory>
+//#include <memory>
 
 #define ASIO_STANDALONE
 #include <asio.hpp>
@@ -8,93 +8,112 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
+using asio::ip::address_v4;
 using asio::ip::udp;
 
 /*------------------------------------------------------------------------------------------------*/
 
-class transcoder
-  : public std::enable_shared_from_this<transcoder>
+/// @brief
+static constexpr auto max_len = 2048;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief Called by encoder when data is ready to be written.
+struct data_handler
 {
-public:
+  udp::socket& socket;
+  udp::endpoint& endpoint;
 
-  /// @brief Constructor.
-  transcoder(ntc::configuration conf, asio::io_service& io, std::uint16_t port)
-    : io_{io}
-    , as_server_socket_{io_, udp::endpoint{udp::v4(), port}}
-    , as_server_endpoint_{}
-    , as_client_socket_{io_}
-    , as_client_endpoint_{}
-    , encoder_{[this](const char* data, std::size_t len){encoder_callback(data, len);}, conf}
-    , as_server_buffer_{}
-    , as_server_nb_written_{0}
-  {
-//    udp::resolver resolver{io};
-//    as_client_endpoint_ = *resolver.resolve({udp::v4(), "127.0.0.1", "12345"});
-//    as_client_socket_.open(udp::v4());
-    do_receive();
-  }
+  char buffer[max_len];
+  std::size_t written;
 
-private:
+  data_handler(udp::socket& sock, udp::endpoint& end)
+    : socket{sock}, endpoint{end}, buffer{}, written{0}
+  {}
 
   void
-  do_receive()
+  operator()(const char* data, std::size_t sz)
+  noexcept
   {
-    // sources
-    as_server_socket_.async_receive_from( asio::buffer(as_server_buffer_, max_len)
-                                        , as_server_endpoint_
-                                        , [this, self = shared_from_this()]
-                                          (const asio::error_code& err, std::size_t sz)
-                                          {
-                                            if (err)
-                                            {
-                                              std::cerr << err.value() << '\n';
-                                              std::cerr << err.message() << '\n';
-                                              throw "arg";
-                                            }
-                                            ntc::copy_symbol symbol{as_server_buffer_, sz};
-                                            encoder_.commit(std::move(symbol));
-                                          });
-
-    // ack
-//    as_client_socket_.async_receive_from( asio::buffer(as_client_buffer_, max_len)
-//                                        , as_client_endpoint_
-//                                        , [this](const asio::error_code& err, std::size_t sz)
-//                                          {
-//                                            if (err)
-//                                            {
-//                                              throw "arg2";
-//                                            }
-//                                            ntc::copy_packet packet{as_client_buffer_, sz};
-//                                            encoder_.notify(std::move(packet));
-//                                          });
-  }
-
-  /// @brief Callback for encoder.
-  void
-  encoder_callback(const char* data, std::size_t len)
-  {
+    std::cout << "handler\n";
     if (data)
     {
-      std::copy_n(data, len, as_server_buffer_ + as_server_nb_written_);
-      as_server_nb_written_ += len;
+      std::copy_n(data, sz, buffer + written);
+      written += sz;
     }
     else
     {
       // End of data, we can now send it.
-      as_client_socket_.async_send_to( asio::buffer(as_server_buffer_, as_server_nb_written_)
-                                     , as_client_endpoint_
-                                     , [this](const asio::error_code&, std::size_t sz)
-                                       {
-                                         do_receive();
-                                       });
-      as_server_nb_written_ = 0;
+      socket.send_to(asio::buffer(buffer, written), endpoint);
+      written = 0;
     }
+  }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+class transcoder
+{
+public:
+
+  /// @brief Constructor.
+  transcoder( ntc::configuration conf, asio::io_service& io
+            , std::uint16_t server_port
+            , std::string decoder_ip, std::uint16_t decoder_port)
+    : io_{io}
+    , as_server_socket_{io_, udp::endpoint{udp::v4(), server_port}}
+    , as_server_endpoint_{}
+    , as_client_socket_{io_, udp::endpoint{address_v4::from_string(decoder_ip), decoder_port}}
+    , as_client_endpoint_{}
+    , encoder_{data_handler{as_client_socket_, as_server_endpoint_}, conf}
+    , ack_{max_len}
+    , symbol_{max_len}
+  {
+    start_server_handler();
+    start_client_handler();
   }
 
 private:
 
-  /// @brief
-  static constexpr auto max_len = 2048;
+  void
+  start_server_handler()
+  {
+    as_server_socket_.async_receive_from( asio::buffer(symbol_.buffer(), max_len)
+                                        , as_server_endpoint_
+                                        , [this](const asio::error_code& err, std::size_t sz)
+                                          {
+                                            if (err)
+                                            {
+                                              throw std::runtime_error(err.message());
+                                            }
+                                            symbol_.set_nb_written_bytes(sz);
+                                            std::cout << "received " << sz << " bytes\n";
+                                            encoder_(std::move(symbol_));
+                                            // Prepare symbol for next incoming.
+                                            symbol_ = ntc::symbol{max_len};
+                                            start_server_handler();
+                                          });
+  }
+
+  void
+  start_client_handler()
+  {
+    as_client_socket_.async_receive_from( asio::buffer(ack_.buffer(), max_len)
+                                        , as_client_endpoint_
+                                        , [this](const asio::error_code& err, std::size_t sz)
+                                          {
+                                            if (err)
+                                            {
+                                              throw std::runtime_error(err.message());
+                                            }
+                                            encoder_(std::move(ack_));
+                                            // Prepare ack for next incoming.
+                                            ack_ = ntc::packet{max_len};
+                                            start_client_handler();
+                                          });
+  }
+
+private:
 
   /// @brief
   asio::io_service& io_;
@@ -112,17 +131,13 @@ private:
   udp::endpoint as_client_endpoint_;
 
   /// @brief
-  ntc::encoder encoder_;
+  ntc::encoder<data_handler> encoder_;
 
   /// @brief
-  char as_server_buffer_[max_len];
+  ntc::packet ack_;
 
   /// @brief
-  std::size_t as_server_nb_written_;
-
-  /// @brief
-  char as_client_buffer_[max_len];
-
+  ntc::symbol symbol_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -134,7 +149,7 @@ main(int argc, char** argv)
   {
     ntc::configuration conf;
     asio::io_service io;
-    transcoder{conf, io, 8888};
+    transcoder t{conf, io, 8888, "127.0.0.1", 9999};
     io.run();
   }
   catch (const std::exception& e)
