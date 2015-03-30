@@ -112,28 +112,25 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   }
   REQUIRE(encoder.window_size() == 4);
 
-  // Will hold the bytes of the serialized ack.
-  packet data{2048};
-  std::size_t nb_written = 0;
-  struct my_handler
+  struct handler
   {
-    char* data;
-    std::size_t& written;
+    packet pkt = packet{2048};
+    std::size_t written = 0ul;
 
     void
     operator()(const char* src, std::size_t len)
     {
       if (src)
       {
-        std::copy_n(src, len, data + written);
+        std::copy_n(src, len, pkt.buffer() + written);
         written += len;
       }
     }
   };
 
-  // Directly use the serializer that would have been called by the sender.
-  my_handler h{data.buffer(), nb_written};
-  detail::packetizer<my_handler> serializer{h};
+  // Directly use the serializer that would have been called by the decoder.
+  handler h;
+  detail::packetizer<handler> serializer{h};
 
   SECTION("incoming ack")
   {
@@ -144,7 +141,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack);
 
     // Finally, notify the encoder.
-    const auto result = encoder(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(result);
 
     // The number of sources should have decreased.
@@ -160,14 +157,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack0);
 
     // Finally, notify the encoder.
-    const auto result0 = encoder(data);
+    const auto result0 = encoder(h.pkt);
     REQUIRE(result0);
 
     // The number of sources should have decreased.
     REQUIRE(encoder.window_size() == 2);
 
     /// Reset handler.
-    nb_written = 0;
+    h.written = 0;
 
     // Create an ack for some sources, with an already deleted source.
     const auto ack1 = detail::ack{{0}};
@@ -176,14 +173,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack1);
 
     // Finally, notify the encoder.
-    const auto result1 = encoder(data);
+    const auto result1 = encoder(h.pkt);
     REQUIRE(result1);
 
     // The number of sources should have decreased.
     REQUIRE(encoder.window_size() == 2);
 
     /// Reset handler.
-    nb_written = 0;
+    h.written = 0;
     
     // Create an ack for some sources, with a source that wasn't deleted before.
     const auto ack2 = detail::ack{{1}};
@@ -192,7 +189,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack2);
 
     // Finally, notify the encoder.
-    const auto result2 = encoder(data);
+    const auto result2 = encoder(h.pkt);
     REQUIRE(result2);
 
     // The number of sources should have decreased.
@@ -208,7 +205,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_repair(repair);
 
     // Finally, notify the encoder.
-    const auto result = encoder(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -224,7 +221,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_source(source);
 
     // Finally, notify the encoder.
-    const auto result = encoder(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
