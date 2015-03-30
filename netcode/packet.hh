@@ -11,8 +11,6 @@ namespace ntc {
 
 /// @brief A packet with an allocated buffer.
 /// @note It's possible to resize the buffer using resize_buffer().
-///
-/// This class is meant to be used with encoder::notify() and decoder::notify().
 class packet final
 {
 public:
@@ -68,7 +66,6 @@ private:
 
 /// @brief A packet that copies the input data.
 ///
-/// This class is meant to be used with encoder::notify() and decoder::notify().
 /// Use this packet when the data already exists and must be copied, otherwise @ref auto_packet and
 /// @ref packet should be prefered.
 class copy_packet final
