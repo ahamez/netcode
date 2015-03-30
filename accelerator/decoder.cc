@@ -5,7 +5,7 @@
 /*------------------------------------------------------------------------------------------------*/
 
 int
-main(int argc, char** argv)
+main()
 {
   ntc::configuration conf;
   asio::io_service io;

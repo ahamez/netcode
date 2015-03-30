@@ -28,14 +28,13 @@ struct data_handler
   std::size_t written;
 
   data_handler(udp::socket& sock, udp::endpoint& end)
-    : socket{sock}, endpoint{end}, buffer{}, written{0}
+    : socket(sock), endpoint(end), buffer(), written(0)
   {}
 
   void
   operator()(const char* data, std::size_t sz)
   noexcept
   {
-    std::cout << "handler\n";
     if (data)
     {
       std::copy_n(data, sz, buffer + written);
@@ -59,15 +58,15 @@ public:
   /// @brief Constructor.
   transcoder( ntc::configuration conf, asio::io_service& io
             , std::uint16_t server_port
-            , std::string decoder_ip, std::uint16_t decoder_port)
-    : io_{io}
-    , as_server_socket_{io_, udp::endpoint{udp::v4(), server_port}}
-    , as_server_endpoint_{}
-    , as_client_socket_{io_, udp::endpoint{address_v4::from_string(decoder_ip), decoder_port}}
-    , as_client_endpoint_{}
-    , encoder_{data_handler{as_client_socket_, as_server_endpoint_}, conf}
-    , ack_{max_len}
-    , symbol_{max_len}
+            , const std::string& decoder_ip, std::uint16_t decoder_port)
+    : io_(io)
+    , as_server_socket_(io_, udp::endpoint{udp::v4(), server_port})
+    , as_server_endpoint_()
+    , as_client_socket_(io_, udp::endpoint{address_v4::from_string(decoder_ip), decoder_port})
+    , as_client_endpoint_()
+    , encoder_(data_handler(as_client_socket_, as_server_endpoint_), conf)
+    , ack_(max_len)
+    , symbol_(max_len)
   {
     start_server_handler();
     start_client_handler();
@@ -87,10 +86,9 @@ private:
                                               throw std::runtime_error(err.message());
                                             }
                                             symbol_.set_nb_written_bytes(sz);
-                                            std::cout << "received " << sz << " bytes\n";
                                             encoder_(std::move(symbol_));
                                             // Prepare symbol for next incoming.
-                                            symbol_ = ntc::symbol{max_len};
+                                            symbol_ = ntc::symbol{sz};
                                             start_server_handler();
                                           });
   }
@@ -100,7 +98,7 @@ private:
   {
     as_client_socket_.async_receive_from( asio::buffer(ack_.buffer(), max_len)
                                         , as_client_endpoint_
-                                        , [this](const asio::error_code& err, std::size_t sz)
+                                        , [this](const asio::error_code& err, std::size_t)
                                           {
                                             if (err)
                                             {
@@ -143,7 +141,7 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 int
-main(int argc, char** argv)
+main()
 {
   try
   {

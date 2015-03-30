@@ -28,6 +28,7 @@
 		2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
 		2B516BEF1AC9453C00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516A161AC87CF800133F38 /* encoder.cc */; };
 		2B516BF01AC9454100133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* decoder.cc */; };
+		2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BF21AC9997200133F38 /* test_invert_matrix.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
@@ -1026,6 +1027,7 @@
 		2B516BE11AC944AE00133F38 /* invert_matrix.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
 		2B516BEE1AC944DD00133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B516BF11AC9566500133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B516BF21AC9997200133F38 /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
 		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -2907,6 +2909,7 @@
 				2B282BBE1AB861C200640FF8 /* test_decoder.cc */,
 				2B2A96261AC59120001B8F66 /* test_encoder.cc */,
 				2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */,
+				2B516BF21AC9997200133F38 /* test_invert_matrix.cc */,
 				2B272C511AC75C1800E6FEDC /* test_packetizer.cc */,
 				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 				2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */,
@@ -3058,6 +3061,7 @@
 				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
 				2B516BE51AC944AE00133F38 /* decoder.cc in Sources */,
 				2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */,
+				2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */,
 				2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */,
 				2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */,
 			);
