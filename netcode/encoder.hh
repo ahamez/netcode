@@ -18,6 +18,8 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
+/// @todo Check gf-complete requirements on size of symbols which must be a multiple of w/8 (1 for
+/// w = 4 and w = 8.
 template <typename DataHandler>
 class encoder final
 {
