@@ -29,8 +29,7 @@ public:
 
   /// @brief Constructor.
   decoder(handler data_handler, handler symbol_handler, configuration conf)
-    : code_type_{conf.code_type}
-    , ack_frequency_{conf.ack_frequency}
+    : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
     , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
@@ -163,7 +162,7 @@ public:
   {
     // Do we need to send an ack?
     const auto now = std::chrono::steady_clock::now();
-    if ((now - last_ack_date_) >= ack_frequency_)
+    if ((now - last_ack_date_) >= conf_.ack_frequency)
     {
       send_ack();
       last_ack_date_ = now;
@@ -223,12 +222,8 @@ private:
 
 private:
 
-  /// @brief Is the encoder systematic?
-  code code_type_;
-
-  /// @brief The frequency of sent ack.
-  /// @note It's a lower bound, the maximal bound is not guaranteed.
-  std::chrono::milliseconds ack_frequency_;
+  /// @brief The configuration.
+  configuration conf_;
 
   /// @brief The last time an ack was sent.
   std::chrono::steady_clock::time_point last_ack_date_;
