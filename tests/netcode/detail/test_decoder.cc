@@ -583,7 +583,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
   detail::decoder decoder{8, [](const detail::source&){}};
 
   detail::source_list sl;
-  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+  sl.emplace(0, detail::byte_buffer{}, 0);
   detail::repair r0{0};
   encoder(r0, sl.cbegin(), sl.cend());
 
@@ -606,7 +606,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
     sl.pop_front();
 
     // A new source along with a new repair.
-    sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+    sl.emplace(1, detail::byte_buffer{}, 0);
     detail::repair r1{0};
     encoder(r1, sl.cbegin(), sl.cend());
 
@@ -634,7 +634,7 @@ TEST_CASE("Decoder: duplicate repair 1")
 
   // A dummy lost source. Should be repaired immediatly.
   detail::source_list sl;
-  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+  sl.emplace(0, detail::byte_buffer{}, 0);
 
   // Create original repair.
   detail::repair r0{0};
@@ -664,7 +664,7 @@ TEST_CASE("Decoder: duplicate repair 1")
   SECTION("Reconstructed source is outdated")
   {
     sl.pop_front();
-    sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+    sl.emplace(1, detail::byte_buffer{}, 0);
     detail::repair r1{0};
     encoder0(r1, sl.cbegin(), sl.cend());
     // Send repair.
@@ -692,8 +692,8 @@ TEST_CASE("Decoder: duplicate repair 2")
 
   // Some dummy lost sources.
   detail::source_list sl;
-  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
-  sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+  sl.emplace(0, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{}, 0);
 
   // Create original repair.
   detail::repair r0{0};

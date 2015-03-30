@@ -19,12 +19,11 @@ public:
   using const_iterator = std::list<detail::source>::const_iterator;
 
   /// @brief Add a source packet in-place.
-  /// @return The newly added source.
-  template <typename... Args>
+  /// @return A reference the added source.
   const detail::source&
-  emplace(Args&&... args)
+  emplace(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)
   {
-    sources_.emplace_back(std::forward<Args>(args)...);
+    sources_.emplace_back(id, std::move(buf), user_size);
     return sources_.back();
   }
 
