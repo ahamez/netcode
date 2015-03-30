@@ -46,7 +46,7 @@
 		2B516BF01AC9454100133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* decoder.cc */; };
 		2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BF21AC9997200133F38 /* test_invert_matrix.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
-		2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_symbol.cc */; };
+		2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_data.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */; };
 		2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */; };
@@ -1075,11 +1075,11 @@
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
-		2B9222681AB4BCD4009A2843 /* test_symbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_symbol.cc; sourceTree = "<group>"; };
+		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319561AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
-		2BE3196D1AB206FC001AA9DF /* symbol.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol.hh; sourceTree = "<group>"; };
+		2BE3196D1AB206FC001AA9DF /* data.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = data.hh; sourceTree = "<group>"; };
 		2BE319701AB237CA001AA9DF /* repair.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = repair.hh; sourceTree = "<group>"; };
 		2BE319711AB237CA001AA9DF /* source.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
 		2BE319721AB23910001AA9DF /* buffer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = buffer.hh; sourceTree = "<group>"; };
@@ -2875,10 +2875,10 @@
 				2BE3196E1AB2357F001AA9DF /* detail */,
 				2BE319561AB0C550001AA9DF /* code.hh */,
 				2B6F62431AC7604600A34953 /* configuration.hh */,
+				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
 				2B282BB81AB81ABA00640FF8 /* packet.hh */,
-				2BE3196D1AB206FC001AA9DF /* symbol.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -2934,10 +2934,10 @@
 			isa = PBXGroup;
 			children = (
 				2BE319851AB32DA0001AA9DF /* detail */,
+				2B9222681AB4BCD4009A2843 /* test_data.cc */,
 				2B282BB91AB8514700640FF8 /* test_decoder.cc */,
 				2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */,
 				2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */,
-				2B9222681AB4BCD4009A2843 /* test_symbol.cc */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -3104,7 +3104,7 @@
 				2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */,
 				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
 				2B516BE51AC944AE00133F38 /* decoder.cc in Sources */,
-				2B9222691AB4BCD4009A2843 /* test_symbol.cc in Sources */,
+				2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */,
 				2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */,
 				2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */,
 				2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */,

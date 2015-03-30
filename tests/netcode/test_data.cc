@@ -3,7 +3,7 @@
 
 #include "tests/catch.hpp"
 
-#include "netcode/symbol.hh"
+#include "netcode/data.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -11,11 +11,11 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("manual symbol", "[symbol]" )
+TEST_CASE("manual data")
 {
   std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
 
-  auto s = symbol{128};
+  auto s = data{128};
   std::copy_n(begin(tab), 5, s.buffer());
   s.used_bytes() = 5;
   REQUIRE(std::equal(s.buffer(), s.buffer() + 5, begin(tab)));
@@ -25,10 +25,10 @@ TEST_CASE("manual symbol", "[symbol]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("copy symbol", "[symbol]" )
+TEST_CASE("copy data")
 {
   std::array<char, 5> tab = {{'a', 'b', 'c', 'd', 'e'}};
-  auto s = copy_symbol{tab.data(), 3};
+  auto s = copy_data{tab.data(), 3};
 }
 
 /*------------------------------------------------------------------------------------------------*/

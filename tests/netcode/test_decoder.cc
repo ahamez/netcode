@@ -41,11 +41,11 @@ TEST_CASE("Decoder gives a correct source to user")
   decoder<handler, handler> dec{handler{}, handler{}};
 
   auto& enc_handler = enc.packet_handler();
-  auto& dec_handler = dec.symbol_handler();
+  auto& dec_handler = dec.data_handler();
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc(copy_symbol{begin(s0), end(s0)});
+  enc(copy_data{begin(s0), end(s0)});
 
   // Send serialized data to decoder.
   dec(copy_packet{enc_handler.data, enc_handler.written});
@@ -65,16 +65,16 @@ TEST_CASE("Decoder repairs a lost source")
   decoder<handler, handler> dec{handler{}, handler{}};
 
   auto& enc_handler = enc.packet_handler();
-  auto& dec_symbol_handler = dec.symbol_handler();
+  auto& dec_data_handler = dec.data_handler();
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc(copy_symbol{begin(s0), end(s0)});
+  enc(copy_data{begin(s0), end(s0)});
 
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
-                    + sizeof(std::uint16_t)     // user symbol size
-                    + s0.size();                // symbol
+                    + sizeof(std::uint16_t)     // user data size
+                    + s0.size();                // data
 
   // Skip first source.
   auto repair = copy_packet(enc_handler.data + src_sz, enc_handler.written - src_sz);
@@ -84,7 +84,7 @@ TEST_CASE("Decoder repairs a lost source")
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded_sources() == 1);
-  REQUIRE(dec_symbol_handler.written == s0.size());
+  REQUIRE(dec_data_handler.written == s0.size());
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -103,7 +103,7 @@ TEST_CASE("Decoder generate correct ack")
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc(copy_symbol{begin(s0), end(s0)});
+  enc(copy_data{begin(s0), end(s0)});
   REQUIRE(enc.window_size() == 1);
 
   // Send source to decoder.

@@ -22,11 +22,11 @@ TEST_CASE("Encode one source")
   detail::galois_field gf{8};
 
   // The payload that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
 
   // Push some sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, 4);
+  sl.emplace(0, detail::byte_buffer{s0_data}, 4);
   REQUIRE(sl.size() == 1);
 
   // A repair to store encoded sources
@@ -47,7 +47,7 @@ TEST_CASE("Encode one source")
 
   detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
   gf.multiply(r0.buffer().data(), s0.buffer().data(), src_size, inv);
-  REQUIRE(s0.buffer() == s0_symbol);
+  REQUIRE(s0.buffer() == s0_data);
   REQUIRE(s0.buffer().size() == src_size);
 }
 
@@ -99,8 +99,8 @@ TEST_CASE("Encode two sources")
   detail::galois_field gf{8};
 
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // The coefficients.
   const auto c0 = detail::coefficient(gf, 0 /*repair*/, 0 /*src*/);
@@ -108,8 +108,8 @@ TEST_CASE("Encode two sources")
 
   // Push two sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, 4);
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, 5);
+  sl.emplace(0, detail::byte_buffer{s0_data}, 4);
+  sl.emplace(1, detail::byte_buffer{s1_data}, 5);
   REQUIRE(sl.size() == 2);
 
   // A repair to store encoded sources
@@ -123,42 +123,42 @@ TEST_CASE("Encode two sources")
   SECTION("s0 is lost")
   {
     // First, remove size.
-    r0.size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_symbol.size()));
+    r0.size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_data.size()));
 
-    // Second, remove symbol.
-    gf.multiply_add(s1_symbol.data(), r0.buffer().data(), s1_symbol.size(), c1);
+    // Second, remove data.
+    gf.multiply_add(s1_data.data(), r0.buffer().data(), s1_data.size(), c1);
 
     // The inverse of the coefficient.
     const auto inv0 = gf.divide(1, c0);
 
     // First, compute its size.
     const auto src_size = gf.multiply(inv0, static_cast<std::uint32_t>(r0.size()));
-    REQUIRE(src_size == s0_symbol.size());
+    REQUIRE(src_size == s0_data.size());
 
-    // Now, reconstruct missing symbol.
+    // Now, reconstruct missing data.
     detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
-    gf.multiply(r0.buffer().data(), s0.buffer().data(), s0_symbol.size(), inv0);
-    REQUIRE(s0.buffer() == s0_symbol);
+    gf.multiply(r0.buffer().data(), s0.buffer().data(), s0_data.size(), inv0);
+    REQUIRE(s0.buffer() == s0_data);
   }
 
   SECTION("s1 is lost")
   {
     // First, remove size.
-    r0.size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_symbol.size()));
-    // Second, remove symbol.
-    gf.multiply_add(s0_symbol.data(), r0.buffer().data(), s0_symbol.size(), c0);
+    r0.size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_data.size()));
+    // Second, remove data.
+    gf.multiply_add(s0_data.data(), r0.buffer().data(), s0_data.size(), c0);
 
     // The inverse of the coefficient.
     const auto inv1 = gf.divide(1, c1);
 
     // First, compute its size.
     const auto src_size = gf.multiply(inv1, static_cast<std::uint32_t>(r0.size()));
-    REQUIRE(src_size == s1_symbol.size());
+    REQUIRE(src_size == s1_data.size());
 
-    // Now, reconstruct missing symbol.
+    // Now, reconstruct missing data.
     detail::source s1{0, detail::byte_buffer{'x','x','x','x','x'}, src_size};
-    gf.multiply(r0.buffer().data(), s1.buffer().data(), s1_symbol.size(), inv1);
-    REQUIRE(s1.buffer() == s1_symbol);
+    gf.multiply(r0.buffer().data(), s1.buffer().data(), s1_data.size(), inv1);
+    REQUIRE(s1.buffer() == s1_data);
   }
 }
 
@@ -169,13 +169,13 @@ TEST_CASE("Two sources lost")
   detail::galois_field gf{8};
 
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // Push two sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
   REQUIRE(sl.size() == 2);
 
   // Repairs to store encoded sources.
@@ -228,26 +228,26 @@ TEST_CASE("Two sources lost")
   // But first, compute its size.
   const auto s0_size = gf.multiply(static_cast<std::uint32_t>(r0.size()), inv(0,0))
                      ^ gf.multiply(static_cast<std::uint32_t>(r1.size()), inv(1,0));
-  REQUIRE(s0_size == s0_symbol.size());
+  REQUIRE(s0_size == s0_data.size());
   detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, s0_size};
 
-  // Now, reconstruct the symbol.
+  // Now, reconstruct the data.
   gf.multiply(r0.buffer().data(), s0.buffer().data(), s0_size, inv(0,0));
   gf.multiply_add(r1.buffer().data(), s0.buffer().data(), s0_size, inv(1,0));
-  REQUIRE(s0.buffer() == s0_symbol);
+  REQUIRE(s0.buffer() == s0_data);
 
   // Reconstruct s1.
 
   // But first, compute its size.
   const auto s1_size = gf.multiply(static_cast<std::uint32_t>(r0.size()), inv(0,1))
                      ^ gf.multiply(static_cast<std::uint32_t>(r1.size()), inv(1,1));
-  REQUIRE(s1_size == s1_symbol.size());
+  REQUIRE(s1_size == s1_data.size());
   detail::source s1{0, detail::byte_buffer{'x','x','x','x','x'}, s1_size};
 
-  // Now, reconstruct the symbol.
+  // Now, reconstruct the data.
   gf.multiply(r0.buffer().data(), s1.buffer().data(), s1_size, inv(0,1));
   gf.multiply_add(r1.buffer().data(), s1.buffer().data(), s1_size, inv(1,1));
-  REQUIRE(s1.buffer() == s1_symbol);
+  REQUIRE(s1.buffer() == s1_data);
 }
 
 /*------------------------------------------------------------------------------------------------*/

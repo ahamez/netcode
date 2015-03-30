@@ -8,15 +8,15 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
+#include "netcode/data.hh"
 #include "netcode/packet.hh"
-#include "netcode/symbol.hh"
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
-/// @todo Check gf-complete requirements on size of symbols which must be a multiple of w/8 (1 for
+/// @todo Check gf-complete requirements on size of data which must be a multiple of w/8 (1 for
 /// w = 4 and w = 8.
 template <typename PacketHandler, typename Packetizer = detail::packetizer<PacketHandler>>
 class encoder final
@@ -63,23 +63,23 @@ public:
     : encoder{packet_handler, configuration{}}
   {}
 
-  /// @brief Give the encoder a new symbol.
-  /// @param sym The symbol to add.
-  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
+  /// @brief Give the encoder a new data.
+  /// @param d The data to add.
+  /// @attention Any use of the data @p d after this call will result in an undefined behavior.
   void
-  operator()(symbol&& sym)
+  operator()(data&& d)
   {
-    assert(sym.used_bytes() != 0 && "please use symbol::used_bytes()");
-    commit_impl(std::move(sym));
+    assert(d.used_bytes() != 0 && "please use data::used_bytes()");
+    commit_impl(std::move(d));
   }
 
-  /// @brief Give the encoder a new symbol.
-  /// @param sym The symbol to add.
-  /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
+  /// @brief Give the encoder a new data.
+  /// @param d The data to add.
+  /// @attention Any use of the data @p d after this call will result in an undefined behavior.
   void
-  operator()(copy_symbol&& sym)
+  operator()(copy_data&& d)
   {
-    commit_impl(std::move(sym));
+    commit_impl(std::move(d));
   }
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -159,25 +159,25 @@ public:
 
 private:
 
-  /// @brief Create a source from the given symbol and generate a repair if needed.
-  /// @param sym The symbol to add.
+  /// @brief Create a source from the given data and generate a repair if needed.
+  /// @param d The data to add.
   /// @todo Handle possible allocation errors.
-  template <typename Symbol>
+  template <typename Data>
   void
-  commit_impl(Symbol&& sym)
+  commit_impl(Data&& d)
   {
-    assert(sym.buffer_impl().size() % 16 == 0 && "symbol buffer size not a multiple of 16");
-    assert(sym.used_bytes() <= sym.buffer_impl().size() && "More bytes than the buffer can hold");
+    assert(d.buffer_impl().size() % 16 == 0 && "data buffer size not a multiple of 16");
+    assert(d.used_bytes() <= d.buffer_impl().size() && "More bytes than the buffer can hold");
 
     if (sources_.size() == conf_.window)
     {
       sources_.pop_front();
     }
 
-    // Create a new source in-place at the end of the list of sources, "stealing" the symbol
-    // buffer from sym.
+    // Create a new source in-place at the end of the list of sources, "stealing" the data
+    // buffer from d.
     const auto& insertion
-      = sources_.emplace(current_source_id_, std::move(sym.buffer_impl()), sym.used_bytes());
+      = sources_.emplace(current_source_id_, std::move(d.buffer_impl()), d.used_bytes());
 
     // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
     packetizer_.write_source(insertion);

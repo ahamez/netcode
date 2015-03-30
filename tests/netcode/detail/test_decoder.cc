@@ -15,11 +15,11 @@ using namespace ntc;
 TEST_CASE("Decoder: reconstruct a source from a repair")
 {
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -31,11 +31,11 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
   detail::decoder decoder{8, [](const detail::source&){}};
 
   const auto s0 = decoder.create_source_from_repair(r0);
-  REQUIRE(s0.user_size() == s0_symbol.size());
+  REQUIRE(s0.user_size() == s0_data.size());
   REQUIRE(std::equal( s0.buffer().begin()
                       // The allocated buffer might be larger than the user size
                     , s0.buffer().begin() + s0.user_size()
-                    , s0_symbol.begin()));
+                    , s0_data.begin()));
 
 }
 
@@ -44,13 +44,13 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
 TEST_CASE("Decoder: remove a source from a repair")
 {
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -61,33 +61,33 @@ TEST_CASE("Decoder: remove a source from a repair")
   SECTION("Remove s0, we should be able to reconstruct s1")
   {
     detail::decoder decoder{8, [](const detail::source&){}};
-    const detail::source s0{0, detail::byte_buffer{s0_symbol}, s0_symbol.size()};
+    const detail::source s0{0, detail::byte_buffer{s0_data}, s0_data.size()};
     decoder.remove_source_from_repair(s0, r0);
     REQUIRE(r0.source_ids().size() == 1);
     REQUIRE(*(r0.source_ids().begin()) == 1);
 
     const auto s1 = decoder.create_source_from_repair(r0);
-    REQUIRE(s1.user_size() == s1_symbol.size());
+    REQUIRE(s1.user_size() == s1_data.size());
     REQUIRE(std::equal( s1.buffer().begin()
                         // The allocated buffer might be larger than the user size
                       , s1.buffer().begin() + s1.user_size()
-                      , s1_symbol.begin()));
+                      , s1_data.begin()));
   }
 
   SECTION("Remove s1, we should be able to reconstruct s0")
   {
     detail::decoder decoder{8, [](const detail::source&){}};
-    const detail::source s1{1, detail::byte_buffer{s1_symbol}, s1_symbol.size()};
+    const detail::source s1{1, detail::byte_buffer{s1_data}, s1_data.size()};
     decoder.remove_source_from_repair(s1, r0);
     REQUIRE(r0.source_ids().size() == 1);
     REQUIRE(*(r0.source_ids().begin()) == 0);
 
     const auto s0 = decoder.create_source_from_repair(r0);
-    REQUIRE(s0.user_size() == s0_symbol.size());
+    REQUIRE(s0.user_size() == s0_data.size());
     REQUIRE(std::equal( s0.buffer().begin()
                        // The allocated buffer might be larger than the user size
                       , s0.buffer().begin() + s0.user_size()
-                      , s0_symbol.begin()));
+                      , s0_data.begin()));
   }
 }
 
@@ -285,11 +285,11 @@ TEST_CASE("Decoder: drop outdated lost sources")
 TEST_CASE("Decoder: one source lost encoded in one received repair")
 {
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -301,10 +301,10 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
   detail::decoder decoder{8, [&](const detail::source& s0)
                                 {
                                   REQUIRE(s0.id() == 0);
-                                  REQUIRE(s0.user_size() == s0_symbol.size());
+                                  REQUIRE(s0.user_size() == s0_data.size());
                                   REQUIRE(std::equal( s0.buffer().begin()
                                                     , s0.buffer().begin() + s0.user_size()
-                                                    , s0_symbol.begin()));
+                                                    , s0_data.begin()));
                                 }};
   decoder(std::move(r0));
 }
@@ -317,13 +317,13 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
   detail::decoder decoder{8, [&](const detail::source&){}};
 
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0 /* id */};
@@ -349,11 +349,11 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
   REQUIRE(decoder.repairs().size() == 0);
 
   // Now, check contents.
-  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_symbol.size());
-  REQUIRE( std::equal( s0_symbol.begin(), s0_symbol.end()
+  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+  REQUIRE( std::equal( s0_data.begin(), s0_data.end()
                      , decoder.sources().find(0)->second.buffer().begin()));
-  REQUIRE(decoder.sources().find(1)->second.user_size() == s1_symbol.size());
-  REQUIRE( std::equal( s1_symbol.begin(), s1_symbol.end()
+  REQUIRE(decoder.sources().find(1)->second.user_size() == s1_data.size());
+  REQUIRE( std::equal( s1_data.begin(), s1_data.end()
                      , decoder.sources().find(1)->second.buffer().begin()));
 }
 
@@ -367,16 +367,16 @@ TEST_CASE("Decoder: several lost sources from several repairs")
   detail::decoder decoder{8, [&](const detail::source&){}};
 
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
-  detail::byte_buffer s2_symbol{'j','k','l','m','n','o','p'};
-  detail::byte_buffer s3_symbol{'q','r','s'};
-  detail::byte_buffer s4_symbol{'t','u','v','w','x','y','z'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
+  detail::byte_buffer s2_data{'j','k','l','m','n','o','p'};
+  detail::byte_buffer s3_data{'q','r','s'};
+  detail::byte_buffer s4_data{'t','u','v','w','x','y','z'};
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0};
@@ -402,11 +402,11 @@ TEST_CASE("Decoder: several lost sources from several repairs")
   REQUIRE(decoder.repairs().size() == 0);
 
   // Now, check contents.
-  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_symbol.size());
-  REQUIRE(std::equal( s0_symbol.begin(), s0_symbol.end()
+  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+  REQUIRE(std::equal( s0_data.begin(), s0_data.end()
                     , decoder.sources().find(0)->second.buffer().begin()));
-  REQUIRE(decoder.sources().find(1)->second.user_size() == s1_symbol.size());
-  REQUIRE(std::equal( s1_symbol.begin(), s1_symbol.end()
+  REQUIRE(decoder.sources().find(1)->second.user_size() == s1_data.size());
+  REQUIRE(std::equal( s1_data.begin(), s1_data.end()
                     , decoder.sources().find(1)->second.buffer().begin()));
 
   SECTION("Sources are not outdated")
@@ -419,10 +419,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     detail::repair r4{4};
 
     // Push 3 new sources.
-    sl.emplace(2, detail::byte_buffer{s2_symbol}, s2_symbol.size());
-    sl.emplace(3, detail::byte_buffer{s3_symbol}, s3_symbol.size());
+    sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
+    sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
     encoder(r2, sl.cbegin(), sl.cend());
-    sl.emplace(4, detail::byte_buffer{s4_symbol}, s4_symbol.size());
+    sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
     encoder(r3, sl.cbegin(), sl.cend());
     encoder(r4, sl.cbegin(), sl.cend());
 
@@ -470,14 +470,14 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
 
       // Check contents.
-      REQUIRE(decoder.sources().find(2)->second.user_size() == s2_symbol.size());
-      REQUIRE(std::equal( s2_symbol.begin(), s2_symbol.end()
+      REQUIRE(decoder.sources().find(2)->second.user_size() == s2_data.size());
+      REQUIRE(std::equal( s2_data.begin(), s2_data.end()
                         , decoder.sources().find(2)->second.buffer().begin()));
-      REQUIRE(decoder.sources().find(3)->second.user_size() == s3_symbol.size());
-      REQUIRE(std::equal( s3_symbol.begin(), s3_symbol.end()
+      REQUIRE(decoder.sources().find(3)->second.user_size() == s3_data.size());
+      REQUIRE(std::equal( s3_data.begin(), s3_data.end()
                         , decoder.sources().find(3)->second.buffer().begin()));
-      REQUIRE(decoder.sources().find(4)->second.user_size() == s4_symbol.size());
-      REQUIRE(std::equal( s4_symbol.begin(), s4_symbol.end()
+      REQUIRE(decoder.sources().find(4)->second.user_size() == s4_data.size());
+      REQUIRE(std::equal( s4_data.begin(), s4_data.end()
                         , decoder.sources().find(4)->second.buffer().begin()));
 
     }
@@ -497,10 +497,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     sl.pop_front();
 
     // Push 3 new sources.
-    sl.emplace(2, detail::byte_buffer{s2_symbol}, s2_symbol.size());
-    sl.emplace(3, detail::byte_buffer{s3_symbol}, s3_symbol.size());
+    sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
+    sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
     encoder(r2, sl.cbegin(), sl.cend());
-    sl.emplace(4, detail::byte_buffer{s4_symbol}, s4_symbol.size());
+    sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
     encoder(r3, sl.cbegin(), sl.cend());
     encoder(r4, sl.cbegin(), sl.cend());
 
@@ -542,14 +542,14 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     REQUIRE(decoder.repairs().size() == 0);
 
     // Check contents.
-    REQUIRE(decoder.sources().find(2)->second.user_size() == s2_symbol.size());
-    REQUIRE(std::equal( s2_symbol.begin(), s2_symbol.end()
+    REQUIRE(decoder.sources().find(2)->second.user_size() == s2_data.size());
+    REQUIRE(std::equal( s2_data.begin(), s2_data.end()
                       , decoder.sources().find(2)->second.buffer().begin()));
-    REQUIRE(decoder.sources().find(3)->second.user_size() == s3_symbol.size());
-    REQUIRE(std::equal( s3_symbol.begin(), s3_symbol.end()
+    REQUIRE(decoder.sources().find(3)->second.user_size() == s3_data.size());
+    REQUIRE(std::equal( s3_data.begin(), s3_data.end()
                       , decoder.sources().find(3)->second.buffer().begin()));
-    REQUIRE(decoder.sources().find(4)->second.user_size() == s4_symbol.size());
-    REQUIRE(std::equal( s4_symbol.begin(), s4_symbol.end()
+    REQUIRE(decoder.sources().find(4)->second.user_size() == s4_data.size());
+    REQUIRE(std::equal( s4_data.begin(), s4_data.end()
                       , decoder.sources().find(4)->second.buffer().begin()));
   }
 }
@@ -726,13 +726,13 @@ TEST_CASE("Decoder: source after repair")
   detail::decoder decoder{8, [&](const detail::source&){}};
 
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
-  detail::byte_buffer s1_symbol{'e','f','g','h','i'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
+  detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
-  sl.emplace(1, detail::byte_buffer{s1_symbol}, s1_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0};
@@ -747,7 +747,7 @@ TEST_CASE("Decoder: source after repair")
   REQUIRE(decoder.repairs().size() == 1);
 
   // s0 is received
-  decoder({0, detail::byte_buffer{s0_symbol}, s0_symbol.size()});
+  decoder({0, detail::byte_buffer{s0_data}, s0_data.size()});
   REQUIRE(decoder.sources().size() == 2);
   REQUIRE(decoder.sources().count(0));
   REQUIRE(decoder.sources().count(1));
@@ -760,11 +760,11 @@ TEST_CASE("Decoder: source after repair")
 TEST_CASE("Decoder: repair with only one source")
 {
   // The payloads that should be reconstructed.
-  detail::byte_buffer s0_symbol{'a','b','c','d'};
+  detail::byte_buffer s0_data{'a','b','c','d'};
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_symbol}, s0_symbol.size());
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0};
@@ -779,8 +779,8 @@ TEST_CASE("Decoder: repair with only one source")
   decoder(std::move(r0));
   REQUIRE(decoder.sources().size() == 1);
   REQUIRE(decoder.sources().count(0));
-  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_symbol.size());
-  REQUIRE(std::equal( s0_symbol.begin(), s0_symbol.end()
+  REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+  REQUIRE(std::equal( s0_data.begin(), s0_data.end()
                     , decoder.sources().find(0)->second.buffer().begin()));
   REQUIRE(decoder.missing_sources().size() == 0);
   REQUIRE(decoder.repairs().size() == 0);

@@ -65,7 +65,7 @@ public:
     , as_client_endpoint_()
     , encoder_(data_handler(as_client_socket_, as_server_endpoint_), conf)
     , ack_(max_len)
-    , symbol_(max_len)
+    , data_(max_len)
   {
     start_server_handler();
     start_client_handler();
@@ -76,7 +76,7 @@ private:
   void
   start_server_handler()
   {
-    as_server_socket_.async_receive_from( asio::buffer(symbol_.buffer(), max_len)
+    as_server_socket_.async_receive_from( asio::buffer(data_.buffer(), max_len)
                                         , as_server_endpoint_
                                         , [this](const asio::error_code& err, std::size_t sz)
                                           {
@@ -84,10 +84,10 @@ private:
                                             {
                                               throw std::runtime_error(err.message());
                                             }
-                                            symbol_.used_bytes() = sz;
-                                            encoder_(std::move(symbol_));
-                                            // Prepare symbol for next incoming.
-                                            symbol_.reset(max_len);
+                                            data_.used_bytes() = sz;
+                                            encoder_(std::move(data_));
+                                            // Prepare data for next incoming.
+                                            data_.reset(max_len);
                                             start_server_handler();
                                           });
   }
@@ -134,7 +134,7 @@ private:
   ntc::packet ack_;
 
   /// @brief
-  ntc::symbol symbol_;
+  ntc::data data_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

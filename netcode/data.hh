@@ -10,25 +10,25 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief A symbol with an allocated buffer.
+/// @brief A data with an allocated buffer.
 ///
 /// @attention Because it's not possible for the library to keep track of the number of written
-/// bytes, when the symbol is completely written in the buffer, set_user_size() must be called.
+/// bytes, when the dta is completely written in the buffer, set_user_size() must be called.
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
-class symbol final
+class data final
 {
 public:
 
   /// @brief Constructor.
   /// @param size The size of the buffer to allocate.
-  symbol(std::size_t size)
+  data(std::size_t size)
     : used_bytes_{0}
     , buffer_(detail::make_multiple(size, 16))
   {}
 
-  /// @brief Get the buffer where to write the symbol.
+  /// @brief Get the buffer where to write the data.
   char*
   buffer()
   noexcept
@@ -46,7 +46,7 @@ public:
     buffer_.resize(size);
   }
 
-  /// @brief Get the the number of used bytes in this symbol (read-only).
+  /// @brief Get the the number of used bytes for this data (read-only).
   std::size_t
   used_bytes()
   const noexcept
@@ -54,7 +54,7 @@ public:
     return used_bytes_;
   }
 
-  /// @brief Get the the number of used bytes in this symbol.
+  /// @brief Get the the number of used bytes for this data.
   ///
   /// When set, it must be smaller than the reserved size.
   std::size_t&
@@ -89,9 +89,9 @@ public:
     return buffer_.size();
   }
 
-  /// @brief Reset the symbol for further re-use.
+  /// @brief Reset the data for further re-use.
   ///
-  /// Can be used on a moved symbol.
+  /// Can be used on a moved data.
   void
   reset(std::size_t size)
   noexcept
@@ -102,7 +102,7 @@ public:
 
 private:
 
-  /// @brief The size of the symbol given by the user.
+  /// @brief The size of the data given by the user.
   std::size_t used_bytes_;
 
   /// @brief The buffer storage.
@@ -111,18 +111,18 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief A symbol that copies the input data.
+/// @brief A data that copies the input data.
 ///
-/// Use this symbol when the data already exists and must be copied, otherwise @ref auto_symbol and
-/// @ref symbol should be prefered.
-class copy_symbol final
+/// Use this data when the data already exists and must be copied, otherwise @ref data should be
+//// prefered.
+class copy_data final
 {
 public:
 
   /// @brief Constructor.
   /// @param src The address of the data to copy.
   /// @param len The size of the data to copy.
-  copy_symbol(const char* src, std::size_t len)
+  copy_data(const char* src, std::size_t len)
     : used_bytes_{len}
     , buffer_(detail::make_multiple(len, 16))
   {
@@ -133,14 +133,14 @@ public:
   /// @param begin The beginning of the data to copy.
   /// @param end The end of the data to copy.
   template <typename InputIterator>
-  copy_symbol(InputIterator begin, InputIterator end)
+  copy_data(InputIterator begin, InputIterator end)
     : used_bytes_{static_cast<std::size_t>(std::distance(begin, end))}
     , buffer_(detail::make_multiple(used_bytes_, 16))
   {
     std::copy(begin, end, buffer_.begin());
   }
 
-  /// @brief Get the the number of used bytes in this symbol (read-only).
+  /// @brief Get the the number of used bytes for this data (read-only).
   std::size_t
   used_bytes()
   const noexcept
@@ -148,7 +148,7 @@ public:
     return used_bytes_;
   }
 
-  /// @brief Get the the number of used bytes in this symbol.
+  /// @brief Get the the number of used bytes for this data.
   std::size_t&
   used_bytes()
   noexcept
@@ -181,9 +181,9 @@ public:
     return buffer_.size();
   }
 
-  /// @brief Reset the symbol for further re-use.
+  /// @brief Reset the data for further re-use.
   ///
-  /// Can be used on a moved symbol.
+  /// Can be used on a moved data.
   void
   reset(std::size_t size)
   noexcept
@@ -194,7 +194,7 @@ public:
 
 private:
 
-  /// @brief The size of the symbol given by the user.
+  /// @brief The size of the data given by the user.
   std::size_t used_bytes_;
 
   /// @brief The buffer storage.

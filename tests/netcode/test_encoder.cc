@@ -29,19 +29,19 @@ TEST_CASE("Encoder's window size")
   conf.rate = 1;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  auto sym0 = ntc::symbol{512};
-  sym0.used_bytes() = 13;
-  encoder(std::move(sym0));
+  auto data0 = ntc::data{512};
+  data0.used_bytes() = 13;
+  encoder(std::move(data0));
   REQUIRE(encoder.window_size() == 1);
 
-  auto sym1 = ntc::symbol{512};
-  sym1.used_bytes() = 17;
-  encoder(std::move(sym1));
+  auto data1 = ntc::data{512};
+  data1.used_bytes() = 17;
+  encoder(std::move(data1));
   REQUIRE(encoder.window_size() == 2);
 
-  auto sym2 = ntc::symbol{512};
-  sym2.used_bytes() = 17;
-  encoder(std::move(sym2));
+  auto data2 = ntc::data{512};
+  data2.used_bytes() = 17;
+  encoder(std::move(data2));
   REQUIRE(encoder.window_size() == 3);
 }
 
@@ -53,30 +53,30 @@ TEST_CASE("Encoder can limit the window size")
   conf.window = 4;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  auto sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  auto data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
 
-  sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
 
-  sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
 
-  sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
 
-  sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
   REQUIRE(encoder.window_size() == 4);
 
-  sym = ntc::symbol{512};
-  sym.used_bytes() = 8;
-  encoder(std::move(sym));
+  data = ntc::data{512};
+  data.used_bytes() = 8;
+  encoder(std::move(data));
   REQUIRE(encoder.window_size() == 4);
 }
 
@@ -92,9 +92,9 @@ TEST_CASE("Encoder generates repairs")
   {
     for (auto i = 0ul; i < 100; ++i)
     {
-      auto sym = ntc::symbol{512};
-      sym.used_bytes() = 512;
-      encoder(std::move(sym));
+      auto data = ntc::data{512};
+      data.used_bytes() = 512;
+      encoder(std::move(data));
     }
     REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
   }
@@ -111,9 +111,9 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)
   {
-    auto sym = ntc::symbol{512};
-    sym.used_bytes() = 512;
-    encoder(std::move(sym));
+    auto data = ntc::data{512};
+    data.used_bytes() = 512;
+    encoder(std::move(data));
   }
   REQUIRE(encoder.window_size() == 4);
 
@@ -271,11 +271,11 @@ TEST_CASE("Encoder sends correct sources")
 
   const auto s0 = {'A', 'B', 'C'};
 
-  enc(copy_symbol{begin(s0), end(s0)});
+  enc(copy_data{begin(s0), end(s0)});
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
-                                 + sizeof(std::uint16_t)     // user symbol size
-                                 + s0.size()                 // symbol
+                                 + sizeof(std::uint16_t)     // user data size
+                                 + s0.size()                 // data
                                  ));
   REQUIRE(std::equal( begin(s0), end(s0)
                     , enc_handler.data + sizeof(std::uint8_t) + sizeof(std::uint32_t)
@@ -297,11 +297,11 @@ TEST_CASE("Encoder sends repairs")
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc(copy_symbol{begin(s0), end(s0)});
+  enc(copy_data{begin(s0), end(s0)});
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
-                    + sizeof(std::uint16_t)     // user symbol size
-                    + s0.size();                // symbol
+                    + sizeof(std::uint16_t)     // user data size
+                    + s0.size();                // data
 
   REQUIRE(enc_handler.nb_packets == 2 /* 1 source +  1 repair */);
   REQUIRE(detail::get_packet_type(enc_handler.data + src_sz) == detail::packet_type::repair);
