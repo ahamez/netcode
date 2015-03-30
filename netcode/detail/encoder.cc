@@ -18,10 +18,8 @@ encoder::operator()( repair& repair, source_list::const_iterator src_cit
 {
   assert(src_cit != src_end && "Empty source list");
 
-  auto user_size = make_multiple(src_cit->user_size(), 16);
-
   // Resize the repair's symbol buffer to fit the first source symbol buffer.
-  repair.buffer().resize(user_size);
+  repair.buffer().resize(src_cit->user_size());
 
   // Add the current source id to the list of encoded sources by this repair.
   repair.source_ids().insert(repair.source_ids().end(), src_cit->id());
@@ -30,7 +28,7 @@ encoder::operator()( repair& repair, source_list::const_iterator src_cit
   auto coeff = coefficient(gf_, repair.id(), src_cit->id());
 
   // Only multiply for the first source, no need to add with repair.
-  gf_.multiply(src_cit->buffer().data(), repair.buffer().data(), user_size, coeff);
+  gf_.multiply(src_cit->buffer().data(), repair.buffer().data(), src_cit->user_size(), coeff);
 
   // Initialize the user's size.
   repair.size() = gf_.multiply(coeff, static_cast<std::uint32_t>(src_cit->user_size()));
@@ -39,11 +37,10 @@ encoder::operator()( repair& repair, source_list::const_iterator src_cit
   // current repair.
   for (++src_cit; src_cit != src_end; ++src_cit)
   {
-    user_size = make_multiple(src_cit->user_size(), 16);
     // The current repair's symbol buffer might be too small for the current source.
-    if (user_size > repair.buffer().size())
+    if (src_cit->user_size() > repair.buffer().size())
     {
-      repair.buffer().resize(user_size);
+      repair.buffer().resize(src_cit->user_size());
     }
 
     // The coefficient for this repair and source.
@@ -53,7 +50,7 @@ encoder::operator()( repair& repair, source_list::const_iterator src_cit
     repair.source_ids().insert(repair.source_ids().end(), src_cit->id());
 
     // Multiply and add for all following sources.
-    gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), user_size
+    gf_.multiply_add( src_cit->buffer().data(), repair.buffer().data(), src_cit->user_size()
                     , coeff);
 
     // Finally, add the user size.
