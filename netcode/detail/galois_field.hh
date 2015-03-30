@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <cstddef> // size_t
-#include <memory>  // unique_ptr
+#include <stdexcept>
 
 extern "C" {
 #include <gf_complete.h>
@@ -24,29 +24,29 @@ public:
   galois_field& operator=(const galois_field&) = delete;
 
   // Can move-construct a field.
-  galois_field(galois_field&&) = default;
+  galois_field(galois_field&&) = delete;
 
   // Can move a field.
-  galois_field& operator=(galois_field&&) = default;
+  galois_field& operator=(galois_field&&) = delete;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
   galois_field(std::size_t w)
-    : gf_{new gf_t}
+    : gf_{}
     , size_{static_cast<std::uint32_t>(w)}
   {
-    if (gf_init_easy(gf_.get(), size_) == 0)
+    if (gf_init_easy(&gf_, size_) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
     }
   }
+#pragma GCC diagnostic pop
 
   /// @brief Destructor.
   ~galois_field()
   {
-    if (gf_)
-    {
-      gf_free(gf_.get(), 0 /* non-recursive */);
-    }
+    gf_free(&gf_, 0 /* non-recursive */);
   }
 
   /// @brief Get the size of this Galois field
@@ -66,12 +66,12 @@ public:
   multiply(const char* src, char* dst, std::size_t len, std::uint32_t coeff)
   noexcept
   {
-    gf_.get()->multiply_region.w32( gf_.get()
-                                  , const_cast<char*>(src)
-                                  , dst
-                                  , coeff
-                                  , static_cast<int>(len)
-                                  , 0 /* don't add to src */);
+    gf_.multiply_region.w32( &gf_
+                           , const_cast<char*>(src)
+                           , dst
+                           , coeff
+                           , static_cast<int>(len)
+                           , 0 /* don't add to src */);
   }
 
   /// @brief Multiply a region with a constant, add the result with the source.
@@ -83,12 +83,12 @@ public:
   multiply_add(const char* src, char* dst, std::size_t len, std::uint32_t coeff)
   noexcept
   {
-    gf_.get()->multiply_region.w32( gf_.get()
-                                  , const_cast<char*>(src)
-                                  , dst
-                                  , coeff
-                                  , static_cast<int>(len)
-                                  , 1 /* add to src */);
+    gf_.multiply_region.w32( &gf_
+                           , const_cast<char*>(src)
+                           , dst
+                           , coeff
+                           , static_cast<int>(len)
+                           , 1 /* add to src */);
   }
 
   std::uint32_t
@@ -97,7 +97,7 @@ public:
   {
     return x == 0 or y == 0
          ? 0
-         : gf_.get()->multiply.w32(gf_.get(), x, y);
+         : gf_.multiply.w32(&gf_, x, y);
   }
 
   std::uint32_t
@@ -106,13 +106,13 @@ public:
   {
     return x == 0
          ? 0
-         : gf_.get()->divide.w32(gf_.get(), x, y);
+         : gf_.divide.w32(&gf_, x, y);
   }
 
 private:
 
   /// @brief The real underlying galois field.
-  std::unique_ptr<gf_t> gf_;
+  gf_t gf_;
 
   /// @brief This field size.
   std::uint32_t size_;
@@ -121,3 +121,5 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 }} // namespace galois::detail
+
+//#pragma GCC diagnostic pop

@@ -112,10 +112,10 @@ private:
   detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
-  friend class encoder;
+  template <typename DataHandler> friend class encoder;
 
   /// @brief The decoder needs to access the buffer.
-  friend class decoder;
+  template <typename DataHandler, typename SymbolHandler> friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -152,10 +152,10 @@ private:
   detail::byte_buffer buffer_;
 
   /// @brief The encoder needs to access the buffer.
-  friend class encoder;
+  template <typename DataHandler> friend class encoder;
 
   /// @brief The decoder needs to access the buffer.
-  friend class decoder;
+  template <typename DataHandler, typename SymbolHandler> friend class decoder;
 };
 
 /*------------------------------------------------------------------------------------------------*/

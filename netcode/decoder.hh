@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/packet_type.hh"
@@ -9,7 +10,6 @@
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
-#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 
 namespace ntc {
@@ -17,8 +17,17 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the receiver side.
+template <typename DataHandler, typename SymbolHandler>
 class decoder final
 {
+public:
+
+  /// @brief The type of the handler that processes data ready to be sent on the network.
+  using data_handler_type = DataHandler;
+
+  /// @brief The type of the handler that processes decoded or received symbols.
+  using symbol_handler_type = SymbolHandler;
+
 public:
 
   /// @brief Can't copy-construct an encoder.
@@ -28,12 +37,13 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  decoder(handler data_handler, handler symbol_handler, configuration conf)
-    : code_type_{conf.code_type}
-    , ack_frequency_{conf.ack_frequency}
+  decoder( const data_handler_type& data_handler, const symbol_handler_type& symbol_handler
+         , configuration conf)
+    : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
-    , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
+    , decoder_{ conf.galois_field_size
+              , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
     , data_handler_{data_handler}
     , symbol_handler_{symbol_handler}
     , packetizer_{data_handler_}
@@ -47,7 +57,7 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  decoder(handler data_handler, handler symbol_handler)
+  decoder(const data_handler_type& data_handler, const symbol_handler_type& symbol_handler)
     : decoder{data_handler, symbol_handler, configuration{}}
   {}
 
@@ -56,7 +66,7 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(packet&& p)
+  operator()(packet&& p)
   {
     return notify_impl(p.buffer());
   }
@@ -66,7 +76,7 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(auto_packet&& p)
+  operator()(auto_packet&& p)
   {
     return notify_impl(p.buffer_.data());
   }
@@ -76,13 +86,13 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(copy_packet&& p)
+  operator()(copy_packet&& p)
   {
     return notify_impl(p.buffer_.data());
   }
 
   /// @brief Get the data handler.
-  const handler&
+  const data_handler_type&
   data_handler()
   const noexcept
   {
@@ -90,7 +100,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  handler&
+  data_handler_type&
   data_handler()
   noexcept
   {
@@ -98,7 +108,7 @@ public:
   }
 
   /// @brief Get the symbol handler.
-  const handler&
+  const symbol_handler_type&
   symbol_handler()
   const noexcept
   {
@@ -106,7 +116,7 @@ public:
   }
 
   /// @brief Get the symbol handler.
-  handler&
+  symbol_handler_type&
   symbol_handler()
   noexcept
   {
@@ -161,12 +171,15 @@ public:
   void
   maybe_ack()
   {
-    // Do we need to send an ack?
-    const auto now = std::chrono::steady_clock::now();
-    if ((now - last_ack_date_) >= ack_frequency_)
+    if (conf_.ack_frequency != std::chrono::milliseconds{0})
     {
-      send_ack();
-      last_ack_date_ = now;
+      // Do we need to send an ack?
+      const auto now = std::chrono::steady_clock::now();
+      if ((now - last_ack_date_) >= conf_.ack_frequency)
+      {
+        send_ack();
+        last_ack_date_ = now;
+      }
     }
   }
 
@@ -223,12 +236,8 @@ private:
 
 private:
 
-  /// @brief Is the encoder systematic?
-  code code_type_;
-
-  /// @brief The frequency of sent ack.
-  /// @note It's a lower bound, the maximal bound is not guaranteed.
-  std::chrono::milliseconds ack_frequency_;
+  /// @brief The configuration.
+  configuration conf_;
 
   /// @brief The last time an ack was sent.
   std::chrono::steady_clock::time_point last_ack_date_;
@@ -240,13 +249,13 @@ private:
   detail::decoder decoder_;
 
   /// @brief The user's handler to output data on network.
-  handler data_handler_;
+  data_handler_type data_handler_;
 
   /// @brief The user's handler to read decoded symbols.
-  handler symbol_handler_;
+  symbol_handler_type symbol_handler_;
 
   /// @brief How to serialize packets.
-  detail::packetizer packetizer_;
+  detail::packetizer<data_handler_type> packetizer_;
 
   /// @brief The counter of received repairs.
   std::size_t nb_received_repairs_;

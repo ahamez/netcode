@@ -40,6 +40,42 @@ TEST_CASE("Encoder: create repairs")
 
 /*------------------------------------------------------------------------------------------------*/
 
+TEST_CASE("Encoder: large source")
+{
+  detail::encoder enc{8};
+
+  SECTION("Largest first")
+  {
+    // Push sources of different sizes.
+    detail::source_list sl;
+    sl.emplace(0, detail::byte_buffer(8192), 8192);
+    sl.emplace(1, detail::byte_buffer(128), 128);
+
+    // Create repair.
+    detail::repair r0{0};
+    enc(r0, sl.cbegin(), sl.cend());
+
+    REQUIRE(r0.buffer().size() >= 8192);
+  }
+
+  SECTION("Smallest first")
+  {
+    // Push sources of different sizes.
+    detail::source_list sl;
+    sl.emplace(0, detail::byte_buffer(128), 128);
+    sl.emplace(1, detail::byte_buffer(8192), 8192);
+
+    // Create repair.
+    detail::repair r0{0};
+    enc(r0, sl.cbegin(), sl.cend());
+
+    REQUIRE(r0.buffer().size() >= 8192);
+
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 TEST_CASE("Encoder is deterministic")
 {
   // We'll need two encoder to compare their evolution.
@@ -48,7 +84,7 @@ TEST_CASE("Encoder is deterministic")
 
   // A dummy source.
   detail::source_list sl;
-  sl.emplace(detail::source{0, detail::byte_buffer{}, 0});
+  sl.emplace(0, detail::byte_buffer{}, 0);
 
   // First encoder.
   detail::repair r0_0{0};
@@ -62,7 +98,7 @@ TEST_CASE("Encoder is deterministic")
   REQUIRE(r0_0.buffer() == r0_1.buffer());
 
   // Once more.
-  sl.emplace(detail::source{1, detail::byte_buffer{}, 0});
+  sl.emplace(1, detail::byte_buffer{}, 0);
 
   // First encoder.
   detail::repair r1_0{1};

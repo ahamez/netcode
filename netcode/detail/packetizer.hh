@@ -12,7 +12,6 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_id_list.hh"
 #include "netcode/detail/repair.hh"
-#include "netcode/handler.hh"
 
 namespace ntc { namespace detail {
 
@@ -20,12 +19,13 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief Prepare and construct ack/repair/source for network.
+template <typename DataHandler>
 class packetizer final
 {
 public:
 
   /// @brief Constructor.
-  packetizer(handler& h)
+  packetizer(DataHandler& h)
     : data_handler_(h)
   {}
 
@@ -246,7 +246,7 @@ private:
   }
 
   /// @brief The handler which serializes packets.
-  handler& data_handler_;
+  DataHandler& data_handler_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

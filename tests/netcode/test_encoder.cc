@@ -27,7 +27,7 @@ TEST_CASE("Encoder's window size")
 {
   configuration conf;
   conf.rate = 3;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   SECTION("Ever growing window size")
   {
@@ -35,7 +35,7 @@ TEST_CASE("Encoder's window size")
     {
       auto sym = ntc::symbol{512};
       sym.set_nb_written_bytes(300);
-      encoder.commit(std::move(sym));
+      encoder(std::move(sym));
       REQUIRE(encoder.window_size() == (i + 1));
     }
   }
@@ -47,32 +47,32 @@ TEST_CASE("Encoder can limit the window size")
 {
   configuration conf;
   conf.window = 4;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   auto sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 }
 
@@ -82,7 +82,7 @@ TEST_CASE("Encoder generates repairs")
 {
   configuration conf;
   conf.rate = 5;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   SECTION("Fixed code rate")
   {
@@ -90,7 +90,7 @@ TEST_CASE("Encoder generates repairs")
     {
       auto sym = ntc::symbol{512};
       sym.set_nb_written_bytes(512);
-      encoder.commit(std::move(sym));
+      encoder(std::move(sym));
     }
     REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
   }
@@ -102,38 +102,35 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 {
   configuration conf;
   conf.rate = 5;
-  ntc::encoder encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)
   {
     auto sym = ntc::auto_symbol{512};
-    encoder.commit(std::move(sym));
+    encoder(std::move(sym));
   }
   REQUIRE(encoder.window_size() == 4);
 
-  // Will hold the bytes of the serialized ack.
-  packet data{2048};
-  std::size_t nb_written = 0;
-  struct my_handler
+  struct handler
   {
-    char* data;
-    std::size_t& written;
+    packet pkt = packet{2048};
+    std::size_t written = 0ul;
 
     void
     operator()(const char* src, std::size_t len)
     {
       if (src)
       {
-        std::copy_n(src, len, data + written);
+        std::copy_n(src, len, pkt.buffer() + written);
         written += len;
       }
     }
   };
 
-  // Directly use the serializer that would have been called by the sender.
-  handler h = my_handler{data.buffer(), nb_written};
-  detail::packetizer serializer{h};
+  // Directly use the serializer that would have been called by the decoder.
+  handler h;
+  detail::packetizer<handler> serializer{h};
 
   SECTION("incoming ack")
   {
@@ -144,7 +141,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(result);
 
     // The number of sources should have decreased.
@@ -160,14 +157,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack0);
 
     // Finally, notify the encoder.
-    const auto result0 = encoder.notify(data);
+    const auto result0 = encoder(h.pkt);
     REQUIRE(result0);
 
     // The number of sources should have decreased.
     REQUIRE(encoder.window_size() == 2);
 
     /// Reset handler.
-    nb_written = 0;
+    h.written = 0;
 
     // Create an ack for some sources, with an already deleted source.
     const auto ack1 = detail::ack{{0}};
@@ -176,14 +173,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack1);
 
     // Finally, notify the encoder.
-    const auto result1 = encoder.notify(data);
+    const auto result1 = encoder(h.pkt);
     REQUIRE(result1);
 
     // The number of sources should have decreased.
     REQUIRE(encoder.window_size() == 2);
 
     /// Reset handler.
-    nb_written = 0;
+    h.written = 0;
     
     // Create an ack for some sources, with a source that wasn't deleted before.
     const auto ack2 = detail::ack{{1}};
@@ -192,7 +189,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack2);
 
     // Finally, notify the encoder.
-    const auto result2 = encoder.notify(data);
+    const auto result2 = encoder(h.pkt);
     REQUIRE(result2);
 
     // The number of sources should have decreased.
@@ -208,7 +205,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_repair(repair);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -224,7 +221,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_source(source);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(h.pkt);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -263,13 +260,13 @@ struct my_handler
 
 TEST_CASE("Encoder sends correct sources")
 {
-  ntc::encoder enc{my_handler{}};
+  encoder<my_handler> enc{my_handler{}};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
 
   const auto s0 = {'A', 'B', 'C'};
 
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
                                  + sizeof(std::uint16_t)     // user symbol size
@@ -289,13 +286,13 @@ TEST_CASE("Encoder sends repairs")
   configuration conf;
   conf.rate = 1; // A repair for a source
 
-  ntc::encoder enc{my_handler{}, conf};
+  encoder<my_handler> enc{my_handler{}, conf};
 
-  auto& enc_handler = *enc.data_handler().target<my_handler>();
+  auto& enc_handler = enc.data_handler();
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
                     + sizeof(std::uint16_t)     // user symbol size

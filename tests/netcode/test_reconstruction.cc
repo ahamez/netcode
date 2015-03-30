@@ -2,6 +2,7 @@
 
 #include "tests/catch.hpp"
 
+#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/invert_matrix.hh"

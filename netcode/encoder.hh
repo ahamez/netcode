@@ -10,7 +10,6 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
-#include "netcode/handler.hh"
 #include "netcode/packet.hh"
 #include "netcode/symbol.hh"
 
@@ -19,8 +18,14 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
+template <typename DataHandler>
 class encoder final
 {
+public:
+
+  /// @brief The type of the handler that processes data ready to be sent on the network.
+  using data_handler_type = DataHandler;
+
 public:
 
   /// @brief Can't copy-construct an encoder.
@@ -30,19 +35,18 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  encoder(handler data_handler, configuration conf)
-    : code_type_{conf.code_type}
-    , rate_{conf.rate == 0 ? 1 : conf.rate}
-    , max_window_size_{conf.window}
+  encoder(const data_handler_type& data_handler, configuration conf)
+    : conf_{conf}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , data_handler_{data_handler}
+    , data_handler_(data_handler)
     , encoder_{conf.galois_field_size}
     , packetizer_{data_handler_}
     , nb_repairs_{0ul}
   {
+    assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
     repair_.buffer().reserve(2048);
     // Same thing for the list of source identifiers.
@@ -50,7 +54,7 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  encoder(handler data_handler)
+  encoder(const data_handler_type& data_handler)
     : encoder{data_handler, configuration{}}
   {}
 
@@ -58,7 +62,7 @@ public:
   /// @param sym The symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(symbol&& sym)
+  operator()(symbol&& sym)
   {
     assert(sym.user_size_ != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
     commit_impl(std::move(sym));
@@ -68,7 +72,7 @@ public:
   /// @param sym The automatic symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(auto_symbol&& sym)
+  operator()(auto_symbol&& sym)
   {
     sym.user_size_ = sym.buffer_.size();
     if ((sym.buffer_.size() % 16) != 0)
@@ -83,7 +87,7 @@ public:
   /// @param sym The symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(copy_symbol&& sym)
+  operator()(copy_symbol&& sym)
   {
     commit_impl(std::move(sym));
   }
@@ -92,7 +96,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const packet& p)
+  operator()(const packet& p)
   {
     return notify_impl(p.buffer());
   }
@@ -101,7 +105,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const auto_packet& p)
+  operator()(const auto_packet& p)
   {
     return notify_impl(p.buffer_.data());
   }
@@ -110,7 +114,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const copy_packet& p)
+  operator()(const copy_packet& p)
   {
     return notify_impl(p.buffer_.data());
   }
@@ -128,7 +132,7 @@ public:
   rate()
   const noexcept
   {
-    return rate_;
+    return conf_.rate;
   }
 
   /// @brief Set the code rate.
@@ -136,7 +140,7 @@ public:
   rate()
   noexcept
   {
-    return rate_;
+    return conf_.rate;
   }
 
   /// @brief Get the number of generated repairs.
@@ -148,7 +152,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  const handler&
+  const data_handler_type&
   data_handler()
   const noexcept
   {
@@ -156,7 +160,7 @@ public:
   }
 
   /// @brief Get the data handler.
-  handler&
+  data_handler_type&
   data_handler()
   noexcept
   {
@@ -184,7 +188,7 @@ private:
     assert(sym.buffer_.size() % 16 == 0 && "symbol buffer size not a multiple of 16");
     assert(sym.user_size_ <= sym.buffer_.size() && "More bytes are used than the buffer can hold");
 
-    if (sources_.size() == max_window_size_)
+    if (sources_.size() == conf_.window)
     {
       sources_.pop_front();
     }
@@ -198,7 +202,7 @@ private:
     packetizer_.write_source(insertion);
 
     /// @todo Should we generate a repair if window_size() == 1?
-    if ((current_source_id_ + 1) % rate_ == 0)
+    if ((current_source_id_ + 1) % conf_.rate == 0)
     {
       send_repair();
     }
@@ -243,14 +247,8 @@ private:
 
 private:
 
-  /// @brief Is the encoder systematic?
-  code code_type_;
-
-  /// @brief The number of source packets to send before sending a repair packet.
-  std::size_t rate_;
-
-  /// @brief The maximum size the window is allowed to grow to.
-  std::size_t max_window_size_;
+  /// @brief The configuration.
+  configuration conf_;
 
   /// @brief The counter for source packets identifiers.
   std::uint32_t current_source_id_;
@@ -265,13 +263,13 @@ private:
   detail::repair repair_;
 
   /// @brief The user's handler.
-  handler data_handler_;
+  data_handler_type data_handler_;
 
   /// @brief The component that handles the coding process.
   detail::encoder encoder_;
 
   /// @brief How to serialize packets.
-  detail::packetizer packetizer_;
+  detail::packetizer<data_handler_type> packetizer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;

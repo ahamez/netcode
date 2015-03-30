@@ -65,6 +65,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fvisibility=hidden")
 include_directories("${GF_COMPLETE_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/ext")
+add_subdirectory(netcode)
 add_subdirectory(tests)
 
 #--------------------------------------------------------------------------------------------------#
