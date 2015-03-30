@@ -4,9 +4,12 @@
 #include <cassert>
 #include <vector>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
 #include <boost/optional.hpp>
+#pragma GCC diagnostic pop
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/galois_field.hh"

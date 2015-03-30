@@ -2,7 +2,10 @@
 
 #include <cassert>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <boost/optional.hpp>
+#pragma GCC diagnostic pop
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/square_matrix.hh"
