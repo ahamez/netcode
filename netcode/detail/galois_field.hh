@@ -3,12 +3,6 @@
 #include <cassert>
 #include <cstddef> // size_t
 
-#pragma GCC diagnostic push
-
-#if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#endif
-
 extern "C" {
 #include <gf_complete.h>
 }
@@ -34,6 +28,8 @@ public:
   // Can move a field.
   galois_field& operator=(galois_field&&) = delete;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
   galois_field(std::size_t w)
     : gf_{}
@@ -44,6 +40,7 @@ public:
       throw std::runtime_error("Can't allocate galois field");
     }
   }
+#pragma GCC diagnostic pop
 
   /// @brief Destructor.
   ~galois_field()
@@ -124,4 +121,4 @@ private:
 
 }} // namespace galois::detail
 
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic pop
