@@ -35,7 +35,7 @@ TEST_CASE("Encoder's window size")
     {
       auto sym = ntc::symbol{512};
       sym.set_nb_written_bytes(300);
-      encoder.commit(std::move(sym));
+      encoder(std::move(sym));
       REQUIRE(encoder.window_size() == (i + 1));
     }
   }
@@ -51,28 +51,28 @@ TEST_CASE("Encoder can limit the window size")
 
   auto sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 
   sym = ntc::symbol{512};
   sym.set_nb_written_bytes(8);
-  encoder.commit(std::move(sym));
+  encoder(std::move(sym));
   REQUIRE(encoder.window_size() == 4);
 }
 
@@ -90,7 +90,7 @@ TEST_CASE("Encoder generates repairs")
     {
       auto sym = ntc::symbol{512};
       sym.set_nb_written_bytes(512);
-      encoder.commit(std::move(sym));
+      encoder(std::move(sym));
     }
     REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
   }
@@ -108,7 +108,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   for (auto i = 0ul; i < 4; ++i)
   {
     auto sym = ntc::auto_symbol{512};
-    encoder.commit(std::move(sym));
+    encoder(std::move(sym));
   }
   REQUIRE(encoder.window_size() == 4);
 
@@ -144,7 +144,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(data);
     REQUIRE(result);
 
     // The number of sources should have decreased.
@@ -160,7 +160,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack0);
 
     // Finally, notify the encoder.
-    const auto result0 = encoder.notify(data);
+    const auto result0 = encoder(data);
     REQUIRE(result0);
 
     // The number of sources should have decreased.
@@ -176,7 +176,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack1);
 
     // Finally, notify the encoder.
-    const auto result1 = encoder.notify(data);
+    const auto result1 = encoder(data);
     REQUIRE(result1);
 
     // The number of sources should have decreased.
@@ -192,7 +192,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack2);
 
     // Finally, notify the encoder.
-    const auto result2 = encoder.notify(data);
+    const auto result2 = encoder(data);
     REQUIRE(result2);
 
     // The number of sources should have decreased.
@@ -208,7 +208,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_repair(repair);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(data);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -224,7 +224,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_source(source);
 
     // Finally, notify the encoder.
-    const auto result = encoder.notify(data);
+    const auto result = encoder(data);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -269,7 +269,7 @@ TEST_CASE("Encoder sends correct sources")
 
   const auto s0 = {'A', 'B', 'C'};
 
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
                                  + sizeof(std::uint16_t)     // user symbol size
@@ -295,7 +295,7 @@ TEST_CASE("Encoder sends repairs")
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
                     + sizeof(std::uint16_t)     // user symbol size

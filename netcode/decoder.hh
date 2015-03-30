@@ -56,7 +56,7 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(packet&& p)
+  operator()(packet&& p)
   {
     return notify_impl(p.buffer());
   }
@@ -66,7 +66,7 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(auto_packet&& p)
+  operator()(auto_packet&& p)
   {
     return notify_impl(p.buffer_.data());
   }
@@ -76,7 +76,7 @@ public:
   /// @return false if the data could not have been decoded, true otherwise.
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
   bool
-  notify(copy_packet&& p)
+  operator()(copy_packet&& p)
   {
     return notify_impl(p.buffer_.data());
   }

@@ -45,10 +45,10 @@ TEST_CASE("Decoder gives a correct source to user")
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
 
   // Send serialized data to decoder.
-  dec.notify(copy_packet{enc_handler.data, enc_handler.written});
+  dec(copy_packet{enc_handler.data, enc_handler.written});
 
   REQUIRE(dec_handler.written == s0.size());
   REQUIRE(std::equal(begin(s0), end(s0), dec_handler.data));
@@ -69,7 +69,7 @@ TEST_CASE("Decoder repairs a lost source")
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
 
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
@@ -80,7 +80,7 @@ TEST_CASE("Decoder repairs a lost source")
   auto repair = copy_packet(enc_handler.data + src_sz, enc_handler.written - src_sz);
 
   // Send repair to decoder.
-  REQUIRE(dec.notify(std::move(repair)));
+  REQUIRE(dec(std::move(repair)));
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded_sources() == 1);
@@ -103,11 +103,11 @@ TEST_CASE("Decoder generate correct ack")
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc.commit(copy_symbol{begin(s0), end(s0)});
+  enc(copy_symbol{begin(s0), end(s0)});
   REQUIRE(enc.window_size() == 1);
 
   // Send source to decoder.
-  REQUIRE(dec.notify(copy_packet(enc_handler.data, enc_handler.written)));
+  REQUIRE(dec(copy_packet(enc_handler.data, enc_handler.written)));
 
   SECTION("Force ack")
   {
@@ -116,7 +116,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_ack() == 1);
 
     // Sent it to the encoder.
-    REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc(copy_packet(dec_data_handler.data, dec_data_handler.written)));
     REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -128,7 +128,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_ack() == 1);
 
     // Sent it to the encoder.
-    REQUIRE(enc.notify(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc(copy_packet(dec_data_handler.data, dec_data_handler.written)));
     REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
   }
 }

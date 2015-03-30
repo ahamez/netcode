@@ -58,7 +58,7 @@ public:
   /// @param sym The symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(symbol&& sym)
+  operator()(symbol&& sym)
   {
     assert(sym.user_size_ != 0 && "user_size hasn't been set, please invoke symbol::user_size()");
     commit_impl(std::move(sym));
@@ -68,7 +68,7 @@ public:
   /// @param sym The automatic symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(auto_symbol&& sym)
+  operator()(auto_symbol&& sym)
   {
     sym.user_size_ = sym.buffer_.size();
     if ((sym.buffer_.size() % 16) != 0)
@@ -83,7 +83,7 @@ public:
   /// @param sym The symbol to add.
   /// @attention Any use of the symbol @p sym after this call will result in an undefined behavior.
   void
-  commit(copy_symbol&& sym)
+  operator()(copy_symbol&& sym)
   {
     commit_impl(std::move(sym));
   }
@@ -92,7 +92,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const packet& p)
+  operator()(const packet& p)
   {
     return notify_impl(p.buffer());
   }
@@ -101,7 +101,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const auto_packet& p)
+  operator()(const auto_packet& p)
   {
     return notify_impl(p.buffer_.data());
   }
@@ -110,7 +110,7 @@ public:
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
   bool
-  notify(const copy_packet& p)
+  operator()(const copy_packet& p)
   {
     return notify_impl(p.buffer_.data());
   }
