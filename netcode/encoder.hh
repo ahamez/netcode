@@ -1,7 +1,5 @@
 #pragma once
 
-#include <algorithm> // is_sorted
-
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/packetizer.hh"
@@ -221,8 +219,6 @@ private:
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
       const auto source_ids = packetizer_.read_ack(data).source_ids();
-      // Identifiers should be sorted.
-      assert(std::is_sorted(begin(source_ids), end(source_ids)));
       sources_.erase(begin(source_ids), end(source_ids));
       return true;
     }
@@ -239,9 +235,6 @@ private:
     // Create the repair packet from the list of sources.
     assert(sources_.size() > 0 && "Empty source list");
     encoder_(repair_, sources_.cbegin(), sources_.cend());
-
-    // By construction, the list of source identifiers should be sorted.
-    assert(std::is_sorted(begin(repair_.source_ids()), end(repair_.source_ids())));
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;

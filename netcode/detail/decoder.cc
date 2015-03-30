@@ -1,4 +1,4 @@
-#include <algorithm>  // all_of, is_sorted
+#include <algorithm>  // all_of
 #include <cassert>
 #include <vector>
 
@@ -52,9 +52,8 @@ decoder::operator()(source&& src)
 void
 decoder::operator()(repair&& incoming_r)
 {
-  // By construction, the list of source identifiers should be sorted.
+  // By construction, the list of source identifiers should be empty.
   assert(not incoming_r.source_ids().empty());
-  assert(std::is_sorted(begin(incoming_r.source_ids()), end(incoming_r.source_ids())));
 
   //                     last id in source_ids
   //               ------------------------------------
