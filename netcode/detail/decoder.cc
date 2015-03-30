@@ -360,6 +360,8 @@ noexcept
   gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 decoder::attempt_full_decoding()
 {
