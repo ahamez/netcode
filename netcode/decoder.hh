@@ -17,8 +17,8 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the receiver side.
-template < typename DataHandler, typename SymbolHandler
-         , typename Packetizer = detail::packetizer<DataHandler>>
+template < typename PacketHandler, typename SymbolHandler
+         , typename Packetizer = detail::packetizer<PacketHandler>>
 class decoder final
 {
 private:
@@ -29,7 +29,7 @@ private:
 public:
 
   /// @brief The type of the handler that processes data ready to be sent on the network.
-  using data_handler_type = DataHandler;
+  using packet_handler_type = PacketHandler;
 
   /// @brief The type of the handler that processes decoded or received symbols.
   using symbol_handler_type = SymbolHandler;
@@ -43,16 +43,16 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  decoder( const data_handler_type& data_handler, const symbol_handler_type& symbol_handler
+  decoder( const packet_handler_type& packet_handler, const symbol_handler_type& symbol_handler
          , configuration conf)
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
     , decoder_{ conf.galois_field_size
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
-    , data_handler_{data_handler}
+    , packet_handler_{packet_handler}
     , symbol_handler_{symbol_handler}
-    , packetizer_{data_handler_}
+    , packetizer_{packet_handler_}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
     , nb_handled_sources_{0}
@@ -63,8 +63,8 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  decoder(const data_handler_type& data_handler, const symbol_handler_type& symbol_handler)
-    : decoder{data_handler, symbol_handler, configuration{}}
+  decoder(const packet_handler_type& packet_handler, const symbol_handler_type& symbol_handler)
+    : decoder{packet_handler, symbol_handler, configuration{}}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.
@@ -88,19 +88,19 @@ public:
   }
 
   /// @brief Get the data handler.
-  const data_handler_type&
-  data_handler()
+  const packet_handler_type&
+  packet_handler()
   const noexcept
   {
-    return data_handler_;
+    return packet_handler_;
   }
 
   /// @brief Get the data handler.
-  data_handler_type&
-  data_handler()
+  packet_handler_type&
+  packet_handler()
   noexcept
   {
-    return data_handler_;
+    return packet_handler_;
   }
 
   /// @brief Get the symbol handler.
@@ -245,7 +245,7 @@ private:
   detail::decoder decoder_;
 
   /// @brief The user's handler to output data on network.
-  data_handler_type data_handler_;
+  packet_handler_type packet_handler_;
 
   /// @brief The user's handler to read decoded symbols.
   symbol_handler_type symbol_handler_;

@@ -19,14 +19,14 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief Prepare and construct ack/repair/source for network.
-template <typename DataHandler>
+template <typename PacketHandler>
 class packetizer final
 {
 public:
 
   /// @brief Constructor.
-  packetizer(DataHandler& h)
-    : data_handler_(h)
+  packetizer(PacketHandler& h)
+    : packet_handler_(h)
   {}
 
   void
@@ -242,11 +242,11 @@ private:
   write(const void* data, std::size_t len)
   noexcept
   {
-    data_handler_(reinterpret_cast<const char*>(data), len);
+    packet_handler_(reinterpret_cast<const char*>(data), len);
   }
 
   /// @brief The handler which serializes packets.
-  DataHandler& data_handler_;
+  PacketHandler& packet_handler_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

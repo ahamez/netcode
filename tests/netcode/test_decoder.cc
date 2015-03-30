@@ -40,7 +40,7 @@ TEST_CASE("Decoder gives a correct source to user")
   encoder<handler> enc{handler{}};
   decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = enc.data_handler();
+  auto& enc_handler = enc.packet_handler();
   auto& dec_handler = dec.symbol_handler();
 
   const auto s0 = {'a', 'b', 'c'};
@@ -64,7 +64,7 @@ TEST_CASE("Decoder repairs a lost source")
   encoder<handler> enc{handler{}, conf};
   decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = enc.data_handler();
+  auto& enc_handler = enc.packet_handler();
   auto& dec_symbol_handler = dec.symbol_handler();
 
   // Give a source to the encoder.
@@ -98,8 +98,8 @@ TEST_CASE("Decoder generate correct ack")
   encoder<handler> enc{handler{}, conf};
   decoder<handler, handler> dec{handler{}, handler{}};
 
-  auto& enc_handler = enc.data_handler();
-  auto& dec_data_handler = dec.data_handler();
+  auto& enc_handler = enc.packet_handler();
+  auto& dec_packet_handler = dec.packet_handler();
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
@@ -116,7 +116,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_ack() == 1);
 
     // Sent it to the encoder.
-    REQUIRE(enc(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc(copy_packet(dec_packet_handler.data, dec_packet_handler.written)));
     REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -128,7 +128,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_ack() == 1);
 
     // Sent it to the encoder.
-    REQUIRE(enc(copy_packet(dec_data_handler.data, dec_data_handler.written)));
+    REQUIRE(enc(copy_packet(dec_packet_handler.data, dec_packet_handler.written)));
     REQUIRE(enc.window_size() == 0); // Source was correctly removed from the encoder window.
   }
 }

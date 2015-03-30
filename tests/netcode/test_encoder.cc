@@ -267,7 +267,7 @@ TEST_CASE("Encoder sends correct sources")
 {
   encoder<my_handler> enc{my_handler{}};
 
-  auto& enc_handler = enc.data_handler();
+  auto& enc_handler = enc.packet_handler();
 
   const auto s0 = {'A', 'B', 'C'};
 
@@ -293,7 +293,7 @@ TEST_CASE("Encoder sends repairs")
 
   encoder<my_handler> enc{my_handler{}, conf};
 
-  auto& enc_handler = enc.data_handler();
+  auto& enc_handler = enc.packet_handler();
 
   const auto s0 = {'a', 'b', 'c'};
 

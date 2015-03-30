@@ -18,7 +18,7 @@ namespace ntc {
 /// @brief The class to interact with on the sender side.
 /// @todo Check gf-complete requirements on size of symbols which must be a multiple of w/8 (1 for
 /// w = 4 and w = 8.
-template <typename DataHandler, typename Packetizer = detail::packetizer<DataHandler>>
+template <typename PacketHandler, typename Packetizer = detail::packetizer<PacketHandler>>
 class encoder final
 {
 private:
@@ -29,7 +29,7 @@ private:
 public:
 
   /// @brief The type of the handler that processes data ready to be sent on the network.
-  using data_handler_type = DataHandler;
+  using packet_handler_type = PacketHandler;
 
 public:
 
@@ -40,15 +40,15 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  encoder(const data_handler_type& data_handler, configuration conf)
+  encoder(const packet_handler_type& packet_handler, configuration conf)
     : conf_{conf}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , data_handler_(data_handler)
+    , packet_handler_(packet_handler)
     , encoder_{conf.galois_field_size}
-    , packetizer_{data_handler_}
+    , packetizer_{packet_handler_}
     , nb_repairs_{0ul}
   {
     assert(conf_.rate > 0);
@@ -59,8 +59,8 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  encoder(const data_handler_type& data_handler)
-    : encoder{data_handler, configuration{}}
+  encoder(const packet_handler_type& packet_handler)
+    : encoder{packet_handler, configuration{}}
   {}
 
   /// @brief Give the encoder a new symbol.
@@ -133,19 +133,19 @@ public:
   }
 
   /// @brief Get the data handler.
-  const data_handler_type&
-  data_handler()
+  const packet_handler_type&
+  packet_handler()
   const noexcept
   {
-    return data_handler_;
+    return packet_handler_;
   }
 
   /// @brief Get the data handler.
-  data_handler_type&
-  data_handler()
+  packet_handler_type&
+  packet_handler()
   noexcept
   {
-    return data_handler_;
+    return packet_handler_;
   }
 
   /// @brief Force the sending of a repair.
@@ -239,7 +239,7 @@ private:
   detail::repair repair_;
 
   /// @brief The user's handler.
-  data_handler_type data_handler_;
+  packet_handler_type packet_handler_;
 
   /// @brief The component that handles the coding process.
   detail::encoder encoder_;
