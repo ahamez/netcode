@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/packet_type.hh"
@@ -41,7 +42,8 @@ public:
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
-    , decoder_{conf.galois_field_size, [this](const detail::source& src){handle_source(src);}}
+    , decoder_{ conf.galois_field_size
+              , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
     , data_handler_{data_handler}
     , symbol_handler_{symbol_handler}
     , packetizer_{data_handler_}
