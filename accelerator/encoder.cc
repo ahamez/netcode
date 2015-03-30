@@ -42,7 +42,6 @@ struct data_handler
     else
     {
       // End of data, we can now send it.
-      std::cout << "Will write " << written << " bytes\n";
       socket.send_to(asio::buffer(buffer, written), endpoint);
       written = 0;
     }

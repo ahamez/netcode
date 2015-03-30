@@ -18,9 +18,14 @@ namespace ntc {
 /// @brief The class to interact with on the sender side.
 /// @todo Check gf-complete requirements on size of symbols which must be a multiple of w/8 (1 for
 /// w = 4 and w = 8.
-template <typename DataHandler>
+template <typename DataHandler, typename Packetizer = detail::packetizer<DataHandler>>
 class encoder final
 {
+private:
+
+  /// @brief The type of the component that de/serializes packets.
+  using packetizer_type = Packetizer;
+
 public:
 
   /// @brief The type of the handler that processes data ready to be sent on the network.
@@ -240,7 +245,7 @@ private:
   detail::encoder encoder_;
 
   /// @brief How to serialize packets.
-  detail::packetizer<data_handler_type> packetizer_;
+  packetizer_type packetizer_;
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;
