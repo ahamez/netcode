@@ -160,12 +160,15 @@ public:
   void
   maybe_ack()
   {
-    // Do we need to send an ack?
-    const auto now = std::chrono::steady_clock::now();
-    if ((now - last_ack_date_) >= conf_.ack_frequency)
+    if (not conf_.manual_ack_send)
     {
-      send_ack();
-      last_ack_date_ = now;
+      // Do we need to send an ack?
+      const auto now = std::chrono::steady_clock::now();
+      if ((now - last_ack_date_) >= conf_.ack_frequency)
+      {
+        send_ack();
+        last_ack_date_ = now;
+      }
     }
   }
 

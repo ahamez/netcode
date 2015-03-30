@@ -21,6 +21,9 @@ struct configuration
   /// @brief
   std::size_t rate = 5;
 
+  /// @brief Indicate that the user will take care of sending ack.
+  bool manual_ack_send = false;
+
   /// @brief
   std::chrono::milliseconds ack_frequency = std::chrono::milliseconds{100};
 
