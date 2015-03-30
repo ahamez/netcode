@@ -19,7 +19,7 @@ public:
 
   /// @brief Constructor.
   encoder(std::size_t galois_field_size)
-    : gf_{detail::galois_field{galois_field_size}}
+    : gf_{galois_field_size}
   {}
 
   /// @brief Fill a @ref detail::repair from a set of detail::source.
