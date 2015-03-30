@@ -169,7 +169,7 @@ public:
   void
   maybe_ack()
   {
-    if (not conf_.manual_ack_send)
+    if (conf_.ack_frequency != std::chrono::milliseconds{0})
     {
       // Do we need to send an ack?
       const auto now = std::chrono::steady_clock::now();
