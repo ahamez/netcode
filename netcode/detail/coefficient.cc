@@ -4,7 +4,6 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-inline
 std::uint32_t
 coefficient(const galois_field& gf, std::uint32_t repair_id, std::uint32_t src_id)
 noexcept
