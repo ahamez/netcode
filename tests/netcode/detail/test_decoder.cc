@@ -787,3 +787,52 @@ TEST_CASE("Decoder: repair with only one source")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: 1 packet loss")
+{
+  // The payloads that should be reconstructed.
+  detail::byte_buffer s0_data{'a','b','c',};
+  detail::byte_buffer s1_data{'d','e','f'};
+  detail::byte_buffer s2_data{'g','h','i'};
+  detail::byte_buffer s3_data{'j','k','l'};
+
+  // Push the source.
+  detail::source_list sl;
+  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(1, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(2, detail::byte_buffer{s0_data}, s0_data.size());
+  sl.emplace(3, detail::byte_buffer{s0_data}, s0_data.size());
+
+  // A repair to store encoded sources
+  detail::repair r0{0};
+
+  // We need an encoder to fill the repair.
+  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+
+  // Now test the decoder.
+  detail::decoder decoder{8, [](const detail::source&){}};
+
+  // s1 -> s3 are received
+  decoder(detail::source{1, detail::byte_buffer{s1_data}, s1_data.size()});
+  decoder(detail::source{2, detail::byte_buffer{s2_data}, s2_data.size()});
+  decoder(detail::source{3, detail::byte_buffer{s3_data}, s3_data.size()});
+  REQUIRE(decoder.sources().size() == 3);
+  REQUIRE(decoder.sources().count(1));
+  REQUIRE(decoder.sources().count(2));
+  REQUIRE(decoder.sources().count(3));
+
+
+  // r0 is received
+  decoder(std::move(r0));
+  REQUIRE(decoder.sources().size() == 4);
+  REQUIRE(decoder.sources().count(0));
+  REQUIRE(decoder.sources().count(1));
+  REQUIRE(decoder.sources().count(2));
+  REQUIRE(decoder.sources().count(3));
+  REQUIRE(decoder.repairs().size() == 0);
+  REQUIRE(decoder.nb_useless_repairs() == 0);
+  REQUIRE(decoder.nb_failed_full_decodings() == 0);
+
+}
+
+/*------------------------------------------------------------------------------------------------*/
