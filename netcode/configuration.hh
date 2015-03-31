@@ -16,7 +16,7 @@ namespace ntc {
 struct configuration
 {
   /// @brief The Galois field size is 2 ^ @p galois_field_size.
-  std::size_t galois_field_size = 8;
+  const std::size_t galois_field_size = 8;
 
   /// @brief Tell if the code is systematic or not.
   code code_type = code::systematic;
@@ -26,7 +26,7 @@ struct configuration
 
   /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
   ///
-  /// If 0, the user will take care of sending ack by calling decoder::send_ack() directly.
+  /// If 0, the user has to take care of sending ack by calling decoder::send_ack() directly.
   std::chrono::milliseconds ack_frequency = std::chrono::milliseconds{100};
 
   /// @brief The maximal number of sources to keep on the encoder side before discarding them.

@@ -179,6 +179,22 @@ public:
     }
   }
 
+  /// @brief Get the configuration (read-only).
+  const configuration&
+  conf()
+  const noexcept
+  {
+    return conf_;
+  }
+
+  /// @brief Get the configuration.
+  configuration&
+  conf()
+  noexcept
+  {
+    return conf_;
+  }
+
 private:
 
   /// @brief Notify the encoder that some data has been received.

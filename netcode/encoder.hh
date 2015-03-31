@@ -163,6 +163,22 @@ public:
     packetizer_.write_repair(repair_);
   }
 
+  /// @brief Get the configuration (read-only).
+  const configuration&
+  conf()
+  const noexcept
+  {
+    return conf_;
+  }
+
+  /// @brief Get the configuration.
+  configuration&
+  conf()
+  noexcept
+  {
+    return conf_;
+  }
+
 private:
 
   /// @brief Create a source from the given data and generate a repair if needed.
