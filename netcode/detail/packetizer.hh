@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iterator> // back_inserter
+#include <utility>  // pair
 
 #include <boost/endian/conversion.hpp>
 
@@ -57,13 +58,16 @@ public:
     mark_end();
   }
 
-  ack
+  std::pair<ack, std::size_t>
   read_ack(const char* data)
   {
     using namespace boost::endian;
 
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::ack);
+
+    // Keep the initial memory location.
+    const auto begin = reinterpret_cast<std::size_t>(data);
 
     // Skip packet type.
     data += sizeof(std::uint8_t);
@@ -81,7 +85,8 @@ public:
       data += sizeof(std::uint32_t);
     }
 
-    return {std::move(ids)};
+    return std::make_pair( ack{std::move(ids)}
+                         , reinterpret_cast<std::size_t>(data) - begin);
   }
 
   void
@@ -134,13 +139,16 @@ public:
     mark_end();
   }
 
-  repair
+  std::pair<repair, std::size_t>
   read_repair(const char* data)
   {
     using namespace boost::endian;
 
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::repair);
+
+    // Keep the initial memory location.
+    const auto begin = reinterpret_cast<std::size_t>(data);
 
     // Skip packet type.
     data += sizeof(std::uint8_t);
@@ -175,7 +183,8 @@ public:
     buffer.reserve(make_multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 
-    return {id, user_sz, std::move(ids), std::move(buffer)};
+    return std::make_pair( repair{id, user_sz, std::move(ids), std::move(buffer)}
+                         , reinterpret_cast<std::size_t>(data) - begin);
   }
 
   void
@@ -208,13 +217,16 @@ public:
     mark_end();
   }
 
-  source
+  std::pair<source, std::size_t>
   read_source(const char* data)
   {
     using namespace boost::endian;
 
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::source);
+
+    // Keep the initial memory location.
+    const auto begin = reinterpret_cast<std::size_t>(data);
 
     // Skip packet type.
     data += sizeof(std::uint8_t);
@@ -232,7 +244,8 @@ public:
     buffer.reserve(make_multiple(user_sz, 16));
     std::copy_n(data, user_sz, std::back_inserter(buffer));
 
-    return {id, std::move(buffer), user_sz};
+    return std::make_pair( source{id, std::move(buffer), user_sz}
+                         , reinterpret_cast<std::size_t>(data) - begin);
   }
 
 private:

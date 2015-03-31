@@ -46,7 +46,7 @@ TEST_CASE("An ack is (de)serialized by packetizer")
                       + 4 * sizeof(std::uint32_t) // identifiers
                       ));
 
-  const auto a_out = serializer.read_ack(h.data_);
+  const auto a_out = serializer.read_ack(h.data_).first;
   REQUIRE(a_in.source_ids() == a_out.source_ids());
 }
 
@@ -70,7 +70,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
                       + 3                         // symbol
                       ));
 
-  const auto r_out = serializer.read_repair(h.data_);
+  const auto r_out = serializer.read_repair(h.data_).first;
   REQUIRE(r_in.id() == r_out.id());
   REQUIRE(r_in.source_ids() == r_out.source_ids());
   REQUIRE(r_in.size() == r_out.size());
@@ -94,7 +94,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
                       + 4                         // symbol
                       ));
 
-  const auto s_out = serializer.read_source(h.data_);
+  const auto s_out = serializer.read_source(h.data_).first;
   REQUIRE(s_in.id() == s_out.id());
   REQUIRE(s_in.user_size() == s_out.user_size());
   REQUIRE(s_in.buffer() == s_out.buffer());

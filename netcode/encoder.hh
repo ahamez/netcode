@@ -86,10 +86,10 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
   /// except for one case: calling packet::reset() will put @p p in a usable state.
-  bool
+  std::size_t
   operator()(const packet& p)
   {
     return notify_impl(p.buffer());
@@ -97,10 +97,10 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
   /// except for one case: calling packet::reset() will put @p p in a usable state.
-  bool
+  std::size_t
   operator()(const copy_packet& p)
   {
     return notify_impl(p.buffer());
@@ -198,18 +198,18 @@ private:
   }
 
   /// @brief Notify the encoder that some data has been received.
-  /// @return false if the data could not have been decoded, true otherwise.
-  bool
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  std::size_t
   notify_impl(const char* data)
   {
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      const auto source_ids = packetizer_.read_ack(data).source_ids();
-      sources_.erase(begin(source_ids), end(source_ids));
-      return true;
+      const auto res = packetizer_.read_ack(data);
+      sources_.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
+      return res.second;
     }
-    return false;
+    return 0ul;
   }
 
   /// @brief Launch the generation of a repair.

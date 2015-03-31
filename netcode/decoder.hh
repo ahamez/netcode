@@ -69,9 +69,9 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
-  bool
+  std::size_t
   operator()(packet&& p)
   {
     return notify_impl(p.buffer());
@@ -79,9 +79,9 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
-  /// @return false if the data could not have been decoded, true otherwise.
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p p after this call will result in an undefined behavior.
-  bool
+  std::size_t
   operator()(copy_packet&& p)
   {
     return notify_impl(p.buffer());
@@ -182,8 +182,8 @@ public:
 private:
 
   /// @brief Notify the encoder that some data has been received.
-  /// @return false if the data could not have been read, true otherwise.
-  bool
+  /// @return The number of bytes that have been read (0 if the packet was no decoded).
+  std::size_t
   notify_impl(const char* data)
   {
     assert(data != nullptr);
@@ -193,19 +193,21 @@ private:
       {
         nb_received_repairs_ += 1;
         // Give the decoder this received repair.
-        decoder_(packetizer_.read_repair(data));
-        return true;
+        auto res = packetizer_.read_repair(data);
+        decoder_(std::move(res.first));
+        return res.second;
       }
 
       case detail::packet_type::source:
       {
         nb_received_sources_ += 1;
         // Give the decoder this received source.
-        decoder_(packetizer_.read_source(data));
-        return true;
+        auto res = packetizer_.read_source(data);
+        decoder_(std::move(res.first));
+        return res.second;
       }
 
-      default: return false;
+      default: return 0ul;
     }
   }
 
