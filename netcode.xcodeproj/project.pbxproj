@@ -650,7 +650,7 @@
 		2B4E310B1AC07DA10002E97C /* galois_field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = galois_field.hh; sourceTree = "<group>"; };
 		2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_galois_field.cc; sourceTree = "<group>"; };
 		2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_square_matrix.cc; sourceTree = "<group>"; };
-		2B516A0F1AC87CE500133F38 /* accelerator_encoder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_encoder; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B516A0F1AC87CE500133F38 /* accelerator_client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_client; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B516A161AC87CF800133F38 /* client.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cc; sourceTree = "<group>"; };
 		2B516A1A1AC87DC700133F38 /* async_result.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = async_result.hpp; sourceTree = "<group>"; };
 		2B516A1B1AC87DC700133F38 /* basic_datagram_socket.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = basic_datagram_socket.hpp; sourceTree = "<group>"; };
@@ -1058,7 +1058,7 @@
 		2B516BC21AC87DC700133F38 /* write_at.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = write_at.hpp; sourceTree = "<group>"; };
 		2B516BC31AC87DC700133F38 /* yield.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = yield.hpp; sourceTree = "<group>"; };
 		2B516BC41AC87DC700133F38 /* asio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = asio.hpp; sourceTree = "<group>"; };
-		2B516BC91AC8881C00133F38 /* accelerator_decoder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_decoder; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B516BC91AC8881C00133F38 /* accelerator_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_server; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B516BD01AC8884200133F38 /* server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = server.cc; sourceTree = "<group>"; };
 		2B516BDD1AC944AE00133F38 /* coefficient.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coefficient.cc; sourceTree = "<group>"; };
 		2B516BDE1AC944AE00133F38 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
@@ -2897,8 +2897,8 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
-				2B516BC91AC8881C00133F38 /* accelerator_decoder */,
-				2B516A0F1AC87CE500133F38 /* accelerator_encoder */,
+				2B516BC91AC8881C00133F38 /* accelerator_server */,
+				2B516A0F1AC87CE500133F38 /* accelerator_client */,
 				2BE3197C1AB32D7F001AA9DF /* tests */,
 			);
 			name = bin;
@@ -2969,9 +2969,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2B516A0E1AC87CE500133F38 /* accelerator_encoder */ = {
+		2B516A0E1AC87CE500133F38 /* accelerator_client */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_encoder" */;
+			buildConfigurationList = 2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_client" */;
 			buildPhases = (
 				2B516A0B1AC87CE500133F38 /* Sources */,
 				2B516A0C1AC87CE500133F38 /* Frameworks */,
@@ -2981,14 +2981,14 @@
 			);
 			dependencies = (
 			);
-			name = accelerator_encoder;
+			name = accelerator_client;
 			productName = accelerator_encoder;
-			productReference = 2B516A0F1AC87CE500133F38 /* accelerator_encoder */;
+			productReference = 2B516A0F1AC87CE500133F38 /* accelerator_client */;
 			productType = "com.apple.product-type.tool";
 		};
-		2B516BC81AC8881C00133F38 /* accelerator_decoder */ = {
+		2B516BC81AC8881C00133F38 /* accelerator_server */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_decoder" */;
+			buildConfigurationList = 2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_server" */;
 			buildPhases = (
 				2B516BC51AC8881C00133F38 /* Sources */,
 				2B516BC61AC8881C00133F38 /* Frameworks */,
@@ -2998,9 +2998,9 @@
 			);
 			dependencies = (
 			);
-			name = accelerator_decoder;
+			name = accelerator_server;
 			productName = accelerator_decoder;
-			productReference = 2B516BC91AC8881C00133F38 /* accelerator_decoder */;
+			productReference = 2B516BC91AC8881C00133F38 /* accelerator_server */;
 			productType = "com.apple.product-type.tool";
 		};
 		2BE3197B1AB32D7F001AA9DF /* tests */ = {
@@ -3055,8 +3055,8 @@
 			projectRoot = "";
 			targets = (
 				2B516BF41AC9B86400133F38 /* all */,
-				2B516BC81AC8881C00133F38 /* accelerator_decoder */,
-				2B516A0E1AC87CE500133F38 /* accelerator_encoder */,
+				2B516BC81AC8881C00133F38 /* accelerator_server */,
+				2B516A0E1AC87CE500133F38 /* accelerator_client */,
 				2BE3197B1AB32D7F001AA9DF /* tests */,
 			);
 		};
@@ -3116,12 +3116,12 @@
 /* Begin PBXTargetDependency section */
 		2B516BF91AC9B87300133F38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B516BC81AC8881C00133F38 /* accelerator_decoder */;
+			target = 2B516BC81AC8881C00133F38 /* accelerator_server */;
 			targetProxy = 2B516BF81AC9B87300133F38 /* PBXContainerItemProxy */;
 		};
 		2B516BFB1AC9B87300133F38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B516A0E1AC87CE500133F38 /* accelerator_encoder */;
+			target = 2B516A0E1AC87CE500133F38 /* accelerator_client */;
 			targetProxy = 2B516BFA1AC9B87300133F38 /* PBXContainerItemProxy */;
 		};
 		2B516BFD1AC9B87300133F38 /* PBXTargetDependency */ = {
@@ -3417,7 +3417,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_encoder" */ = {
+		2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_client" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B516A141AC87CE500133F38 /* Debug */,
@@ -3426,7 +3426,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_decoder" */ = {
+		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_server" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B516BCE1AC8881C00133F38 /* Debug */,
