@@ -65,7 +65,8 @@ public:
 
   /// @brief Give the encoder a new data.
   /// @param d The data to add.
-  /// @attention Any use of the data @p d after this call will result in an undefined behavior.
+  /// @attention Any use of the data @p d after this call will result in an undefined behavior,
+  /// except for one case: calling data::reset() will put @p d in a usable state.
   void
   operator()(data&& d)
   {
@@ -75,7 +76,8 @@ public:
 
   /// @brief Give the encoder a new data.
   /// @param d The data to add.
-  /// @attention Any use of the data @p d after this call will result in an undefined behavior.
+  /// @attention Any use of the data @p d after this call will result in an undefined behavior,
+  /// except for one case: calling data::reset() will put @p d in a usable state.
   void
   operator()(copy_data&& d)
   {
@@ -85,6 +87,8 @@ public:
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
+  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
+  /// except for one case: calling packet::reset() will put @p p in a usable state.
   bool
   operator()(const packet& p)
   {
@@ -94,6 +98,8 @@ public:
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return false if the data could not have been decoded, true otherwise.
+  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
+  /// except for one case: calling packet::reset() will put @p p in a usable state.
   bool
   operator()(const copy_packet& p)
   {

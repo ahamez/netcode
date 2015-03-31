@@ -66,8 +66,8 @@ private:
 
 /// @brief A packet that copies the input data.
 ///
-/// Use this packet when the data already exists and must be copied, otherwise @ref auto_packet and
-/// @ref packet should be prefered.
+/// Use this packet when the data already exists and must be copied, otherwise @ref packet should be
+/// prefered.
 class copy_packet final
 {
 public:
