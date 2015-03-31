@@ -95,7 +95,7 @@ TEST_CASE("Encoder generates repairs")
       data.used_bytes() = 512;
       encoder(std::move(data));
     }
-    REQUIRE(encoder.nb_repairs() == (100/5 /*code rate*/));
+    REQUIRE(encoder.nb_sent_repairs() == (100/5 /*code rate*/));
   }
 }
 

@@ -118,15 +118,15 @@ public:
 
   /// @brief Get the number of received acks.
   std::size_t
-  nb_acks()
+  nb_received_acks()
   const noexcept
   {
     return nb_acks_;
   }
 
-  /// @brief Get the number of generated repairs.
+  /// @brief Get the number of sent repairs.
   std::size_t
-  nb_repairs()
+  nb_sent_repairs()
   const noexcept
   {
     return nb_repairs_;
@@ -134,7 +134,7 @@ public:
 
   /// @brief Get the number of sent sources.
   std::size_t
-  nb_sources()
+  nb_sent_sources()
   const noexcept
   {
     return nb_sources_;

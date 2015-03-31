@@ -80,8 +80,8 @@ TEST_CASE("Decoder repairs a lost source")
 
   // Send repair to decoder.
   REQUIRE(dec(std::move(repair)));
-  REQUIRE(dec.nb_repairs() == 1);
-  REQUIRE(dec.nb_sources() == 0);
+  REQUIRE(dec.nb_received_repairs() == 1);
+  REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded() == 1);
   REQUIRE(dec_data_handler.written == s0.size());
 }
@@ -112,7 +112,7 @@ TEST_CASE("Decoder generate correct ack")
   {
     // Now force the sending of an ack.
     dec.send_ack();
-    REQUIRE(dec.nb_acks() == 1);
+    REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
     REQUIRE(enc(copy_packet(dec_packet_handler.data, dec_packet_handler.written)));
@@ -124,7 +124,7 @@ TEST_CASE("Decoder generate correct ack")
     // Wait long enough just to be sure.
     std::this_thread::sleep_for(std::chrono::milliseconds{200});
     dec.maybe_ack();
-    REQUIRE(dec.nb_acks() == 1);
+    REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
     REQUIRE(enc(copy_packet(dec_packet_handler.data, dec_packet_handler.written)));

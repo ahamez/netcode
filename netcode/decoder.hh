@@ -119,23 +119,7 @@ public:
     return data_handler_;
   }
 
-  /// @brief The number of received repairs.
-  std::size_t
-  nb_repairs()
-  const noexcept
-  {
-    return nb_received_repairs_;
-  }
-
-  /// @brief The number of received sources.
-  std::size_t
-  nb_sources()
-  const noexcept
-  {
-    return nb_received_sources_;
-  }
-
-  /// @brief The number of decoded sources.
+  /// @brief Get the total number of decoded sources.
   std::size_t
   nb_decoded()
   const noexcept
@@ -143,9 +127,33 @@ public:
     return nb_handled_sources_ - nb_received_sources_;
   }
 
-  /// @brief The number of sent ack.
+  /// @brief Get the current number of missing sources.
   std::size_t
-  nb_acks()
+  nb_missing_sources()
+  const noexcept
+  {
+    return decoder_.missing_sources().size();
+  }
+
+  /// @brief Get the total number of received repairs.
+  std::size_t
+  nb_received_repairs()
+  const noexcept
+  {
+    return nb_received_repairs_;
+  }
+
+  /// @brief Get the total number of received sources.
+  std::size_t
+  nb_received_sources()
+  const noexcept
+  {
+    return nb_received_sources_;
+  }
+
+  /// @brief Get the number of sent ack.
+  std::size_t
+  nb_sent_acks()
   const noexcept
   {
     return nb_sent_ack_;
