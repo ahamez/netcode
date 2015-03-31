@@ -121,7 +121,7 @@ public:
 
   /// @brief The number of received repairs.
   std::size_t
-  nb_received_repairs()
+  nb_repairs()
   const noexcept
   {
     return nb_received_repairs_;
@@ -129,7 +129,7 @@ public:
 
   /// @brief The number of received sources.
   std::size_t
-  nb_received_sources()
+  nb_sources()
   const noexcept
   {
     return nb_received_sources_;
@@ -137,7 +137,7 @@ public:
 
   /// @brief The number of decoded sources.
   std::size_t
-  nb_decoded_sources()
+  nb_decoded()
   const noexcept
   {
     return nb_handled_sources_ - nb_received_sources_;
@@ -145,7 +145,7 @@ public:
 
   /// @brief The number of sent ack.
   std::size_t
-  nb_sent_ack()
+  nb_acks()
   const noexcept
   {
     return nb_sent_ack_;

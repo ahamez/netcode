@@ -51,6 +51,7 @@ public:
     , packetizer_{packet_handler_}
     , nb_repairs_{0ul}
     , nb_acks_{0ul}
+    , nb_sources_{0ul}
   {
     assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -109,7 +110,7 @@ public:
 
   /// @brief The number of packets which have not been acknowledged.
   std::size_t
-  window_size()
+  window()
   const noexcept
   {
     return sources_.size();
@@ -131,6 +132,14 @@ public:
     return conf_.rate;
   }
 
+  /// @brief Get the number of received acks.
+  std::size_t
+  nb_acks()
+  const noexcept
+  {
+    return nb_acks_;
+  }
+
   /// @brief Get the number of generated repairs.
   std::size_t
   nb_repairs()
@@ -139,12 +148,12 @@ public:
     return nb_repairs_;
   }
 
-  /// @brief Get the number of received acks.
+  /// @brief Get the number of sent sources.
   std::size_t
-  nb_acks()
+  nb_sources()
   const noexcept
   {
-    return nb_acks_;
+    return nb_sources_;
   }
 
   /// @brief Get the data handler.
@@ -212,6 +221,7 @@ private:
 
     // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
     packetizer_.write_source(insertion);
+    nb_sources_ += 1;
 
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % conf_.rate == 0)
@@ -284,6 +294,9 @@ private:
 
   /// @brief The number of received ack.
   std::size_t nb_acks_;
+
+  /// @brief The number of sent sources.
+  std::size_t nb_sources_;
 
 };
 

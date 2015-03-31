@@ -31,17 +31,17 @@ TEST_CASE("Encoder's window size")
   auto data0 = ntc::data{512};
   data0.used_bytes() = 13;
   encoder(std::move(data0));
-  REQUIRE(encoder.window_size() == 1);
+  REQUIRE(encoder.window() == 1);
 
   auto data1 = ntc::data{512};
   data1.used_bytes() = 17;
   encoder(std::move(data1));
-  REQUIRE(encoder.window_size() == 2);
+  REQUIRE(encoder.window() == 2);
 
   auto data2 = ntc::data{512};
   data2.used_bytes() = 17;
   encoder(std::move(data2));
-  REQUIRE(encoder.window_size() == 3);
+  REQUIRE(encoder.window() == 3);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -71,12 +71,12 @@ TEST_CASE("Encoder can limit the window size")
   data = ntc::data{512};
   data.used_bytes() = 8;
   encoder(std::move(data));
-  REQUIRE(encoder.window_size() == 4);
+  REQUIRE(encoder.window() == 4);
 
   data = ntc::data{512};
   data.used_bytes() = 8;
   encoder(std::move(data));
-  REQUIRE(encoder.window_size() == 4);
+  REQUIRE(encoder.window() == 4);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     data.used_bytes() = 512;
     encoder(std::move(data));
   }
-  REQUIRE(encoder.window_size() == 4);
+  REQUIRE(encoder.window() == 4);
 
   struct handler
   {
@@ -148,7 +148,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(result);
 
     // The number of sources should have decreased.
-    REQUIRE(encoder.window_size() == 2);
+    REQUIRE(encoder.window() == 2);
   }
 
   SECTION("incoming ack 2")
@@ -164,7 +164,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(result0);
 
     // The number of sources should have decreased.
-    REQUIRE(encoder.window_size() == 2);
+    REQUIRE(encoder.window() == 2);
 
     /// Reset handler.
     h.written = 0;
@@ -180,7 +180,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(result1);
 
     // The number of sources should have decreased.
-    REQUIRE(encoder.window_size() == 2);
+    REQUIRE(encoder.window() == 2);
 
     /// Reset handler.
     h.written = 0;
@@ -196,7 +196,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(result2);
 
     // The number of sources should have decreased.
-    REQUIRE(encoder.window_size() == 1);
+    REQUIRE(encoder.window() == 1);
   }
 
   SECTION("incoming repair")
@@ -212,7 +212,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
-    REQUIRE(encoder.window_size() == 4);
+    REQUIRE(encoder.window() == 4);
   }
 
   SECTION("incoming source")
@@ -228,7 +228,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
-    REQUIRE(encoder.window_size() == 4);
+    REQUIRE(encoder.window() == 4);
   }
 }
 
