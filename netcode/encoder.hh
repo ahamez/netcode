@@ -116,22 +116,6 @@ public:
     return sources_.size();
   }
 
-  /// @brief Get the code rate.
-  std::size_t
-  rate()
-  const noexcept
-  {
-    return conf_.rate;
-  }
-
-  /// @brief Set the code rate.
-  std::size_t&
-  rate()
-  noexcept
-  {
-    return conf_.rate;
-  }
-
   /// @brief Get the number of received acks.
   std::size_t
   nb_acks()
