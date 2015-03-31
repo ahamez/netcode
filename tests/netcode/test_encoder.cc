@@ -14,9 +14,8 @@ namespace /* unnamed */ {
 
 struct dummy_handler
 {
-  void
-  operator()(const char*, std::size_t)
-  {}
+  void operator()(const char*, std::size_t) const noexcept {}
+  void operator()()                         const noexcept {} // end of data
 };
 
 } // namespace unnamed
@@ -125,12 +124,11 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     void
     operator()(const char* src, std::size_t len)
     {
-      if (src)
-      {
-        std::copy_n(src, len, pkt.buffer() + written);
-        written += len;
-      }
+      std::copy_n(src, len, pkt.buffer() + written);
+      written += len;
     }
+
+    void operator()() const noexcept {} // end of data
   };
 
   // Directly use the serializer that would have been called by the decoder.
@@ -247,15 +245,15 @@ struct my_handler
   void
   operator()(const char* src, std::size_t len)
   {
-    if (src)
-    {
-      std::copy_n(src, len, data + written);
-      written += len;
-    }
-    else
-    {
-      nb_packets += 1;
-    }
+    std::copy_n(src, len, data + written);
+    written += len;
+  }
+
+  void operator()()
+  noexcept
+  {
+    // end of data
+    nb_packets += 1;
   }
 };
 

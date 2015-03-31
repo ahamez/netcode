@@ -21,12 +21,11 @@ struct handler
   operator()(const char* data, std::size_t len)
   noexcept
   {
-    if (data)
-    {
-      std::copy_n(data, len, data_ + bytes_);
-      bytes_ += len;
-    }
+    std::copy_n(data, len, data_ + bytes_);
+    bytes_ += len;
   }
+
+  void operator()() noexcept {} // end of data
 };
 
 } // namespace unnamed

@@ -17,8 +17,8 @@ static constexpr auto max_len = 2048;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Called by encoder when data is ready to be written.
-struct data_handler
+/// @brief Called by encoder when a packet is ready to be written to the network.
+struct packet_handler
 {
   udp::socket& socket;
   udp::endpoint& endpoint;
@@ -26,7 +26,7 @@ struct data_handler
   char buffer[max_len];
   std::size_t written;
 
-  data_handler(udp::socket& sock, udp::endpoint& end)
+  packet_handler(udp::socket& sock, udp::endpoint& end)
     : socket(sock), endpoint(end), buffer(), written(0)
   {}
 
@@ -34,17 +34,17 @@ struct data_handler
   operator()(const char* data, std::size_t sz)
   noexcept
   {
-    if (data)
-    {
-      std::copy_n(data, sz, buffer + written);
-      written += sz;
-    }
-    else
-    {
-      // End of data, we can now send it.
-      socket.send_to(asio::buffer(buffer, written), endpoint);
-      written = 0;
-    }
+    std::copy_n(data, sz, buffer + written);
+    written += sz;
+  }
+
+  void
+  operator()()
+  noexcept
+  {
+    // End of data, we can now send it.
+    socket.send_to(asio::buffer(buffer, written), endpoint);
+    written = 0;
   }
 };
 
@@ -63,7 +63,7 @@ public:
     , as_server_endpoint_()
     , as_client_socket_(io_, udp::endpoint{address_v4::from_string(decoder_ip), decoder_port})
     , as_client_endpoint_()
-    , encoder_(data_handler(as_client_socket_, as_server_endpoint_), conf)
+    , encoder_(packet_handler(as_client_socket_, as_client_endpoint_), conf)
     , ack_(max_len)
     , data_(max_len)
   {
@@ -128,7 +128,7 @@ private:
   udp::endpoint as_client_endpoint_;
 
   /// @brief
-  ntc::encoder<data_handler> encoder_;
+  ntc::encoder<packet_handler> encoder_;
 
   /// @brief
   ntc::packet ack_;

@@ -22,12 +22,11 @@ struct handler
   void
   operator()(const char* src, std::size_t len)
   {
-    if (src)
-    {
-      std::copy_n(src, len, data + written);
-      written += len;
-    }
+    std::copy_n(src, len, data + written);
+    written += len;
   }
+
+  void operator()() const noexcept {}
 };
 
 

@@ -54,7 +54,7 @@ public:
     }
 
     // End of data.
-    write(nullptr, 0);
+    mark_end();
   }
 
   ack
@@ -131,7 +131,7 @@ public:
     write(pkt.buffer().data(), pkt.buffer().size());
 
     // End of data.
-    write(nullptr, 0);
+    mark_end();
   }
 
   repair
@@ -205,7 +205,7 @@ public:
     write(src.buffer().data(), src.user_size());
 
     // End of data.
-    write(nullptr, 0);
+    mark_end();
   }
 
   source
@@ -243,6 +243,14 @@ private:
   noexcept
   {
     packet_handler_(reinterpret_cast<const char*>(data), len);
+  }
+
+  /// @brief Convenient method to indicate end of data to user's handler.
+  void
+  mark_end()
+  noexcept
+  {
+    packet_handler_();
   }
 
   /// @brief The handler which serializes packets.
