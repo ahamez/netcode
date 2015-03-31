@@ -56,6 +56,16 @@ public:
     return buffer_.size();
   }
 
+  /// @brief Reset the packet for further re-use.
+  ///
+  /// Can be used on a moved packet.
+  void
+  reset(std::size_t size)
+  noexcept
+  {
+    buffer_.resize(size);
+  }
+
 private:
 
   /// @brief The buffer storage.
