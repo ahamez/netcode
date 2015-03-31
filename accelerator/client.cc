@@ -45,7 +45,6 @@ struct packet_handler
   operator()()
   noexcept
   {
-    std::cout << "send " << written << " bytes to server\n";
     // End of packet, we can now send it.
     socket.send_to(asio::buffer(buffer, written), endpoint);
     written = 0;
@@ -68,7 +67,6 @@ struct data_handler
   operator()(const char* data, std::size_t sz)
   noexcept
   {
-    std::cout << "send " << sz << " bytes to app\n";
     socket.send_to(asio::buffer(data, sz), endpoint);
   }
 };
@@ -84,6 +82,7 @@ public:
             , std::uint16_t app_port
             , const std::string& addr, const std::string& port)
     : io_(io)
+    , timer_(io_, boost::posix_time::seconds(2))
     , app_socket_(io_, udp::endpoint{udp::v4(), app_port}) // a listening socket
     , app_endpoint_()
     , socket_(io_, udp::endpoint(udp::v4(), 0)) // a client
@@ -100,10 +99,9 @@ public:
     socket_.send_to(asio::buffer(msg), endpoint_);
     std::cout << "Connected to server.\n";
 
-//    start_server_handler();
-//    start_client_handler();
     start_handler();
     start_app_handler();
+    start_timer_handler();
   }
 
 private:
@@ -120,8 +118,6 @@ private:
                                   {
                                     throw std::runtime_error(err.message());
                                   }
-
-                                  std::cout << "received " << sz << " bytes from server\n";
 
                                   bool res = false;
                                   switch (ntc::detail::get_packet_type(packet_.buffer()))
@@ -167,8 +163,6 @@ private:
                                         throw std::runtime_error(err.message());
                                       }
 
-                                      std::cout << "received " << sz << " bytes from app\n";
-
                                       // Give the ack to decoder.
                                       data_.used_bytes() = sz;
                                       encoder_(std::move(data_));
@@ -183,61 +177,28 @@ private:
   }
 
   void
-  start_server_handler()
+  start_timer_handler()
   {
-//    app_socket_.async_receive_from( asio::buffer(data_.buffer(), max_len)
-//                                       , app_endpoint_
-//                                       , [this](const asio::error_code& err, std::size_t sz)
-//                                         {
-//                                           if (err)
-//                                           {
-//                                             throw std::runtime_error(err.message());
-//                                           }
-//
-//                                           std::cout << "received " << sz << " bytes of data\n";
-//
-//                                           // Give the data to decoder.
-//                                           data_.used_bytes() = sz;
-//                                           encoder_(std::move(data_));
-//
-//                                           // Prepare data for next incoming.
-//                                           data_.reset(max_len);
-//
-//                                           // Listen again for incoming data.
-//                                           start_server_handler();
-//                                          });
+    timer_.expires_from_now(boost::posix_time::seconds(2));
+    timer_.async_wait([this](const asio::error_code& err)
+                      {
+                        if (err)
+                        {
+                          throw std::runtime_error(err.message());
+                        }
+                        decoder_.send_ack();
+                        start_timer_handler();
+                      });
   }
 
-  // Will receive ack from decoder.
-  void
-  start_client_handler()
-  {
-//    socket_.async_receive_from( asio::buffer(packet_.buffer(), max_len)
-//                                      , endpoint_
-//                                      , [this](const asio::error_code& err, std::size_t sz)
-//                                        {
-//                                          if (err)
-//                                          {
-//                                            throw std::runtime_error(err.message());
-//                                          }
-//
-//                                          std::cout << "received " << sz << " bytes of ack\n";
-//
-//                                          // Give the ack to decoder.
-//                                          encoder_(std::move(packet_));
-//
-//                                          // Prepare ack for next incoming.
-//                                          packet_ = ntc::packet{max_len};
-//
-//                                          // Listen again for incoming acks.
-//                                          start_client_handler();
-//                                        });
-  }
 
 private:
 
   /// @brief
   asio::io_service& io_;
+
+  /// @brief
+  asio::deadline_timer timer_;
 
   /// @brief
   udp::socket app_socket_;
