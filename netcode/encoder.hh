@@ -50,6 +50,7 @@ public:
     , encoder_{conf.galois_field_size}
     , packetizer_{packet_handler_}
     , nb_repairs_{0ul}
+    , nb_acks_{0ul}
   {
     assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -138,6 +139,14 @@ public:
     return nb_repairs_;
   }
 
+  /// @brief Get the number of received acks.
+  std::size_t
+  nb_acks()
+  const noexcept
+  {
+    return nb_acks_;
+  }
+
   /// @brief Get the data handler.
   const packet_handler_type&
   packet_handler()
@@ -221,6 +230,7 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
+      nb_acks_ += 1;
       const auto res = packetizer_.read_ack(data);
       sources_.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
@@ -271,6 +281,10 @@ private:
 
   /// @brief The number of generated repairs.
   std::size_t nb_repairs_;
+
+  /// @brief The number of received ack.
+  std::size_t nb_acks_;
+
 };
 
 /*------------------------------------------------------------------------------------------------*/
