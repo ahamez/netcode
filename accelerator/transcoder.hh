@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <random>
 
 #define ASIO_STANDALONE
 #define BOOST_DATE_TIME_NO_LIB
@@ -22,6 +23,64 @@ static constexpr auto max_len = 2048;
 
 /*------------------------------------------------------------------------------------------------*/
 
+static std::random_device rd;
+
+/*------------------------------------------------------------------------------------------------*/
+
+class random_loss
+{
+public:
+
+  random_loss()
+    : state_{state::good}
+    , gen_{rd()}
+    , dist_{1, 100}
+  {}
+
+  bool
+  operator()()
+  noexcept
+  {
+    switch (state_)
+    {
+        case state::good:
+        {
+          if (dist_(gen_) < 80)
+          {
+            return false; // no loss
+          }
+          else
+          {
+            state_ = state::bad;
+            return true; // loss
+          }
+        }
+
+        case state::bad:
+        {
+          if (dist_(gen_) > 90)
+          {
+            return true; // loss
+          }
+          else
+          {
+            state_ = state::good;
+            return false; // no loss
+          }
+        }
+    }
+  }
+
+private:
+
+  enum class state {good, bad};
+  state state_;
+  std::default_random_engine gen_;
+  std::uniform_int_distribution<> dist_;
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
 /// @brief Called by encoder when a packet is ready to be written to the network.
 struct packet_handler
 {
@@ -31,8 +90,11 @@ struct packet_handler
   char buffer[max_len];
   std::size_t written;
 
-  packet_handler(udp::socket& sock, udp::endpoint& end)
-    : socket(sock), endpoint(end), buffer(), written(0)
+  bool lossy;
+  random_loss loss;
+
+  packet_handler(udp::socket& sock, udp::endpoint& end, bool lossy = false)
+    : socket(sock), endpoint(end), buffer(), written(0), lossy(lossy)
   {}
 
   void
@@ -48,7 +110,10 @@ struct packet_handler
   noexcept
   {
     // End of packet, we can now send it.
-    socket.send_to(asio::buffer(buffer, written), endpoint);
+    if (not lossy or not loss())
+    {
+      socket.send_to(asio::buffer(buffer, written), endpoint);
+    }
     written = 0;
   }
 };
@@ -94,7 +159,7 @@ public:
     , socket_(socket)
     , endpoint_(endpoint)
     , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
-    , encoder_(packet_handler(socket_, endpoint_), conf)
+    , encoder_(packet_handler(socket_, endpoint_, true), conf)
     , packet_(max_len)
     , data_(max_len)
     , other_side_seen_(false)
@@ -209,16 +274,17 @@ private:
                                 throw std::runtime_error(err.message());
                               }
                               std::cout << "-- Encoder --\n"
-                                        << "repairs: " << encoder_.nb_repairs() << '\n'
-                                        << "acks   : " << encoder_.nb_acks() << '\n'
-                                        << "window : " << encoder_.window_size() << '\n'
+                                        << "<- acks   : " << encoder_.nb_acks() << '\n'
+                                        << "-> repairs: " << encoder_.nb_repairs() << '\n'
+                                        << "-> sources: " << encoder_.nb_sources() << '\n'
+                                        << "window : " << encoder_.window() << '\n'
                                         ;
                               std::cout << '\n';
                               std::cout << "-- Decoder --\n"
-                                        << "repairs: " << decoder_.nb_received_repairs() << '\n'
-                                        << "sources: " << decoder_.nb_received_sources() << '\n'
-                                        << "decoded: " << decoder_.nb_decoded_sources() << '\n'
-                                        << "acks   : " << decoder_.nb_sent_ack() << '\n'
+                                        << "-> acks   : " << decoder_.nb_acks() << '\n'
+                                        << "<- repairs: " << decoder_.nb_repairs() << '\n'
+                                        << "<- sources: " << decoder_.nb_sources() << '\n'
+                                        << "decoded: " << decoder_.nb_decoded() << '\n'
                                         ;
                               std::cout << '\n' << std::endl;
 
