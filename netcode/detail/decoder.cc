@@ -166,7 +166,7 @@ noexcept
   const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.size()), inv);
 
   // The source that will be reconstructed.
-  source src{src_id, byte_buffer(make_multiple(src_sz, 16)), src_sz};
+  source src{src_id, byte_buffer(multiple(src_sz, 16)), src_sz};
 
   // Reconstruct missing source.
   gf_.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
@@ -445,7 +445,7 @@ decoder::attempt_full_decoding()
     }();
 
     // Now, decode symbol.
-    source src{miss.first, byte_buffer(make_multiple(sz, 16)), sz};
+    source src{miss.first, byte_buffer(multiple(sz, 16)), sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 

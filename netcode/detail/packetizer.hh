@@ -180,7 +180,7 @@ public:
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
-    buffer.reserve(make_multiple(sz, 16));
+    buffer.reserve(multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 
     return std::make_pair( repair{id, user_sz, std::move(ids), std::move(buffer)}
@@ -241,7 +241,7 @@ public:
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(make_multiple(user_sz, 16));
+    buffer.reserve(multiple(user_sz, 16));
     std::copy_n(data, user_sz, std::back_inserter(buffer));
 
     return std::make_pair( source{id, std::move(buffer), user_sz}

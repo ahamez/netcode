@@ -13,7 +13,7 @@ namespace ntc {
 /// @brief A data with an allocated buffer.
 ///
 /// @attention Because it's not possible for the library to keep track of the number of written
-/// bytes, when the dta is completely written in the buffer, set_user_size() must be called.
+/// bytes, when the dta is completely written in the buffer, used_bytes() must be called.
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
@@ -25,7 +25,7 @@ public:
   /// @param size The size of the buffer to allocate.
   data(std::size_t size)
     : used_bytes_{0}
-    , buffer_(detail::make_multiple(size, 16))
+    , buffer_(detail::multiple(size, 16))
   {}
 
   /// @brief Get the buffer where to write the data.
@@ -97,7 +97,7 @@ public:
   noexcept
   {
     used_bytes_ = 0;
-    buffer_.resize(detail::make_multiple(size, 16));
+    buffer_.resize(detail::multiple(size, 16));
   }
 
 private:
@@ -124,7 +124,7 @@ public:
   /// @param len The size of the data to copy.
   copy_data(const char* src, std::size_t len)
     : used_bytes_{len}
-    , buffer_(detail::make_multiple(len, 16))
+    , buffer_(detail::multiple(len, 16))
   {
     std::copy_n(src, len, buffer_.begin());
   }
@@ -135,7 +135,7 @@ public:
   template <typename InputIterator>
   copy_data(InputIterator begin, InputIterator end)
     : used_bytes_{static_cast<std::size_t>(std::distance(begin, end))}
-    , buffer_(detail::make_multiple(used_bytes_, 16))
+    , buffer_(detail::multiple(used_bytes_, 16))
   {
     std::copy(begin, end, buffer_.begin());
   }
