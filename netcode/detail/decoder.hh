@@ -91,7 +91,7 @@ public:
   missing_sources()
   const noexcept;
 
-  /// @brief Get the number of repairs that were dropped because they useless.
+  /// @brief Get the number of repairs that were dropped because they were useless.
   std::size_t
   nb_useless_repairs()
   const noexcept;

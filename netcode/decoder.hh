@@ -127,6 +127,14 @@ public:
     return nb_handled_sources_ - nb_received_sources_;
   }
 
+  /// @brief Get the number of times the full decodong failed.
+  std::size_t
+  nb_failed_full_decodings()
+  const noexcept
+  {
+    return decoder_.nb_failed_full_decodings();
+  }
+
   /// @brief Get the current number of missing sources.
   std::size_t
   nb_missing_sources()
@@ -157,6 +165,14 @@ public:
   const noexcept
   {
     return nb_sent_ack_;
+  }
+
+  /// @brief Get the number of repairs that were dropped because they wereuseless.
+  std::size_t
+  nb_useless_repairs()
+  const noexcept
+  {
+    return decoder_.nb_useless_repairs();
   }
 
   /// @brief Force the sending of an ack.
