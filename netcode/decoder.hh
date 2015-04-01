@@ -43,14 +43,15 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  decoder( const packet_handler_type& packet_handler, const data_handler_type& data_handler
+  template <typename PacketHandler_>
+  decoder( PacketHandler_&& packet_handler, const data_handler_type& data_handler
          , configuration conf)
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
     , decoder_{ conf.galois_field_size
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
-    , packet_handler_{packet_handler}
+    , packet_handler_{std::forward<PacketHandler_>(packet_handler)}
     , data_handler_{data_handler}
     , packetizer_{packet_handler_}
     , nb_received_repairs_{0}
@@ -63,8 +64,9 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  decoder(const packet_handler_type& packet_handler, const data_handler_type& data_handler)
-    : decoder{packet_handler, data_handler, configuration{}}
+  template <typename PacketHandler_>
+  decoder(PacketHandler_&& packet_handler, const data_handler_type& data_handler)
+    : decoder{std::forward<PacketHandler_>(packet_handler), data_handler, configuration{}}
   {}
 
   /// @brief Notify the encoder of a new incoming packet.

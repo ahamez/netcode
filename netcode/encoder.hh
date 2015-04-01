@@ -40,13 +40,14 @@ public:
   encoder& operator=(const encoder&) = delete;
 
   /// @brief Constructor.
-  encoder(const packet_handler_type& packet_handler, configuration conf)
+  template <typename PacketHandler_>
+  encoder(PacketHandler_&& packet_handler, configuration conf)
     : conf_{conf}
     , current_source_id_{0}
     , current_repair_id_{0}
     , sources_{}
     , repair_{current_repair_id_}
-    , packet_handler_(packet_handler)
+    , packet_handler_(std::forward<PacketHandler_>(packet_handler))
     , encoder_{conf.galois_field_size}
     , packetizer_{packet_handler_}
     , nb_repairs_{0ul}
@@ -61,8 +62,9 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  encoder(const packet_handler_type& packet_handler)
-    : encoder{packet_handler, configuration{}}
+  template <typename PacketHandler_>
+  encoder(PacketHandler_&& packet_handler)
+    : encoder{std::forward<PacketHandler_>(packet_handler), configuration{}}
   {}
 
   /// @brief Give the encoder a new data.
