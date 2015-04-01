@@ -33,7 +33,7 @@ TEST_CASE("Encode one source")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
   REQUIRE(*r0.source_ids().begin() == 0);
 
   // The inverse of the coefficient.
@@ -116,7 +116,7 @@ TEST_CASE("Encode two sources")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
   REQUIRE(*(r0.source_ids().begin() + 0) == 0);
   REQUIRE(*(r0.source_ids().begin() + 1) == 1);
 
@@ -183,13 +183,13 @@ TEST_CASE("Two sources lost")
   detail::repair r1{1 /* id */};
 
   // Create first repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
   REQUIRE(r0.source_ids().size() == 2);
   REQUIRE(*(r0.source_ids().begin() + 0) == 0);
   REQUIRE(*(r0.source_ids().begin() + 1) == 1);
 
   // Create second repair.
-  detail::encoder{8}(r1, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r1, sl);
   REQUIRE(r1.source_ids().size() == 2);
   REQUIRE(*(r1.source_ids().begin() + 0) == 0);
   REQUIRE(*(r1.source_ids().begin() + 1) == 1);

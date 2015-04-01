@@ -241,7 +241,7 @@ private:
 
     // Create the repair packet from the list of sources.
     assert(sources_.size() > 0 && "Empty source list");
-    encoder_(repair_, sources_.cbegin(), sources_.cend());
+    encoder_(repair_, sources_);
 
     current_repair_id_ += 1;
     nb_repairs_ += 1;

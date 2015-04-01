@@ -13,10 +13,13 @@ encoder::encoder(std::size_t galois_field_size)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-encoder::operator()( repair& repair, source_list::const_iterator src_cit
-                   , source_list::const_iterator src_end)
+encoder::operator()(repair& repair, source_list& sources)
 {
-  assert(src_cit != src_end && "Empty source list");
+  assert(sources.size() && "Empty source list");
+
+  auto src_cit = sources.cbegin();
+  const auto src_end = sources.cend();
+
   assert((reinterpret_cast<std::size_t>(src_cit->buffer().data()) % 16) == 0);
 
   // Resize the repair's symbol buffer to fit the first source symbol buffer.

@@ -29,7 +29,7 @@ TEST_CASE("Encoder: create repairs")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
   REQUIRE(r0.source_ids().size() == 5);
   REQUIRE(*(r0.source_ids().begin() + 0) == 0);
   REQUIRE(*(r0.source_ids().begin() + 1) == 1);
@@ -53,7 +53,7 @@ TEST_CASE("Encoder: large source")
 
     // Create repair.
     detail::repair r0{0};
-    enc(r0, sl.cbegin(), sl.cend());
+    enc(r0, sl);
 
     REQUIRE(r0.buffer().size() >= 8192);
   }
@@ -67,7 +67,7 @@ TEST_CASE("Encoder: large source")
 
     // Create repair.
     detail::repair r0{0};
-    enc(r0, sl.cbegin(), sl.cend());
+    enc(r0, sl);
 
     REQUIRE(r0.buffer().size() >= 8192);
 
@@ -88,11 +88,11 @@ TEST_CASE("Encoder is deterministic")
 
   // First encoder.
   detail::repair r0_0{0};
-  encoder0(r0_0, sl.cbegin(), sl.cend());
+  encoder0(r0_0, sl);
 
   // Second encoder.
   detail::repair r0_1{0};
-  encoder1(r0_1, sl.cbegin(), sl.cend());
+  encoder1(r0_1, sl);
 
   REQUIRE(r0_0.id() == r0_1.id());
   REQUIRE(r0_0.buffer() == r0_1.buffer());
@@ -102,11 +102,11 @@ TEST_CASE("Encoder is deterministic")
 
   // First encoder.
   detail::repair r1_0{1};
-  encoder1(r1_0, sl.cbegin(), sl.cend());
+  encoder1(r1_0, sl);
 
   // Second encoder.
   detail::repair r1_1{1};
-  encoder1(r1_1, sl.cbegin(), sl.cend());
+  encoder1(r1_1, sl);
 
   REQUIRE(r1_0.id() == r1_1.id());
   REQUIRE(r1_0.buffer() == r1_1.buffer());

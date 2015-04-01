@@ -20,11 +20,9 @@ public:
 
   /// @brief Fill a @ref detail::repair from a set of detail::source.
   /// @param repair The repair to fill.
-  /// @param src_cit The beginning of the container of @ref detail::source.
-  /// @param src_end The end of the container @ref detail::source. Must be different of @p src_cit.
+  /// @param sources The container of @ref detail::source to build the repair from.
   void
-  operator()( repair& repair, source_list::const_iterator src_cit
-            , source_list::const_iterator src_end);
+  operator()(repair& repair, source_list& sources);
 
 private:
 

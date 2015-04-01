@@ -25,7 +25,7 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
@@ -56,7 +56,7 @@ TEST_CASE("Decoder: remove a source from a repair")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   SECTION("Remove s0, we should be able to reconstruct s1")
   {
@@ -107,7 +107,7 @@ TEST_CASE("Decoder: useless repair")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
@@ -139,7 +139,7 @@ TEST_CASE("Decoder: missing sources")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
@@ -174,7 +174,7 @@ TEST_CASE("Decoder: drop outdated sources")
   sl.emplace(3, detail::byte_buffer{}, 0);
   sl.emplace(4, detail::byte_buffer{}, 0);
   detail::repair r0{0};
-  encoder(r0, sl.cbegin(), sl.cend());
+  encoder(r0, sl);
 
   SECTION("sources lost")
   {
@@ -227,7 +227,7 @@ TEST_CASE("Decoder: drop outdated lost sources")
   sl0.emplace(0, detail::byte_buffer{}, 0);
   sl0.emplace(1, detail::byte_buffer{}, 0);
   detail::repair r0{0};
-  encoder(r0, sl0.cbegin(), sl0.cend());
+  encoder(r0, sl0);
 
   // First 2 sources are lost.
   decoder(std::move(r0));
@@ -242,7 +242,7 @@ TEST_CASE("Decoder: drop outdated lost sources")
   sl1.emplace(2, detail::byte_buffer{}, 0);
   sl1.emplace(3, detail::byte_buffer{}, 0);
   detail::repair r1{1};
-  encoder(r1, sl1.cbegin(), sl1.cend());
+  encoder(r1, sl1);
 
   SECTION("sources lost")
   {
@@ -295,7 +295,7 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
   detail::repair r0{0 /* id */};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [&](const detail::source& s0)
@@ -328,8 +328,8 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
   // 2 repairs to store encoded sources
   detail::repair r0{0 /* id */};
   detail::repair r1{1 /* id */};
-  encoder(r0, sl.cbegin(), sl.cend());
-  encoder(r1, sl.cbegin(), sl.cend());
+  encoder(r0, sl);
+  encoder(r1, sl);
 
   // Send first repair.
   decoder(std::move(r0));
@@ -381,8 +381,8 @@ TEST_CASE("Decoder: several lost sources from several repairs")
   // 2 repairs to store encoded sources
   detail::repair r0{0};
   detail::repair r1{1};
-  encoder(r0, sl.cbegin(), sl.cend());
-  encoder(r1, sl.cbegin(), sl.cend());
+  encoder(r0, sl);
+  encoder(r1, sl);
 
   // Send first repair.
   decoder(std::move(r0));
@@ -421,10 +421,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     // Push 3 new sources.
     sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
     sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
-    encoder(r2, sl.cbegin(), sl.cend());
+    encoder(r2, sl);
     sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
-    encoder(r3, sl.cbegin(), sl.cend());
-    encoder(r4, sl.cbegin(), sl.cend());
+    encoder(r3, sl);
+    encoder(r4, sl);
 
     // Send 1 more repair, there should not be any decoding.
     decoder(std::move(r2));
@@ -452,7 +452,7 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       ++nb_failed_full_decodings;
       // Try with a new repair.
       detail::repair r5{5};
-      encoder(r5, sl.cbegin(), sl.cend());
+      encoder(r5, sl);
       decoder(std::move(r5));
       if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
       {
@@ -499,10 +499,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     // Push 3 new sources.
     sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
     sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
-    encoder(r2, sl.cbegin(), sl.cend());
+    encoder(r2, sl);
     sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
-    encoder(r3, sl.cbegin(), sl.cend());
-    encoder(r4, sl.cbegin(), sl.cend());
+    encoder(r3, sl);
+    encoder(r4, sl);
 
     // Send 1 more repair, there should not be any decoding.
     decoder(std::move(r2));
@@ -526,7 +526,7 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       ++nb_failed_full_decodings;
       // Try with a new repair.
       detail::repair r5{5};
-      encoder(r5, sl.cbegin(), sl.cend());
+      encoder(r5, sl);
       decoder(std::move(r5));
       if (decoder.nb_failed_full_decodings() != nb_failed_full_decodings)
       {
@@ -585,7 +585,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
   detail::source_list sl;
   sl.emplace(0, detail::byte_buffer{}, 0);
   detail::repair r0{0};
-  encoder(r0, sl.cbegin(), sl.cend());
+  encoder(r0, sl);
 
   // Send repair
   decoder(std::move(r0));
@@ -608,7 +608,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
     // A new source along with a new repair.
     sl.emplace(1, detail::byte_buffer{}, 0);
     detail::repair r1{0};
-    encoder(r1, sl.cbegin(), sl.cend());
+    encoder(r1, sl);
 
     // Send repair
     decoder(std::move(r1));
@@ -638,11 +638,11 @@ TEST_CASE("Decoder: duplicate repair 1")
 
   // Create original repair.
   detail::repair r0{0};
-  encoder0(r0, sl.cbegin(), sl.cend());
+  encoder0(r0, sl);
 
   // Create copy.
   detail::repair r0_dup{0};
-  encoder1(r0_dup, sl.cbegin(), sl.cend());
+  encoder1(r0_dup, sl);
 
   // Send original repair.
   decoder(std::move(r0));
@@ -666,7 +666,7 @@ TEST_CASE("Decoder: duplicate repair 1")
     sl.pop_front();
     sl.emplace(1, detail::byte_buffer{}, 0);
     detail::repair r1{0};
-    encoder0(r1, sl.cbegin(), sl.cend());
+    encoder0(r1, sl);
     // Send repair.
     decoder(std::move(r1));
 
@@ -697,11 +697,11 @@ TEST_CASE("Decoder: duplicate repair 2")
 
   // Create original repair.
   detail::repair r0{0};
-  encoder0(r0, sl.cbegin(), sl.cend());
+  encoder0(r0, sl);
 
   // Create copy.
   detail::repair r0_dup{0};
-  encoder1(r0_dup, sl.cbegin(), sl.cend());
+  encoder1(r0_dup, sl);
 
   // Send original repair.
   decoder(std::move(r0));
@@ -737,8 +737,8 @@ TEST_CASE("Decoder: source after repair")
   // 2 repairs to store encoded sources
   detail::repair r0{0};
   detail::repair r1{1};
-  encoder(r0, sl.cbegin(), sl.cend());
-  encoder(r1, sl.cbegin(), sl.cend());
+  encoder(r0, sl);
+  encoder(r1, sl);
 
   // r0 is received before s0 and s1
   decoder(std::move(r0));
@@ -770,7 +770,7 @@ TEST_CASE("Decoder: repair with only one source")
   detail::repair r0{0};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
@@ -807,7 +807,7 @@ TEST_CASE("Decoder: 1 packet loss")
   detail::repair r0{0};
 
   // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl.cbegin(), sl.cend());
+  detail::encoder{8}(r0, sl);
 
   // Now test the decoder.
   detail::decoder decoder{8, [](const detail::source&){}};
