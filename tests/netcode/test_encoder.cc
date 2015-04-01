@@ -18,6 +18,35 @@ struct dummy_handler
   void operator()()                         const noexcept {} // end of data
 };
 
+struct packet_handler
+{
+  // Stores all packets.
+  std::vector<std::vector<char>> vec;
+
+  packet_handler()
+    : vec(1)
+  {}
+
+  void
+  operator()(const char* src, std::size_t len)
+  {
+    std::copy_n(src, len, std::back_inserter(vec.back()));
+  }
+
+  void
+  operator()()
+  {
+    vec.emplace_back();
+  }
+
+  std::size_t
+  nb_packets()
+  const noexcept
+  {
+    return vec.size() - 1;
+  }
+};
+
 } // namespace unnamed
 
 /*------------------------------------------------------------------------------------------------*/
@@ -303,6 +332,62 @@ TEST_CASE("Encoder sends repairs")
 
   REQUIRE(enc_handler.nb_packets == 2 /* 1 source +  1 repair */);
   REQUIRE(detail::get_packet_type(enc_handler.data + src_sz) == detail::packet_type::repair);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: invalid memory access scenerio")
+{
+  // A bug occurred when the pre-allocated size of a data was larger than the size of the cached
+  // repair in the encoder.
+  static constexpr auto max_len = 4096;
+
+  configuration conf;
+  conf.rate = 5;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+
+  auto& enc_handler = enc.packet_handler();
+
+  // Packets will be stored in enc_handler.vec.
+  const std::vector<char> x = {'x', '\n'};
+  const std::vector<char> empty = {'\n'};
+
+  {
+    auto data_ptr = std::make_shared<ntc::data>(max_len);
+    std::copy(x.begin(),  x.end(), data_ptr->buffer());
+    data_ptr->used_bytes() = x.size();
+    enc(std::move(*data_ptr));
+  }
+  {
+    auto data_ptr = std::make_shared<ntc::data>(max_len);
+    std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
+    data_ptr->used_bytes() = empty.size();
+    enc(std::move(*data_ptr));
+  }
+  {
+    auto data_ptr = std::make_shared<ntc::data>(max_len);
+    std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
+    data_ptr->used_bytes() = empty.size();
+    enc(std::move(*data_ptr));
+  }
+  {
+    auto data_ptr = std::make_shared<ntc::data>(max_len);
+    std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
+    data_ptr->used_bytes() = empty.size();
+    enc(std::move(*data_ptr));
+  }
+  {
+    auto data_ptr = std::make_shared<ntc::data>(max_len);
+    std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
+    data_ptr->used_bytes() = empty.size();
+    enc(std::move(*data_ptr));
+  }
+  REQUIRE(enc_handler.nb_packets() == 6);
+  REQUIRE(enc.nb_sent_repairs() == 1);
+  REQUIRE(enc.nb_sent_sources() == 5);
+  REQUIRE(enc.nb_received_acks() == 0);
 }
 
 /*------------------------------------------------------------------------------------------------*/
