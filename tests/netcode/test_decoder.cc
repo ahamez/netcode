@@ -34,7 +34,7 @@ namespace /* unnamed */ {
     void
     operator()()
     {
-      vec.resize(vec.size() + 1);
+      vec.emplace_back();
     }
 
     std::size_t
