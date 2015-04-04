@@ -1093,7 +1093,7 @@
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2BBC050C1ACA9BFA00EEDAC0 /* transcoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = transcoder.hh; sourceTree = "<group>"; };
-		2BBC05251ACC472C00EEDAC0 /* tests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "tests copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BBC05251ACC472C00EEDAC0 /* tests-one */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "tests-one"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBC052B1ACD08C700EEDAC0 /* common.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
 		2BE319561AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
@@ -2891,7 +2891,6 @@
 				2BE3198C1AB35D35001AA9DF /* ext */,
 				2BE3194F1AB0C550001AA9DF /* netcode */,
 				2BE319571AB0C550001AA9DF /* tests */,
-				2BBC05251ACC472C00EEDAC0 /* tests copy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2924,6 +2923,7 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				2BBC05251ACC472C00EEDAC0 /* tests-one */,
 				2B516BC91AC8881C00133F38 /* accelerator_server */,
 				2B516A0F1AC87CE500133F38 /* accelerator_client */,
 				2BE3197C1AB32D7F001AA9DF /* tests */,
@@ -3045,7 +3045,7 @@
 			);
 			name = "test-one";
 			productName = tests;
-			productReference = 2BBC05251ACC472C00EEDAC0 /* tests copy */;
+			productReference = 2BBC05251ACC472C00EEDAC0 /* tests-one */;
 			productType = "com.apple.product-type.tool";
 		};
 		2BE3197B1AB32D7F001AA9DF /* tests */ = {
@@ -3393,7 +3393,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "tests copy";
+				PRODUCT_NAME = "tests-one";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -3428,7 +3428,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = "tests copy";
+				PRODUCT_NAME = "tests-one";
 				SDKROOT = macosx;
 			};
 			name = Release;
