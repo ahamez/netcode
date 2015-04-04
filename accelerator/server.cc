@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 
 #include "accelerator/transcoder.hh"
@@ -51,12 +52,17 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 int
-main()
+main(int argc, char** argv)
 {
+  if (argc != 4)
+  {
+    std::cerr << "Usage: " << argv[0] << " server_port app_ip app_port\n";
+    return 1;
+  }
   try
   {
-    server serve(ntc::configuration{}, 9999, "127.0.0.1", "11111");
-    serve();
+    server s(ntc::configuration{}, std::atoi(argv[1]), argv[2], argv[3]);
+    s();
   }
   catch (const std::exception& e)
   {

@@ -51,11 +51,16 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 int
-main()
+main(int argc, char** argv)
 {
+  if (argc != 4)
+  {
+    std::cerr << "Usage: " << argv[0] << " app_port server_ip server_port\n";
+    return 1;
+  }
   try
   {
-    client c(ntc::configuration{}, 8888, "127.0.0.1", "9999");
+    client c(ntc::configuration{}, std::atoi(argv[1]), argv[2], argv[3]);
     c();
   }
   catch (const std::exception& e)
