@@ -20,7 +20,7 @@ using asio::ip::udp;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief
-static constexpr auto max_len = 4096;
+static constexpr auto buffer_size = 4096;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -104,8 +104,8 @@ public:
     , endpoint_(endpoint)
     , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
     , encoder_(packet_handler(socket_, endpoint_), conf)
-    , packet_(max_len)
-    , data_(max_len)
+    , packet_(buffer_size)
+    , data_(buffer_size)
     , other_side_seen_(false)
   {
     decoder_.conf().ack_frequency = std::chrono::milliseconds{0};
@@ -121,7 +121,7 @@ private:
   void
   start_handler()
   {
-    socket_.async_receive_from( asio::buffer(packet_.buffer(), max_len)
+    socket_.async_receive_from( asio::buffer(packet_.buffer(), buffer_size)
                               , endpoint_
                               , [this](const asio::error_code& err, std::size_t)
                                 {
@@ -156,7 +156,7 @@ private:
                                     throw std::runtime_error("Invalid packet format");
                                   }
 
-                                  packet_.reset(max_len);
+                                  packet_.reset(buffer_size);
 
                                   // Listen again for incoming packets.
                                   start_handler();
@@ -166,7 +166,7 @@ private:
   void
   start_app_handler()
   {
-    app_socket_.async_receive_from( asio::buffer(data_.buffer(), max_len)
+    app_socket_.async_receive_from( asio::buffer(data_.buffer(), buffer_size)
                                   , app_endpoint_
                                   , [this](const asio::error_code& err, std::size_t sz)
                                     {
@@ -177,7 +177,7 @@ private:
                                       data_.used_bytes() = sz;
                                       encoder_(std::move(data_));
 
-                                      data_.reset(max_len);
+                                      data_.reset(buffer_size);
 
                                       // Listen again.
                                       start_app_handler();
