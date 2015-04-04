@@ -193,7 +193,7 @@ private:
   commit_impl(Data&& d)
   {
     assert(d.buffer_impl().size() % 16 == 0 && "data buffer size not a multiple of 16");
-    assert(d.used_bytes() <= d.buffer_impl().size() && "More bytes than the buffer can hold");
+    assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
 
     if (sources_.size() == conf_.window)
     {
