@@ -1,9 +1,10 @@
 #pragma once
 
-#include <algorithm>
+#include <algorithm> // copy_n
+#include <memory>
 #include <iostream>
 #include <random>
-#include <memory>
+#include <vector>
 
 #define ASIO_STANDALONE
 #define BOOST_DATE_TIME_NO_LIB
@@ -20,7 +21,7 @@ using asio::ip::udp;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief
-static constexpr auto max_len = 2048;
+static constexpr auto max_len = 4096;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -84,47 +85,51 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Called by encoder when a packet is ready to be written to the network.
-struct packet_handler
+class packet_handler
 {
+private:
+
   udp::socket& socket;
   udp::endpoint& endpoint;
 
-  char buffer[max_len];
-  std::size_t written;
+  std::vector<char> buffer;
 
   bool lossy;
   random_loss loss;
 
+public:
+
+  packet_handler(const packet_handler&) = delete;
+  packet_handler& operator=(const packet_handler&) = delete;
+
+  packet_handler(packet_handler&&) = default;
+  packet_handler& operator=(packet_handler&&) = default;
+
   packet_handler(udp::socket& sock, udp::endpoint& end, bool lossy = false)
-    : socket(sock), endpoint(end), buffer(), written(0), lossy(lossy)
+    : socket(sock), endpoint(end), buffer(), lossy(lossy), loss()
   {}
 
   void
   operator()(const char* data, std::size_t sz)
   noexcept
   {
-    std::copy_n(data, sz, buffer + written);
-    written += sz;
+    std::copy_n(data, sz, std::back_inserter(buffer));
   }
 
   void
   operator()()
   noexcept
   {
-    if (written >= max_len)
-    {
-      throw std::runtime_error("written >= max_len");
-    }
     // End of packet, we can now send it.
     if (not lossy or not loss())
     {
-      socket.send_to(asio::buffer(buffer, written), endpoint);
+      socket.send_to(asio::buffer(buffer), endpoint);
     }
     else
     {
       std::cout << "loss\n";
     }
-    written = 0;
+    buffer.clear();
   }
 };
 
@@ -160,16 +165,17 @@ public:
             , udp::socket& app_socket
             , udp::endpoint& app_endpoint
             , udp::socket& socket
-            , udp::endpoint& endpoint
-            )
-    : timer_(io, boost::posix_time::milliseconds(10000))
-    , stats_timer_(io, boost::posix_time::seconds(2))
+            , udp::endpoint& endpoint)
+    : timer_(io, boost::posix_time::milliseconds(100))
+    , stats_timer_(io, boost::posix_time::seconds(5))
     , app_socket_(app_socket)
     , app_endpoint_(app_endpoint)
     , socket_(socket)
     , endpoint_(endpoint)
     , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
     , encoder_(packet_handler(socket_, endpoint_, true), conf)
+    , packet_(max_len)
+    , data_(max_len)
     , other_side_seen_(false)
   {
     decoder_.conf().ack_frequency = std::chrono::milliseconds{0};
@@ -182,14 +188,12 @@ public:
 
 private:
 
-  // Will receive sources and repairs from encoder.
   void
   start_handler()
   {
-    auto packet_ptr = std::make_shared<ntc::packet>(max_len);
-    socket_.async_receive_from( asio::buffer(packet_ptr->buffer(), max_len)
+    socket_.async_receive_from( asio::buffer(packet_.buffer(), max_len)
                               , endpoint_
-                              , [this, packet_ptr](const asio::error_code& err, std::size_t)
+                              , [this](const asio::error_code& err, std::size_t)
                                 {
                                   if (err)
                                   {
@@ -199,18 +203,18 @@ private:
                                   other_side_seen_ = true;
 
                                   auto res = 0ul;
-                                  switch (ntc::detail::get_packet_type(packet_ptr->buffer()))
+                                  switch (ntc::detail::get_packet_type(packet_.buffer()))
                                   {
                                       case ntc::detail::packet_type::ack:
                                       {
-                                        res = encoder_(std::move(*packet_ptr));
+                                        res = encoder_(std::move(packet_));
                                         break;
                                       }
 
                                       case ntc::detail::packet_type::repair:
                                       case ntc::detail::packet_type::source:
                                       {
-                                        res = decoder_(std::move(*packet_ptr));
+                                        res = decoder_(std::move(packet_));
                                         break;
                                       }
 
@@ -222,6 +226,8 @@ private:
                                     throw std::runtime_error("Invalid packet format");
                                   }
 
+                                  packet_.reset(max_len);
+
                                   // Listen again for incoming packets.
                                   start_handler();
                                 });
@@ -230,18 +236,18 @@ private:
   void
   start_app_handler()
   {
-    auto data_ptr = std::make_shared<ntc::data>(max_len);
-    app_socket_.async_receive_from( asio::buffer(data_ptr->buffer(), max_len)
+    app_socket_.async_receive_from( asio::buffer(data_.buffer(), max_len)
                                   , app_endpoint_
-                                  , [this, data_ptr](const asio::error_code& err, std::size_t sz)
+                                  , [this](const asio::error_code& err, std::size_t sz)
                                     {
                                       if (err)
                                       {
                                         throw std::runtime_error(err.message());
                                       }
+                                      data_.used_bytes() = sz;
+                                      encoder_(std::move(data_));
 
-                                      data_ptr->used_bytes() = sz;
-                                      encoder_(std::move(*data_ptr));
+                                      data_.reset(max_len);
 
                                       // Listen again.
                                       start_app_handler();
@@ -251,7 +257,7 @@ private:
   void
   start_timer_handler()
   {
-    timer_.expires_from_now(boost::posix_time::milliseconds(10000));
+    timer_.expires_from_now(boost::posix_time::milliseconds(100));
     timer_.async_wait([this](const asio::error_code& err)
                       {
                         if (err)
@@ -324,6 +330,12 @@ private:
 
   /// @brief
   ntc::encoder<packet_handler> encoder_;
+
+  /// @brief
+  ntc::packet packet_;
+
+  /// @brief
+  ntc::data data_;
 
   /// @brief
   bool other_side_seen_;
