@@ -137,7 +137,7 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s0_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s0_dst{1, detail::byte_buffer(detail::multiple(src_size, 16)), src_size};
+    detail::source s0_dst{1, detail::byte_buffer(src_size), src_size};
     gf.multiply(r0.buffer().data(), s0_dst.buffer().data(), src_size, inv0);
     REQUIRE(s0.buffer().size() == s0_dst.buffer().size());
     for (auto i = 0ul; i < src_size; ++i)
@@ -161,7 +161,7 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s1_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s1_dst{1, detail::byte_buffer(detail::multiple(src_size, 16)), src_size};
+    detail::source s1_dst{1, detail::byte_buffer(src_size), src_size};
     gf.multiply(r0.buffer().data(), s1_dst.buffer().data(), src_size, inv1);
     REQUIRE(s1.buffer().size() == s1_dst.buffer().size());
     for (auto i = 0ul; i < src_size; ++i)

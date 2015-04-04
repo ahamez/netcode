@@ -1,6 +1,5 @@
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/encoder.hh"
-#include "netcode/detail/multiple.hh"
 
 namespace ntc { namespace detail {
 

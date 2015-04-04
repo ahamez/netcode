@@ -1105,7 +1105,6 @@
 		2BE3197C1AB32D7F001AA9DF /* tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BE319831AB32DA0001AA9DF /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319861AB32DA0001AA9DF /* tests.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cc; sourceTree = "<group>"; };
-		2BE31A0E1AB35F8E001AA9DF /* multiple.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multiple.hh; sourceTree = "<group>"; };
 		2BE31A0F1AB3710F001AA9DF /* source_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_list.hh; sourceTree = "<group>"; };
 		2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_source_list.cc; sourceTree = "<group>"; };
 		2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_buffer.cc; sourceTree = "<group>"; };
@@ -2945,7 +2944,6 @@
 				2B4E310B1AC07DA10002E97C /* galois_field.hh */,
 				2B516BE11AC944AE00133F38 /* invert_matrix.hh */,
 				2B516BE01AC944AE00133F38 /* invert_matrix.cc */,
-				2BE31A0E1AB35F8E001AA9DF /* multiple.hh */,
 				2B75268B1AB43A87008DEDAD /* packet_type.hh */,
 				2B272C501AC75A1E00E6FEDC /* packetizer.hh */,
 				2BE319701AB237CA001AA9DF /* repair.hh */,

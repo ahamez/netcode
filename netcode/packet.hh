@@ -3,7 +3,6 @@
 #include <algorithm> // copy, copy_n
 
 #include "netcode/detail/buffer.hh"
-#include "netcode/detail/multiple.hh"
 
 namespace ntc {
 
@@ -18,7 +17,7 @@ public:
   /// @brief Constructor.
   /// @param size The size of the buffer to allocate.
   packet(std::size_t size)
-    : buffer_(detail::multiple(size, 16))
+    : buffer_(size)
   {}
 
   /// @brief Get the buffer where to write the packet.
@@ -86,7 +85,7 @@ public:
   /// @param src The address of the data to copy.
   /// @param len The size of the data to copy.
   copy_packet(const char* src, std::size_t len)
-    : buffer_(detail::multiple(len, 16))
+    : buffer_(len)
   {
     std::copy_n(src, len, buffer_.begin());
   }

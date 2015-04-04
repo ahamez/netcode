@@ -8,7 +8,6 @@
 
 #include "netcode/detail/ack.hh"
 #include "netcode/detail/buffer.hh"
-#include "netcode/detail/multiple.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_id_list.hh"
@@ -180,7 +179,7 @@ public:
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
-    buffer.reserve(multiple(sz, 16));
+    buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
     return std::make_pair( repair{id, user_sz, std::move(ids), std::move(buffer)}
@@ -241,7 +240,7 @@ public:
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(multiple(user_sz, 16));
+    buffer.reserve(user_sz);
     std::copy_n(data, user_sz, std::back_inserter(buffer));
 
     return std::make_pair( source{id, std::move(buffer), user_sz}

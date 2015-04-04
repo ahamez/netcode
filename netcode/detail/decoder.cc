@@ -5,7 +5,6 @@
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/invert_matrix.hh"
-#include "netcode/detail/multiple.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 
@@ -166,7 +165,7 @@ noexcept
   const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.size()), inv);
 
   // The source that will be reconstructed.
-  source src{src_id, byte_buffer(multiple(src_sz, 16)), src_sz};
+  source src{src_id, byte_buffer(src_sz), src_sz};
 
   // Reconstruct missing source.
   gf_.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
@@ -446,7 +445,7 @@ decoder::attempt_full_decoding()
     }();
 
     // Now, decode symbol.
-    source src{miss.first, byte_buffer(multiple(sz, 16)), sz};
+    source src{miss.first, byte_buffer(sz), sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 
