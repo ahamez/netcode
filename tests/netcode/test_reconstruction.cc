@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "tests/catch.hpp"
+#include "tests/netcode/common.hh"
 
 #include "netcode/detail/coefficient.hh"
 #include "netcode/detail/encoder.hh"
@@ -26,7 +27,7 @@ TEST_CASE("Encode one source")
 
   // Push some sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, 4);
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
   REQUIRE(sl.size() == 1);
 
   // A repair to store encoded sources
@@ -108,8 +109,8 @@ TEST_CASE("Encode two sources")
 
   // Push two sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, 4);
-  sl.emplace(1, detail::byte_buffer{s1_data}, 5);
+  const auto& s0 = add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  const auto& s1 = add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
   REQUIRE(sl.size() == 2);
 
   // A repair to store encoded sources
@@ -126,7 +127,8 @@ TEST_CASE("Encode two sources")
     r0.size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_data.size()));
 
     // Second, remove data.
-    gf.multiply_add(s1_data.data(), r0.buffer().data(), s1_data.size(), c1);
+    gf.multiply_add( s1.buffer().data(), r0.buffer().data(), detail::multiple(s0.user_size(), 16)
+                   , c1);
 
     // The inverse of the coefficient.
     const auto inv0 = gf.divide(1, c0);
@@ -136,9 +138,9 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s0_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
-    gf.multiply(r0.buffer().data(), s0.buffer().data(), s0_data.size(), inv0);
-    REQUIRE(s0.buffer() == s0_data);
+    detail::source s0_dst{1, detail::byte_buffer(detail::multiple(src_size, 16), 'x'), src_size};
+    gf.multiply(r0.buffer().data(), s0_dst.buffer().data(), detail::multiple(src_size, 16), inv0);
+    REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_dst.buffer().begin()));
   }
 
   SECTION("s1 is lost")
@@ -146,7 +148,8 @@ TEST_CASE("Encode two sources")
     // First, remove size.
     r0.size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_data.size()));
     // Second, remove data.
-    gf.multiply_add(s0_data.data(), r0.buffer().data(), s0_data.size(), c0);
+    gf.multiply_add( s0.buffer().data(), r0.buffer().data(), detail::multiple(s0.user_size(), 16)
+                   , c0);
 
     // The inverse of the coefficient.
     const auto inv1 = gf.divide(1, c1);
@@ -156,9 +159,9 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s1_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s1{0, detail::byte_buffer{'x','x','x','x','x'}, src_size};
-    gf.multiply(r0.buffer().data(), s1.buffer().data(), s1_data.size(), inv1);
-    REQUIRE(s1.buffer() == s1_data);
+    detail::source s1_dst{1, detail::byte_buffer(detail::multiple(src_size, 16), 'x'), src_size};
+    gf.multiply(r0.buffer().data(), s1_dst.buffer().data(), detail::multiple(src_size, 16), inv1);
+    REQUIRE(std::equal(s1.buffer().begin(), s1.buffer().end(), s1_dst.buffer().begin()));
   }
 }
 
@@ -174,8 +177,8 @@ TEST_CASE("Two sources lost")
 
   // Push two sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
   REQUIRE(sl.size() == 2);
 
   // Repairs to store encoded sources.

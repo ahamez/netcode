@@ -1,6 +1,7 @@
 #include <algorithm> // equal
 
 #include "tests/catch.hpp"
+#include "tests/netcode/common.hh"
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/encoder.hh"
@@ -19,7 +20,7 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -49,8 +50,8 @@ TEST_CASE("Decoder: remove a source from a repair")
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -289,7 +290,7 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0 /* id */};
@@ -322,8 +323,8 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0 /* id */};
@@ -375,8 +376,8 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0};
@@ -419,10 +420,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     detail::repair r4{4};
 
     // Push 3 new sources.
-    sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
-    sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
+    add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
+    add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
     encoder(r2, sl);
-    sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
+    add_source(sl, 4, detail::byte_buffer{s4_data}, s4_data.size());
     encoder(r3, sl);
     encoder(r4, sl);
 
@@ -497,10 +498,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     sl.pop_front();
 
     // Push 3 new sources.
-    sl.emplace(2, detail::byte_buffer{s2_data}, s2_data.size());
-    sl.emplace(3, detail::byte_buffer{s3_data}, s3_data.size());
+    add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
+    add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
     encoder(r2, sl);
-    sl.emplace(4, detail::byte_buffer{s4_data}, s4_data.size());
+    add_source(sl, 4, detail::byte_buffer{s4_data}, s4_data.size());
     encoder(r3, sl);
     encoder(r4, sl);
 
@@ -731,8 +732,8 @@ TEST_CASE("Decoder: source after repair")
 
   // Push 2 sources.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
 
   // 2 repairs to store encoded sources
   detail::repair r0{0};
@@ -764,7 +765,7 @@ TEST_CASE("Decoder: repair with only one source")
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0};
@@ -798,10 +799,10 @@ TEST_CASE("Decoder: 1 packet loss")
 
   // Push the source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(1, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(2, detail::byte_buffer{s0_data}, s0_data.size());
-  sl.emplace(3, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
+  add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
 
   // A repair to store encoded sources
   detail::repair r0{0};
