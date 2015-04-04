@@ -16,6 +16,9 @@ namespace ntc {
 struct configuration
 {
   /// @brief The Galois field size is 2 ^ @p galois_field_size.
+  /// @note Possible values are: 4, 8, 16 and 32.
+  /// @attention When 4 or 8, length of data handled to the library can be any value. However, for
+  /// size 16, length must be a multiple of 2; a multiple of 4 for size 32.
   const std::size_t galois_field_size = 8;
 
   /// @brief Tell if the code is systematic or not.
