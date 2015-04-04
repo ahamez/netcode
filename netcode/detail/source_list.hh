@@ -23,6 +23,7 @@ public:
   const detail::source&
   emplace(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)
   {
+    assert(buf.size() % 16 == 0 && "Added source has an size which is not a multiple of 16");
     sources_.emplace_back(id, std::move(buf), user_size);
     return sources_.back();
   }
