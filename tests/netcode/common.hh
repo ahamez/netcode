@@ -18,6 +18,7 @@ add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf, 
   if (buf.size() == 0 or buf.size() % 16 != 0)
   {
     buf.resize(detail::multiple(buf.size(), 16));
+  }
   return sl.emplace(id, std::move(buf), sz);
 }
 
