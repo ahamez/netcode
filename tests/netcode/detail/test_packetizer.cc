@@ -58,7 +58,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   detail::packetizer<handler> serializer{h};
 
   // The values in the constructor are completely meaningless for this test.
-  const detail::repair r_in{42, 3, {0,1,2,3}, detail::byte_buffer{'a', 'b', 'c'}};
+  const detail::repair r_in{42, 3, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
   serializer.write_repair(r_in);
 
   REQUIRE(h.bytes_ == ( sizeof(std::uint8_t)      // type

@@ -26,7 +26,7 @@ public:
   repair& operator=(repair&&) = default;
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair(std::uint32_t id, std::size_t sz, source_id_list&& ids, detail::byte_buffer&& buffer)
+  repair(std::uint32_t id, std::size_t sz, source_id_list&& ids, detail::zero_byte_buffer&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
     , size_{sz}
@@ -74,7 +74,7 @@ public:
   }
 
   /// @brief This repair's symbol.
-  const detail::byte_buffer&
+  const detail::zero_byte_buffer&
   buffer()
   const noexcept
   {
@@ -82,7 +82,7 @@ public:
   }
 
   /// @brief This repair's symbol (mutable).
-  detail::byte_buffer&
+  detail::zero_byte_buffer&
   buffer()
   noexcept
   {
@@ -128,7 +128,7 @@ private:
   std::size_t size_;
 
   /// @brief This repair's symbol.
-  detail::byte_buffer buffer_;
+  detail::zero_byte_buffer buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

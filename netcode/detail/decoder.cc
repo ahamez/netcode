@@ -157,7 +157,6 @@ decoder::create_source_from_repair(const repair& r)
 noexcept
 {
   assert(r.source_ids().size() == 1 && "Repair encodes more that 1 source");
-  assert((r.buffer().size() % 16) == 0);
   const auto src_id = *r.source_ids().begin();
 
   // The inverse of the coefficient which was used to encode the missing source.
@@ -350,7 +349,7 @@ decoder::remove_source_data_from_repair(const source& src, repair& r)
 noexcept
 {
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
-  assert(src.buffer().size() <= r.buffer().size());
+  assert(src.user_size() <= r.buffer().size());
 
   const auto coeff = coefficient(gf_, r.id(), src.id());
 

@@ -179,7 +179,7 @@ public:
     data += sizeof(std::uint16_t);
 
     // Read the repair symbol.
-    byte_buffer buffer;
+    zero_byte_buffer buffer;
     buffer.reserve(multiple(sz, 16));
     std::copy_n(data, sz, std::back_inserter(buffer));
 

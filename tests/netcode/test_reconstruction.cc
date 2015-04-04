@@ -127,8 +127,7 @@ TEST_CASE("Encode two sources")
     r0.size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_data.size()));
 
     // Second, remove data.
-    gf.multiply_add( s1.buffer().data(), r0.buffer().data(), detail::multiple(s0.user_size(), 16)
-                   , c1);
+    gf.multiply_add(s1.buffer().data(), r0.buffer().data(), s1.user_size(), c1);
 
     // The inverse of the coefficient.
     const auto inv0 = gf.divide(1, c0);
@@ -138,9 +137,13 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s0_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s0_dst{1, detail::byte_buffer(detail::multiple(src_size, 16), 'x'), src_size};
-    gf.multiply(r0.buffer().data(), s0_dst.buffer().data(), detail::multiple(src_size, 16), inv0);
-    REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_dst.buffer().begin()));
+    detail::source s0_dst{1, detail::byte_buffer(detail::multiple(src_size, 16)), src_size};
+    gf.multiply(r0.buffer().data(), s0_dst.buffer().data(), src_size, inv0);
+    REQUIRE(s0.buffer().size() == s0_dst.buffer().size());
+    for (auto i = 0ul; i < src_size; ++i)
+    {
+      REQUIRE(s0.buffer()[i] == s0_dst.buffer()[i]);
+    }
   }
 
   SECTION("s1 is lost")
@@ -148,8 +151,7 @@ TEST_CASE("Encode two sources")
     // First, remove size.
     r0.size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_data.size()));
     // Second, remove data.
-    gf.multiply_add( s0.buffer().data(), r0.buffer().data(), detail::multiple(s0.user_size(), 16)
-                   , c0);
+    gf.multiply_add(s0.buffer().data(), r0.buffer().data(), s0.user_size(), c0);
 
     // The inverse of the coefficient.
     const auto inv1 = gf.divide(1, c1);
@@ -159,9 +161,13 @@ TEST_CASE("Encode two sources")
     REQUIRE(src_size == s1_data.size());
 
     // Now, reconstruct missing data.
-    detail::source s1_dst{1, detail::byte_buffer(detail::multiple(src_size, 16), 'x'), src_size};
-    gf.multiply(r0.buffer().data(), s1_dst.buffer().data(), detail::multiple(src_size, 16), inv1);
-    REQUIRE(std::equal(s1.buffer().begin(), s1.buffer().end(), s1_dst.buffer().begin()));
+    detail::source s1_dst{1, detail::byte_buffer(detail::multiple(src_size, 16)), src_size};
+    gf.multiply(r0.buffer().data(), s1_dst.buffer().data(), src_size, inv1);
+    REQUIRE(s1.buffer().size() == s1_dst.buffer().size());
+    for (auto i = 0ul; i < src_size; ++i)
+    {
+      REQUIRE(s1.buffer()[i] == s1_dst.buffer()[i]);
+    }
   }
 }
 
