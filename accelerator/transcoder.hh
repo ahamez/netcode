@@ -3,7 +3,6 @@
 #include <algorithm> // copy_n
 #include <memory>
 #include <iostream>
-#include <random>
 #include <vector>
 
 #define ASIO_STANDALONE
@@ -25,65 +24,6 @@ static constexpr auto max_len = 4096;
 
 /*------------------------------------------------------------------------------------------------*/
 
-static std::random_device rd;
-
-/*------------------------------------------------------------------------------------------------*/
-
-class random_loss
-{
-public:
-
-  random_loss()
-    : state_{state::good}
-    , gen_{rd()}
-    , dist_{1, 100}
-  {}
-
-  bool
-  operator()()
-  noexcept
-  {
-    return dist_(gen_) > 95;
-//    switch (state_)
-//    {
-//        case state::good:
-//        {
-//          if (dist_(gen_) < 80)
-//          {
-//            return false; // no loss
-//          }
-//          else
-//          {
-//            state_ = state::bad;
-//            return true; // loss
-//          }
-//        }
-//
-//        case state::bad:
-//        {
-//          if (dist_(gen_) > 90)
-//          {
-//            return true; // loss
-//          }
-//          else
-//          {
-//            state_ = state::good;
-//            return false; // no loss
-//          }
-//        }
-//    }
-  }
-
-private:
-
-  enum class state {good, bad};
-  state state_;
-  std::default_random_engine gen_;
-  std::uniform_int_distribution<> dist_;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
 /// @brief Called by encoder when a packet is ready to be written to the network.
 class packet_handler
 {
@@ -94,9 +34,6 @@ private:
 
   std::vector<char> buffer;
 
-  bool lossy;
-  random_loss loss;
-
 public:
 
   packet_handler(const packet_handler&) = delete;
@@ -105,8 +42,8 @@ public:
   packet_handler(packet_handler&&) = default;
   packet_handler& operator=(packet_handler&&) = default;
 
-  packet_handler(udp::socket& sock, udp::endpoint& end, bool lossy = false)
-    : socket(sock), endpoint(end), buffer(), lossy(lossy), loss()
+  packet_handler(udp::socket& sock, udp::endpoint& end)
+    : socket(sock), endpoint(end), buffer()
   {}
 
   void
@@ -121,14 +58,7 @@ public:
   noexcept
   {
     // End of packet, we can now send it.
-    if (not lossy or not loss())
-    {
-      socket.send_to(asio::buffer(buffer), endpoint);
-    }
-    else
-    {
-      std::cout << "loss\n";
-    }
+    socket.send_to(asio::buffer(buffer), endpoint);
     buffer.clear();
   }
 };
@@ -173,7 +103,7 @@ public:
     , socket_(socket)
     , endpoint_(endpoint)
     , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
-    , encoder_(packet_handler(socket_, endpoint_, true), conf)
+    , encoder_(packet_handler(socket_, endpoint_), conf)
     , packet_(max_len)
     , data_(max_len)
     , other_side_seen_(false)
