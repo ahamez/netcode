@@ -214,15 +214,15 @@ private:
                               }
                               std::cout
                                 << "-- Encoder --\n"
-                                << "<- acks   : " << encoder_.nb_received_acks() << '\n'
-                                << "-> repairs: " << encoder_.nb_sent_repairs() << '\n'
-                                << "-> sources: " << encoder_.nb_sent_sources() << '\n'
+                                << "in  acks   : " << encoder_.nb_received_acks() << '\n'
+                                << "out repairs: " << encoder_.nb_sent_repairs() << '\n'
+                                << "out sources: " << encoder_.nb_sent_sources() << '\n'
                                 << "window : " << encoder_.window() << '\n'
                                 << '\n'
                                 << "-- Decoder --\n"
-                                << "-> acks   : " << decoder_.nb_sent_acks() << '\n'
-                                << "<- repairs: " << decoder_.nb_received_repairs() << '\n'
-                                << "<- sources: " << decoder_.nb_received_sources() << '\n'
+                                << "out acks   : " << decoder_.nb_sent_acks() << '\n'
+                                << "in  repairs: " << decoder_.nb_received_repairs() << '\n'
+                                << "in  sources: " << decoder_.nb_received_sources() << '\n'
                                 << "decoded: " << decoder_.nb_decoded() << '\n'
                                 << "failed : " << decoder_.nb_failed_full_decodings() << '\n'
                                 << "useless: " << decoder_.nb_useless_repairs() << '\n'

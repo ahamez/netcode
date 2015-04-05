@@ -70,8 +70,9 @@ include_directories("${GF_COMPLETE_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/ext")
 include_directories("${PROJECT_SOURCE_DIR}/ext/asio")
+add_subdirectory(accelerator)
 add_subdirectory(netcode)
 add_subdirectory(tests)
-add_subdirectory(accelerator)
+add_subdirectory(tools)
 
 #--------------------------------------------------------------------------------------------------#
