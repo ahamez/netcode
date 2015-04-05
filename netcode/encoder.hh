@@ -70,7 +70,7 @@ public:
   /// @brief Give the encoder a new data.
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::reset() will put @p d in a usable state.
+  /// except for one case: calling data::reset() will put back @p d in a usable state.
   void
   operator()(data&& d)
   {
@@ -81,7 +81,7 @@ public:
   /// @brief Give the encoder a new data.
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::reset() will put @p d in a usable state.
+  /// except for one case: calling data::reset() will put back @p d in a usable state.
   void
   operator()(copy_data&& d)
   {
@@ -92,7 +92,7 @@ public:
   /// @param p The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put @p p in a usable state.
+  /// except for one case: calling packet::reset() will put back @p p in a usable state.
   std::size_t
   operator()(const packet& p)
   {
@@ -103,7 +103,7 @@ public:
   /// @param p The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put @p p in a usable state.
+  /// except for one case: calling packet::reset() will put back @p p in a usable state.
   std::size_t
   operator()(const copy_packet& p)
   {
