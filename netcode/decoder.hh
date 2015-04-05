@@ -181,6 +181,12 @@ public:
   void
   send_ack()
   {
+    // Add all currently known source identifiers to the ack to be sent.
+    for (const auto& id_src : decoder_.sources())
+    {
+      ack_.source_ids().insert(ack_.source_ids().end(), id_src.first);
+    }
+
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
     packetizer_.write_ack(ack_);
     nb_sent_ack_ +=1;
@@ -263,14 +269,6 @@ private:
     data_handler_(src.buffer().data(), src.user_size());
 
     // Send an ack if necessary.
-    maybe_ack(src.id());
-  }
-
-  /// @brief Send an ack if needed.
-  void
-  maybe_ack(std::uint32_t src_id)
-  {
-    ack_.source_ids().insert(src_id);
     maybe_ack();
   }
 
