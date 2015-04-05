@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "tests/catch.hpp"
+#include "tests/netcode/common.hh"
 
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
@@ -11,58 +12,6 @@
 /*------------------------------------------------------------------------------------------------*/
 
 using namespace ntc;
-
-/*------------------------------------------------------------------------------------------------*/
-
-namespace /* unnamed */ {
-
-  struct packet_handler
-  {
-    // Stores all packets.
-    std::vector<std::vector<char>> vec;
-
-    packet_handler()
-      : vec(1)
-    {}
-
-    void
-    operator()(const char* src, std::size_t len)
-    {
-      std::copy_n(src, len, std::back_inserter(vec.back()));
-    }
-
-    void
-    operator()()
-    {
-      vec.emplace_back();
-    }
-
-    std::size_t
-    nb_packets()
-    const noexcept
-    {
-      return vec.size() - 1;
-    }
-  };
-
-  struct data_handler
-  {
-    // Stores all symbols.
-    std::vector<std::vector<char>> vec;
-
-    data_handler()
-      : vec()
-    {}
-
-    void
-    operator()(const char* src, std::size_t len)
-    {
-      vec.emplace_back();
-      std::copy_n(src, len, std::back_inserter(vec.back()));
-    }
-  };
-
-} // namespace unnamed
 
 /*------------------------------------------------------------------------------------------------*/
 

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "tests/catch.hpp"
+#include "tests/netcode/common.hh"
 
 #include "netcode/encoder.hh"
 
@@ -18,34 +19,6 @@ struct dummy_handler
   void operator()()                         const noexcept {} // end of data
 };
 
-struct packet_handler
-{
-  // Stores all packets.
-  std::vector<std::vector<char>> vec;
-
-  packet_handler()
-    : vec(1)
-  {}
-
-  void
-  operator()(const char* src, std::size_t len)
-  {
-    std::copy_n(src, len, std::back_inserter(vec.back()));
-  }
-
-  void
-  operator()()
-  {
-    vec.emplace_back();
-  }
-
-  std::size_t
-  nb_packets()
-  const noexcept
-  {
-    return vec.size() - 1;
-  }
-};
 
 } // namespace unnamed
 
