@@ -80,17 +80,6 @@ public:
     return notify_impl(p.buffer());
   }
 
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  /// @attention Any use of the packet @p p after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put back @p p in a usable state.
-  std::size_t
-  operator()(copy_packet&& p)
-  {
-    return notify_impl(p.buffer());
-  }
-
   /// @brief Get the data handler.
   const packet_handler_type&
   packet_handler()

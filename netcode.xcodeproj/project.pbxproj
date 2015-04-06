@@ -1108,10 +1108,10 @@
 		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
-		2B7F12681AD0520B00CAA199 /* udp_lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = udp_lossy_proxy; path = /Users/hal/code/netcode/build/Debug/udp_lossy_proxy; sourceTree = "<absolute>"; };
 		2B7F12711AD0523200CAA199 /* lossy_proxy.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lossy_proxy.cc; sourceTree = "<group>"; };
 		2B7F12731AD0527D00CAA199 /* loss.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = loss.hh; sourceTree = "<group>"; };
 		2B7F12741AD162FD00CAA199 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2BBC050C1ACA9BFA00EEDAC0 /* transcoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = transcoder.hh; sourceTree = "<group>"; };
@@ -2962,6 +2962,7 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				2B7F12771AD289EF00CAA199 /* lossy_proxy */,
 				2BBC05251ACC472C00EEDAC0 /* tests-one */,
 				2B516BC91AC8881C00133F38 /* accelerator_server */,
 				2B516A0F1AC87CE500133F38 /* accelerator_client */,
@@ -3083,7 +3084,7 @@
 			);
 			name = lossy_proxy;
 			productName = udp_lossy_proxy;
-			productReference = 2B7F12681AD0520B00CAA199 /* udp_lossy_proxy */;
+			productReference = 2B7F12771AD289EF00CAA199 /* lossy_proxy */;
 			productType = "com.apple.product-type.tool";
 		};
 		2BBC050D1ACC472C00EEDAC0 /* test-one */ = {
@@ -3736,6 +3737,7 @@
 				2B7F126E1AD0520B00CAA199 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2BBC05221ACC472C00EEDAC0 /* Build configuration list for PBXNativeTarget "test-one" */ = {
 			isa = XCConfigurationList;

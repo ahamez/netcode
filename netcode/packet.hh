@@ -16,8 +16,31 @@ public:
 
   /// @brief Constructor.
   /// @param size The size of the buffer to allocate.
+  ///
+  /// Use this constructor when you intend to directly write in the underlying buffer to avoid copy.
   packet(std::size_t size)
     : buffer_(size)
+  {}
+
+  /// @brief Constructor.
+  /// @param src The address of the data to copy.
+  /// @param len The size of the data to copy.
+  ///
+  /// Use this constructor when you need to copy the input packet.
+  packet(const char* src, std::size_t len)
+    : buffer_(len)
+  {
+    std::copy_n(src, len, buffer_.begin());
+  }
+
+  /// @brief Constructor.
+  /// @param begin The beginning of the data to copy.
+  /// @param end The end of the data to copy.
+  ///
+  /// Use this constructor when you need to copy the input packet.
+  template <typename InputIterator>
+  packet(InputIterator begin, InputIterator end)
+    : buffer_(begin, end)
   {}
 
   /// @brief Get the buffer where to write the packet.
@@ -63,64 +86,6 @@ public:
   noexcept
   {
     buffer_.resize(size);
-  }
-
-private:
-
-  /// @brief The buffer storage.
-  detail::byte_buffer buffer_;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @brief A packet that copies the input data.
-///
-/// Use this packet when the data already exists and must be copied, otherwise @ref packet should be
-/// prefered.
-class copy_packet final
-{
-public:
-
-  /// @brief Constructor.
-  /// @param src The address of the data to copy.
-  /// @param len The size of the data to copy.
-  copy_packet(const char* src, std::size_t len)
-    : buffer_(len)
-  {
-    std::copy_n(src, len, buffer_.begin());
-  }
-
-  /// @brief Constructor.
-  /// @param begin The beginning of the data to copy.
-  /// @param end The end of the data to copy.
-  template <typename InputIterator>
-  copy_packet(InputIterator begin, InputIterator end)
-    : buffer_(begin, end)
-  {}
-
-  /// @brief Get the buffer where to write the packet.
-  char*
-  buffer()
-  noexcept
-  {
-    return buffer_.data();
-  }
-
-  /// @brief Get the buffer (read-only).
-  const char*
-  buffer()
-  const noexcept
-  {
-    return buffer_.data();
-  }
-
-  /// @brief The useable size of the underlying buffer.
-  /// @note It might be greater than the requested size at construction.
-  std::size_t
-  reserved_size()
-  const noexcept
-  {
-    return buffer_.size();
   }
 
 private:

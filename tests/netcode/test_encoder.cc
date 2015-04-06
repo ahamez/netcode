@@ -32,15 +32,15 @@ TEST_CASE("Encoder's window size")
   conf.rate = 1;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  auto data0 = ntc::copy_data(data.begin(), data.begin() + 13);
+  auto data0 = ntc::data(data.begin(), data.begin() + 13);
   encoder(std::move(data0));
   REQUIRE(encoder.window() == 1);
 
-  auto data1 = ntc::copy_data(data.begin(), data.begin() + 17);
+  auto data1 = ntc::data(data.begin(), data.begin() + 17);
   encoder(std::move(data1));
   REQUIRE(encoder.window() == 2);
 
-  auto data2 = ntc::copy_data(data.begin(), data.begin() + 17);
+  auto data2 = ntc::data(data.begin(), data.begin() + 17);
   encoder(std::move(data2));
   REQUIRE(encoder.window() == 3);
 }
@@ -55,23 +55,23 @@ TEST_CASE("Encoder can limit the window size")
   conf.window = 4;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  auto data0 = ntc::copy_data(data.begin(), data.begin() + 8);
+  auto data0 = ntc::data(data.begin(), data.begin() + 8);
   encoder(std::move(data0));
 
-  data0 = ntc::copy_data(data.begin(), data.begin() + 7);
+  data0 = ntc::data(data.begin(), data.begin() + 7);
   encoder(std::move(data0));
 
-  data0 = ntc::copy_data(data.begin(), data.begin() + 23);
+  data0 = ntc::data(data.begin(), data.begin() + 23);
   encoder(std::move(data0));
 
-  data0 = ntc::copy_data(data.begin(), data.begin() + 76);
+  data0 = ntc::data(data.begin(), data.begin() + 76);
   encoder(std::move(data0));
 
-  data0 = ntc::copy_data(data.begin(), data.begin() + 1);
+  data0 = ntc::data(data.begin(), data.begin() + 1);
   encoder(std::move(data0));
   REQUIRE(encoder.window() == 4);
 
-  data0 = ntc::copy_data(data.begin(), data.begin() + 32);
+  data0 = ntc::data(data.begin(), data.begin() + 32);
   encoder(std::move(data0));
   REQUIRE(encoder.window() == 4);
 }
@@ -266,7 +266,7 @@ TEST_CASE("Encoder sends correct sources")
 
   const auto s0 = {'A', 'B', 'C'};
 
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
   REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
                                  + sizeof(std::uint32_t)     // id
                                  + sizeof(std::uint16_t)     // user data size
@@ -292,7 +292,7 @@ TEST_CASE("Encoder sends repairs")
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
   const auto src_sz = sizeof(std::uint8_t)      // type
                     + sizeof(std::uint32_t)     // id
                     + sizeof(std::uint16_t)     // user data size

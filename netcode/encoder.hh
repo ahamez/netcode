@@ -78,16 +78,6 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief Give the encoder a new data.
-  /// @param d The data to add.
-  /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::reset() will put back @p d in a usable state.
-  void
-  operator()(copy_data&& d)
-  {
-    commit_impl(std::move(d));
-  }
-
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
@@ -95,17 +85,6 @@ public:
   /// except for one case: calling packet::reset() will put back @p p in a usable state.
   std::size_t
   operator()(const packet& p)
-  {
-    return notify_impl(p.buffer());
-  }
-
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put back @p p in a usable state.
-  std::size_t
-  operator()(const copy_packet& p)
   {
     return notify_impl(p.buffer());
   }
@@ -188,9 +167,8 @@ private:
   /// @brief Create a source from the given data and generate a repair if needed.
   /// @param d The data to add.
   /// @todo Handle possible allocation errors.
-  template <typename Data>
   void
-  commit_impl(Data&& d)
+  commit_impl(data&& d)
   {
     assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
 

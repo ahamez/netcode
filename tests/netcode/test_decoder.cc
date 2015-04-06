@@ -25,10 +25,10 @@ TEST_CASE("Decoder gives a correct source to user")
 
   const auto s0 = {'a', 'b', 'c'};
 
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
 
   // Send serialized data to decoder.
-  dec(copy_packet{enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()});
+  dec(packet{enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()});
 
   REQUIRE(dec_data_handler.vec[0].size() == s0.size());
   REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
@@ -49,10 +49,10 @@ TEST_CASE("Decoder repairs a lost source")
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
 
   // Skip first source.
-  auto repair = copy_packet(enc_packet_handler.vec[1].data(), enc_packet_handler.vec[1].size());
+  auto repair = packet(enc_packet_handler.vec[1].data(), enc_packet_handler.vec[1].size());
 
   // Send repair to decoder.
   REQUIRE(dec(std::move(repair)));
@@ -79,11 +79,11 @@ TEST_CASE("Decoder generate correct ack")
 
   // Give a source to the encoder.
   const auto s0 = {'a', 'b', 'c'};
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
   REQUIRE(enc.window() == 1);
 
   // Send source to decoder.
-  dec(copy_packet(enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()));
+  dec(packet(enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()));
 
   SECTION("Force ack")
   {
@@ -92,7 +92,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(copy_packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
+    enc(packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -104,7 +104,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(copy_packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
+    enc(packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 }
@@ -126,19 +126,19 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
 
   // Packets will be stored in enc_handler.vec.
   const auto s0 = {'a', 'b', 'c'};
-  enc(copy_data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
   REQUIRE(enc.window() == 1);
 
   const auto s1 = {'d', 'e', 'f'};
-  enc(copy_data{begin(s1), end(s1)});
+  enc(data{begin(s1), end(s1)});
   REQUIRE(enc.window() == 2);
 
   const auto s2 = {'g', 'h', 'i'};
-  enc(copy_data{begin(s2), end(s2)});
+  enc(data{begin(s2), end(s2)});
   REQUIRE(enc.window() == 3);
 
   const auto s3 = {'j', 'k', 'l'};
-  enc(copy_data{begin(s3), end(s3)});
+  enc(data{begin(s3), end(s3)});
   REQUIRE(enc.window() == 3);
 
   REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
@@ -150,11 +150,11 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
 
   // Now send to decoder.
   // Lost first source.
-  dec(copy_packet{enc_handler.vec[1].data(), enc_handler.vec[1].size()});
-  dec(copy_packet{enc_handler.vec[2].data(), enc_handler.vec[2].size()});
-  dec(copy_packet{enc_handler.vec[3].data(), enc_handler.vec[3].size()});
+  dec(packet{enc_handler.vec[1].data(), enc_handler.vec[1].size()});
+  dec(packet{enc_handler.vec[2].data(), enc_handler.vec[2].size()});
+  dec(packet{enc_handler.vec[3].data(), enc_handler.vec[3].size()});
   // The arrival of the repair should decode the lost source.
-  dec(copy_packet{enc_handler.vec[4].data(), enc_handler.vec[4].size()});
+  dec(packet{enc_handler.vec[4].data(), enc_handler.vec[4].size()});
   REQUIRE(dec.nb_received_sources() == 3);
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_missing_sources() == 0);
