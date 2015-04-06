@@ -49,6 +49,8 @@ public:
             return false; // no loss
           }
         }
+
+        default: __builtin_unreachable();
     }
   }
 
@@ -76,37 +78,37 @@ private:
 
 /*------------------------------------------------------------------------------------------------*/
 
-//class uniform_loss
-//{
-//public:
-//
-//  uniform_loss(unsigned int threshold)
-//    : gen_{}
-//    , dist_{1, 100}
-//    , threshold_{threshold}
-//  {
-//    assert(threshold_ > 0 and threshold < 100);
-//  }
-//
-//  /// @return true if packet should be lost.
-//  bool
-//  operator()()
-//  const noexcept
-//  {
-//    return dist_(gen_) > threshold_;
-//  }
-//
-//private:
-//
-//
-//  /// @brief
-//  std::default_random_engine gen_;
-//
-//  /// @brief
-//  std::uniform_int_distribution<unsigned int> dist_;
-//
-//  /// @brief
-//  unsigned int threshold_;
-//};
+class uniform_loss
+{
+public:
+
+  uniform_loss(unsigned int threshold)
+    : gen_{}
+    , dist_{1, 100}
+    , threshold_{threshold}
+  {
+    assert(threshold_ > 0 and threshold < 100);
+  }
+
+  /// @return true if packet should be lost.
+  bool
+  operator()()
+  noexcept
+  {
+    return dist_(gen_) > threshold_;
+  }
+
+private:
+
+
+  /// @brief
+  std::default_random_engine gen_;
+
+  /// @brief
+  std::uniform_int_distribution<unsigned int> dist_;
+
+  /// @brief
+  unsigned int threshold_;
+};
 
 /*------------------------------------------------------------------------------------------------*/
