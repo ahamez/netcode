@@ -672,7 +672,6 @@
 		2B272C4F1AC74A8C00E6FEDC /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
 		2B272C501AC75A1E00E6FEDC /* packetizer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer.hh; sourceTree = "<group>"; };
 		2B272C511AC75C1800E6FEDC /* test_packetizer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_packetizer.cc; sourceTree = "<group>"; };
-		2B282BB81AB81ABA00640FF8 /* packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet.hh; sourceTree = "<group>"; };
 		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B282BBD1AB8618800640FF8 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B282BBE1AB861C200640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
@@ -2943,7 +2942,6 @@
 				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
-				2B282BB81AB81ABA00640FF8 /* packet.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";

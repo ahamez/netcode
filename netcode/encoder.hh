@@ -9,15 +9,12 @@
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
 #include "netcode/data.hh"
-#include "netcode/packet.hh"
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
-/// @todo Check gf-complete requirements on size of data which must be a multiple of w/8 (1 for
-/// w = 4 and w = 8.
 template <typename PacketHandler, typename Packetizer = detail::packetizer<PacketHandler>>
 class encoder final
 {
@@ -71,6 +68,8 @@ public:
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
   /// except for one case: calling data::reset() will put back @p d in a usable state.
+  /// @todo Check gf-complete requirements on size of data which must be a multiple of w/8 (1 for
+  /// w = 4 and w = 8.
   void
   operator()(data&& d)
   {
@@ -78,19 +77,8 @@ public:
     commit_impl(std::move(d));
   }
 
-//  /// @brief Notify the encoder of a new incoming packet.
-//  /// @param p The incoming packet.
-//  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-//  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
-//  /// except for one case: calling packet::reset() will put back @p p in a usable state.
-//  std::size_t
-//  operator()(const packet& p)
-//  {
-//    return notify_impl(p.buffer());
-//  }
-
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
+  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @param packet The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
   operator()(const char* packet)

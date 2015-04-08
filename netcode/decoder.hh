@@ -10,7 +10,6 @@
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
-#include "netcode/packet.hh"
 
 namespace ntc {
 
@@ -69,20 +68,35 @@ public:
     : decoder{std::forward<PacketHandler_>(packet_handler), data_handler, configuration{}}
   {}
 
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param p The incoming packet.
+  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @param packet The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
-//  std::size_t
-//  operator()(const packet& p)
-//  {
-//    return notify_impl(p.buffer());
-//  }
+  ///
+  /// To fulfill memory alignement requirements, a copy will occur.
   std::size_t
-  operator()(const char* buffer)
+  operator()(const char* packet)
   {
-    return notify_impl(buffer);
-  }
+    switch (detail::get_packet_type(packet))
+    {
+      case detail::packet_type::repair:
+      {
+        nb_received_repairs_ += 1;
+        auto res = packetizer_.read_repair(packet);
+        decoder_(std::move(res.first));
+        return res.second;
+      }
 
+      case detail::packet_type::source:
+      {
+        nb_received_sources_ += 1;
+        auto res = packetizer_.read_source(packet);
+        decoder_(std::move(res.first));
+        return res.second;
+      }
+
+      default: return 0ul;
+    }
+  }
 
   /// @brief Get the data handler.
   const packet_handler_type&
@@ -223,36 +237,6 @@ public:
   }
 
 private:
-
-  /// @brief Notify the encoder that some data has been received.
-  /// @return The number of bytes that have been read (0 if the packet was no decoded).
-  std::size_t
-  notify_impl(const char* data)
-  {
-    assert(data != nullptr);
-    switch (detail::get_packet_type(data))
-    {
-      case detail::packet_type::repair:
-      {
-        nb_received_repairs_ += 1;
-        // Give the decoder this received repair.
-        auto res = packetizer_.read_repair(data);
-        decoder_(std::move(res.first));
-        return res.second;
-      }
-
-      case detail::packet_type::source:
-      {
-        nb_received_sources_ += 1;
-        // Give the decoder this received source.
-        auto res = packetizer_.read_source(data);
-        decoder_(std::move(res.first));
-        return res.second;
-      }
-
-      default: return 0ul;
-    }
-  }
 
   /// @brief Callback given to the real encoder to be notified when a source is processed.
   void
