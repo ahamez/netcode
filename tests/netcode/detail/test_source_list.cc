@@ -24,7 +24,7 @@ contains_id(const detail::source_list& sl, std::size_t id)
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("add and remove sources in source_list", "[source_list][source]")
+TEST_CASE("add and remove sources in source_list")
 {
   auto sl = detail::source_list{};
 
@@ -109,6 +109,17 @@ TEST_CASE("add and remove sources in source_list", "[source_list][source]")
     REQUIRE(sl.size() == 1);
     REQUIRE(contains_id(sl, 3));
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Error scenario")
+{
+  auto sl = detail::source_list{};
+  sl.emplace(1, detail::byte_buffer{}, 0);
+  const auto ids = detail::source_id_list{0,1};
+  sl.erase(begin(ids), end(ids));
+  REQUIRE(sl.size() == 0);
 }
 
 /*------------------------------------------------------------------------------------------------*/

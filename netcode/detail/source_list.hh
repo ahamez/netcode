@@ -39,10 +39,18 @@ public:
     {
       if (source_it->id() == *id_cit)
       {
+        // We found an identifier to erase.
         auto to_erase = source_it;
         ++source_it;
         ++id_cit;
         sources_.erase(to_erase);
+      }
+      else if (source_it->id() > *id_cit)
+      {
+        // The current source has an identifier greater than the current id to erase.
+        // This means that this id was already removed in a previous erase procedure.
+        // We can safely ignore it.
+        ++id_cit;
       }
       else
       {
