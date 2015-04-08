@@ -108,6 +108,10 @@ private:
   add_source_recursive(source&& src);
 
   /// @brief Drop outdated sources and repairs.
+  /// @param id The oldest id to keep. 
+  ///
+  /// All sources with an identifier smaller than @p id will be dropped, as well as all repairs
+  /// that reference thes outdated sources.
   void
   drop_outdated(std::uint32_t id)
   noexcept;
