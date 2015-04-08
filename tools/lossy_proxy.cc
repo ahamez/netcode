@@ -1,6 +1,9 @@
 #include <array>
+#include <cassert>
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
+#include <random>
 #include <stdexcept>
 #include <string>
 
@@ -9,7 +12,113 @@
 #define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
 
-#include "tools/loss.hh"
+/*------------------------------------------------------------------------------------------------*/
+
+class burst_loss
+{
+public:
+
+  burst_loss(unsigned int good, unsigned int bad)
+    : state_{state::good}
+    , gen_{}
+    , dist_{1, 100}
+    , good_{good}
+    , bad_{bad}
+  {}
+
+  /// @return true if packet should be lost.
+  bool
+  operator()()
+  noexcept
+  {
+    switch (state_)
+    {
+        case state::good:
+        {
+          if (dist_(gen_) < good_)
+          {
+            return false; // no loss
+          }
+          else
+          {
+            state_ = state::bad;
+            return true; // loss
+          }
+        }
+
+        case state::bad:
+        {
+          if (dist_(gen_) > bad_)
+          {
+            return true; // loss
+          }
+          else
+          {
+            state_ = state::good;
+            return false; // no loss
+          }
+        }
+
+        default: __builtin_unreachable();
+    }
+  }
+
+private:
+
+  /// @brief
+  enum class state {good, bad};
+
+  /// @brief
+  state state_;
+
+  /// @brief
+  std::default_random_engine gen_;
+
+  /// @brief
+  std::uniform_int_distribution<unsigned int> dist_;
+
+  /// @brief
+  unsigned int good_;
+
+  /// @bief
+  unsigned int bad_;
+
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+class uniform_loss
+{
+public:
+
+  uniform_loss(unsigned int threshold)
+    : gen_{}
+    , dist_{1, 100}
+    , threshold_{threshold}
+  {
+    assert(threshold_ > 0 and threshold < 100);
+  }
+
+  /// @return true if packet should be lost.
+  bool
+  operator()()
+  noexcept
+  {
+    return dist_(gen_) > threshold_;
+  }
+
+private:
+
+
+  /// @brief
+  std::default_random_engine gen_;
+
+  /// @brief
+  std::uniform_int_distribution<unsigned int> dist_;
+
+  /// @brief
+  unsigned int threshold_;
+};
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -64,7 +173,6 @@ display(asio::deadline_timer& timer)
                       {
                         throw std::runtime_error(err.message());
                       }
-//                      std::printf("%lu | %lu\r", a_to_b_losses, b_to_a_losses);
                       std::cout << " losses " << a_to_b_losses << " | "  << b_to_a_losses << '\r';
                       std::cout.flush();
                       display(timer);
@@ -104,14 +212,40 @@ proxy(unsigned short a_port, const std::string& b_ip, const std::string& b_port,
 int
 main(int argc, char** argv)
 {
-  if (argc != 4)
+  const auto usage = [&]
   {
-    std::cerr << "Usage: " << argv[0] << "\n";
+    std::cerr << "Usage:\n";
+    std::cerr << argv[0] << " from_port to_ip to_port burst p_good p_bad\n";
+    std::cerr << argv[0] << " from_port to_ip to_port uniform p\n";
+  };
+
+  if (argc != 6 and argc != 7)
+  {
+    std::cout << "here\n";
+    usage();
     return 1;
   }
   try
   {
-    proxy(std::atoi(argv[1]), argv[2], argv[3], burst_loss{90, 50});
+    const auto from_port = std::atoi(argv[1]);
+    const auto to_ip = argv[2];
+    const auto to_port = argv[3];
+    if (std::strncmp(argv[4], "burst", 6) == 0)
+    {
+      const auto p_good = static_cast<unsigned int>(std::atoi(argv[5]));
+      const auto p_bad = static_cast<unsigned int>(std::atoi(argv[6]));
+      proxy(from_port, to_ip, to_port, burst_loss{p_good, p_bad});
+    }
+    else if (std::strncmp(argv[4], "uniform", 8) == 0)
+    {
+      const auto p = static_cast<unsigned int>(std::atoi(argv[5]));
+      proxy(from_port, to_ip, to_port, uniform_loss{100 - p});
+    }
+    else
+    {
+      usage();
+      return 1;
+    }
   }
   catch (const std::exception& e)
   {

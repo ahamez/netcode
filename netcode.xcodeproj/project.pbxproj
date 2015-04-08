@@ -1108,7 +1108,6 @@
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
 		2B7F12711AD0523200CAA199 /* lossy_proxy.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lossy_proxy.cc; sourceTree = "<group>"; };
-		2B7F12731AD0527D00CAA199 /* loss.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = loss.hh; sourceTree = "<group>"; };
 		2B7F12741AD162FD00CAA199 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
@@ -2912,7 +2911,6 @@
 			isa = PBXGroup;
 			children = (
 				2B7F12741AD162FD00CAA199 /* CMakeLists.txt */,
-				2B7F12731AD0527D00CAA199 /* loss.hh */,
 				2B7F12711AD0523200CAA199 /* lossy_proxy.cc */,
 			);
 			path = tools;
