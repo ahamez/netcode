@@ -343,6 +343,7 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
 
   // Send second repair, full decoding should take place.
   decoder(std::move(r1));
+  REQUIRE(decoder.nb_failed_full_decodings() == 0);
   REQUIRE(decoder.sources().size() == 2);
   REQUIRE(decoder.sources().count(0));
   REQUIRE(decoder.sources().count(1));
