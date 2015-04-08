@@ -104,7 +104,7 @@ public:
     , endpoint_(endpoint)
     , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
     , encoder_(packet_handler(socket_, endpoint_), conf)
-    , packet_(buffer_size)
+    , packet_()
     , data_(buffer_size)
     , other_side_seen_(false)
   {
@@ -121,7 +121,7 @@ private:
   void
   start_handler()
   {
-    socket_.async_receive_from( asio::buffer(packet_.buffer(), buffer_size)
+    socket_.async_receive_from( asio::buffer(packet_, buffer_size)
                               , endpoint_
                               , [this](const asio::error_code& err, std::size_t)
                                 {
@@ -133,18 +133,18 @@ private:
                                   other_side_seen_ = true;
 
                                   auto res = 0ul;
-                                  switch (ntc::detail::get_packet_type(packet_.buffer()))
+                                  switch (ntc::detail::get_packet_type(packet_))
                                   {
                                       case ntc::detail::packet_type::ack:
                                       {
-                                        res = encoder_(std::move(packet_));
+                                        res = encoder_(packet_);
                                         break;
                                       }
 
                                       case ntc::detail::packet_type::repair:
                                       case ntc::detail::packet_type::source:
                                       {
-                                        res = decoder_(std::move(packet_));
+                                        res = decoder_(packet_);
                                         break;
                                       }
 
@@ -155,8 +155,6 @@ private:
                                   {
                                     throw std::runtime_error("Invalid packet format");
                                   }
-
-                                  packet_.reset(buffer_size);
 
                                   // Listen again for incoming packets.
                                   start_handler();
@@ -262,7 +260,7 @@ private:
   ntc::encoder<packet_handler> encoder_;
 
   /// @brief
-  ntc::packet packet_;
+  char packet_[buffer_size];
 
   /// @brief
   ntc::data data_;

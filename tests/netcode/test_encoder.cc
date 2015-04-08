@@ -115,13 +115,13 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 
   struct handler
   {
-    packet pkt = packet{2048};
+    char pkt[2048];
     std::size_t written = 0ul;
 
     void
     operator()(const char* src, std::size_t len)
     {
-      std::copy_n(src, len, pkt.buffer() + written);
+      std::copy_n(src, len, pkt + written);
       written += len;
     }
 

@@ -28,7 +28,7 @@ TEST_CASE("Decoder gives a correct source to user")
   enc(data{begin(s0), end(s0)});
 
   // Send serialized data to decoder.
-  dec(packet{enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()});
+  dec(enc_packet_handler.vec[0].data());
 
   REQUIRE(dec_data_handler.vec[0].size() == s0.size());
   REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
@@ -52,10 +52,10 @@ TEST_CASE("Decoder repairs a lost source")
   enc(data{begin(s0), end(s0)});
 
   // Skip first source.
-  auto repair = packet(enc_packet_handler.vec[1].data(), enc_packet_handler.vec[1].size());
+  auto repair = enc_packet_handler.vec[1].data();
 
   // Send repair to decoder.
-  REQUIRE(dec(std::move(repair)));
+  REQUIRE(dec(repair));
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded() == 1);
@@ -83,7 +83,7 @@ TEST_CASE("Decoder generate correct ack")
   REQUIRE(enc.window() == 1);
 
   // Send source to decoder.
-  dec(packet(enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size()));
+  dec(enc_packet_handler.vec[0].data());
 
   SECTION("Force ack")
   {
@@ -92,7 +92,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
+    enc(dec_packet_handler.vec[0].data());
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -104,7 +104,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(packet(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size()));
+    enc(dec_packet_handler.vec[0].data());
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 }
@@ -150,11 +150,11 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
 
   // Now send to decoder.
   // Lost first source.
-  dec(packet{enc_handler.vec[1].data(), enc_handler.vec[1].size()});
-  dec(packet{enc_handler.vec[2].data(), enc_handler.vec[2].size()});
-  dec(packet{enc_handler.vec[3].data(), enc_handler.vec[3].size()});
+  dec(enc_handler.vec[1].data());
+  dec(enc_handler.vec[2].data());
+  dec(enc_handler.vec[3].data());
   // The arrival of the repair should decode the lost source.
-  dec(packet{enc_handler.vec[4].data(), enc_handler.vec[4].size()});
+  dec(enc_handler.vec[4].data());
   REQUIRE(dec.nb_received_sources() == 3);
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_missing_sources() == 0);

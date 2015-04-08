@@ -72,13 +72,17 @@ public:
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  /// @attention Any use of the packet @p p after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put back @p p in a usable state.
+//  std::size_t
+//  operator()(const packet& p)
+//  {
+//    return notify_impl(p.buffer());
+//  }
   std::size_t
-  operator()(packet&& p)
+  operator()(const char* buffer)
   {
-    return notify_impl(p.buffer());
+    return notify_impl(buffer);
   }
+
 
   /// @brief Get the data handler.
   const packet_handler_type&

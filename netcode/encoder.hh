@@ -78,15 +78,24 @@ public:
     commit_impl(std::move(d));
   }
 
+//  /// @brief Notify the encoder of a new incoming packet.
+//  /// @param p The incoming packet.
+//  /// @return The number of bytes that have been read (0 if the packet was not decoded).
+//  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
+//  /// except for one case: calling packet::reset() will put back @p p in a usable state.
+//  std::size_t
+//  operator()(const packet& p)
+//  {
+//    return notify_impl(p.buffer());
+//  }
+
   /// @brief Notify the encoder of a new incoming packet.
   /// @param p The incoming packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  /// @attention Any use of the packet @p d after this call will result in an undefined behavior,
-  /// except for one case: calling packet::reset() will put back @p p in a usable state.
   std::size_t
-  operator()(const packet& p)
+  operator()(const char* packet)
   {
-    return notify_impl(p.buffer());
+    return notify_impl(packet);
   }
 
   /// @brief The number of packets which have not been acknowledged.
