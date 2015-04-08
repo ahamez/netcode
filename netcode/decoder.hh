@@ -250,7 +250,7 @@ private:
     }
   }
 
-  /// @brief Callback given to the real encoder to be notify when a source is processed.
+  /// @brief Callback given to the real encoder to be notified when a source is processed.
   void
   handle_source(const detail::source& src)
   {
