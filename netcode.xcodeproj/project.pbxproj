@@ -13,9 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
-				2B7F12701AD0521300CAA199 /* PBXTargetDependency */,
 				2B516BF91AC9B87300133F38 /* PBXTargetDependency */,
-				2B516BFB1AC9B87300133F38 /* PBXTargetDependency */,
+				2B7F12701AD0521300CAA199 /* PBXTargetDependency */,
 				2B516BFD1AC9B87300133F38 /* PBXTargetDependency */,
 			);
 			name = all;
@@ -32,19 +31,14 @@
 		2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */; };
 		2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */; };
 		2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
-		2B516BE31AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
 		2B516BE41AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
 		2B516BE51AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
-		2B516BE61AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2B516BE71AC944AE00133F38 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2B516BE81AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
-		2B516BE91AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2B516BEC1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
 		2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2B516BEF1AC9453C00133F38 /* client.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516A161AC87CF800133F38 /* client.cc */; };
-		2B516BF01AC9454100133F38 /* server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* server.cc */; };
+		2B516BF01AC9454100133F38 /* accelerator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* accelerator.cc */; };
 		2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BF21AC9997200133F38 /* test_invert_matrix.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
@@ -68,13 +62,6 @@
 			remoteGlobalIDString = 2B516BC81AC8881C00133F38;
 			remoteInfo = accelerator_decoder;
 		};
-		2B516BFA1AC9B87300133F38 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2BC3179F1AB0C53200C61FBB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2B516A0E1AC87CE500133F38;
-			remoteInfo = accelerator_encoder;
-		};
 		2B516BFC1AC9B87300133F38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2BC3179F1AB0C53200C61FBB /* Project object */;
@@ -92,15 +79,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2B516A0D1AC87CE500133F38 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		2B516BC71AC8881C00133F38 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -682,8 +660,6 @@
 		2B4E310B1AC07DA10002E97C /* galois_field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = galois_field.hh; sourceTree = "<group>"; };
 		2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_galois_field.cc; sourceTree = "<group>"; };
 		2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_square_matrix.cc; sourceTree = "<group>"; };
-		2B516A0F1AC87CE500133F38 /* accelerator_client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_client; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B516A161AC87CF800133F38 /* client.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cc; sourceTree = "<group>"; };
 		2B516A1A1AC87DC700133F38 /* async_result.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = async_result.hpp; sourceTree = "<group>"; };
 		2B516A1B1AC87DC700133F38 /* basic_datagram_socket.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = basic_datagram_socket.hpp; sourceTree = "<group>"; };
 		2B516A1C1AC87DC700133F38 /* basic_deadline_timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = basic_deadline_timer.hpp; sourceTree = "<group>"; };
@@ -1090,8 +1066,8 @@
 		2B516BC21AC87DC700133F38 /* write_at.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = write_at.hpp; sourceTree = "<group>"; };
 		2B516BC31AC87DC700133F38 /* yield.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = yield.hpp; sourceTree = "<group>"; };
 		2B516BC41AC87DC700133F38 /* asio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = asio.hpp; sourceTree = "<group>"; };
-		2B516BC91AC8881C00133F38 /* accelerator_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator_server; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B516BD01AC8884200133F38 /* server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = server.cc; sourceTree = "<group>"; };
+		2B516BC91AC8881C00133F38 /* accelerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = accelerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B516BD01AC8884200133F38 /* accelerator.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = accelerator.cc; sourceTree = "<group>"; };
 		2B516BDD1AC944AE00133F38 /* coefficient.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coefficient.cc; sourceTree = "<group>"; };
 		2B516BDE1AC944AE00133F38 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
 		2B516BDF1AC944AE00133F38 /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
@@ -1132,13 +1108,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2B516A0C1AC87CE500133F38 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2B516BC61AC8881C00133F38 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2312,8 +2281,7 @@
 			children = (
 				2B516BF11AC9566500133F38 /* CMakeLists.txt */,
 				2BBC050C1ACA9BFA00EEDAC0 /* transcoder.hh */,
-				2B516A161AC87CF800133F38 /* client.cc */,
-				2B516BD01AC8884200133F38 /* server.cc */,
+				2B516BD01AC8884200133F38 /* accelerator.cc */,
 			);
 			path = accelerator;
 			sourceTree = "<group>";
@@ -2960,8 +2928,7 @@
 			children = (
 				2B7F12771AD289EF00CAA199 /* lossy_proxy */,
 				2BBC05251ACC472C00EEDAC0 /* tests-one */,
-				2B516BC91AC8881C00133F38 /* accelerator_server */,
-				2B516A0F1AC87CE500133F38 /* accelerator_client */,
+				2B516BC91AC8881C00133F38 /* accelerator */,
 				2BE3197C1AB32D7F001AA9DF /* tests */,
 			);
 			name = bin;
@@ -3032,26 +2999,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2B516A0E1AC87CE500133F38 /* accelerator_client */ = {
+		2B516BC81AC8881C00133F38 /* accelerator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_client" */;
-			buildPhases = (
-				2B516A0B1AC87CE500133F38 /* Sources */,
-				2B516A0C1AC87CE500133F38 /* Frameworks */,
-				2B516A0D1AC87CE500133F38 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = accelerator_client;
-			productName = accelerator_encoder;
-			productReference = 2B516A0F1AC87CE500133F38 /* accelerator_client */;
-			productType = "com.apple.product-type.tool";
-		};
-		2B516BC81AC8881C00133F38 /* accelerator_server */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_server" */;
+			buildConfigurationList = 2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator" */;
 			buildPhases = (
 				2B516BC51AC8881C00133F38 /* Sources */,
 				2B516BC61AC8881C00133F38 /* Frameworks */,
@@ -3061,9 +3011,9 @@
 			);
 			dependencies = (
 			);
-			name = accelerator_server;
+			name = accelerator;
 			productName = accelerator_decoder;
-			productReference = 2B516BC91AC8881C00133F38 /* accelerator_server */;
+			productReference = 2B516BC91AC8881C00133F38 /* accelerator */;
 			productType = "com.apple.product-type.tool";
 		};
 		2B7F12671AD0520B00CAA199 /* lossy_proxy */ = {
@@ -3125,9 +3075,6 @@
 			attributes = {
 				LastUpgradeCheck = 0620;
 				TargetAttributes = {
-					2B516A0E1AC87CE500133F38 = {
-						CreatedOnToolsVersion = 6.2;
-					};
 					2B516BC81AC8881C00133F38 = {
 						CreatedOnToolsVersion = 6.2;
 					};
@@ -3155,8 +3102,7 @@
 			projectRoot = "";
 			targets = (
 				2B516BF41AC9B86400133F38 /* all */,
-				2B516BC81AC8881C00133F38 /* accelerator_server */,
-				2B516A0E1AC87CE500133F38 /* accelerator_client */,
+				2B516BC81AC8881C00133F38 /* accelerator */,
 				2BE3197B1AB32D7F001AA9DF /* tests */,
 				2BBC050D1ACC472C00EEDAC0 /* test-one */,
 				2B7F12671AD0520B00CAA199 /* lossy_proxy */,
@@ -3165,23 +3111,11 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2B516A0B1AC87CE500133F38 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2B516BEF1AC9453C00133F38 /* client.cc in Sources */,
-				2B516BEC1AC944AE00133F38 /* invert_matrix.cc in Sources */,
-				2B516BE61AC944AE00133F38 /* decoder.cc in Sources */,
-				2B516BE91AC944AE00133F38 /* encoder.cc in Sources */,
-				2B516BE31AC944AE00133F38 /* coefficient.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2B516BC51AC8881C00133F38 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B516BF01AC9454100133F38 /* server.cc in Sources */,
+				2B516BF01AC9454100133F38 /* accelerator.cc in Sources */,
 				2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */,
 				2B516BE71AC944AE00133F38 /* decoder.cc in Sources */,
 				2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */,
@@ -3239,13 +3173,8 @@
 /* Begin PBXTargetDependency section */
 		2B516BF91AC9B87300133F38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B516BC81AC8881C00133F38 /* accelerator_server */;
+			target = 2B516BC81AC8881C00133F38 /* accelerator */;
 			targetProxy = 2B516BF81AC9B87300133F38 /* PBXContainerItemProxy */;
-		};
-		2B516BFB1AC9B87300133F38 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2B516A0E1AC87CE500133F38 /* accelerator_client */;
-			targetProxy = 2B516BFA1AC9B87300133F38 /* PBXContainerItemProxy */;
 		};
 		2B516BFD1AC9B87300133F38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3260,82 +3189,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2B516A141AC87CE500133F38 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		2B516A151AC87CE500133F38 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
 		2B516BCE1AC8881C00133F38 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3699,16 +3552,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B516A131AC87CE500133F38 /* Build configuration list for PBXNativeTarget "accelerator_client" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2B516A141AC87CE500133F38 /* Debug */,
-				2B516A151AC87CE500133F38 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator_server" */ = {
+		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B516BCE1AC8881C00133F38 /* Debug */,
