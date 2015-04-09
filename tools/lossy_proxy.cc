@@ -217,13 +217,13 @@ main(int argc, char** argv)
     std::cerr << "Usage:\n";
     std::cerr << argv[0] << " from_port to_ip to_port burst p_good p_bad\n";
     std::cerr << argv[0] << " from_port to_ip to_port uniform p\n";
+    std::exit(1);
   };
 
   if (argc != 6 and argc != 7)
   {
     std::cout << "here\n";
     usage();
-    return 1;
   }
   try
   {
@@ -244,7 +244,6 @@ main(int argc, char** argv)
     else
     {
       usage();
-      return 1;
     }
   }
   catch (const std::exception& e)
