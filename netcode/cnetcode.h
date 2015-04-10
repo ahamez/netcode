@@ -41,23 +41,28 @@ void
 ntc_data_reset(ntc_data_t* d, size_t sz);
 
 /*------------------------------------------------------------------------------------------------*/
-// Encoder
+// Encoder & Decoder stuff
 /*------------------------------------------------------------------------------------------------*/
 
-typedef void (*ntc_prepare_packet_handler)(void*, const char* data, size_t sz);
-typedef void (*ntc_send_packet_handler)(void*);
+typedef void (*ntc_prepare_packet)(void*, const char* data, size_t sz);
+typedef void (*ntc_send_packet)(void*);
+typedef void (*ntc_read_data)(void*, const char* data, size_t sz);
 
 typedef struct
 {
   void* context;
-  ntc_prepare_packet_handler prepare_packet;
-  ntc_send_packet_handler send_packet;
+  ntc_prepare_packet prepare_packet;
+  ntc_send_packet send_packet;
 } ntc_packet_handler;
 
-#ifdef __cplusplus
-namespace ntc { namespace detail {
+typedef struct
+{
+  void* context;
+  ntc_read_data read_data;
+} ntc_data_handler;
 
-struct c_handler
+#ifdef __cplusplus
+struct c_packet_handler
 {
   ntc_packet_handler handler;
 
@@ -76,9 +81,25 @@ struct c_handler
   }
 };
 
-}} // namespace ntc::detail
+struct c_data_handler
+{
+  ntc_data_handler handler;
 
-using ntc_encoder_t = ntc::encoder<ntc::detail::c_handler>;
+  void
+  operator()(const char* data, std::size_t sz)
+  noexcept
+  {
+    handler.read_data(handler.context, data, sz);
+  }
+};
+#endif
+
+/*------------------------------------------------------------------------------------------------*/
+// Encoder
+/*------------------------------------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+using ntc_encoder_t = ntc::encoder<c_packet_handler>;
 #else
 typedef struct ntc_encoder_t ntc_encoder_t;
 #endif
@@ -94,10 +115,29 @@ ntc_delete_encoder(ntc_encoder_t* enc);
 void
 ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data);
 
+void
+ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet);
+
+size_t
+window(ntc_encoder_t* enc);
+
 /*------------------------------------------------------------------------------------------------*/
 // Decoder manipulation
 /*------------------------------------------------------------------------------------------------*/
 
+#ifdef __cplusplus
+using ntc_decoder_t = ntc::decoder<c_packet_handler, c_data_handler>;
+#else
+typedef struct ntc_decoder_t ntc_decoder_t;
+#endif
+
+/*------------------------------------------------------------------------------------------------*/
+
+ntc_decoder_t*
+ntc_new_decoder(ntc_packet_handler packet_handler, ntc_data_handler data_handler);
+
+void
+ntc_delete_decoder(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 

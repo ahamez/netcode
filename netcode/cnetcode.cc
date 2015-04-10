@@ -47,7 +47,7 @@ ntc_data_reset(ntc_data_t* d, size_t sz)
 ntc_encoder_t*
 ntc_new_encoder(ntc_packet_handler handler)
 {
-  return new ntc_encoder_t{ntc::detail::c_handler{handler}};
+  return new ntc_encoder_t{c_packet_handler{handler}};
 }
 
 void
@@ -60,6 +60,34 @@ void
 ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data)
 {
   (*enc)(std::move(*data));
+}
+
+void
+ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet)
+{
+  (*enc)(packet);
+}
+
+size_t
+window(ntc_encoder_t* enc)
+{
+  return enc->window();
+}
+
+/*------------------------------------------------------------------------------------------------*/
+// Encoder
+/*------------------------------------------------------------------------------------------------*/
+
+ntc_decoder_t*
+ntc_new_decoder(ntc_packet_handler packet_handler, ntc_data_handler data_handler)
+{
+  return new ntc_decoder_t{c_packet_handler{packet_handler}, c_data_handler{data_handler}};
+}
+
+void
+ntc_delete_decoder(ntc_decoder_t* dec)
+{
+  delete dec;
 }
 
 /*------------------------------------------------------------------------------------------------*/
