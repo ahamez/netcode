@@ -42,16 +42,16 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  template <typename PacketHandler_>
-  decoder( PacketHandler_&& packet_handler, const data_handler_type& data_handler
+  template <typename PacketHandler_, typename DataHandler_>
+  decoder( PacketHandler_&& packet_handler, DataHandler_&& data_handler
          , configuration conf)
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
     , decoder_{ conf.galois_field_size
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
-    , packet_handler_{std::forward<PacketHandler_>(packet_handler)}
-    , data_handler_{data_handler}
+    , packet_handler_(std::forward<PacketHandler_>(packet_handler))
+    , data_handler_(std::forward<DataHandler_>(data_handler))
     , packetizer_{packet_handler_}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
@@ -63,9 +63,11 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  template <typename PacketHandler_>
-  decoder(PacketHandler_&& packet_handler, const data_handler_type& data_handler)
-    : decoder{std::forward<PacketHandler_>(packet_handler), data_handler, configuration{}}
+  template <typename PacketHandler_, typename DataHandler_>
+  decoder(PacketHandler_&& packet_handler, DataHandler_&& data_handler)
+    : decoder{ std::forward<PacketHandler_>(packet_handler)
+             , std::forward<DataHandler_>(data_handler)
+             , configuration{}}
   {}
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
