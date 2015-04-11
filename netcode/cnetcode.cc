@@ -68,8 +68,14 @@ ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet)
   (*enc)(packet);
 }
 
+void
+ntc_encoder_end_repair(ntc_encoder_t* enc)
+{
+  enc->send_repair();
+}
+
 size_t
-window(ntc_encoder_t* enc)
+ntc_encoder_window(ntc_encoder_t* enc)
 {
   return enc->window();
 }
@@ -88,6 +94,18 @@ void
 ntc_delete_decoder(ntc_decoder_t* dec)
 {
   delete dec;
+}
+
+void
+ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet)
+{
+  (*dec)(packet);
+}
+
+void
+ntc_decoder_send_ack(ntc_decoder_t* dec)
+{
+  dec->send_ack();
 }
 
 /*------------------------------------------------------------------------------------------------*/

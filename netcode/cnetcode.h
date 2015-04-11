@@ -118,8 +118,11 @@ ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data);
 void
 ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet);
 
+void
+ntc_encoder_end_repair(ntc_encoder_t* enc);
+
 size_t
-window(ntc_encoder_t* enc);
+ntc_encoder_window(ntc_encoder_t* enc);
 
 /*------------------------------------------------------------------------------------------------*/
 // Decoder manipulation
@@ -138,6 +141,12 @@ ntc_new_decoder(ntc_packet_handler packet_handler, ntc_data_handler data_handler
 
 void
 ntc_delete_decoder(ntc_decoder_t* dec);
+
+void
+ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet);
+
+void
+ntc_decoder_send_ack(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 
