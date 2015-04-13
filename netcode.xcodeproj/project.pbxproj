@@ -39,6 +39,7 @@
 		2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BBE1AB861C200640FF8 /* test_decoder.cc */; };
 		2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B2A96261AC59120001B8F66 /* test_encoder.cc */; };
 		2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */; };
+		2B4DC02D1ADBE515006C548B /* accelerator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4DC02A1ADBE515006C548B /* accelerator.cc */; };
 		2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */; };
 		2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */; };
 		2B516BE21AC944AE00133F38 /* coefficient.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDD1AC944AE00133F38 /* coefficient.cc */; };
@@ -49,7 +50,6 @@
 		2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
 		2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2B516BF01AC9454100133F38 /* accelerator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BD01AC8884200133F38 /* accelerator.cc */; };
 		2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BF21AC9997200133F38 /* test_invert_matrix.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
@@ -153,7 +153,6 @@
 
 /* Begin PBXFileReference section */
 		2B218AEB1AD7C736000D2657 /* libcnetcode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcnetcode.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B218AF91AD7FBC4000D2657 /* example_c */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = example_c; path = /Users/hal/code/netcode/build/Debug/example_c; sourceTree = "<absolute>"; };
 		2B218B001AD7FBE4000D2657 /* example_c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = example_c.c; sourceTree = "<group>"; };
 		2B218B021AD7FDBC000D2657 /* cnetcode.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cnetcode.cc; sourceTree = "<group>"; };
 		2B218B031AD7FDBC000D2657 /* cnetcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cnetcode.h; sourceTree = "<group>"; };
@@ -696,6 +695,10 @@
 		2B2A96261AC59120001B8F66 /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B4977FE1AC4137500A76CF8 /* coefficient.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = coefficient.hh; sourceTree = "<group>"; };
 		2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_reconstruction.cc; sourceTree = "<group>"; };
+		2B4DC0281ADBE4F2006C548B /* example_c */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = example_c; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B4DC02A1ADBE515006C548B /* accelerator.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = accelerator.cc; sourceTree = "<group>"; };
+		2B4DC02B1ADBE515006C548B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		2B4DC02C1ADBE515006C548B /* transcoder.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transcoder.hh; sourceTree = "<group>"; };
 		2B4E310A1AC0761C0002E97C /* square_matrix.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = square_matrix.hh; sourceTree = "<group>"; };
 		2B4E310B1AC07DA10002E97C /* galois_field.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = galois_field.hh; sourceTree = "<group>"; };
 		2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_galois_field.cc; sourceTree = "<group>"; };
@@ -1198,6 +1201,7 @@
 		2B218AF31AD7FB85000D2657 /* examples */ = {
 			isa = PBXGroup;
 			children = (
+				2B4DC0291ADBE515006C548B /* accelerator */,
 				2B218AF41AD7FB85000D2657 /* c */,
 			);
 			path = examples;
@@ -2348,6 +2352,16 @@
 			path = utility;
 			sourceTree = "<group>";
 		};
+		2B4DC0291ADBE515006C548B /* accelerator */ = {
+			isa = PBXGroup;
+			children = (
+				2B4DC02A1ADBE515006C548B /* accelerator.cc */,
+				2B4DC02B1ADBE515006C548B /* CMakeLists.txt */,
+				2B4DC02C1ADBE515006C548B /* transcoder.hh */,
+			);
+			path = accelerator;
+			sourceTree = "<group>";
+		};
 		2B5169FF1AC87C4400133F38 /* accelerator */ = {
 			isa = PBXGroup;
 			children = (
@@ -2968,6 +2982,7 @@
 				2BE3194F1AB0C550001AA9DF /* netcode */,
 				2BE319571AB0C550001AA9DF /* tests */,
 				2B7F12631AD051A300CAA199 /* tools */,
+				2B4DC0281ADBE4F2006C548B /* example_c */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3118,7 +3133,7 @@
 			);
 			name = example_c;
 			productName = example_c;
-			productReference = 2B218AF91AD7FBC4000D2657 /* example_c */;
+			productReference = 2B4DC0281ADBE4F2006C548B /* example_c */;
 			productType = "com.apple.product-type.tool";
 		};
 		2B516BC81AC8881C00133F38 /* accelerator */ = {
@@ -3265,7 +3280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B516BF01AC9454100133F38 /* accelerator.cc in Sources */,
+				2B4DC02D1ADBE515006C548B /* accelerator.cc in Sources */,
 				2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */,
 				2B516BE71AC944AE00133F38 /* decoder.cc in Sources */,
 				2B516BEA1AC944AE00133F38 /* encoder.cc in Sources */,
@@ -3542,6 +3557,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)",
+					/usr/local/include,
+					"$(SRCROOT)/ext",
+					"$(SRCROOT)/ext/asio",
+					"$(SRCROOT)/examples",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -3578,6 +3602,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)",
+					/usr/local/include,
+					"$(SRCROOT)/ext",
+					"$(SRCROOT)/ext/asio",
+					"$(SRCROOT)/examples",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3879,6 +3912,7 @@
 				2B218AEE1AD7C736000D2657 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2B218AFD1AD7FBC4000D2657 /* Build configuration list for PBXNativeTarget "example_c" */ = {
 			isa = XCConfigurationList;
@@ -3887,6 +3921,7 @@
 				2B218AFF1AD7FBC4000D2657 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2B516BCD1AC8881C00133F38 /* Build configuration list for PBXNativeTarget "accelerator" */ = {
 			isa = XCConfigurationList;
