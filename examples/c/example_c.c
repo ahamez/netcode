@@ -2,13 +2,20 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <netcode/cnetcode.h>
+#include <netcode/c/configuration.h>
+#include <netcode/c/data.h>
+#include <netcode/c/decoder.h>
+#include <netcode/c/encoder.h>
+
+/*------------------------------------------------------------------------------------------------*/
 
 typedef struct
 {
   size_t nb_read;
   char buffer[4096];
 } context;
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 prepare_packet(void* c, const char* packet, size_t sz)
@@ -19,6 +26,8 @@ prepare_packet(void* c, const char* packet, size_t sz)
   cxt->nb_read += sz;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 send_packet(void* cxt)
 {
@@ -26,12 +35,16 @@ send_packet(void* cxt)
   ((context*)cxt)->nb_read = 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 receive_data(void* cxt, const char* data, size_t sz)
 {
   printf("data has been received!\n");
   memcpy(((context*)cxt)->buffer, data, sz);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int main(int argc, char** argv)
 {
@@ -72,7 +85,7 @@ int main(int argc, char** argv)
   ntc_data_buffer(data)[0] = 'a';
   ntc_data_buffer(data)[1] = 'b';
   ntc_data_buffer(data)[2] = 'c';
-  ntc_data_used_bytes(data, 3);
+  ntc_data_set_used_bytes(data, 3);
 
   // Give this data to the encoder.
   ntc_encoder_commit_data(enc, data);

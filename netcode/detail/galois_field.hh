@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstddef> // size_t
+#include <cstdint>
 #include <stdexcept>
 
 extern "C" {

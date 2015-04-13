@@ -10,7 +10,10 @@ add_library(ntc STATIC ${NTC_SOURCES})
 
 set(
   CNTC_SOURCES
-  cnetcode.cc
+  c/configuration.cc
+  c/data.cc
+  c/decoder.cc
+  c/encoder.cc
 )
 
 add_library(cntc STATIC ${CNTC_SOURCES})
