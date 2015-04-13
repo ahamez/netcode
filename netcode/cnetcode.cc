@@ -41,19 +41,80 @@ ntc_data_reset(ntc_data_t* d, size_t sz)
 }
 
 /*------------------------------------------------------------------------------------------------*/
+// Configuration
+/*------------------------------------------------------------------------------------------------*/
+
+ntc_configuration_t*
+ntc_new_configuration()
+{
+  return new ntc_configuration_t{};
+}
+
+void
+ntc_delete_configuration(ntc_configuration_t* conf)
+{
+  delete conf;
+}
+
+void
+ntc_configuration_set_galois_field_size(ntc_configuration_t* conf , size_t size)
+{
+  conf->galois_field_size = size;
+}
+
+void
+ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type)
+{
+  switch (code_type)
+  {
+    case ntc_systematic:
+      conf->code_type = ntc::code::systematic;
+      break;
+
+    case ntc_non_systematic:
+    default:
+      conf->code_type = ntc::code::non_systematic;
+  }
+}
+
+void
+ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate)
+{
+  conf->rate = rate;
+}
+
+void
+ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
+{
+  conf->ack_frequency = std::chrono::milliseconds{frequency};
+}
+
+void
+ntc_configuration_set_window(ntc_configuration_t* conf, size_t window)
+{
+  conf->window = window;
+}
+
+/*------------------------------------------------------------------------------------------------*/
 // Encoder
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_encoder_t*
-ntc_new_encoder(ntc_packet_handler handler)
+ntc_new_encoder(ntc_configuration_t* conf, ntc_packet_handler handler)
 {
-  return new ntc_encoder_t{c_packet_handler{handler}};
+  return new ntc_encoder_t{c_packet_handler{handler}, *conf};
 }
 
 void
 ntc_delete_encoder(ntc_encoder_t* enc)
 {
   delete enc;
+}
+
+ntc_configuration_t*
+ntc_encoder_get_configuration(ntc_encoder_t* enc)
+{
+  return &enc->conf();
 }
 
 void
@@ -81,19 +142,26 @@ ntc_encoder_window(ntc_encoder_t* enc)
 }
 
 /*------------------------------------------------------------------------------------------------*/
-// Encoder
+// Decoder
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_decoder_t*
-ntc_new_decoder(ntc_packet_handler packet_handler, ntc_data_handler data_handler)
+ntc_new_decoder( ntc_configuration_t* conf, ntc_packet_handler packet_handler
+               , ntc_data_handler data_handler)
 {
-  return new ntc_decoder_t{c_packet_handler{packet_handler}, c_data_handler{data_handler}};
+  return new ntc_decoder_t{c_packet_handler{packet_handler}, c_data_handler{data_handler}, *conf};
 }
 
 void
 ntc_delete_decoder(ntc_decoder_t* dec)
 {
   delete dec;
+}
+
+ntc_configuration_t*
+ntc_decoder_get_configuration(ntc_decoder_t* dec)
+{
+  return &dec->conf();
 }
 
 void

@@ -1,6 +1,7 @@
 #pragma once
 
 #ifdef __cplusplus
+#include <netcode/configuration.hh>
 #include <netcode/data.hh>
 #include <netcode/decoder.hh>
 #include <netcode/encoder.hh>
@@ -39,6 +40,42 @@ ntc_data_used_bytes(ntc_data_t* d, size_t sz);
 
 void
 ntc_data_reset(ntc_data_t* d, size_t sz);
+
+/*------------------------------------------------------------------------------------------------*/
+// Configuration
+/*------------------------------------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+using ntc_configuration_t = ntc::configuration;
+#else
+typedef struct ntc_configuration_t ntc_configuration_t;
+#endif
+
+enum ntc_code_type{ntc_systematic, ntc_non_systematic};
+
+ntc_configuration_t*
+ntc_new_configuration();
+
+ntc_configuration_t*
+ntc_new_default_configuration();
+
+void
+ntc_delete_configuration(ntc_configuration_t* conf);
+
+void
+ntc_configuration_set_galois_field_size(ntc_configuration_t* conf, size_t size);
+
+void
+ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type);
+
+void
+ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate);
+
+void
+ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency);
+
+void
+ntc_configuration_set_window(ntc_configuration_t* conf, size_t window);
 
 /*------------------------------------------------------------------------------------------------*/
 // Encoder & Decoder stuff
@@ -107,10 +144,13 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_encoder_t*
-ntc_new_encoder(ntc_packet_handler handler);
+ntc_new_encoder(ntc_configuration_t* conf, ntc_packet_handler handler);
 
 void
 ntc_delete_encoder(ntc_encoder_t* enc);
+
+ntc_configuration_t*
+ntc_encoder_get_configuration(ntc_encoder_t* enc);
 
 void
 ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data);
@@ -137,10 +177,14 @@ typedef struct ntc_decoder_t ntc_decoder_t;
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_decoder_t*
-ntc_new_decoder(ntc_packet_handler packet_handler, ntc_data_handler data_handler);
+ntc_new_decoder( ntc_configuration_t* conf, ntc_packet_handler packet_handler
+               , ntc_data_handler data_handler);
 
 void
 ntc_delete_decoder(ntc_decoder_t* dec);
+
+ntc_configuration_t*
+ntc_decoder_get_configuration(ntc_decoder_t* dec);
 
 void
 ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet);
