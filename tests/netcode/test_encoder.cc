@@ -365,7 +365,9 @@ TEST_CASE("Non systematic encoder")
   configuration conf;
   conf.code_type = code::non_systematic;
   conf.rate = 3;
+
   encoder<packet_handler> encoder{packet_handler{}, conf};
+  auto& enc_handler = encoder.packet_handler();
 
   const auto data = std::vector<char>(100, 'x');
 
@@ -392,6 +394,13 @@ TEST_CASE("Non systematic encoder")
   REQUIRE(encoder.nb_sent_sources() == 0);
   REQUIRE(encoder.window() == 4);
   REQUIRE(encoder.nb_sent_repairs() == 5);
+
+  REQUIRE(enc_handler.nb_packets() == 5 /* 5 repairs */);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
 }
 
 /*------------------------------------------------------------------------------------------------*/
