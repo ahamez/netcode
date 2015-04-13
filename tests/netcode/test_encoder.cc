@@ -359,3 +359,39 @@ TEST_CASE("Decoder: invalid memory access scenerio")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Non systematic encoder")
+{
+  configuration conf;
+  conf.code_type = code::non_systematic;
+  conf.rate = 3;
+  encoder<packet_handler> encoder{packet_handler{}, conf};
+
+  const auto data = std::vector<char>(100, 'x');
+
+  auto data0 = ntc::data(data.begin(), data.begin() + 7);
+  encoder(std::move(data0));
+  REQUIRE(encoder.nb_sent_sources() == 0);
+  REQUIRE(encoder.window() == 1);
+  REQUIRE(encoder.nb_sent_repairs() == 1);
+
+  data0 = ntc::data(data.begin(), data.begin() + 23);
+  encoder(std::move(data0));
+  REQUIRE(encoder.nb_sent_sources() == 0);
+  REQUIRE(encoder.window() == 2);
+  REQUIRE(encoder.nb_sent_repairs() == 2);
+
+  data0 = ntc::data(data.begin(), data.begin() + 76);
+  encoder(std::move(data0));
+  REQUIRE(encoder.nb_sent_sources() == 0);
+  REQUIRE(encoder.window() == 3);
+  REQUIRE(encoder.nb_sent_repairs() == 4);
+
+  data0 = ntc::data(data.begin(), data.begin() + 1);
+  encoder(std::move(data0));
+  REQUIRE(encoder.nb_sent_sources() == 0);
+  REQUIRE(encoder.window() == 4);
+  REQUIRE(encoder.nb_sent_repairs() == 5);
+}
+
+/*------------------------------------------------------------------------------------------------*/

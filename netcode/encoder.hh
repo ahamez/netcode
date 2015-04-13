@@ -49,9 +49,9 @@ public:
     , packet_handler_(std::forward<PacketHandler_>(packet_handler))
     , encoder_{conf.galois_field_size}
     , packetizer_{packet_handler_}
-    , nb_repairs_{0ul}
+    , nb_sent_repairs_{0ul}
     , nb_acks_{0ul}
-    , nb_sources_{0ul}
+    , nb_sent_sources_{0ul}
   {
     assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -111,7 +111,7 @@ public:
   nb_sent_repairs()
   const noexcept
   {
-    return nb_repairs_;
+    return nb_sent_repairs_;
   }
 
   /// @brief Get the number of sent sources.
@@ -119,7 +119,7 @@ public:
   nb_sent_sources()
   const noexcept
   {
-    return nb_sources_;
+    return nb_sent_sources_;
   }
 
   /// @brief Get the data handler.
@@ -183,9 +183,16 @@ private:
     const auto& insertion
       = sources_.emplace(current_source_id_, std::move(d.buffer_impl()), d.used_bytes());
 
-    // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-    packetizer_.write_source(insertion);
-    nb_sources_ += 1;
+    if (conf_.code_type == code::systematic)
+    {
+      // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
+      packetizer_.write_source(insertion);
+      nb_sent_sources_ += 1;
+    }
+    else // non_systematic code
+    {
+      send_repair();
+    }
 
     /// @todo Should we generate a repair if window_size() == 1?
     if ((current_source_id_ + 1) % conf_.rate == 0)
@@ -224,7 +231,7 @@ private:
     encoder_(repair_, sources_);
 
     current_repair_id_ += 1;
-    nb_repairs_ += 1;
+    nb_sent_repairs_ += 1;
   }
 
 private:
@@ -254,13 +261,13 @@ private:
   packetizer_type packetizer_;
 
   /// @brief The number of generated repairs.
-  std::size_t nb_repairs_;
+  std::size_t nb_sent_repairs_;
 
   /// @brief The number of received ack.
   std::size_t nb_acks_;
 
   /// @brief The number of sent sources.
-  std::size_t nb_sources_;
+  std::size_t nb_sent_sources_;
 
 };
 
