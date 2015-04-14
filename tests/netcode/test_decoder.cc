@@ -161,11 +161,109 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
   REQUIRE(dec.nb_missing_sources() == 0);
   REQUIRE(dec.nb_decoded() == 0);
 
-  // They were correctly given to the user handler.
+  // Sources were correctly given to the user handler.
   REQUIRE(dec_data_handler.vec.size() == 3);
   REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[0])));
   REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[1])));
   REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[2])));
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder: non systematic code")
+{
+  configuration conf;
+  conf.rate = 4;
+  conf.code_type = code::non_systematic;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+
+  auto& enc_handler = enc.packet_handler();
+  auto& dec_data_handler = dec.data_handler();
+
+  // Packets will be stored in enc_handler.vec.
+  const auto s0 = {'a', 'b', 'c'};
+  enc(data{begin(s0), end(s0)});
+  REQUIRE(enc.window() == 1);
+
+  const auto s1 = {'d', 'e', 'f'};
+  enc(data{begin(s1), end(s1)});
+  REQUIRE(enc.window() == 2);
+
+  const auto s2 = {'g', 'h', 'i'};
+  enc(data{begin(s2), end(s2)});
+  REQUIRE(enc.window() == 3);
+
+  const auto s3 = {'j', 'k', 'l'};
+  enc(data{begin(s3), end(s3)});
+
+  REQUIRE(enc_handler.nb_packets() == 5 /* repairs */);
+
+  SECTION("Lost first repair")
+  {
+    // Now send to decoder.
+    // Lost first repair.
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[2].data());
+    dec(enc_handler.vec[3].data());
+    dec(enc_handler.vec[4].data());
+
+    REQUIRE(dec.nb_received_sources() == 0);
+    REQUIRE(dec.nb_received_repairs() == 4);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 4);
+
+    // All sources were correctly given to the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
+  SECTION("Lost a repair")
+  {
+    // Now send to decoder.
+    // Lost repair 2.
+    dec(enc_handler.vec[0].data());
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[3].data());
+    dec(enc_handler.vec[4].data());
+
+    REQUIRE(dec.nb_received_sources() == 0);
+    REQUIRE(dec.nb_received_repairs() == 4);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 4);
+
+    // All sources were correctly given to the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
+  SECTION("Lost last repair")
+  {
+    // Now send to decoder.
+    // Lost last repair.
+    dec(enc_handler.vec[0].data());
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[2].data());
+    dec(enc_handler.vec[3].data());
+
+    REQUIRE(dec.nb_received_sources() == 0);
+    REQUIRE(dec.nb_received_repairs() == 4);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 4);
+
+    // All sources were correctly given to the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
