@@ -153,7 +153,8 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
   dec(enc_handler.vec[1].data());
   dec(enc_handler.vec[2].data());
   dec(enc_handler.vec[3].data());
-  // The arrival of the repair should decode the lost source.
+  // Because the encoder's window is 3, the incoming repair only encode s1, s2 and s3. Thus,
+  // s0 is completely lost and cannot be recovered.
   dec(enc_handler.vec[4].data());
   REQUIRE(dec.nb_received_sources() == 3);
   REQUIRE(dec.nb_received_repairs() == 1);
