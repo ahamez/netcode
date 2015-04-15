@@ -32,12 +32,14 @@ endif()
 
 #--------------------------------------------------------------------------------------------------#
 
-find_path(GF_COMPLETE_INCLUDE_DIR gf_complete.h)
+option (GF_COMPLETE_ROOT "Path to gf-complete")
+
+find_path(GF_COMPLETE_INCLUDE_DIR gf_complete.h PATHS "${GF_COMPLETE_ROOT}/include")
 if (NOT GF_COMPLETE_INCLUDE_DIR)
   message(FATAL_ERROR "gf-complete headers not found")
 endif ()
 
-find_library(GF_COMPLETE_LIBRARY libgf_complete.a)
+find_library(GF_COMPLETE_LIBRARY libgf_complete.a PATHS "${GF_COMPLETE_ROOT}/lib")
 if (NOT GF_COMPLETE_LIBRARY)
   message(FATAL_ERROR "gf-complete library not found")
 endif ()
