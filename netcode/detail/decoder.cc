@@ -430,7 +430,7 @@ decoder::attempt_full_decoding()
   for (const auto& miss : missing_sources_)
   {
     // First, decode the size of the source.
-    const auto sz = [&,this]
+    const auto src_sz = [&,this]
     {
       auto res = 0ul;
       for (auto repair_row = 0ul; repair_row < inv_.dimension(); ++repair_row)
@@ -445,7 +445,7 @@ decoder::attempt_full_decoding()
     }();
 
     // Now, decode symbol.
-    source src{miss.first, byte_buffer(sz), sz};
+    source src{miss.first, byte_buffer(src_sz), src_sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 
@@ -460,16 +460,15 @@ decoder::attempt_full_decoding()
     }
     assert(repair_row != repairs_.size() && "No coefficients for missing source");
 
-    gf_.multiply( index[repair_row]->buffer().data(), src.buffer().data(), src.buffer().size()
-                , coeff);
+    assert(index[repair_row]->buffer().size() >= src_sz);
+    gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), src_sz, coeff);
 
     for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
     {
       coeff = inv_(repair_row, src_col);
       if (coeff != 0)
       {
-        gf_.multiply_add( index[repair_row]->buffer().data(), src.buffer().data()
-                        , src.buffer().size(), coeff);
+        gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), src_sz, coeff);
       }
     }
     ++src_col;
