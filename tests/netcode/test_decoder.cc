@@ -199,7 +199,13 @@ TEST_CASE("Decoder: non systematic code")
   const auto s3 = {'j', 'k', 'l'};
   enc(data{begin(s3), end(s3)});
 
+  // Only repairs
   REQUIRE(enc_handler.nb_packets() == 5 /* repairs */);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
 
   SECTION("Lost first repair")
   {
