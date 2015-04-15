@@ -124,7 +124,7 @@ TEST_CASE("Encode two sources")
   SECTION("s0 is lost")
   {
     // First, remove size.
-    r0.size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_data.size()));
+    r0.encoded_size() ^= gf.multiply(c1, static_cast<std::uint32_t>(s1_data.size()));
 
     // Second, remove data.
     gf.multiply_add(s1.buffer().data(), r0.buffer().data(), s1.user_size(), c1);
@@ -149,7 +149,7 @@ TEST_CASE("Encode two sources")
   SECTION("s1 is lost")
   {
     // First, remove size.
-    r0.size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_data.size()));
+    r0.encoded_size() ^= gf.multiply(c0, static_cast<std::uint32_t>(s0_data.size()));
     // Second, remove data.
     gf.multiply_add(s0.buffer().data(), r0.buffer().data(), s0.user_size(), c0);
 

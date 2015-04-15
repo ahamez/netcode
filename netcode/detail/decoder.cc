@@ -353,7 +353,7 @@ noexcept
   const auto coeff = coefficient(gf_, r.id(), src.id());
 
   // Remove source size.
-  r.size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
+  r.encoded_size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
 
   // Remove symbol.
   gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);

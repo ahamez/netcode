@@ -34,7 +34,7 @@ encoder::operator()(repair& repair, source_list& sources)
   gf_.multiply(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
   // Initialize the user's size.
-  repair.size() = gf_.multiply(c, static_cast<std::uint32_t>(cit->user_size()));
+  repair.encoded_size() = gf_.multiply(c, static_cast<std::uint32_t>(cit->user_size()));
 
   // Then, for each remaining source, multiply it with a coefficient and add it with
   // current repair.
@@ -56,7 +56,7 @@ encoder::operator()(repair& repair, source_list& sources)
     gf_.multiply_add(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
     // Finally, add the user size.
-    repair.size() ^= gf_.multiply(c, static_cast<std::uint32_t>(cit->user_size()));
+    repair.encoded_size() ^= gf_.multiply(c, static_cast<std::uint32_t>(cit->user_size()));
   }
 }
 
