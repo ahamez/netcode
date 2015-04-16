@@ -169,8 +169,8 @@ public:
       data += sizeof(std::uint32_t);
     }
 
-    // Read user size.
-    const auto user_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    // Read encoded size.
+    const auto encoded_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
     // Read size of the repair symbol.
@@ -182,7 +182,7 @@ public:
     buffer.reserve(sz);
     std::copy_n(data, sz, std::back_inserter(buffer));
 
-    return std::make_pair( repair{id, user_sz, std::move(ids), std::move(buffer)}
+    return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
                          , reinterpret_cast<std::size_t>(data) - begin);
   }
 

@@ -73,7 +73,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   const auto r_out = serializer.read_repair(h.data_).first;
   REQUIRE(r_in.id() == r_out.id());
   REQUIRE(r_in.source_ids() == r_out.source_ids());
-  REQUIRE(r_in.size() == r_out.size());
+  REQUIRE(r_in.encoded_size() == r_out.encoded_size());
   REQUIRE(r_in.buffer() == r_out.buffer());
 }
 
