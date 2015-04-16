@@ -80,20 +80,17 @@ TEST_CASE("Encoder can limit the window size")
 
 TEST_CASE("Encoder generates repairs")
 {
+  const auto data = std::vector<char>(100, 'x');
+
   configuration conf;
   conf.rate = 5;
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
-  SECTION("Fixed code rate")
+  for (auto i = 0ul; i < 100; ++i)
   {
-    for (auto i = 0ul; i < 100; ++i)
-    {
-      auto data = ntc::data{512};
-      data.used_bytes() = 512;
-      encoder(std::move(data));
-    }
-    REQUIRE(encoder.nb_sent_repairs() == (100/5 /*code rate*/));
+    encoder(ntc::data(data.begin(), data.begin() + 1));
   }
+  REQUIRE(encoder.nb_sent_repairs() == (100/5 /*code rate*/));
 }
 
 /*------------------------------------------------------------------------------------------------*/
