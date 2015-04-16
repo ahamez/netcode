@@ -273,3 +273,53 @@ TEST_CASE("Decoder: non systematic code")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder invalid read scenario")
+{
+  configuration conf;
+  conf.rate = 3;
+  conf.code_type = code::non_systematic;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+
+  auto& enc_handler = enc.packet_handler();
+  auto& dec_data_handler = dec.data_handler();
+
+  // Packets will be stored in enc_handler.vec.
+  const auto s0 = {'a'};
+  enc(data{begin(s0), end(s0)});
+
+  const auto s1 = {'b'};
+  enc(data{begin(s1), end(s1)});
+
+  const auto s2 = {'c', 'c'};
+  enc(data{begin(s2), end(s2)});
+
+  // Only repairs
+  REQUIRE(enc_handler.nb_packets() == 4 /* repairs */);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+
+  SECTION("Lost 1st repair")
+  {
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[2].data());
+    dec(enc_handler.vec[3].data());
+
+    REQUIRE(dec.nb_received_sources() == 0);
+    REQUIRE(dec.nb_received_repairs() == 3);
+    REQUIRE(dec.nb_decoded() == 3);
+
+    // All sources were correctly given to the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 3);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/

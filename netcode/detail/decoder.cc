@@ -468,7 +468,8 @@ decoder::attempt_full_decoding()
       coeff = inv_(repair_row, src_col);
       if (coeff != 0)
       {
-        gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), src_sz, coeff);
+        const auto sz = std::min(src_sz, index[repair_row]->buffer().size());
+        gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
       }
     }
     ++src_col;
