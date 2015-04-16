@@ -460,7 +460,6 @@ decoder::attempt_full_decoding()
     }
     assert(repair_row != repairs_.size() && "No coefficients for missing source");
 
-    assert(index[repair_row]->buffer().size() >= src_sz);
     gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), src_sz, coeff);
 
     for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
