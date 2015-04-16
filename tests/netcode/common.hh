@@ -62,8 +62,7 @@ struct data_handler
   void
   operator()(const char* src, std::size_t len)
   {
-    vec.emplace_back();
-    std::copy_n(src, len, std::back_inserter(vec.back()));
+    vec.emplace_back(src, src + len);
   }
 };
 

@@ -445,7 +445,7 @@ decoder::attempt_full_decoding()
     }();
 
     // Now, decode symbol.
-    source src{miss.first, byte_buffer(src_sz), src_sz};
+    source src{miss.first, byte_buffer(src_sz, 0 /* zero out the buffer */), src_sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 
