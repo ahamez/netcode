@@ -460,14 +460,18 @@ decoder::attempt_full_decoding()
     }
     assert(repair_row != repairs_.size() && "No coefficients for missing source");
 
-    gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), src_sz, coeff);
+    // Repair's buffer might be smaller than the size of the source to decode, or it could be
+    // the opposite situation. Thus, we need to make sure that we only read the right number of
+    // bytes.
+    auto sz = std::min(src_sz, index[repair_row]->buffer().size());
+    gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
 
     for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
     {
       coeff = inv_(repair_row, src_col);
       if (coeff != 0)
       {
-        const auto sz = std::min(src_sz, index[repair_row]->buffer().size());
+        sz = std::min(src_sz, index[repair_row]->buffer().size());
         gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
       }
     }
