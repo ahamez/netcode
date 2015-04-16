@@ -162,7 +162,7 @@ noexcept
   const auto inv = gf_.divide(1, coefficient(gf_, r.id(), src_id));
 
   // Reconstruct size.
-  const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.encoded_size()), inv);
+  const auto src_sz = gf_.multiply(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
   source src{src_id, byte_buffer(src_sz), src_sz};
@@ -353,7 +353,7 @@ noexcept
   const auto coeff = coefficient(gf_, r.id(), src.id());
 
   // Remove source size.
-  r.encoded_size() ^= gf_.multiply(coeff, static_cast<std::uint32_t>(src.user_size()));
+  r.encoded_size() ^= gf_.multiply(coeff, src.user_size());
 
   // Remove symbol.
   gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
@@ -432,13 +432,13 @@ decoder::attempt_full_decoding()
     // First, decode the size of the source.
     const auto src_sz = [&,this]
     {
-      auto res = 0ul;
+      auto res = 0u;
       for (auto repair_row = 0ul; repair_row < inv_.dimension(); ++repair_row)
       {
         const auto coeff = inv_(repair_row, src_col);
         if (coeff != 0)
         {
-          res ^= gf_.multiply(static_cast<std::uint32_t>(index[repair_row]->encoded_size()), coeff);
+          res ^= gf_.multiply(index[repair_row]->encoded_size(), coeff);
         }
       }
       return res;
@@ -463,7 +463,7 @@ decoder::attempt_full_decoding()
     // Repair's buffer might be smaller than the size of the source to decode, or it could be
     // the opposite situation. Thus, we need to make sure that we only read the right number of
     // bytes.
-    auto sz = std::min(src_sz, index[repair_row]->buffer().size());
+    auto sz = std::min(src_sz, static_cast<std::uint32_t>(index[repair_row]->buffer().size()));
     gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
 
     for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
@@ -471,7 +471,7 @@ decoder::attempt_full_decoding()
       coeff = inv_(repair_row, src_col);
       if (coeff != 0)
       {
-        sz = std::min(src_sz, index[repair_row]->buffer().size());
+        sz = std::min(src_sz, static_cast<std::uint32_t>(index[repair_row]->buffer().size()));
         gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
       }
     }

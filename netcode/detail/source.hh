@@ -25,7 +25,7 @@ public:
   source& operator=(source&&) = default;
 
   /// @brief Constructor.
-  source(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)
+  source(std::uint32_t id, byte_buffer&& buf, std::uint32_t user_size)
     : id_{id}
     , symbol_buffer_{std::move(buf)}
     , user_size_{user_size}
@@ -56,7 +56,7 @@ public:
   }
 
   /// @brief Get the number of bytes really used by the user's symbol.
-  std::size_t
+  std::uint32_t
   user_size()
   const noexcept
   {
@@ -72,7 +72,7 @@ private:
   byte_buffer symbol_buffer_;
 
   /// @brief The number of bytes really used by the user's symbol in the buffer.
-  std::size_t user_size_;
+  std::uint32_t user_size_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
