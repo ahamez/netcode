@@ -43,7 +43,7 @@ TEST_CASE("Encode one source")
   // s0 is lost, reconstruct it in a new source.
 
   // First, compute its size.
-  const auto src_size = gf.multiply(inv, static_cast<std::uint32_t>(r0.size()));
+  const auto src_size = gf.multiply(inv, static_cast<std::uint32_t>(r0.encoded_size()));
   REQUIRE(src_size == 4);
 
   detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
@@ -133,7 +133,7 @@ TEST_CASE("Encode two sources")
     const auto inv0 = gf.divide(1, c0);
 
     // First, compute its size.
-    const auto src_size = gf.multiply(inv0, static_cast<std::uint32_t>(r0.size()));
+    const auto src_size = gf.multiply(inv0, static_cast<std::uint32_t>(r0.encoded_size()));
     REQUIRE(src_size == s0_data.size());
 
     // Now, reconstruct missing data.
@@ -157,7 +157,7 @@ TEST_CASE("Encode two sources")
     const auto inv1 = gf.divide(1, c1);
 
     // First, compute its size.
-    const auto src_size = gf.multiply(inv1, static_cast<std::uint32_t>(r0.size()));
+    const auto src_size = gf.multiply(inv1, static_cast<std::uint32_t>(r0.encoded_size()));
     REQUIRE(src_size == s1_data.size());
 
     // Now, reconstruct missing data.
@@ -235,8 +235,8 @@ TEST_CASE("Two sources lost")
   // Reconstruct s0.
 
   // But first, compute its size.
-  const auto s0_size = gf.multiply(static_cast<std::uint32_t>(r0.size()), inv(0,0))
-                     ^ gf.multiply(static_cast<std::uint32_t>(r1.size()), inv(1,0));
+  const auto s0_size = gf.multiply(static_cast<std::uint32_t>(r0.encoded_size()), inv(0,0))
+                     ^ gf.multiply(static_cast<std::uint32_t>(r1.encoded_size()), inv(1,0));
   REQUIRE(s0_size == s0_data.size());
   detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, s0_size};
 
@@ -248,8 +248,8 @@ TEST_CASE("Two sources lost")
   // Reconstruct s1.
 
   // But first, compute its size.
-  const auto s1_size = gf.multiply(static_cast<std::uint32_t>(r0.size()), inv(0,1))
-                     ^ gf.multiply(static_cast<std::uint32_t>(r1.size()), inv(1,1));
+  const auto s1_size = gf.multiply(static_cast<std::uint32_t>(r0.encoded_size()), inv(0,1))
+                     ^ gf.multiply(static_cast<std::uint32_t>(r1.encoded_size()), inv(1,1));
   REQUIRE(s1_size == s1_data.size());
   detail::source s1{0, detail::byte_buffer{'x','x','x','x','x'}, s1_size};
 

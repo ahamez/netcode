@@ -103,7 +103,7 @@ public:
 
   /// @brief Get the encoded sizes of all sources this repair contains.
   std::size_t
-  size()
+  encoded_size()
   const noexcept
   {
     return encoded_size_;

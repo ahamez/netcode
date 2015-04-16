@@ -162,7 +162,7 @@ noexcept
   const auto inv = gf_.divide(1, coefficient(gf_, r.id(), src_id));
 
   // Reconstruct size.
-  const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.size()), inv);
+  const auto src_sz = gf_.multiply(static_cast<std::uint32_t>(r.encoded_size()), inv);
 
   // The source that will be reconstructed.
   source src{src_id, byte_buffer(src_sz), src_sz};
@@ -438,7 +438,7 @@ decoder::attempt_full_decoding()
         const auto coeff = inv_(repair_row, src_col);
         if (coeff != 0)
         {
-          res ^= gf_.multiply(static_cast<std::uint32_t>(index[repair_row]->size()), coeff);
+          res ^= gf_.multiply(static_cast<std::uint32_t>(index[repair_row]->encoded_size()), coeff);
         }
       }
       return res;
