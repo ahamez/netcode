@@ -5,8 +5,8 @@
 //  Distributed under the Boost Software License, Version 1.0.
 //  http://www.boost.org/LICENSE_1_0.txt
 
-#ifndef BOOST_ENDIAN_CONVERTERS_HPP
-#define BOOST_ENDIAN_CONVERTERS_HPP
+#ifndef BOOST_ENDIAN_CONVERSION_HPP
+#define BOOST_ENDIAN_CONVERSION_HPP
 
 #include <boost/config.hpp>
 #include <boost/predef/detail/endian_compat.h>
@@ -61,9 +61,6 @@ namespace endian
   inline uint16_t endian_reverse(uint16_t x) BOOST_NOEXCEPT;
   inline uint32_t endian_reverse(uint32_t x) BOOST_NOEXCEPT;
   inline uint64_t endian_reverse(uint64_t x) BOOST_NOEXCEPT;
-  //  TODO: Track N3626,Floating-Point Typedefs Having Specified Widths, proposal
-  inline float    endian_reverse(float x) BOOST_NOEXCEPT;
-  inline double   endian_reverse(double x) BOOST_NOEXCEPT;
 
   //  reverse byte order unless native endianness is big
   template <class EndianReversible >
@@ -162,17 +159,15 @@ namespace endian
   {
     //  generic reverse function template implementation approach using std::reverse
     //  suggested by Mathias Gaunard. Primary motivation for inclusion is to have an
-    //  independent implementation to test against. Secondary motivation is use by
-    //  floating-point endian_reverse, but that use is likely to be replace by a
-    //  more tailored floating-point implementation.
+    //  independent implementation to test against.
 
     template <class T>
     inline T std_endian_reverse(T x) BOOST_NOEXCEPT
     {
       T tmp(x);
       std::reverse(
-        reinterpret_cast<char*>(&tmp),
-        reinterpret_cast<char*>(&tmp) + sizeof(T));
+        reinterpret_cast<unsigned char*>(&tmp),
+        reinterpret_cast<unsigned char*>(&tmp) + sizeof(T));
       return tmp;
     }
 
@@ -281,22 +276,6 @@ namespace endian
 # else
     return BOOST_ENDIAN_INTRINSIC_BYTE_SWAP_8(x);
 # endif
-  }
-
-  inline float endian_reverse(float x) BOOST_NOEXCEPT
-  {
-    BOOST_STATIC_ASSERT_MSG(sizeof(float) == sizeof(uint32_t),
-      "boost::endian currently supports only sizeof(float) == 4;"
-      " please report static_assert failure to the boost mailing list");
-    return detail::std_endian_reverse(x);
-  }
-
-  inline double endian_reverse(double x) BOOST_NOEXCEPT
-  {
-    BOOST_STATIC_ASSERT_MSG(sizeof(double) == sizeof(uint64_t),
-      "boost::endian currently supports only sizeof(double) == 8;"
-      " please report static_assert failure to the boost mailing list");
-    return detail::std_endian_reverse(x);
   }
 
   template <class EndianReversible >
@@ -505,4 +484,4 @@ namespace endian
 }  // namespace endian
 }  // namespace boost
 
-#endif // BOOST_ENDIAN_CONVERTERS_HPP
+#endif // BOOST_ENDIAN_CONVERSION_HPP

@@ -76,22 +76,6 @@ namespace endian
     BOOST_SCOPED_ENUM(align) A = align::no>
       class endian_buffer;
 
-  // aligned big endian floating point buffers
-  typedef endian_buffer<order::big, float, 32, align::yes>      big_float32_buf_at;
-  typedef endian_buffer<order::big, double, 64, align::yes>     big_float64_buf_at;
-
-  // aligned little endian floating point buffers
-  typedef endian_buffer<order::little, float, 32, align::yes>   little_float32_buf_at;
-  typedef endian_buffer<order::little, double, 64, align::yes>  little_float64_buf_at;
-
-  // unaligned big endian floating point buffers
-  typedef endian_buffer<order::big, float, 32, align::no>       big_float32_buf_t;
-  typedef endian_buffer<order::big, double, 64, align::no>      big_float64_buf_t;
-
-  // unaligned little endian floating point buffers
-  typedef endian_buffer<order::little, float, 32, align::no>    little_float32_buf_t;
-  typedef endian_buffer<order::little, double, 64, align::no>   little_float64_buf_t;
-
   // aligned big endian signed integer buffers
   typedef endian_buffer<order::big, int8_t, 8, align::yes>       big_int8_buf_at;
   typedef endian_buffer<order::big, int16_t, 16, align::yes>     big_int16_buf_at;
@@ -179,12 +163,6 @@ namespace endian
   typedef big_uint48_buf_t  native_uint48_buf_t;
   typedef big_uint56_buf_t  native_uint56_buf_t;
   typedef big_uint64_buf_t  native_uint64_buf_t;
-
-  // native endian floating point buffers
-  typedef big_float32_buf_t native_float32_buf_t;
-  typedef big_float64_buf_t native_float64_buf_t;
-  typedef big_float32_buf_at native_float32_buf_at;
-  typedef big_float64_buf_at native_float64_buf_at;
 # else
   // unaligned native endian signed integer buffers
   typedef little_int8_buf_t   native_int8_buf_t;
@@ -205,12 +183,6 @@ namespace endian
   typedef little_uint48_buf_t  native_uint48_buf_t;
   typedef little_uint56_buf_t  native_uint56_buf_t;
   typedef little_uint64_buf_t  native_uint64_buf_t;
-
-  // native endian floating point buffers
-  typedef little_float32_buf_t native_float32_buf_t;
-  typedef little_float64_buf_t native_float64_buf_t;
-  typedef little_float32_buf_at native_float32_buf_at;
-  typedef little_float64_buf_at native_float64_buf_at;
 # endif
 
   // Stream inserter
@@ -404,102 +376,6 @@ namespace endian
         const char* data() const BOOST_NOEXCEPT  { return m_value; }
       protected:
         char m_value[n_bits/8];
-    };
- 
-    //  unaligned float big endian_buffer specialization
-    template <>
-    class endian_buffer< order::big, float, 32, align::no >
-    {
-      public:
-        typedef float value_type;
-#     ifndef BOOST_ENDIAN_NO_CTORS
-        endian_buffer() BOOST_ENDIAN_DEFAULT_CONSTRUCT
-        explicit endian_buffer(value_type val) BOOST_NOEXCEPT
-          { detail::big_reverse_copy(val, m_value); }
-#     endif
-        endian_buffer & operator=(value_type val) BOOST_NOEXCEPT
-          { detail::big_reverse_copy(val, m_value); return *this; }
-        value_type value() const BOOST_NOEXCEPT
-        {
-          value_type tmp;
-          detail::big_reverse_copy(m_value, tmp);
-          return tmp;
-        }
-        const char* data() const BOOST_NOEXCEPT  { return m_value; }
-      protected:
-        char m_value[sizeof(value_type)];
-    };
-
-    //  unaligned double big endian_buffer specialization
-    template <>
-    class endian_buffer< order::big, double, 64, align::no >
-    {
-      public:
-        typedef double value_type;
-#     ifndef BOOST_ENDIAN_NO_CTORS
-        endian_buffer() BOOST_ENDIAN_DEFAULT_CONSTRUCT
-        explicit endian_buffer(value_type val) BOOST_NOEXCEPT
-          { detail::big_reverse_copy(val, m_value); }
-#     endif
-        endian_buffer & operator=(value_type val) BOOST_NOEXCEPT
-          { detail::big_reverse_copy(val, m_value); return *this; }
-        value_type value() const BOOST_NOEXCEPT
-        {
-          value_type tmp;
-          detail::big_reverse_copy(m_value, tmp);
-          return tmp;
-        }
-        const char* data() const BOOST_NOEXCEPT  { return m_value; }
-      protected:
-        char m_value[sizeof(value_type)];
-    };
- 
-    //  unaligned float little endian_buffer specialization
-    template <>
-    class endian_buffer< order::little, float, 32, align::no >
-    {
-      public:
-        typedef float value_type;
-#     ifndef BOOST_ENDIAN_NO_CTORS
-        endian_buffer() BOOST_ENDIAN_DEFAULT_CONSTRUCT
-        explicit endian_buffer(value_type val) BOOST_NOEXCEPT
-          { detail::little_reverse_copy(val, m_value); }
-#     endif
-        endian_buffer & operator=(value_type val) BOOST_NOEXCEPT
-          { detail::little_reverse_copy(val, m_value); return *this; }
-        value_type value() const BOOST_NOEXCEPT
-        {
-          value_type tmp;
-          detail::little_reverse_copy(m_value, tmp);
-          return tmp;
-        }
-        const char* data() const BOOST_NOEXCEPT  { return m_value; }
-      protected:
-        char m_value[sizeof(value_type)];
-    };
-
-    //  unaligned double little endian_buffer specialization
-    template <>
-    class endian_buffer< order::little, double, 64, align::no >
-    {
-      public:
-        typedef double value_type;
-#     ifndef BOOST_ENDIAN_NO_CTORS
-        endian_buffer() BOOST_ENDIAN_DEFAULT_CONSTRUCT
-        explicit endian_buffer(value_type val) BOOST_NOEXCEPT
-          { detail::little_reverse_copy(val, m_value); }
-#     endif
-        endian_buffer & operator=(value_type val) BOOST_NOEXCEPT
-          { detail::little_reverse_copy(val, m_value); return *this; }
-        value_type value() const BOOST_NOEXCEPT
-        {
-          value_type tmp;
-          detail::little_reverse_copy(m_value, tmp);
-          return tmp;
-        }
-        const char* data() const BOOST_NOEXCEPT  { return m_value; }
-      protected:
-        char m_value[sizeof(value_type)];
     };
 
     //  unaligned little endian_buffer specialization
