@@ -86,12 +86,12 @@ noexcept
         }
         else
         {
-          const auto tmp = mat[k];
+          const auto mat_k = mat[k];
           const auto rs2 = cols * j;
           for (auto x = 0ul; x < cols; ++x)
           {
-            mat[rs2 + x] ^= gf.multiply(tmp, mat[row_start + x]);
-            inv[rs2 + x] ^= gf.multiply(tmp, inv[row_start + x]);
+            mat[rs2 + x] ^= gf.multiply(mat_k, mat[row_start + x]);
+            inv[rs2 + x] ^= gf.multiply(mat_k, inv[row_start + x]);
           }
         }
       }

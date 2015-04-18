@@ -124,8 +124,8 @@ public:
     // Write source identifiers.
     for (const auto id : pkt.source_ids())
     {
-      const auto network_id = native_to_big(id);
-      write(&network_id, sizeof(std::uint32_t));
+      const auto network_source_id = native_to_big(id);
+      write(&network_source_id, sizeof(std::uint32_t));
     }
 
     // Write user size.

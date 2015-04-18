@@ -200,7 +200,7 @@ TEST_CASE("Matrix is correctly inverted", "[square_matrix][invert]")
       identity(i, j) = [&]
       {
         std::uint32_t tmp = 0;
-        for (auto k = 0ul; k < identity.dimension(); ++k)
+        for (k = 0ul; k < identity.dimension(); ++k)
         {
           tmp ^= gf.multiply(m(i, k), inv(k, j));
         }
