@@ -1,10 +1,13 @@
 #include <cstdlib>
 #include <iostream>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
 #define ASIO_STANDALONE
 #define BOOST_DATE_TIME_NO_LIB
 #define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
+#pragma GCC diagnostic pop
 
 #include <netcode/configuration.hh>
 

@@ -7,10 +7,13 @@
 #include <stdexcept>
 #include <string>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
 #define ASIO_STANDALONE
 #define BOOST_DATE_TIME_NO_LIB
 #define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
+#pragma GCC diagnostic pop
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -182,9 +185,11 @@ display(asio::deadline_timer& timer)
                                 << " || total "
                                 << a_to_b_total << " , " << b_to_a_total
                                 << " || % "
-                                << (static_cast<float>(a_to_b_losses) / a_to_b_total) * 100
+                                << ( static_cast<float>(a_to_b_losses)
+                                   / static_cast<float>(a_to_b_total)) * 100
                                 << " , "
-                                << (static_cast<float>(b_to_a_losses) / b_to_a_total) * 100
+                                << ( static_cast<float>(b_to_a_losses)
+                                   / static_cast<float>(b_to_a_total)) * 100
                                 << '\r';
                       std::cout.flush();
                       display(timer);
@@ -241,7 +246,7 @@ main(int argc, char** argv)
   }
   try
   {
-    const auto from_port = std::atoi(argv[1]);
+    const auto from_port = static_cast<unsigned short>(std::atoi(argv[1]));
     const auto to_ip = argv[2];
     const auto to_port = argv[3];
     if (std::strncmp(argv[4], "burst", 6) == 0)

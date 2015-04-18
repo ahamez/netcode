@@ -403,7 +403,9 @@ decoder::attempt_full_decoding()
 
     // Find the repair corresponding to r_col.
     auto r_cit = repairs_.begin();
-    std::advance(r_cit, *r_col);
+    // To avoid a conversion warning with clang's -Wconversion.
+    using difference_type = std::iterator_traits<decltype(r_cit)>::difference_type;
+    std::advance(r_cit, static_cast<difference_type>(*r_col));
 
     // Remove repair from missing sources that reference it.
     for (const auto src : r_cit->second.source_ids())

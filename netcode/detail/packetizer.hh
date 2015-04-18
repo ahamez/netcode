@@ -4,7 +4,10 @@
 #include <iterator> // back_inserter
 #include <utility>  // pair
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
 #include <boost/endian/conversion.hpp>
+#pragma GCC diagnostic pop
 
 #include "netcode/detail/ack.hh"
 #include "netcode/detail/buffer.hh"

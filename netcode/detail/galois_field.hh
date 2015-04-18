@@ -37,7 +37,7 @@ public:
     : gf_{}
     , size_{static_cast<std::uint32_t>(w)}
   {
-    if (gf_init_easy(&gf_, size_) == 0)
+    if (gf_init_easy(&gf_, static_cast<int>(size_)) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
     }
