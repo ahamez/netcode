@@ -99,7 +99,7 @@ public:
   multiply(std::uint16_t size, std::uint32_t coeff)
   noexcept
   {
-    assert(coeff <= (1u << w_) && "Incorrect coefficient");
+    assert(((w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32) && "Invalid coefficient");
 
     if (size == 0 or coeff == 0)
     {
