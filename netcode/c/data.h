@@ -1,7 +1,10 @@
 #pragma once
 
 #ifdef __cplusplus
+#include <cstdint>
 #include "netcode/c/detail/types.hh"
+#else
+#include <stdint.h>
 #endif
 
 /*------------------------------------------------------------------------------------------------*/
