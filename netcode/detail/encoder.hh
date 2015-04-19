@@ -16,7 +16,7 @@ class encoder final
 public:
 
   /// @brief Constructor.
-  encoder(std::size_t galois_field_size);
+  encoder(std::uint8_t galois_field_size);
 
   /// @brief Fill a @ref detail::repair from a set of detail::source.
   /// @param repair The repair to fill.

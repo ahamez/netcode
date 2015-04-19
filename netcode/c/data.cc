@@ -3,7 +3,7 @@
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_data_t*
-ntc_new_data(size_t sz)
+ntc_new_data(uint16_t sz)
 {
   return new ntc_data_t{sz};
 }
@@ -11,7 +11,7 @@ ntc_new_data(size_t sz)
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_data_t*
-ntc_new_data_copy(const char* src, size_t sz)
+ntc_new_data_copy(const char* src, uint16_t sz)
 {
   return new ntc_data_t{src, sz};
 }
@@ -35,7 +35,7 @@ ntc_data_buffer(ntc_data_t* d)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_set_used_bytes(ntc_data_t* d, size_t sz)
+ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz)
 {
   d->used_bytes() = sz;
 }
@@ -43,7 +43,7 @@ ntc_data_set_used_bytes(ntc_data_t* d, size_t sz)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_reset(ntc_data_t* d, size_t sz)
+ntc_data_reset(ntc_data_t* d, uint16_t sz)
 {
   d->reset(sz);
 }

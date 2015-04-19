@@ -12,7 +12,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-decoder::decoder(std::size_t galois_field_size, std::function<void(const source&)> h)
+decoder::decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h)
   : gf_{galois_field_size}
   , callback_(h)
   , repairs_{}
@@ -434,7 +434,7 @@ decoder::attempt_full_decoding()
     // First, decode the size of the source.
     const auto src_sz = [&,this]
     {
-      auto res = 0u;
+      std::uint16_t res = 0;
       for (auto repair_row = 0ul; repair_row < inv_.dimension(); ++repair_row)
       {
         const auto coeff = inv_(repair_row, src_col);
@@ -465,7 +465,7 @@ decoder::attempt_full_decoding()
     // Repair's buffer might be smaller than the size of the source to decode, or it could be
     // the opposite situation. Thus, we need to make sure that we only read the right number of
     // bytes.
-    auto sz = std::min(src_sz, static_cast<std::uint32_t>(index[repair_row]->buffer().size()));
+    auto sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
     gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
 
     for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
@@ -473,7 +473,7 @@ decoder::attempt_full_decoding()
       coeff = inv_(repair_row, src_col);
       if (coeff != 0)
       {
-        sz = std::min(src_sz, static_cast<std::uint32_t>(index[repair_row]->buffer().size()));
+        sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
         gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
       }
     }

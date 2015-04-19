@@ -33,9 +33,9 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
-  galois_field(std::size_t w)
+  galois_field(std::uint8_t w)
     : gf_{}
-    , size_{static_cast<std::uint32_t>(w)}
+    , size_{w}
   {
     if (gf_init_easy(&gf_, static_cast<int>(size_)) == 0)
     {
@@ -92,8 +92,8 @@ public:
                            , 1 /* add to src */);
   }
 
-  std::uint32_t
-  multiply(std::uint32_t x, std::uint32_t y)
+  std::uint16_t
+  multiply(std::uint16_t x, std::uint16_t y)
   noexcept
   {
     return x == 0 or y == 0
@@ -101,8 +101,8 @@ public:
          : gf_.multiply.w32(&gf_, x, y);
   }
 
-  std::uint32_t
-  divide(std::uint32_t x, std::uint32_t y)
+  std::uint16_t
+  divide(std::uint16_t x, std::uint16_t y)
   noexcept
   {
     return x == 0
@@ -116,7 +116,7 @@ private:
   gf_t gf_;
 
   /// @brief This field size.
-  std::uint32_t size_;
+  std::uint8_t  size_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

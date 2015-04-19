@@ -25,7 +25,7 @@ public:
   /// @param size The size of the buffer to allocate.
   ///
   /// Use this constructor when you intend to directly write in the underlying buffer to avoid copy.
-  data(std::size_t size)
+  data(std::uint16_t size)
     : used_bytes_{0}
     , buffer_(size)
   {}
@@ -35,7 +35,7 @@ public:
   /// @param len The size of the data to copy.
   ///
   /// Use this constructor when you need to copy the input data.
-  data(const char* src, std::size_t len)
+  data(const char* src, std::uint16_t len)
     : used_bytes_{len}
     , buffer_(len)
   {
@@ -49,7 +49,7 @@ public:
   /// Use this constructor when you need to copy the input data.
   template <typename InputIterator>
   data(InputIterator begin, InputIterator end)
-    : used_bytes_{static_cast<std::size_t>(std::distance(begin, end))}
+    : used_bytes_{static_cast<std::uint16_t>(std::distance(begin, end))}
     , buffer_(used_bytes_)
   {
     std::copy(begin, end, buffer_.begin());
@@ -68,7 +68,7 @@ public:
   ///
   /// May cause a copy.
   void
-  resize(std::size_t size)
+  resize(std::uint16_t size)
   {
     buffer_.resize(size);
   }
@@ -84,7 +84,7 @@ public:
   /// @brief Get the the number of used bytes for this data.
   ///
   /// When set, it must be smaller than the reserved size.
-  std::size_t&
+  std::uint16_t&
   used_bytes()
   noexcept
   {
@@ -109,7 +109,7 @@ public:
 
   /// @brief The useable size of the underlying buffer.
   /// @note It might be greater than the requested size at construction or by resize().
-  std::size_t
+  std::uint16_t
   reserved_size()
   const noexcept
   {
@@ -120,7 +120,7 @@ public:
   /// @note Can be used on a moved data. As a matter of fact, it's the only way to use again a
   /// moved data.
   void
-  reset(std::size_t size)
+  reset(std::uint16_t size)
   noexcept
   {
     used_bytes_ = 0;
@@ -130,7 +130,7 @@ public:
 private:
 
   /// @brief The size of the data given by the user.
-  std::size_t used_bytes_;
+  std::uint16_t used_bytes_;
 
   /// @brief The buffer storage.
   detail::byte_buffer buffer_;

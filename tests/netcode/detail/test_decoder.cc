@@ -62,7 +62,7 @@ TEST_CASE("Decoder: remove a source from a repair")
   SECTION("Remove s0, we should be able to reconstruct s1")
   {
     detail::decoder decoder{8, [](const detail::source&){}};
-    const detail::source s0{0, detail::byte_buffer{s0_data}, static_cast<std::uint32_t>(s0_data.size())};
+    const detail::source s0{0, detail::byte_buffer{s0_data}, static_cast<std::uint16_t>(s0_data.size())};
     decoder.remove_source_from_repair(s0, r0);
     REQUIRE(r0.source_ids().size() == 1);
     REQUIRE(*(r0.source_ids().begin()) == 1);
@@ -78,7 +78,7 @@ TEST_CASE("Decoder: remove a source from a repair")
   SECTION("Remove s1, we should be able to reconstruct s0")
   {
     detail::decoder decoder{8, [](const detail::source&){}};
-    const detail::source s1{1, detail::byte_buffer{s1_data}, static_cast<std::uint32_t>(s1_data.size())};
+    const detail::source s1{1, detail::byte_buffer{s1_data}, static_cast<std::uint16_t>(s1_data.size())};
     decoder.remove_source_from_repair(s1, r0);
     REQUIRE(r0.source_ids().size() == 1);
     REQUIRE(*(r0.source_ids().begin()) == 0);
@@ -749,7 +749,7 @@ TEST_CASE("Decoder: source after repair")
   REQUIRE(decoder.repairs().size() == 1);
 
   // s0 is received
-  decoder({0, detail::byte_buffer{s0_data}, static_cast<std::uint32_t>(s0_data.size())});
+  decoder({0, detail::byte_buffer{s0_data}, static_cast<std::uint16_t>(s0_data.size())});
   REQUIRE(decoder.sources().size() == 2);
   REQUIRE(decoder.sources().count(0));
   REQUIRE(decoder.sources().count(1));
@@ -815,9 +815,9 @@ TEST_CASE("Decoder: 1 packet loss")
   detail::decoder decoder{8, [](const detail::source&){}};
 
   // s1 -> s3 are received
-  decoder(detail::source{1, detail::byte_buffer{s1_data}, static_cast<uint32_t>(s1_data.size())});
-  decoder(detail::source{2, detail::byte_buffer{s2_data}, static_cast<uint32_t>(s2_data.size())});
-  decoder(detail::source{3, detail::byte_buffer{s3_data}, static_cast<uint32_t>(s3_data.size())});
+  decoder(detail::source{1, detail::byte_buffer{s1_data}, static_cast<std::uint16_t>(s1_data.size())});
+  decoder(detail::source{2, detail::byte_buffer{s2_data}, static_cast<std::uint16_t>(s2_data.size())});
+  decoder(detail::source{3, detail::byte_buffer{s3_data}, static_cast<std::uint16_t>(s3_data.size())});
   REQUIRE(decoder.sources().size() == 3);
   REQUIRE(decoder.sources().count(1));
   REQUIRE(decoder.sources().count(2));

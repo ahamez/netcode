@@ -56,7 +56,7 @@ public:
 public:
 
   /// @brief Constructor.
-  decoder(std::size_t galois_field_size, std::function<void(const source&)> h);
+  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h);
 
   /// @brief What to do when a source is received.
   void

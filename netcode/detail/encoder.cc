@@ -5,7 +5,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-encoder::encoder(std::size_t galois_field_size)
+encoder::encoder(std::uint8_t galois_field_size)
   : gf_{galois_field_size}
 {}
 

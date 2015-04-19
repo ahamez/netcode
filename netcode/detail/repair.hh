@@ -26,7 +26,7 @@ public:
   repair& operator=(repair&&) = default;
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair( std::uint32_t id, std::uint32_t encoded_size, source_id_list&& ids
+  repair( std::uint32_t id, std::uint16_t encoded_size, source_id_list&& ids
         , detail::zero_byte_buffer&& buffer)
     : id_{id}
     , sources_ids_{std::move(ids)}
@@ -102,7 +102,7 @@ public:
   }
 
   /// @brief Get the encoded sizes of all sources this repair contains.
-  std::uint32_t
+  std::uint16_t
   encoded_size()
   const noexcept
   {
@@ -110,7 +110,7 @@ public:
   }
 
   /// @brief Get the encoded sizes of all sources this repair contains.
-  std::uint32_t&
+  std::uint16_t&
   encoded_size()
   noexcept
   {
@@ -126,7 +126,7 @@ private:
   source_id_list sources_ids_;
 
   /// @brief The encoded sizes of all sources this repair contains.
-  std::uint32_t encoded_size_;
+  std::uint16_t encoded_size_;
 
   /// @brief This repair's symbol.
   detail::zero_byte_buffer buffer_;
