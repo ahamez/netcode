@@ -35,9 +35,10 @@ public:
   /// @brief Constructor.
   galois_field(std::uint8_t w)
     : gf_{}
-    , size_{w}
+    , w_{w}
   {
-    if (gf_init_easy(&gf_, static_cast<int>(size_)) == 0)
+    assert(w == 8 or w == 16 or w == 32);
+    if (gf_init_easy(&gf_, static_cast<int>(w_)) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
     }
@@ -55,7 +56,7 @@ public:
   size()
   const noexcept
   {
-    return size_;
+    return w_;
   }
 
   /// @brief Multiply a region with a constant.
@@ -92,22 +93,50 @@ public:
                            , 1 /* add to src */);
   }
 
+  /// @brief Multiply a size with a coefficient.
+  /// @attention Make sure that the coefficient is generated with galois_field::coefficient.
   std::uint16_t
-  multiply(std::uint16_t x, std::uint16_t y)
+  multiply(std::uint16_t size, std::uint32_t coeff)
   noexcept
   {
-    return x == 0 or y == 0
-         ? 0
-         : gf_.multiply.w32(&gf_, x, y);
+    assert(coeff <= (1u << w_) && "Incorrect coefficient");
+
+    if (size == 0 or coeff == 0)
+    {
+      return 0;
+    }
+
+    if (w_ == 8)
+    {
+      const auto size_hi  = static_cast<std::uint16_t>(size >> 8);
+      const auto coeff_hi = static_cast<std::uint16_t>(coeff >> 8);
+
+      const std::uint16_t size_lo = size & (0x00FF);
+      const auto coeff_lo = coeff & (0x00FF);
+
+      const auto hi = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_hi, coeff_hi));
+      const auto lo = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_lo, coeff_lo));
+
+      return static_cast<std::uint16_t>((hi << 8) ^ lo);
+    }
+    else // w = 16 or 32
+    {
+      return static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size, coeff));
+    }
   }
 
-  std::uint16_t
-  divide(std::uint16_t x, std::uint16_t y)
+  std::uint32_t
+  invert(std::uint32_t coef)
   noexcept
   {
-    return x == 0
-         ? 0
-         : gf_.divide.w32(&gf_, x, y);
+    return gf_.divide.w32(&gf_, 1, coef);
+  }
+
+  std::uint32_t
+  coefficient(std::uint32_t repair_id, std::uint32_t src_id)
+  noexcept
+  {
+    return (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % (1 << w_);
   }
 
 private:
@@ -116,11 +145,9 @@ private:
   gf_t gf_;
 
   /// @brief This field size.
-  std::uint8_t  size_;
+  std::uint8_t  w_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
 }} // namespace galois::detail
-
-//#pragma GCC diagnostic pop

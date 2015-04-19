@@ -2,7 +2,6 @@
 #include <cassert>
 #include <vector>
 
-#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/invert_matrix.hh"
 #include "netcode/detail/repair.hh"
@@ -159,7 +158,7 @@ noexcept
   const auto src_id = *r.source_ids().begin();
 
   // The inverse of the coefficient which was used to encode the missing source.
-  const auto inv = gf_.divide(1, coefficient(gf_, r.id(), src_id));
+  const auto inv = gf_.invert(gf_.coefficient(r.id(), src_id));
 
   // Reconstruct size.
   const auto src_sz = gf_.multiply(r.encoded_size(), inv);
@@ -350,10 +349,11 @@ noexcept
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
   assert(src.user_size() <= r.buffer().size());
 
-  const auto coeff = coefficient(gf_, r.id(), src.id());
+  const auto coeff = gf_.coefficient(r.id(), src.id());
 
   // Remove source size.
-  r.encoded_size() ^= gf_.multiply(coeff, src.user_size());
+  r.encoded_size()
+    = static_cast<std::uint16_t>(gf_.multiply(src.user_size(), coeff) ^ r.encoded_size());
 
   // Remove symbol.
   gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
@@ -387,7 +387,7 @@ decoder::attempt_full_decoding()
     for (const auto& missing : missing_sources_)
     {
       coefficients_(row, col) = r.second.source_ids().count(missing.first)
-                              ? coefficient(gf_, r.first, missing.first)
+                              ? gf_.coefficient(r.first, missing.first)
                               : 0u; // repair doesn't encode the missing source.
       ++row;
     }
@@ -440,7 +440,8 @@ decoder::attempt_full_decoding()
         const auto coeff = inv_(repair_row, src_col);
         if (coeff != 0)
         {
-          res ^= gf_.multiply(index[repair_row]->encoded_size(), coeff);
+          res = static_cast<std::uint16_t>( gf_.multiply(index[repair_row]->encoded_size(), coeff)
+                                          ^ res);
         }
       }
       return res;

@@ -60,7 +60,7 @@ noexcept
     const auto tmp = mat[row_start + i];
     if (tmp != 1)
     {
-      const auto inverse = gf.divide(1, tmp);
+      const auto inverse = gf.invert(tmp);
       for (auto j = 0ul; j < cols; j++)
       {
         mat[row_start + j] = gf.multiply(mat[row_start + j], inverse);

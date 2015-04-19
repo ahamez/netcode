@@ -1,4 +1,3 @@
-#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/encoder.hh"
 
 namespace ntc { namespace detail {
@@ -28,13 +27,13 @@ encoder::operator()(repair& repair, source_list& sources)
   repair.source_ids().insert(repair.source_ids().end(), cit->id());
 
   // The coefficient for this repair and source.
-  auto c = coefficient(gf_, repair.id(), cit->id());
+  auto c = gf_.coefficient(repair.id(), cit->id());
 
   // Only multiply for the first source, no need to add with repair.
   gf_.multiply(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
   // Initialize the user's size.
-  repair.encoded_size() = gf_.multiply(c, cit->user_size());
+  repair.encoded_size() = gf_.multiply(cit->user_size(), c);
 
   // Then, for each remaining source, multiply it with a coefficient and add it with
   // current repair.
@@ -47,7 +46,7 @@ encoder::operator()(repair& repair, source_list& sources)
     }
 
     // The coefficient for this repair and source.
-    c = coefficient(gf_, repair.id(), cit->id());
+    c = gf_.coefficient(repair.id(), cit->id());
 
     // Add the current source id to the list of encoded sources by this repair.
     repair.source_ids().insert(repair.source_ids().end(), cit->id());
@@ -56,7 +55,9 @@ encoder::operator()(repair& repair, source_list& sources)
     gf_.multiply_add(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
     // Finally, add the user size.
-    repair.encoded_size() ^= gf_.multiply(c, cit->user_size());
+    // Cast is necessary to inhibit conversion warning as xor implicitly convert to a signed value.
+    repair.encoded_size()
+      = static_cast<std::uint16_t>(gf_.multiply(cit->user_size(), c) ^ repair.encoded_size());
   }
 }
 

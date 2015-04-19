@@ -3,7 +3,6 @@
 #include "tests/catch.hpp"
 #include "tests/netcode/common.hh"
 
-#include "netcode/detail/coefficient.hh"
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/invert_matrix.hh"
@@ -38,7 +37,7 @@ TEST_CASE("Encode one source")
   REQUIRE(*r0.source_ids().begin() == 0);
 
   // The inverse of the coefficient.
-  const auto inv = gf.divide(1, detail::coefficient(gf, 0, 0));
+  const auto inv = gf.invert(gf.coefficient(0, 0));
 
   // s0 is lost, reconstruct it in a new source.
 
@@ -58,23 +57,23 @@ TEST_CASE("Encode two sizes")
 {
   detail::galois_field gf{8};
 
-  const std::uint32_t c0 = detail::coefficient(gf, 0 /*repair*/, 0 /*src*/);
+  const std::uint32_t c0 = gf.coefficient(0 /*repair*/, 0 /*src*/);
   const std::uint32_t s0 = 4;
 
   // Initialize with size of s0.
   auto r0 = gf.multiply(c0, s0);
 
-  const auto inv0 = gf.divide(1, c0);
+  const auto inv0 = gf.invert(c0);
   REQUIRE(gf.multiply(inv0, r0) == 4);
 
 
-  const std::uint32_t c1 = detail::coefficient(gf, 0 /*repair*/, 1 /*src*/);
+  const std::uint32_t c1 = gf.coefficient(0 /*repair*/, 1 /*src*/);
   const std::uint32_t s1 = 5;
 
   // Add size of s1.
   r0 ^= gf.multiply(c1, s1);
 
-  const auto inv1 = gf.divide(1, c1);
+  const auto inv1 = gf.invert(c1);
 
   SECTION("Remove s0 (s1 is lost)")
   {
@@ -104,8 +103,8 @@ TEST_CASE("Encode two sources")
   detail::byte_buffer s1_data{'e','f','g','h','i'};
 
   // The coefficients.
-  const auto c0 = detail::coefficient(gf, 0 /*repair*/, 0 /*src*/);
-  const auto c1 = detail::coefficient(gf, 0 /*repair*/, 1 /*src*/);
+  const auto c0 = gf.coefficient(0 /*repair*/, 0 /*src*/);
+  const auto c1 = gf.coefficient(0 /*repair*/, 1 /*src*/);
 
   // Push two sources.
   detail::source_list sl;
@@ -130,7 +129,7 @@ TEST_CASE("Encode two sources")
     gf.multiply_add(s1.buffer().data(), r0.buffer().data(), s1.user_size(), c1);
 
     // The inverse of the coefficient.
-    const auto inv0 = gf.divide(1, c0);
+    const auto inv0 = gf.invert(c0);
 
     // First, compute its size.
     const auto src_size = gf.multiply(inv0, static_cast<std::uint32_t>(r0.encoded_size()));
@@ -154,7 +153,7 @@ TEST_CASE("Encode two sources")
     gf.multiply_add(s0.buffer().data(), r0.buffer().data(), s0.user_size(), c0);
 
     // The inverse of the coefficient.
-    const auto inv1 = gf.divide(1, c1);
+    const auto inv1 = gf.invert(c1);
 
     // First, compute its size.
     const auto src_size = gf.multiply(inv1, static_cast<std::uint32_t>(r0.encoded_size()));
@@ -215,10 +214,10 @@ TEST_CASE("Two sources lost")
   // r1 = c*s0 + d*s1
 
   detail::square_matrix mat{2};
-  mat(0,0) = detail::coefficient(gf, 0 /*repair*/, 0 /*src*/);
-  mat(1,0) = detail::coefficient(gf, 0 /*repair*/, 1 /*src*/);
-  mat(0,1) = detail::coefficient(gf, 1 /*repair*/, 0 /*src*/);
-  mat(1,1) = detail::coefficient(gf, 1 /*repair*/, 1 /*src*/);
+  mat(0,0) = gf.coefficient(0 /*repair*/, 0 /*src*/);
+  mat(1,0) = gf.coefficient(0 /*repair*/, 1 /*src*/);
+  mat(0,1) = gf.coefficient(1 /*repair*/, 0 /*src*/);
+  mat(1,1) = gf.coefficient(1 /*repair*/, 1 /*src*/);
 
   // Invert matrix.
   //

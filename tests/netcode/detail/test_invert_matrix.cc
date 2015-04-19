@@ -55,7 +55,7 @@ jerasure_invert_matrix( detail::square_matrix& mat, detail::square_matrix& inv
     tmp = mat[row_start+i];
     if (tmp != 1) {
 //      inverse = galois_single_divide(1, tmp, w);
-      inverse = gf.divide(1, tmp);
+      inverse = gf.invert(tmp);
       for (j = 0; j < cols; j++) {
 //        mat[row_start+j] = galois_single_multiply(mat[row_start+j], inverse, w);
         mat[row_start+j] = gf.multiply(mat[row_start+j], inverse);
