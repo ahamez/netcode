@@ -74,7 +74,7 @@ public:
   }
 
   /// @brief Get the the number of used bytes for this data (read-only).
-  std::size_t
+  std::uint16_t
   used_bytes()
   const noexcept
   {
@@ -113,7 +113,7 @@ public:
   reserved_size()
   const noexcept
   {
-    return buffer_.size();
+    return static_cast<std::uint16_t>(buffer_.size());
   }
 
   /// @brief Reset the data for further re-use.
