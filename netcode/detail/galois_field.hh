@@ -141,6 +141,7 @@ public:
   invert(std::uint32_t coef)
   noexcept
   {
+    assert(coef != 0);
     return gf_.divide.w32(&gf_, 1, coef);
   }
 
@@ -148,7 +149,7 @@ public:
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
   noexcept
   {
-    return (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % (1 << w_);
+    return (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << w_) - 1) + 1;
   }
 
 private:
