@@ -15,7 +15,7 @@ namespace /* unnamed */ {
 struct handler
 {
   std::size_t bytes_ = 0;
-  char data_[2048];
+  char data_[8192];
 
   void
   operator()(const char* data, std::size_t len)
@@ -57,24 +57,55 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   handler h;
   detail::packetizer<handler> serializer{h};
 
-  // The values in the constructor are completely meaningless for this test.
-  const detail::repair r_in{42, 3, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
-  serializer.write_repair(r_in);
+  SECTION("Small number of source ids")
+  {
+    // The values in the constructor are completely meaningless for this test.
+    const detail::repair r_in{42, 3, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    serializer.write_repair(r_in);
 
-  REQUIRE(h.bytes_ == ( sizeof(std::uint8_t)      // type
-                      + sizeof(std::uint32_t)     // id
-                      + sizeof(std::uint16_t)     // nb source ids
-                      + 4 * sizeof(std::uint32_t) // identifiers
-                      + sizeof(std::uint16_t)     // encoded size
-                      + sizeof(std::uint16_t)     // symbol length
-                      + 3                         // symbol
-                      ));
+    REQUIRE(h.bytes_ == ( sizeof(std::uint8_t)      // type
+                         + sizeof(std::uint32_t)     // id
+                         + sizeof(std::uint16_t)     // nb source ids
+                         + 4 * sizeof(std::uint32_t) // identifiers
+                         + sizeof(std::uint16_t)     // encoded size
+                         + sizeof(std::uint16_t)     // symbol length
+                         + 3                         // symbol
+                         ));
 
-  const auto r_out = serializer.read_repair(h.data_).first;
-  REQUIRE(r_in.id() == r_out.id());
-  REQUIRE(r_in.source_ids() == r_out.source_ids());
-  REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-  REQUIRE(r_in.buffer() == r_out.buffer());
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
+
+  SECTION("Large number of source ids")
+  {
+    auto sl = detail::source_id_list{};
+    for (auto i = 0u; i < 1024; ++i)
+    {
+      sl.insert(i);
+    }
+
+    // The values in the constructor are completely meaningless for this test.
+    detail::repair r_in{42, 3, std::move(sl), detail::zero_byte_buffer{'a', 'b', 'c'}};
+    serializer.write_repair(r_in);
+
+    REQUIRE(h.bytes_ == ( sizeof(std::uint8_t)      // type
+                         + sizeof(std::uint32_t)     // id
+                         + sizeof(std::uint16_t)     // nb source ids
+                         + 1024 * sizeof(std::uint32_t) // identifiers
+                         + sizeof(std::uint16_t)     // encoded size
+                         + sizeof(std::uint16_t)     // symbol length
+                         + 3                         // symbol
+                         ));
+
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
