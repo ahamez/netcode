@@ -108,16 +108,11 @@ public:
 
     if (w_ == 8)
     {
-      const auto size_hi  = static_cast<std::uint16_t>(size >> 8);
-      const auto coeff_hi = static_cast<std::uint16_t>(coeff >> 8);
-
-      const auto size_lo  = static_cast<std::uint16_t>(size & (0x00FF));
-      const auto coeff_lo = static_cast<std::uint16_t>(coeff & (0x00FF));
-
-      const auto hi = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_hi, coeff_hi));
-      const auto lo = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_lo, coeff_lo));
-
-      return static_cast<std::uint16_t>((hi << 8) ^ lo);
+      __attribute__((aligned(16))) std::uint16_t res;
+      __attribute__((aligned(16))) std::uint16_t size_ = size;
+      multiply( reinterpret_cast<char*>(&size_), reinterpret_cast<char*>(&res)
+              , sizeof(std::uint16_t), coeff);
+      return res;
     }
     else // w = 16 or 32
     {
