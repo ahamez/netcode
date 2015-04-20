@@ -132,6 +132,7 @@ public:
     return gf_.multiply.w32(&gf_, x, y);
   }
 
+  /// @brief Invert a coeeficient.
   std::uint32_t
   invert(std::uint32_t coef)
   noexcept
@@ -140,6 +141,8 @@ public:
     return gf_.divide.w32(&gf_, 1, coef);
   }
 
+  /// @brief Get the coefficient for a repair and a source.
+  /// @note The result is guaranted to be different from 0.
   std::uint32_t
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
   noexcept
