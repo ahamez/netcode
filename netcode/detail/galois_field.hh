@@ -96,10 +96,10 @@ public:
   /// @brief Multiply a size with a coefficient.
   /// @attention Make sure that the coefficient is generated with galois_field::coefficient.
   std::uint16_t
-  multiply(std::uint16_t size, std::uint32_t coeff)
+  multiply_size(std::uint16_t size, std::uint32_t coeff)
   noexcept
   {
-    assert(((w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32) && "Invalid coefficient");
+    assert((((w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32)) && "Invalid coefficient");
 
     if (size == 0 or coeff == 0)
     {
@@ -111,8 +111,8 @@ public:
       const auto size_hi  = static_cast<std::uint16_t>(size >> 8);
       const auto coeff_hi = static_cast<std::uint16_t>(coeff >> 8);
 
-      const std::uint16_t size_lo = size & (0x00FF);
-      const auto coeff_lo = coeff & (0x00FF);
+      const auto size_lo  = static_cast<std::uint16_t>(size & (0x00FF));
+      const auto coeff_lo = static_cast<std::uint16_t>(coeff & (0x00FF));
 
       const auto hi = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_hi, coeff_hi));
       const auto lo = static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size_lo, coeff_lo));
@@ -123,6 +123,18 @@ public:
     {
       return static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size, coeff));
     }
+  }
+
+  /// @brief Multiply two coefficients, to use when inverting a matrix.
+  std::uint32_t
+  multiply(std::uint32_t x, std::uint32_t y)
+  noexcept
+  {
+    if (x == 0 or y == 0)
+    {
+      return 0;
+    }
+    return gf_.multiply.w32(&gf_, x, y);
   }
 
   std::uint32_t

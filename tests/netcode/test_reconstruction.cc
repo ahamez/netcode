@@ -42,7 +42,7 @@ TEST_CASE("Encode one source")
   // s0 is lost, reconstruct it in a new source.
 
   // First, compute its size.
-  const auto src_size = gf.multiply(inv, static_cast<std::uint32_t>(r0.encoded_size()));
+  const auto src_size = gf.multiply_size(static_cast<std::uint32_t>(r0.encoded_size()), inv);
   REQUIRE(src_size == 4);
 
   detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
@@ -132,7 +132,7 @@ TEST_CASE("Encode two sources")
     const auto inv0 = gf.invert(c0);
 
     // First, compute its size.
-    const auto src_size = gf.multiply(inv0, static_cast<std::uint32_t>(r0.encoded_size()));
+    const auto src_size = gf.multiply_size(static_cast<std::uint32_t>(r0.encoded_size()), inv0);
     REQUIRE(src_size == s0_data.size());
 
     // Now, reconstruct missing data.
@@ -156,7 +156,7 @@ TEST_CASE("Encode two sources")
     const auto inv1 = gf.invert(c1);
 
     // First, compute its size.
-    const auto src_size = gf.multiply(inv1, static_cast<std::uint32_t>(r0.encoded_size()));
+    const auto src_size = gf.multiply_size(static_cast<std::uint32_t>(r0.encoded_size()), inv1);
     REQUIRE(src_size == s1_data.size());
 
     // Now, reconstruct missing data.

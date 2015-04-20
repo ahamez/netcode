@@ -33,7 +33,7 @@ encoder::operator()(repair& repair, source_list& sources)
   gf_.multiply(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
   // Initialize the user's size.
-  repair.encoded_size() = gf_.multiply(cit->user_size(), c);
+  repair.encoded_size() = gf_.multiply_size(cit->user_size(), c);
 
   // Then, for each remaining source, multiply it with a coefficient and add it with
   // current repair.
@@ -57,7 +57,7 @@ encoder::operator()(repair& repair, source_list& sources)
     // Finally, add the user size.
     // Cast is necessary to inhibit conversion warning as xor implicitly convert to a signed value.
     repair.encoded_size()
-      = static_cast<std::uint16_t>(gf_.multiply(cit->user_size(), c) ^ repair.encoded_size());
+      = static_cast<std::uint16_t>(gf_.multiply_size(cit->user_size(), c) ^ repair.encoded_size());
   }
 }
 

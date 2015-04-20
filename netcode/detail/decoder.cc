@@ -161,7 +161,7 @@ noexcept
   const auto inv = gf_.invert(gf_.coefficient(r.id(), src_id));
 
   // Reconstruct size.
-  const auto src_sz = gf_.multiply(r.encoded_size(), inv);
+  const auto src_sz = gf_.multiply_size(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
   source src{src_id, byte_buffer(src_sz), src_sz};
@@ -353,7 +353,7 @@ noexcept
 
   // Remove source size.
   r.encoded_size()
-    = static_cast<std::uint16_t>(gf_.multiply(src.user_size(), coeff) ^ r.encoded_size());
+    = static_cast<std::uint16_t>(gf_.multiply_size(src.user_size(), coeff) ^ r.encoded_size());
 
   // Remove symbol.
   gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
@@ -440,8 +440,8 @@ decoder::attempt_full_decoding()
         const auto coeff = inv_(repair_row, src_col);
         if (coeff != 0)
         {
-          res = static_cast<std::uint16_t>( gf_.multiply(index[repair_row]->encoded_size(), coeff)
-                                          ^ res);
+          const auto tmp = gf_.multiply_size(index[repair_row]->encoded_size(), coeff);
+          res = static_cast<std::uint16_t>(tmp) ^ res;
         }
       }
       return res;
