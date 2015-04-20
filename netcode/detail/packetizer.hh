@@ -106,8 +106,8 @@ public:
     const auto network_nb_ids
       = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
 
-    // Prepare user size.
-    const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(pkt.encoded_size()));
+    // Prepare encoded size.
+    const auto network_encoded_sz = native_to_big(static_cast<std::uint16_t>(pkt.encoded_size()));
 
     // Prepare repair symbol size.
     const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
@@ -128,8 +128,8 @@ public:
       write(&network_source_id, sizeof(std::uint32_t));
     }
 
-    // Write user size.
-    write(&network_user_sz, sizeof(std::uint16_t));
+    // Write encoded size.
+    write(&network_encoded_sz, sizeof(std::uint16_t));
 
     // Write size of the repair symbol.
     write(&network_sz, sizeof(std::uint16_t));
