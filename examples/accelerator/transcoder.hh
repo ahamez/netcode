@@ -176,7 +176,7 @@ private:
                                       {
                                         throw std::runtime_error(err.message());
                                       }
-                                      data_.used_bytes() = sz;
+                                      data_.used_bytes() = static_cast<std::uint16_t>(sz);
                                       encoder_(std::move(data_));
 
                                       data_.reset(buffer_size);

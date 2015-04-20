@@ -19,7 +19,7 @@ ntc_delete_configuration(ntc_configuration_t* conf)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_galois_field_size(ntc_configuration_t* conf , size_t size)
+ntc_configuration_set_galois_field_size(ntc_configuration_t* conf , uint8_t size)
 {
   conf->galois_field_size = size;
 }

@@ -322,31 +322,31 @@ TEST_CASE("Decoder: invalid memory access scenerio")
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(x.begin(),  x.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = x.size();
+    data_ptr->used_bytes() = static_cast<std::uint16_t>(x.size());
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = empty.size();
+    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = empty.size();
+    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = empty.size();
+    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = empty.size();
+    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
     enc(std::move(*data_ptr));
   }
   REQUIRE(enc_handler.nb_packets() == 6);
