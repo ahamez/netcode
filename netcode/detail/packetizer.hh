@@ -2,7 +2,9 @@
 
 #include <cassert>
 #include <iterator> // back_inserter
+#include <numeric>  // adjacent_difference, partial_sum
 #include <utility>  // pair
+#include <vector>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -30,31 +32,23 @@ public:
   /// @brief Constructor.
   packetizer(PacketHandler& h)
     : packet_handler_(h)
+    , difference_buffer_(32)
+    , rle_buffer_(32)
   {}
 
   void
-  write_ack(const ack& pkt)
+  write_ack(const ack& a)
   {
     using namespace boost::endian;
 
     // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
 
-    // Prepare number of source identifiers.
-    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
-
     // Write packet type.
     write(&packet_ty, sizeof(std::uint8_t));
 
-    // Write number of source identifiers.
-    write(&network_sz, sizeof(std::uint16_t));
-
     // Write source identifiers.
-    for (const auto id : pkt.source_ids())
-    {
-      const auto network_id = native_to_big(id);
-      write(&network_id, sizeof(std::uint32_t));
-    }
+    write(a.source_ids());
 
     // End of data.
     mark_end();
@@ -74,25 +68,16 @@ public:
     // Skip packet type.
     data += sizeof(std::uint8_t);
 
-    // Read size.
-    const auto nb_ids = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
-
-    // Read source ids.
+    // Read source identifiers
     source_id_list ids;
-    ids.reserve(nb_ids);
-    for (auto i = 0ul; i < nb_ids; ++i)
-    {
-      ids.insert(ids.end(), big_to_native(*reinterpret_cast<const std::uint32_t*>(data)));
-      data += sizeof(std::uint32_t);
-    }
+    data += read_ids(data, ids);
 
     return std::make_pair( ack{std::move(ids)}
                          , reinterpret_cast<std::size_t>(data) - begin);
   }
 
   void
-  write_repair(const repair& pkt)
+  write_repair(const repair& r)
   {
     using namespace boost::endian;
 
@@ -100,17 +85,13 @@ public:
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
 
     // Prepare packet identifier.
-    const auto network_id = native_to_big(pkt.id());
-
-    // Prepare number of source identifiers.
-    const auto network_nb_ids
-      = native_to_big(static_cast<std::uint16_t>(pkt.source_ids().size()));
+    const auto network_id = native_to_big(r.id());
 
     // Prepare encoded size.
-    const auto network_encoded_sz = native_to_big(static_cast<std::uint16_t>(pkt.encoded_size()));
+    const auto network_encoded_sz = native_to_big(static_cast<std::uint16_t>(r.encoded_size()));
 
     // Prepare repair symbol size.
-    const auto network_sz = native_to_big(static_cast<std::uint16_t>(pkt.buffer().size()));
+    const auto network_sz = native_to_big(static_cast<std::uint16_t>(r.buffer().size()));
 
     // Packet type.
     write(&packet_ty, sizeof(std::uint8_t));
@@ -118,15 +99,8 @@ public:
     // Write packet identifier.
     write(&network_id, sizeof(std::uint32_t));
 
-    // Write number of source identifiers.
-    write(&network_nb_ids, sizeof(std::uint16_t));
-
     // Write source identifiers.
-    for (const auto id : pkt.source_ids())
-    {
-      const auto network_source_id = native_to_big(id);
-      write(&network_source_id, sizeof(std::uint32_t));
-    }
+    write(r.source_ids());
 
     // Write encoded size.
     write(&network_encoded_sz, sizeof(std::uint16_t));
@@ -135,7 +109,7 @@ public:
     write(&network_sz, sizeof(std::uint16_t));
 
     // Write repair symbol.
-    write(pkt.buffer().data(), pkt.buffer().size());
+    write(r.buffer().data(), r.buffer().size());
 
     // End of data.
     mark_end();
@@ -159,18 +133,9 @@ public:
     const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
 
-    // Read number of source identifiers
-    const auto nb_ids = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
-
-    // Read source ids.
+    // Read source identifiers
     source_id_list ids;
-    ids.reserve(nb_ids);
-    for (auto i = 0ul; i < nb_ids; ++i)
-    {
-      ids.insert(ids.end(), big_to_native(*reinterpret_cast<const std::uint32_t*>(data)));
-      data += sizeof(std::uint32_t);
-    }
+    data += read_ids(data, ids);
 
     // Read encoded size.
     const auto encoded_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
@@ -255,9 +220,78 @@ private:
   /// @brief Convenient method to write data using user's handler.
   void
   write(const void* data, std::size_t len)
-  noexcept
   {
     packet_handler_(reinterpret_cast<const char*>(data), len);
+  }
+
+  void
+  write(const source_id_list& ids)
+  {
+    using namespace boost::endian;
+
+    difference_buffer_.clear();
+    rle_buffer_.clear();
+
+    // Compute adjacent differences.
+    std::adjacent_difference(ids.begin(), ids.end(), std::back_inserter(difference_buffer_));
+
+    // RLE.
+    auto cit = difference_buffer_.begin();
+    const auto end = difference_buffer_.end();
+    while (cit != end)
+    {
+      std::uint16_t run_length = 1;
+      while (std::next(cit) != end and *cit == *std::next(cit))
+      {
+        ++run_length;
+        ++cit;
+      }
+
+      rle_buffer_.push_back(native_to_big(run_length));
+      rle_buffer_.push_back(native_to_big(*cit));
+
+      ++cit;
+    }
+
+    const auto sz = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size()));
+    write(&sz, sizeof(std::uint16_t));
+    write(rle_buffer_.data(), rle_buffer_.size() * sizeof(std::uint16_t));
+  }
+
+  std::size_t
+  read_ids(const char* data, source_id_list& ids)
+  {
+    using namespace boost::endian;
+
+    difference_buffer_.clear();
+    rle_buffer_.clear();
+
+    const auto size = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
+    for (auto i = 0ul; i < size; ++i)
+    {
+      rle_buffer_.push_back(big_to_native(*reinterpret_cast<const std::uint16_t*>(data)));
+      data += sizeof(std::uint16_t);
+    }
+
+    // UnRLE
+    for (auto cit = rle_buffer_.begin(); cit != rle_buffer_.end();)
+    {
+      const auto run_length = *cit;
+      const auto value = *std::next(cit);
+      std::advance(cit, 2);
+      for (auto j = 0u; j < run_length; ++j)
+      {
+        difference_buffer_.push_back(value);
+      }
+    }
+
+    // Revert to list of source identifiers.
+    std::partial_sum( difference_buffer_.begin(), difference_buffer_.end()
+                    , std::inserter(ids, ids.end()));
+
+    return (size + 1) * sizeof(std::uint16_t);
   }
 
   /// @brief Convenient method to indicate end of data to user's handler.
@@ -268,8 +302,16 @@ private:
     packet_handler_();
   }
 
+private:
+
   /// @brief The handler which serializes packets.
   PacketHandler& packet_handler_;
+
+  /// @brief
+  std::vector<std::uint16_t> difference_buffer_;
+
+  /// @brief
+  std::vector<std::uint16_t> rle_buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
