@@ -143,11 +143,14 @@ public:
 
   /// @brief Get the coefficient for a repair and a source.
   /// @note The result is guaranted to be different from 0.
+  /// @todo When w_ = 32, computation could overflow.
   std::uint32_t
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
   noexcept
   {
-    return (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << w_) - 1) + 1;
+    return w_ == 32
+         ? (((repair_id + 1) + (src_id + 1)) * (repair_id + 1))
+         : (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << w_) - 1) + 1;
   }
 
 private:
