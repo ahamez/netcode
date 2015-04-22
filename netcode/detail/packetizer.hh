@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iterator> // back_inserter
+#include <limits>
 #include <numeric>  // adjacent_difference, partial_sum
 #include <utility>  // pair
 #include <vector>
@@ -243,22 +244,25 @@ private:
     const auto end = difference_buffer_.end();
     while (cit != end)
     {
-      std::uint16_t run_length = 1;
-      while (std::next(cit) != end and *cit == *std::next(cit))
+      std::uint8_t run_length = 1;
+      while ( std::next(cit) != end and *cit == *std::next(cit)
+              // We limit a run length to make it fit in 8 bits.
+              and run_length < std::numeric_limits<std::uint8_t>::max())
       {
         ++run_length;
         ++cit;
       }
-
-      rle_buffer_.push_back(native_to_big(run_length));
-      rle_buffer_.push_back(native_to_big(*cit));
-
+      rle_buffer_.emplace_back(run_length, native_to_big(*cit));
       ++cit;
     }
 
-    const auto sz = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size()));
-    write(&sz, sizeof(std::uint16_t));
-    write(rle_buffer_.data(), rle_buffer_.size() * sizeof(std::uint16_t));
+    const auto nb_pairs = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size()));
+    write(&nb_pairs, sizeof(std::uint16_t));
+    for (const auto& pair : rle_buffer_)
+    {
+      write(&pair.first, sizeof(std::uint8_t));
+      write(&pair.second, sizeof(std::uint16_t));
+    }
   }
 
   /// @brief Deserialize a list of source identifiers.
@@ -270,21 +274,17 @@ private:
     difference_buffer_.clear();
     rle_buffer_.clear();
 
-    const auto size = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto nb_pairs = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     data += sizeof(std::uint16_t);
 
-    for (auto i = 0ul; i < size; ++i)
+    // Reverse running length encoding on the fly.
+    for (auto i = 0ul; i < nb_pairs; ++i)
     {
-      rle_buffer_.push_back(big_to_native(*reinterpret_cast<const std::uint16_t*>(data)));
+      const auto run_length = *reinterpret_cast<const std::uint8_t*>(data);
+      data += sizeof(std::uint8_t);
+      const auto value = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
       data += sizeof(std::uint16_t);
-    }
 
-    // Reverse running length encoding.
-    for (auto cit = rle_buffer_.begin(); cit != rle_buffer_.end();)
-    {
-      const auto run_length = *cit;
-      const auto value = *std::next(cit);
-      std::advance(cit, 2);
       for (auto j = 0u; j < run_length; ++j)
       {
         difference_buffer_.push_back(value);
@@ -295,7 +295,8 @@ private:
     std::partial_sum( difference_buffer_.begin(), difference_buffer_.end()
                     , std::inserter(ids, ids.end()));
 
-    return (size + 1) * sizeof(std::uint16_t);
+    // We read nb_pairs + 1 size.
+    return (nb_pairs * (sizeof(std::uint8_t) + sizeof(std::uint16_t))) + sizeof(std::uint16_t);
   }
 
   /// @brief Convenient method to indicate end of data to user's handler.
@@ -315,7 +316,7 @@ private:
   std::vector<std::uint16_t> difference_buffer_;
 
   /// @brief
-  std::vector<std::uint16_t> rle_buffer_;
+  std::vector<std::pair<std::uint8_t, std::uint16_t>> rle_buffer_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
