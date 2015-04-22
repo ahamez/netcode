@@ -236,12 +236,21 @@ private:
     difference_buffer_.clear();
     rle_buffer_.clear();
 
+    if (ids.size() == 0)
+    {
+      static constexpr std::uint16_t zero = 0;
+      write(&zero, sizeof(std::uint16_t));
+      return;
+    }
+
     // Compute adjacent differences.
     std::adjacent_difference(ids.begin(), ids.end(), std::back_inserter(difference_buffer_));
 
-    // Running length encoding.
-    auto cit = difference_buffer_.begin();
+    // Skip first id as we need to keep it on 32 bits and as its running length will always be 1.
+    auto cit = std::next(difference_buffer_.begin());
     const auto end = difference_buffer_.end();
+
+    // Running length encoding.
     while (cit != end)
     {
       std::uint8_t run_length = 1;
@@ -252,12 +261,20 @@ private:
         ++run_length;
         ++cit;
       }
-      rle_buffer_.emplace_back(run_length, native_to_big(*cit));
+      // The cast to 16 bits is important: differences are always small and rle_buffer only
+      // stores 16 bits differences.
+      rle_buffer_.emplace_back(run_length, native_to_big(static_cast<std::uint16_t>(*cit)));
       ++cit;
     }
 
-    const auto nb_pairs = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size()));
-    write(&nb_pairs, sizeof(std::uint16_t));
+    // Write the number of elements (number of pairs + the first identifier).
+    const auto nb_elements = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size() + 1));
+    write(&nb_elements, sizeof(std::uint16_t));
+
+    // Write first identifier.
+    const auto first_id = native_to_big(*ids.begin());
+    write(&first_id, sizeof(std::uint32_t));
+
     for (const auto& pair : rle_buffer_)
     {
       write(&pair.first, sizeof(std::uint8_t));
@@ -274,10 +291,20 @@ private:
     difference_buffer_.clear();
     rle_buffer_.clear();
 
-    const auto nb_pairs = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto nb_elements = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    if (nb_elements == 0)
+    {
+      return sizeof(std::uint16_t);
+    }
     data += sizeof(std::uint16_t);
 
+    // Read first identifier.
+    const auto first_id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
+    data += sizeof(std::uint32_t);
+    difference_buffer_.push_back(first_id);
+
     // Reverse running length encoding on the fly.
+    const auto nb_pairs = nb_elements - 1u; /* remove the first identifier */
     for (auto i = 0ul; i < nb_pairs; ++i)
     {
       const auto run_length = *reinterpret_cast<const std::uint8_t*>(data);
@@ -295,8 +322,9 @@ private:
     std::partial_sum( difference_buffer_.begin(), difference_buffer_.end()
                     , std::inserter(ids, ids.end()));
 
-    // We read nb_pairs + 1 size.
-    return (nb_pairs * (sizeof(std::uint8_t) + sizeof(std::uint16_t))) + sizeof(std::uint16_t);
+    // We read 1 identifier + nb_pairs + 1 size (number of elements).
+    return sizeof(std::uint32_t) + (nb_pairs * (sizeof(std::uint8_t) + sizeof(std::uint16_t)))
+         + sizeof(std::uint16_t);
   }
 
   /// @brief Convenient method to indicate end of data to user's handler.
@@ -312,10 +340,12 @@ private:
   /// @brief The handler which serializes packets.
   PacketHandler& packet_handler_;
 
-  /// @brief
-  std::vector<std::uint16_t> difference_buffer_;
+  /// @brief A pre-allocated buffer to re-use when computing adjacent difference for ids list.
+  /// @note We use a 32-bits type as the first element will always be exactly the same as the
+  /// ids list, which are on 32 bits.
+  std::vector<std::uint32_t> difference_buffer_;
 
-  /// @brief
+  /// @brief A pre-allocated buffer to re-use when performing the running length encoding.
   std::vector<std::pair<std::uint8_t, std::uint16_t>> rle_buffer_;
 };
 

@@ -55,7 +55,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   SECTION("Small number of source ids")
   {
     // The values in the constructor are completely meaningless for this test.
-    const detail::repair r_in{42, 54, {0,1,2,3}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    const detail::repair r_in{42, 54, {1,2,3,4}, detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
     const auto r_out = serializer.read_repair(h.data_).first;
@@ -68,7 +68,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   SECTION("Large number of source ids")
   {
     auto sl = detail::source_id_list{};
-    for (auto i = 0u; i < 4; ++i)
+    for (auto i = 0u; i < 1024; ++i)
     {
       sl.insert(i);
     }
@@ -83,6 +83,58 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
     REQUIRE(r_in.buffer() == r_out.buffer());
   }
+
+  SECTION("Sparse list of source ids")
+  {
+    // The values in the constructor are completely meaningless for this test.
+    const detail::repair r_in{42, 54, {0,1,4,5,6,100,101}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    serializer.write_repair(r_in);
+
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
+
+  SECTION("Big values")
+  {
+    const auto base = 1 << 21;
+    const detail::repair r_in{ 1 << 20, 54, {base, base + 1, base + 2, base + 100, base + 101}
+                             , detail::zero_byte_buffer{'a', 'b', 'c'}};
+    serializer.write_repair(r_in);
+
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
+
+  SECTION("Empty repair")
+  {
+    const detail::repair r_in{ 0, 54, detail::source_id_list{}, detail::zero_byte_buffer{}};
+    serializer.write_repair(r_in);
+
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
+
+  SECTION("Repair with only one source")
+  {
+    const detail::repair r_in{ 0, 33, {4242}, detail::zero_byte_buffer{'x'}};
+    serializer.write_repair(r_in);
+
+    const auto r_out = serializer.read_repair(h.data_).first;
+    REQUIRE(r_in.id() == r_out.id());
+    REQUIRE(r_in.source_ids() == r_out.source_ids());
+    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
+    REQUIRE(r_in.buffer() == r_out.buffer());
+  }
+
 }
 
 /*------------------------------------------------------------------------------------------------*/
