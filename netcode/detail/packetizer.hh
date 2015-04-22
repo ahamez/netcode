@@ -224,6 +224,9 @@ private:
     packet_handler_(reinterpret_cast<const char*>(data), len);
   }
 
+  /// @brief Serialize a list of source identifiers.
+  ///
+  /// The list is compressed using a RLE encoding on adjacent differences.
   void
   write(const source_id_list& ids)
   {
@@ -235,7 +238,7 @@ private:
     // Compute adjacent differences.
     std::adjacent_difference(ids.begin(), ids.end(), std::back_inserter(difference_buffer_));
 
-    // RLE.
+    // Running length encoding.
     auto cit = difference_buffer_.begin();
     const auto end = difference_buffer_.end();
     while (cit != end)
@@ -258,6 +261,7 @@ private:
     write(rle_buffer_.data(), rle_buffer_.size() * sizeof(std::uint16_t));
   }
 
+  /// @brief Deserialize a list of source identifiers.
   std::size_t
   read_ids(const char* data, source_id_list& ids)
   {
@@ -275,7 +279,7 @@ private:
       data += sizeof(std::uint16_t);
     }
 
-    // UnRLE
+    // Reverse running length encoding.
     for (auto cit = rle_buffer_.begin(); cit != rle_buffer_.end();)
     {
       const auto run_length = *cit;
