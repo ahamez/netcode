@@ -147,20 +147,52 @@ public:
     packetizer_.write_repair(repair_);
   }
 
-  /// @brief Get the configuration (read-only).
-  const configuration&
-  conf()
+  /// @brief Get the code type.
+  code
+  code_type()
   const noexcept
   {
-    return conf_;
+    return conf_.code_type;
   }
 
-  /// @brief Get the configuration.
-  configuration&
-  conf()
+  /// @brief Set the code type.
+  void
+  code_type(code c)
   noexcept
   {
-    return conf_;
+    conf_.code_type = c;
+  }
+
+  /// @brief Get the code rate.
+  std::size_t
+  code_rate()
+  const noexcept
+  {
+    return conf_.rate;
+  }
+
+  /// @brief Set the code rate.
+  void
+  code_rate(std::size_t r)
+  noexcept
+  {
+    conf_.rate = r >= 1 ? r : conf_.rate;
+  }
+
+  /// @brief Get the max window size.
+  std::size_t
+  window_max()
+  const noexcept
+  {
+    return conf_.window;
+  }
+
+  /// @brief Set the max window size.
+  void
+  window_max(std::size_t w)
+  noexcept
+  {
+    conf_.window = w >= 1 ? w : conf_.window;
   }
 
 private:

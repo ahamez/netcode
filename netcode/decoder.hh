@@ -226,20 +226,20 @@ public:
     }
   }
 
-  /// @brief Get the configuration (read-only).
-  const configuration&
-  conf()
+  /// @brief Get the ack frequency.
+  std::chrono::milliseconds
+  ack_frequency()
   const noexcept
   {
-    return conf_;
+    return conf_.ack_frequency;
   }
 
-  /// @brief Get the configuration.
-  configuration&
-  conf()
+  /// @brief Set the ack frequency.
+  void
+  ack_frequency(std::chrono::milliseconds f)
   noexcept
   {
-    return conf_;
+    conf_.ack_frequency = f;
   }
 
 private:

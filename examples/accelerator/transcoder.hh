@@ -112,7 +112,7 @@ public:
     , data_(buffer_size)
     , other_side_seen_(false)
   {
-    decoder_.conf().ack_frequency = std::chrono::milliseconds{0};
+    decoder_.ack_frequency(std::chrono::milliseconds{0});
 
     start_handler();
     start_app_handler();

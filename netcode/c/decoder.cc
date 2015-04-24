@@ -20,14 +20,6 @@ ntc_delete_decoder(ntc_decoder_t* dec)
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_configuration_t*
-ntc_decoder_get_configuration(ntc_decoder_t* dec)
-{
-  return &dec->conf();
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 void
 ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet)
 {
@@ -40,6 +32,14 @@ void
 ntc_decoder_send_ack(ntc_decoder_t* dec)
 {
   dec->send_ack();
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
+{
+  dec->ack_frequency(std::chrono::milliseconds{frequency});
 }
 
 /*------------------------------------------------------------------------------------------------*/

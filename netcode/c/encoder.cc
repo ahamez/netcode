@@ -18,14 +18,6 @@ ntc_delete_encoder(ntc_encoder_t* enc)
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_configuration_t*
-ntc_encoder_get_configuration(ntc_encoder_t* enc)
-{
-  return &enc->conf();
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 void
 ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data)
 {
@@ -43,7 +35,7 @@ ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_encoder_end_repair(ntc_encoder_t* enc)
+ntc_encoder_send_repair(ntc_encoder_t* enc)
 {
   enc->send_repair();
 }
@@ -54,6 +46,39 @@ size_t
 ntc_encoder_window(ntc_encoder_t* enc)
 {
   return enc->window();
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type type)
+{
+  switch (type)
+  {
+    case ntc_systematic:
+      enc->code_type(ntc::code::systematic);
+      break;
+
+    case ntc_non_systematic:
+    default:
+      enc->code_type(ntc::code::non_systematic);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_code_rate(ntc_encoder_t* enc, size_t rate)
+{
+  enc->code_rate(rate);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_window_max(ntc_encoder_t* enc, size_t window)
+{
+  enc->window_max(window);
 }
 
 /*------------------------------------------------------------------------------------------------*/

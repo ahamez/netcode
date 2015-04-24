@@ -75,10 +75,8 @@ int main(int argc, char** argv)
   ntc_decoder_t* dec = ntc_new_decoder(conf, decoder_packet_handler, decoder_data_handler);
 
   // Let's configure a little more encoder and decoder.
-  ntc_configuration_t* encoder_conf = ntc_encoder_get_configuration(enc);
-  ntc_configuration_set_rate(encoder_conf, 6);
-  ntc_configuration_t* decoder_conf = ntc_decoder_get_configuration(dec);
-  ntc_configuration_set_ack_frequency(decoder_conf, 200 /* ms */);
+  ntc_encoder_set_code_rate(enc, 6);
+  ntc_decoder_set_ack_frequency(dec, 200 /* ms */);
 
   // Prepare some data.
   ntc_data_t* data = ntc_new_data(1024);
