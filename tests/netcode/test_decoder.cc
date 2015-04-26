@@ -111,9 +111,11 @@ TEST_CASE("Decoder generate correct ack")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder: lost packet with an encoder's limited window")
+void
+test_case_0(bool in_order)
 {
   configuration conf;
+  conf.in_order = in_order;
   conf.rate = 4;
   conf.window = 3;
   conf.ack_frequency = std::chrono::milliseconds{0};
@@ -168,11 +170,24 @@ TEST_CASE("Decoder: lost packet with an encoder's limited window")
   REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[2])));
 }
 
+
+TEST_CASE("In order decoder: lost packet with an encoder's limited window")
+{
+  test_case_0(true);
+}
+
+TEST_CASE("Out of order decoder: lost packet with an encoder's limited window")
+{
+  test_case_0(false);
+}
+
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder: non systematic code")
+void
+test_case_1(bool in_order)
 {
   configuration conf;
+  conf.in_order = in_order;
   conf.rate = 4;
   conf.code_type = code::non_systematic;
   conf.ack_frequency = std::chrono::milliseconds{0};
@@ -272,6 +287,16 @@ TEST_CASE("Decoder: non systematic code")
   }
 }
 
+TEST_CASE("In order decoder: non systematic code")
+{
+  test_case_1(true);
+}
+
+TEST_CASE("Out of order decoder: non systematic code")
+{
+  test_case_1(false);
+}
+
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder invalid read scenario")
@@ -319,6 +344,236 @@ TEST_CASE("Decoder invalid read scenario")
     REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
     REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
     REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("In order decoder")
+{
+  configuration conf;
+  conf.in_order = true;
+  conf.rate = 4;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+
+  auto& enc_handler = enc.packet_handler();
+  auto& dec_data_handler = dec.data_handler();
+
+  // Packets will be stored in enc_handler.vec.
+  const auto s0 = {'a', 'b', 'c'};
+  enc(data{begin(s0), end(s0)});
+  const auto s1 = {'d', 'e', 'f'};
+  enc(data{begin(s1), end(s1)});
+  const auto s2 = {'g', 'h', 'i'};
+  enc(data{begin(s2), end(s2)});
+  const auto s3 = {'j', 'k', 'l'};
+  enc(data{begin(s3), end(s3)});
+
+  REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
+
+  SECTION("Wrong order of sources")
+  {
+    // Now send to decoder in wrong order.
+    dec(enc_handler.vec[0].data());
+    dec(enc_handler.vec[3].data());
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[2].data());
+    dec(enc_handler.vec[4].data());
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+    // Sources were given to in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
+
+  SECTION("Reverse order of sources")
+  {
+    // Now send to decoder in wrong order.
+    dec(enc_handler.vec[3].data());
+    dec(enc_handler.vec[2].data());
+    dec(enc_handler.vec[1].data());
+    dec(enc_handler.vec[0].data());
+    dec(enc_handler.vec[4].data()); // << repair
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+    // Sources were given to in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
+
+  SECTION("Repair in middle")
+  {
+    dec(enc_handler.vec[0].data()); // s0
+    dec(enc_handler.vec[4].data()); // << repair
+    dec(enc_handler.vec[3].data()); // s3
+    dec(enc_handler.vec[1].data()); // s1
+    dec(enc_handler.vec[2].data()); // s2, will be reconstructed
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 1); //
+
+    // Sources were given in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("In order decoder, missing sources")
+{
+  configuration conf;
+  conf.in_order = true;
+  conf.window = 3;
+  conf.rate = 3;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+
+  auto& enc_handler = enc.packet_handler();
+  auto& dec_data_handler = dec.data_handler();
+
+  // Packets will be stored in enc_handler.vec.
+  const auto s0 = {'a', 'b', 'c'};
+  enc(data{begin(s0), end(s0)});
+  const auto s1 = {'d', 'e', 'f'};
+  enc(data{begin(s1), end(s1)});
+  const auto s2 = {'g', 'h', 'i'};
+  enc(data{begin(s2), end(s2)});
+  const auto s3 = {'j', 'k', 'l'};
+  enc(data{begin(s3), end(s3)});
+  const auto s4 = {'m', 'n'};
+  enc(data{begin(s4), end(s4)});
+  const auto s5 = {'o'};
+  enc(data{begin(s5), end(s5)});
+
+  REQUIRE(enc_handler.nb_packets() == 8 /* 6 src + 2 repair */);
+
+  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+
+  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[5].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[6].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler.vec[7].data()) == detail::packet_type::repair);
+
+  SECTION("Right order")
+  {
+    // s1 and s2 are lost, unable to reconstruct them.
+    dec(enc_handler.vec[0].data());
+    dec(enc_handler.vec[3].data()); // << repair
+    REQUIRE(dec.nb_missing_sources() == 2);
+
+    dec(enc_handler.vec[4].data());
+    dec(enc_handler.vec[5].data());
+    dec(enc_handler.vec[6].data());
+    dec(enc_handler.vec[7].data()); // << repair, outdating sources 0, 1 and 2
+
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 2);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+  // Sources were given in the correct order the user handler.
+  REQUIRE(dec_data_handler.vec.size() == 4);
+  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[1])));
+  REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[2])));
+  REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[3])));
+  }
+
+  SECTION("Wrong order 1")
+  {
+    // s1 and s2 are lost, unable to reconstruct them.
+    dec(enc_handler.vec[0].data()); // s0
+    dec(enc_handler.vec[4].data()); // s3
+    dec(enc_handler.vec[5].data()); // s4
+    dec(enc_handler.vec[6].data()); // s5
+    dec(enc_handler.vec[7].data()); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler.vec[3].data()); // << repair for 0, 1 and 2
+
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 2);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+    // Sources were given in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[2])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[3])));
+  }
+
+  SECTION("Wrong order 2")
+  {
+    // s1 and s2 are lost, unable to reconstruct them.
+    dec(enc_handler.vec[4].data()); // s3
+    dec(enc_handler.vec[5].data()); // s4
+    dec(enc_handler.vec[6].data()); // s5
+    dec(enc_handler.vec[7].data()); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler.vec[3].data()); // << repair for 0, 1 and 2
+    dec(enc_handler.vec[0].data()); // s0
+
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 2);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+    // Sources were given in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 3);
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[2])));
+  }
+
+  SECTION("Wrong order 3")
+  {
+    // s1 and s2 are lost, unable to reconstruct them.
+    dec(enc_handler.vec[5].data()); // s4
+    dec(enc_handler.vec[6].data()); // s5
+    dec(enc_handler.vec[7].data()); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler.vec[3].data()); // << repair for 0, 1 and 2
+    dec(enc_handler.vec[0].data()); // s0
+    dec(enc_handler.vec[4].data()); // s3
+
+    REQUIRE(dec.nb_received_sources() == 4);
+    REQUIRE(dec.nb_received_repairs() == 2);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 1);
+
+    // Sources were given in the correct order the user handler.
+    REQUIRE(dec_data_handler.vec.size() == 3);
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[0])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[1])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[2])));
   }
 }
 

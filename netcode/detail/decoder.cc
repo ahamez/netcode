@@ -11,8 +11,12 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-decoder::decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h)
+decoder::decoder( std::uint8_t galois_field_size, std::function<void(const source&)> h
+                , bool in_order)
   : gf_{galois_field_size}
+  , in_order_{in_order}
+  , first_missing_source_{0}
+  , ordered_sources_{}
   , callback_(h)
   , repairs_{}
   , sources_{}
@@ -20,6 +24,7 @@ decoder::decoder(std::uint8_t galois_field_size, std::function<void(const source
   , missing_sources_{}
   , nb_useless_repairs_{0}
   , nb_failed_full_decodings_{0}
+  , nb_decoded_{0}
   , coefficients_{32}
   , inv_{32}
 {}
@@ -103,7 +108,7 @@ decoder::operator()(repair&& incoming_r)
     if (search != sources_.end())
     {
       // The source has already been received.
-      remove_source_data_from_repair(search->second /* source */, r);
+      remove_source_data_from_repair(*search->second /* source */, r);
 
       // Get the 'normal' iterator corresponding to the current reverse iterator.
       // http://stackoverflow.com/a/1830240/21584
@@ -169,6 +174,8 @@ noexcept
   // Reconstruct missing source.
   gf_.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
 
+  nb_decoded_ += 1;
+
   return src;
 }
 
@@ -232,12 +239,18 @@ const noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
+std::size_t
+decoder::nb_decoded()
+const noexcept
+{
+  return nb_decoded_;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 decoder::add_source_recursive(source&& src)
 {
-  // Notify uppper decoder.
-  callback_(src);
-
   // First, look for all repairs that encode this source.
   const auto search = missing_sources_.find(src.id());
   if (search != missing_sources_.end())
@@ -302,9 +315,12 @@ decoder::add_source_recursive(source&& src)
     }
   }
 
-  // Finally, insert-move this new source in the set of known sources.
+  // Insert-move this new source in the set of known sources.
   const auto src_id = src.id(); // to force evaluation order in the following call.
-  sources_.emplace(src_id, std::move(src));
+  const auto insertion = sources_.emplace(src_id, std::make_shared<source>(std::move(src)));
+  assert(insertion.second && "source already added");
+
+  handle_source(insertion.first->second);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -334,6 +350,22 @@ noexcept
     {
        ++cit;
     }
+  }
+
+  if (in_order_)
+  {
+    for (auto cit = ordered_sources_.begin(); cit != ordered_sources_.lower_bound(id);)
+    {
+      callback_(*cit->second);
+      const auto to_erase = cit;
+      ++cit;
+      ordered_sources_.erase(to_erase);
+    }
+    if (first_missing_source_ < id)
+    {
+      first_missing_source_ = id;
+    }
+    flush_ordered_sources();
   }
 
   // Erase all sources and missing sources with an identifer smaller (strict) than id.
@@ -481,16 +513,71 @@ decoder::attempt_full_decoding()
     }
     ++src_col;
 
-    // Notify netcode::encoder.
-    callback_(src);
-
     // Source decoded, add it to the set of known sources.
-    sources_.emplace(miss.first, std::move(src));
+    const auto insertion = sources_.emplace(miss.first, std::make_shared<source>(std::move(src)));
+    assert(insertion.second && "source already added");
+
+    handle_source(insertion.first->second);
   }
+
+  nb_decoded_ += missing_sources_.size();
 
   // Cleanup.
   repairs_.clear();
   missing_sources_.clear();
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief
+void
+decoder::handle_source(const std::shared_ptr<source>& src)
+{
+  if (not in_order_)
+  {
+    callback_(*src);
+  }
+  else
+  {
+    if (src->id() == first_missing_source_)
+    {
+      callback_(*src);
+      first_missing_source_ += 1;
+
+      // Send all sources that could not be previously sent because their ids were greater than
+      // first_missing_source_.
+      flush_ordered_sources();
+    }
+    else
+    {
+      assert(src->id() > first_missing_source_);
+      // We can't send the current source as they are some older sources which has not been sent
+      // yet.
+      ordered_sources_.emplace(src->id(), src);
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+decoder::flush_ordered_sources()
+{
+  auto cit = ordered_sources_.find(first_missing_source_);
+  while (cit != ordered_sources_.end())
+  {
+    assert(cit->second->id() == first_missing_source_);
+    callback_(*cit->second);
+    const auto to_erase = cit;
+    ++cit;
+    ordered_sources_.erase(to_erase);
+    first_missing_source_ += 1;
+
+    if (cit->second->id() > first_missing_source_)
+    {
+      break;
+    }
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

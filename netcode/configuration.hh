@@ -34,6 +34,9 @@ struct configuration
 
   /// @brief The maximal number of sources to keep on the encoder side before discarding them.
   std::size_t window = std::numeric_limits<std::size_t>::max();
+
+  /// @brief Decoder gives back sources in order.
+  bool in_order = true;
 };
 
 /*------------------------------------------------------------------------------------------------*/

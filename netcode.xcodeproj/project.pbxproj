@@ -46,6 +46,7 @@
 		2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
 		2B516BED1AC944AE00133F38 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
 		2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BF21AC9997200133F38 /* test_invert_matrix.cc */; };
+		2B5F8AEB1AED2C91002FAFFA /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B7E42B11ADC26960035DA89 /* data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42AF1ADC26960035DA89 /* data.cc */; };
 		2B7E42B21ADC26960035DA89 /* data.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42B01ADC26960035DA89 /* data.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -56,7 +57,6 @@
 		2B7E42BD1ADC26D90035DA89 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42BB1ADC26D90035DA89 /* decoder.cc */; };
 		2B7E42BE1ADC26D90035DA89 /* decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42BC1ADC26D90035DA89 /* decoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
-		2B872B0F1AE5336800288C63 /* test_packetizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B272C511AC75C1800E6FEDC /* test_packetizer.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_data.cc */; };
 		2BBC05171ACC472C00EEDAC0 /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
@@ -3326,7 +3326,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B872B0F1AE5336800288C63 /* test_packetizer.cc in Sources */,
+				2B5F8AEB1AED2C91002FAFFA /* test_decoder.cc in Sources */,
 				2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */,
 				2BBC05281ACC477D00EEDAC0 /* encoder.cc in Sources */,
 				2BBC05291ACC477D00EEDAC0 /* invert_matrix.cc in Sources */,

@@ -51,7 +51,9 @@ public:
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
     , decoder_{ conf.galois_field_size
-              , std::bind(&decoder::handle_source, this, std::placeholders::_1)}
+              , std::bind(&decoder::handle_source, this, std::placeholders::_1)
+              , conf.in_order
+              }
     , packet_handler_(std::forward<PacketHandler_>(packet_handler))
     , data_handler_(std::forward<DataHandler_>(data_handler))
     , packetizer_{packet_handler_}
@@ -141,7 +143,7 @@ public:
   nb_decoded()
   const noexcept
   {
-    return nb_handled_sources_ - nb_received_sources_;
+    return decoder_.nb_decoded();
   }
 
   /// @brief Get the number of times the full decodong failed.

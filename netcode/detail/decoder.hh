@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -28,7 +30,7 @@ public:
   using repairs_set_type = boost::container::map<std::uint32_t, repair>;
 
   /// @brief Type of an ordered container of sources.
-  using sources_set_type = boost::container::map<std::uint32_t, source>;
+  using sources_set_type = boost::container::map<std::uint32_t, std::shared_ptr<source>>;
 
 private:
 
@@ -56,7 +58,7 @@ public:
 public:
 
   /// @brief Constructor.
-  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h);
+  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h, bool in_order);
 
   /// @brief What to do when a source is received.
   void
@@ -98,9 +100,14 @@ public:
   nb_useless_repairs()
   const noexcept;
 
-  /// @brief Get the number of times the full decodong failed.
+  /// @brief Get the number of times the full decoding failed.
   std::size_t
   nb_failed_full_decodings()
+  const noexcept;
+
+  /// @brief Get the number of decoded packets.
+  std::size_t
+  nb_decoded()
   const noexcept;
 
 private:
@@ -130,13 +137,33 @@ private:
   void
   attempt_full_decoding();
 
+  /// @brief Manage in-order if needed.
+  void
+  handle_source(const std::shared_ptr<source>&);
+
+  /// @brief Give to callback ordered sources, if possible.
+  void
+  flush_ordered_sources();
+
 private:
 
   /// @brief The implementation of a Galois field.
   galois_field gf_;
 
-  /// @brief The callback to call when a source has been decoded.
-  std::function<void(const source&)> callback_;
+  /// @brief Indicates if sources should be given in-order to the callback.
+  const bool in_order_;
+
+  /// @brief The identifier of the first source which has not yet been given to callback.
+  ///
+  /// Used to give sources in-order to the callback.
+  std::uint32_t first_missing_source_;
+
+  /// @brief Maintains a list of sources which could not be given to callback when some older
+  /// sources are still missing.
+  boost::container::map<std::uint32_t, std::shared_ptr<source>> ordered_sources_;
+
+  /// @brief The callback to call when a source has been decoded or received.
+  const std::function<void(const source&)> callback_;
 
   /// @brief The set of received repairs.
   repairs_set_type repairs_;
@@ -157,6 +184,9 @@ private:
 
   /// @brief The number of time a full decoding failed.
   std::size_t nb_failed_full_decodings_;
+
+  ///
+  std::size_t nb_decoded_;
 
   /// @brief Re-use the same memory for the matrix of coefficients.
   square_matrix coefficients_;
