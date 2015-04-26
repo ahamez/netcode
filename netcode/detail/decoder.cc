@@ -258,7 +258,7 @@ decoder::add_source_recursive(source&& src)
       ; miss_cit != miss_end;)
   {
     const auto& repairs_cits = miss_cit->second;
-    // Does this missing source is references by multiple repairs?
+    // Does this missing source is referenced by only one repair?
     if (repairs_cits.size() == 1)
     {
       // Some shortcuts.
@@ -273,7 +273,7 @@ decoder::add_source_recursive(source&& src)
         // Check that this source doesn't belong to the set of current sources.
         assert(not sources_.count(*r.source_ids().begin()));
 
-        // This missing source is referenced by only 1 repair and this repair reference only 1
+        // This missing source is referenced by only 1 repair and this repair references only 1
         // missing source. Thus, we can reconstruct the missing source.
         auto decoded_src = create_source_from_repair(r);
 
@@ -285,12 +285,13 @@ decoder::add_source_recursive(source&& src)
         ++miss_cit;
         missing_sources_.erase(to_erase);
 
-        // This newly decoded source might triger the decoding of other sources.
+        // This newly decoded source might trigger the decoding of other sources.
         add_source_recursive(std::move(decoded_src));
       }
       else
       {
-        // This repair encodes too much sources. Try next missing source.
+        // This repair encodes too much sources, other sources are needed to reconstruct *miss_cit.
+        // Try next missing source.
         ++miss_cit;
       }
     }
