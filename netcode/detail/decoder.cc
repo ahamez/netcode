@@ -573,7 +573,7 @@ decoder::flush_ordered_sources()
     ordered_sources_.erase(to_erase);
     first_missing_source_ += 1;
 
-    if (cit->second->id() > first_missing_source_)
+    if (cit == ordered_sources_.end() or cit->second->id() > first_missing_source_)
     {
       break;
     }
