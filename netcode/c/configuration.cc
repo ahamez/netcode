@@ -66,3 +66,11 @@ ntc_configuration_set_window(ntc_configuration_t* conf, size_t window)
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order)
+{
+  conf->in_order = in_order;
+}
+
+/*------------------------------------------------------------------------------------------------*/

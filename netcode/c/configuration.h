@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "netcode/c/detail/types.hh"
 #else
+#include <stdbool.h>
 #include <stdint.h>
 #endif
 
@@ -63,6 +64,11 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 
 void
 ntc_configuration_set_window(ntc_configuration_t* conf, size_t window);
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order);
 
 /*------------------------------------------------------------------------------------------------*/
 
