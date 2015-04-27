@@ -108,7 +108,7 @@ decoder::operator()(repair&& incoming_r)
     if (search != sources_.end())
     {
       // The source has already been received.
-      remove_source_data_from_repair(*search->second /* source */, r);
+      remove_source_data_from_repair(search->second /* source */, r);
 
       // Get the 'normal' iterator corresponding to the current reverse iterator.
       // http://stackoverflow.com/a/1830240/21584
@@ -317,10 +317,10 @@ decoder::add_source_recursive(source&& src)
 
   // Insert-move this new source in the set of known sources.
   const auto src_id = src.id(); // to force evaluation order in the following call.
-  const auto insertion = sources_.emplace(src_id, std::make_shared<source>(std::move(src)));
+  const auto insertion = sources_.emplace(src_id, std::move(src));
   assert(insertion.second && "source already added");
 
-  handle_source(insertion.first->second);
+  handle_source(&insertion.first->second);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -514,10 +514,10 @@ decoder::attempt_full_decoding()
     ++src_col;
 
     // Source decoded, add it to the set of known sources.
-    const auto insertion = sources_.emplace(miss.first, std::make_shared<source>(std::move(src)));
+    const auto insertion = sources_.emplace(miss.first, std::move(src));
     assert(insertion.second && "source already added");
 
-    handle_source(insertion.first->second);
+    handle_source(&insertion.first->second);
   }
 
   nb_decoded_ += missing_sources_.size();
@@ -531,7 +531,7 @@ decoder::attempt_full_decoding()
 
 /// @brief
 void
-decoder::handle_source(const std::shared_ptr<source>& src)
+decoder::handle_source(const source* src)
 {
   if (not in_order_)
   {

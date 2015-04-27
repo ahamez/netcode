@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -30,7 +28,7 @@ public:
   using repairs_set_type = boost::container::map<std::uint32_t, repair>;
 
   /// @brief Type of an ordered container of sources.
-  using sources_set_type = boost::container::map<std::uint32_t, std::shared_ptr<source>>;
+  using sources_set_type = boost::container::map<std::uint32_t, source>;
 
 private:
 
@@ -139,7 +137,7 @@ private:
 
   /// @brief Manage in-order if needed.
   void
-  handle_source(const std::shared_ptr<source>&);
+  handle_source(const source*);
 
   /// @brief Give to callback ordered sources, if possible.
   void
@@ -160,7 +158,7 @@ private:
 
   /// @brief Maintains a list of sources which could not be given to callback when some older
   /// sources are still missing.
-  boost::container::map<std::uint32_t, std::shared_ptr<source>> ordered_sources_;
+  boost::container::map<std::uint32_t, const source*> ordered_sources_;
 
   /// @brief The callback to call when a source has been decoded or received.
   const std::function<void(const source&)> callback_;
