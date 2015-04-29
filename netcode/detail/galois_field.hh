@@ -37,7 +37,7 @@ public:
     : gf_{}
     , w_{w}
   {
-    assert(w == 8 or w == 16 or w == 32);
+    assert(w== 4 or w == 8 or w == 16 or w == 32);
     if (gf_init_easy(&gf_, static_cast<int>(w_)) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
@@ -99,14 +99,15 @@ public:
   multiply_size(std::uint16_t size, std::uint32_t coeff)
   noexcept
   {
-    assert((((w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32)) && "Invalid coefficient");
+    assert(  (((w_ == 4 or w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32))
+          && "Invalid coefficient");
 
     if (size == 0 or coeff == 0)
     {
       return 0;
     }
 
-    if (w_ == 8)
+    if (w_ <= 8) // 4 or 8
     {
       __attribute__((aligned(16))) std::uint16_t res;
       __attribute__((aligned(16))) std::uint16_t size_ = size;
