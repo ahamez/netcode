@@ -19,7 +19,7 @@ target_link_libraries(tests ntc ${GF_COMPLETE_LIBRARY})
 
 
 set(END_TO_END_SOURCES
-    test_end_to_end.cc
+    end_to_end.cc
     )
-add_executable(test_end_to_end ${END_TO_END_SOURCES})
-target_link_libraries(test_end_to_end ntc ${GF_COMPLETE_LIBRARY})
+add_executable(end_to_end ${END_TO_END_SOURCES})
+target_link_libraries(end_to_end ntc ${GF_COMPLETE_LIBRARY})
