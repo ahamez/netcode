@@ -12,7 +12,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-static constexpr auto buffer_sz = 2048;
+static constexpr auto buffer_sz = 2048ul;
 using queue_type = std::queue<std::vector<char>>;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -22,11 +22,11 @@ class burst_loss
 public:
 
   burst_loss(unsigned int good, unsigned int bad)
-    : state_{state::good}
-    , gen_{}
-    , dist_{1, 100}
-    , good_{good}
-    , bad_{bad}
+    : state_(state::good)
+    , gen_()
+    , dist_(1, 100)
+    , good_(good)
+    , bad_(bad)
   {}
 
   /// @return true if packet should be lost.
@@ -93,8 +93,8 @@ struct packet_handler
   std::mutex& mutex;
 
   packet_handler(burst_loss& l, queue_type& q, std::mutex& m)
-    : buffer{}, loss{l}, lost_current_packet{loss()}, nb_loss{lost_current_packet ? 1u : 0u}
-    , queue{q}, mutex{m}
+    : buffer(), loss(l), lost_current_packet(loss()), nb_loss(lost_current_packet ? 1u : 0u)
+    , queue(q), mutex(m)
   {
     buffer.reserve(buffer_sz);
   }
@@ -130,7 +130,7 @@ struct in_order_data_handler
   std::uint32_t expected_id;
 
   in_order_data_handler()
-    : nb_received{0}, expected_id{0}
+    : nb_received(0), expected_id(0)
   {}
 
   void
@@ -177,7 +177,7 @@ void
 encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
        , const ntc::configuration& conf, const bool& run)
 {
-  burst_loss loss{90, 10};
+  burst_loss loss{85, 15};
   ntc::encoder<packet_handler> enc{packet_handler{loss, to_dec, to_dec_mutex}, conf};
   std::uint32_t id = 0;
 
@@ -209,7 +209,7 @@ void
 decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
        , const ntc::configuration& conf, const bool& run)
 {
-  burst_loss loss{90, 10};
+  burst_loss loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
     dec{packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{}, conf};
 
