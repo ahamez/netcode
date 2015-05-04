@@ -64,7 +64,7 @@ public:
   /// @note The configuration is copied. If you ever need to modify the configuration on-the-fly,
   /// you should call ntc::encoder::conf() to access the stored configuration.
   template <typename PacketHandler_>
-  encoder(PacketHandler_&& packet_handler)
+  explicit encoder(PacketHandler_&& packet_handler)
     : encoder{std::forward<PacketHandler_>(packet_handler), configuration{}}
   {}
 

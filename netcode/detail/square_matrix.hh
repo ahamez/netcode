@@ -11,7 +11,7 @@ class square_matrix final
 {
 public:
 
-  square_matrix(std::size_t n)
+  explicit square_matrix(std::size_t n)
     : n_{n}
     , vec_(n*n)
   {}

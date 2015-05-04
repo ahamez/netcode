@@ -31,7 +31,7 @@ class packetizer final
 public:
 
   /// @brief Constructor.
-  packetizer(PacketHandler& h)
+  explicit packetizer(PacketHandler& h)
     : packet_handler_(h)
     , difference_buffer_(32)
     , rle_buffer_(32)

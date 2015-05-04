@@ -25,7 +25,7 @@ public:
   /// @param size The size of the buffer to allocate.
   ///
   /// Use this constructor when you intend to directly write in the underlying buffer to avoid copy.
-  data(std::uint16_t size)
+  explicit data(std::uint16_t size)
     : used_bytes_{0}
     , buffer_(size)
   {}

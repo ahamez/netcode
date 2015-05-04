@@ -35,7 +35,7 @@ public:
   {}
 
   /// @brief Construct a default repair, with a given identifier.
-  repair(std::uint32_t id)
+  explicit repair(std::uint32_t id)
     : id_{id}
     , sources_ids_{}
     , encoded_size_{}

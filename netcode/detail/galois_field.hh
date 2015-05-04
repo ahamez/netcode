@@ -33,7 +33,7 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
-  galois_field(std::uint8_t w)
+  explicit galois_field(std::uint8_t w)
     : gf_{}
     , w_{w}
   {
