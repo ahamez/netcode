@@ -12,7 +12,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-static constexpr auto buffer_sz = 2048ul;
+static constexpr auto buffer_sz = 4096ul;
 using queue_type = std::queue<std::vector<char>>;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -131,15 +131,16 @@ struct in_order_data_handler
 {
   std::size_t nb_received;
   std::uint32_t expected_id;
+  const std::uint16_t packet_size;
 
-  in_order_data_handler()
-    : nb_received(0), expected_id(0)
+  in_order_data_handler(std::uint16_t packet_sz)
+    : nb_received(0), expected_id(0), packet_size(packet_sz)
   {}
 
   void
   operator()(const char* data, std::size_t len)
   {
-    if (len != buffer_sz)
+    if (len != packet_size)
     {
       throw std::runtime_error("Invalid length");
     }
@@ -165,12 +166,12 @@ struct in_order_data_handler
 /*------------------------------------------------------------------------------------------------*/
 
 ntc::data
-generate_data(std::uint32_t id)
+generate_data(std::uint32_t id, std::uint16_t packet_size)
 {
-  ntc::data data{buffer_sz};
+  ntc::data data{packet_size};
   auto data_as_int = reinterpret_cast<std::uint32_t*>(data.buffer());
-  std::fill(data_as_int, data_as_int + buffer_sz/sizeof(std::uint32_t), id);
-  data.used_bytes() = buffer_sz;
+  std::fill(data_as_int, data_as_int + packet_size/sizeof(std::uint32_t), id);
+  data.used_bytes() = packet_size;
   return data;
 }
 
@@ -178,7 +179,7 @@ generate_data(std::uint32_t id)
 
 void
 encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const ntc::configuration& conf, const bool& run)
+       , const ntc::configuration& conf, const bool& run, std::uint16_t packet_size)
 {
   burst_loss loss{85, 15};
   ntc::encoder<packet_handler> enc{packet_handler{loss, to_dec, to_dec_mutex}, conf};
@@ -186,7 +187,7 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
   while (run)
   {
-    enc(generate_data(id++));
+    enc(generate_data(id++, packet_size));
 
     // Read ack if any.
     {
@@ -199,7 +200,7 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
     }
   }
 
-  std::lock_guard<std::mutex> out_lock{to_enc_mutex};
+  std::lock_guard<std::mutex> out_lock{to_enc_mutex}; // to serialize output
   std::cout << "Encoder\n";
   std::cout << "Sent " << (id + 1) << '\n';
   std::cout << "Lost " << enc.packet_handler().nb_loss << '\n';
@@ -210,11 +211,11 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
 void
 decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const ntc::configuration& conf, const bool& run)
+       , const ntc::configuration& conf, const bool& run, std::uint16_t packet_size)
 {
   burst_loss loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
-    dec{packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{}, conf};
+    dec{packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}, conf};
 
   while (run)
   {
@@ -229,7 +230,7 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
     }
   }
 
-  std::lock_guard<std::mutex> out_lock{to_enc_mutex};
+  std::lock_guard<std::mutex> out_lock{to_enc_mutex}; // to serialize output
   std::cout << "Decoder\n";
   std::cout << "Handled data " << dec.data_handler().nb_received << '\n';
   std::cout << "Received repairs " << dec.nb_received_repairs() << '\n';
@@ -243,6 +244,13 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
 int main()
 {
+  std::uint16_t packet_size = 1024;
+  if ((packet_size % sizeof(std::uint32_t)) != 0)
+  {
+    std::cerr << "Invalid packet size\n";
+    return 1;
+  }
+
   bool run = true;
 
   queue_type to_dec;
@@ -254,9 +262,9 @@ int main()
   ntc::configuration conf;
 
   std::thread encoder_thread{ encoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run)};
+                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run), packet_size};
   std::thread decoder_thread{ decoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run)};
+                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run), packet_size};
 
   std::this_thread::sleep_for(std::chrono::seconds{10});
 

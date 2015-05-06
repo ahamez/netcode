@@ -8,7 +8,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-static constexpr auto buffer_sz = 2048ul;
+static constexpr auto buffer_sz = 4096ul;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -96,7 +96,7 @@ struct packet_handler
   operator()()
   {
     buffer.emplace_back();
-    buffer.back().reserve(buffer_sz * 2);
+    buffer.back().reserve(buffer_sz);
   }
 };
 
@@ -187,7 +187,7 @@ int main()
     }
 
     enc_packet_handler.buffer.emplace_back();
-    enc_packet_handler.buffer.back().reserve(buffer_sz * 2);
+    enc_packet_handler.buffer.back().reserve(buffer_sz);
 
     enc(generate_data(id++, packet_size));
 
@@ -211,7 +211,7 @@ int main()
     if (((dec.nb_received_sources() + dec.nb_received_repairs()) % ack_frequency) == 0)
     {
       dec_packet_handler.buffer.emplace_back();
-      dec_packet_handler.buffer.back().reserve(buffer_sz * 2);
+      dec_packet_handler.buffer.back().reserve(buffer_sz);
 
       dec.send_ack();
 
