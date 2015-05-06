@@ -113,7 +113,10 @@ struct packet_handler
   {
     {
       std::lock_guard<std::mutex> lock{mutex};
-      queue.push(std::move(buffer));
+      if (not lost_current_packet)
+      {
+        queue.push(std::move(buffer));
+      }
     }
     buffer.clear();
     buffer.reserve(buffer_sz);
