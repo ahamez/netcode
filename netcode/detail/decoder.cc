@@ -72,7 +72,7 @@ decoder::operator()(repair&& incoming_r)
     return;
   }
 
-  // Remove sources with an id smaller than the smallest the current repair encodes.
+  // Remove sources with an id strictly less than the smallest the current repair encodes.
   // Remove repairs which encodes sources with an id smaller than the smallest the current repair
   // encodes.
   drop_outdated(*incoming_r.source_ids().begin());
@@ -329,7 +329,7 @@ void
 decoder::drop_outdated(std::uint32_t id)
 noexcept
 {
-  // All sources with an identifier smaller than last_id_ are now considered outdated.
+  // All sources with an identifier strictly less than last_id_ are now considered outdated.
   last_id_ = id;
 
   // Remove repairs which references this id.
@@ -337,10 +337,9 @@ noexcept
   {
     const auto& r = cit->second;
     assert(not r.source_ids().empty());
-    assert(    (*r.source_ids().begin() <  id and *(r.source_ids().end() - 1) <  id)
-            or (*r.source_ids().begin() >= id and *(r.source_ids().end() - 1) >= id));
-    // Last source encoded by r has an identifier smaller than id.
-    if (*(r.source_ids().end() - 1) < id)
+
+    // Does this repair encodes sources with identifiers strictly less than id?
+    if (id > *r.source_ids().begin())
     {
       const auto to_erase = cit;
       ++cit;
