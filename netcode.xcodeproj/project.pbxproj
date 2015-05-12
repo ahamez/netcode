@@ -1182,11 +1182,11 @@
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
-		2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_end_to_end; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = test_end_to_end; path = "end_to_end-mt"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end_mt.cc; sourceTree = "<group>"; };
 		2B9BD1061AF2A18600856E96 /* udp_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = udp_generator.py; sourceTree = "<group>"; };
-		2BBA82A31AF7FA3200FB22BD /* end_to_end */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = end_to_end; path = /Users/hal/code/netcode/build/Debug/end_to_end; sourceTree = "<absolute>"; };
 		2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end.cc; sourceTree = "<group>"; };
+		2BBBC5E41B022061005C1669 /* end_to_end */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = end_to_end; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBC05251ACC472C00EEDAC0 /* tests-one */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "tests-one"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBC052B1ACD08C700EEDAC0 /* common.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
@@ -3103,6 +3103,7 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				2BBBC5E41B022061005C1669 /* end_to_end */,
 				2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */,
 				2B4DC0281ADBE4F2006C548B /* example_c */,
 				2B218B171AD8066B000D2657 /* libc++.dylib */,
@@ -3291,7 +3292,7 @@
 			);
 			name = end_to_end;
 			productName = end_to_end;
-			productReference = 2BBA82A31AF7FA3200FB22BD /* end_to_end */;
+			productReference = 2BBBC5E41B022061005C1669 /* end_to_end */;
 			productType = "com.apple.product-type.tool";
 		};
 		2BBC050D1ACC472C00EEDAC0 /* test-one */ = {
@@ -4289,6 +4290,7 @@
 				2BBA82A91AF7FA3200FB22BD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2BBC05221ACC472C00EEDAC0 /* Build configuration list for PBXNativeTarget "test-one" */ = {
 			isa = XCConfigurationList;
