@@ -42,8 +42,6 @@ public:
   decoder& operator=(const decoder&) = delete;
 
   /// @brief Constructor.
-  /// @note The configuration is copied. If you ever need to modify the configuration on-the-fly,
-  /// you should call ntc::encoder::conf() to access the stored configuration.
   template <typename PacketHandler_, typename DataHandler_>
   decoder( PacketHandler_&& packet_handler, DataHandler_&& data_handler
          , configuration conf)
@@ -66,8 +64,6 @@ public:
   }
 
   /// @brief Constructor with a default configuration.
-  /// @note The configuration is copied. If you ever need to modify the configuration on-the-fly,
-  /// you should call ntc::encoder::conf() to access the stored configuration.
   template <typename PacketHandler_, typename DataHandler_>
   decoder(PacketHandler_&& packet_handler, DataHandler_&& data_handler)
     : decoder{ std::forward<PacketHandler_>(packet_handler)
