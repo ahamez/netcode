@@ -29,7 +29,7 @@ TEST_CASE("Encoder's window size")
   const auto data = std::vector<char>(100, 'x');
 
   configuration conf;
-  conf.rate = 1;
+  conf.set_rate(1);
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   auto data0 = ntc::data(data.begin(), data.begin() + 13);
@@ -52,7 +52,7 @@ TEST_CASE("Encoder can limit the window size")
   const auto data = std::vector<char>(100, 'x');
 
   configuration conf;
-  conf.window = 4;
+  conf.set_window_size(4);
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   auto data0 = ntc::data(data.begin(), data.begin() + 8);
@@ -83,7 +83,7 @@ TEST_CASE("Encoder generates repairs")
   const auto data = std::vector<char>(100, 'x');
 
   configuration conf;
-  conf.rate = 5;
+  conf.set_rate(5);
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   for (auto i = 0ul; i < 100; ++i)
@@ -98,7 +98,7 @@ TEST_CASE("Encoder generates repairs")
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
   configuration conf;
-  conf.rate = 5;
+  conf.set_rate(5);
   encoder<dummy_handler> encoder{dummy_handler{}, conf};
 
   // First, add some sources.
@@ -281,7 +281,7 @@ TEST_CASE("Encoder sends correct sources")
 TEST_CASE("Encoder sends repairs")
 {
   configuration conf;
-  conf.rate = 1; // A repair for a source
+  conf.set_rate(1); // A repair for a source
 
   encoder<my_handler> enc{my_handler{}, conf};
 
@@ -308,8 +308,8 @@ TEST_CASE("Decoder: invalid memory access scenerio")
   static constexpr auto max_len = 4096;
 
   configuration conf;
-  conf.rate = 5;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_rate(5);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
 
@@ -360,8 +360,8 @@ TEST_CASE("Decoder: invalid memory access scenerio")
 TEST_CASE("Non systematic encoder")
 {
   configuration conf;
-  conf.code_type = code::non_systematic;
-  conf.rate = 3;
+  conf.set_code_type(code::non_systematic);
+  conf.set_rate(3);
 
   encoder<packet_handler> encoder{packet_handler{}, conf};
   auto& enc_handler = encoder.packet_handler();

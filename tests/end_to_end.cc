@@ -169,7 +169,7 @@ int main()
 
   ntc::configuration conf;
   // deactivate automatic ack.
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
   ntc::encoder<packet_handler> enc{packet_handler{}, conf};
   ntc::decoder<packet_handler, in_order_data_handler> dec{ packet_handler{}
                                                          , in_order_data_handler{packet_size}

@@ -62,8 +62,8 @@ int main(int argc, char** argv)
   memset(data_cxt.buffer, 'x', 4096);
 
   // A default configuration for encoder and decoder.
-  ntc_configuration_t* conf = ntc_new_configuration();
-  ntc_configuration_set_window(conf, 1024);
+  ntc_configuration_t* conf = ntc_new_configuration(8);
+  ntc_configuration_set_window_size(conf, 1024);
 
   // Create an encoder.
   ntc_packet_handler encoder_packet_handler = {&encoder_cxt, prepare_packet, send_packet};
@@ -74,9 +74,9 @@ int main(int argc, char** argv)
   ntc_data_handler decoder_data_handler = {&data_cxt, receive_data};
   ntc_decoder_t* dec = ntc_new_decoder(conf, decoder_packet_handler, decoder_data_handler);
 
-  // Let's configure a little more encoder and decoder.
-  ntc_encoder_set_code_rate(enc, 6);
-  ntc_decoder_set_ack_frequency(dec, 200 /* ms */);
+  // Let's configure a little more the decoder.
+  ntc_configuration_t* dec_conf = ntc_decoder_get_configuration(dec);
+  ntc_configuration_set_ack_frequency(dec_conf, 200 /* ms */);
 
   // Prepare some data.
   ntc_data_t* data = ntc_new_data(1024);

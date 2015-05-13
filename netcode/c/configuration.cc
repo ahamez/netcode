@@ -3,9 +3,9 @@
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_configuration_t*
-ntc_new_configuration()
+ntc_new_configuration(uint8_t galois_field_size)
 {
-  return new ntc_configuration_t{};
+  return new ntc_configuration_t{galois_field_size};
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -19,25 +19,17 @@ ntc_delete_configuration(ntc_configuration_t* conf)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_galois_field_size(ntc_configuration_t* conf , uint8_t size)
-{
-  conf->galois_field_size = size;
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
 ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type)
 {
   switch (code_type)
   {
     case ntc_systematic:
-      conf->code_type = ntc::code::systematic;
+      conf->set_code_type(ntc::code::systematic);
       break;
 
     case ntc_non_systematic:
     default:
-      conf->code_type = ntc::code::non_systematic;
+      conf->set_code_type(ntc::code::non_systematic);
   }
 }
 
@@ -46,7 +38,7 @@ ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type co
 void
 ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate)
 {
-  conf->rate = rate;
+  conf->set_rate(rate);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -54,15 +46,15 @@ ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate)
 void
 ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 {
-  conf->ack_frequency = std::chrono::milliseconds{frequency};
+  conf->set_ack_frequency(std::chrono::milliseconds{frequency});
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_window(ntc_configuration_t* conf, size_t window)
+ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window)
 {
-  conf->window = window;
+  conf->set_window_size(window);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -70,7 +62,7 @@ ntc_configuration_set_window(ntc_configuration_t* conf, size_t window)
 void
 ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order)
 {
-  conf->in_order = in_order;
+  conf->set_in_order(in_order);
 }
 
 /*------------------------------------------------------------------------------------------------*/

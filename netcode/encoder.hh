@@ -45,7 +45,7 @@ public:
     , sources_{}
     , repair_{current_repair_id_}
     , packet_handler_(std::forward<PacketHandler_>(packet_handler))
-    , encoder_{conf.galois_field_size}
+    , encoder_{conf.galois_field_size()}
     , packetizer_{packet_handler_}
     , nb_sent_repairs_{0ul}
     , nb_acks_{0ul}
@@ -53,7 +53,6 @@ public:
     , nb_sent_packets_{0}
     , previous_loss_rate_{5.0} /// @todo Compute from conf.rate
   {
-    assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
     repair_.buffer().reserve(2048);
     // Same thing for the list of source identifiers.
@@ -145,52 +144,20 @@ public:
     packetizer_.write_repair(repair_);
   }
 
-  /// @brief Get the code type.
-  code
-  code_type()
-  const noexcept
-  {
-    return conf_.code_type;
-  }
-
-  /// @brief Set the code type.
-  void
-  code_type(code c)
+  /// @brief Get the configuration (mutable).
+  configuration&
+  conf()
   noexcept
   {
-    conf_.code_type = c;
+    return conf_;
   }
 
-  /// @brief Get the code rate.
-  std::size_t
-  code_rate()
+  /// @brief Get the configuration.
+  const configuration&
+  conf()
   const noexcept
   {
-    return conf_.rate;
-  }
-
-  /// @brief Set the code rate.
-  void
-  code_rate(std::size_t r)
-  noexcept
-  {
-    conf_.rate = r >= 1 ? r : conf_.rate;
-  }
-
-  /// @brief Get the max window size.
-  std::size_t
-  window_max()
-  const noexcept
-  {
-    return conf_.window;
-  }
-
-  /// @brief Set the max window size.
-  void
-  window_max(std::size_t w)
-  noexcept
-  {
-    conf_.window = w >= 1 ? w : conf_.window;
+    return conf_;
   }
 
 private:
@@ -203,7 +170,7 @@ private:
   {
     assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
 
-    if (sources_.size() == conf_.window)
+    if (sources_.size() == conf_.window_size())
     {
       sources_.pop_front();
     }
@@ -213,7 +180,7 @@ private:
     const auto& insertion
       = sources_.emplace(current_source_id_, std::move(d.buffer_impl()), d.used_bytes());
 
-    if (conf_.code_type == code::systematic)
+    if (conf_.code_type() == code::systematic)
     {
       // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
       packetizer_.write_source(insertion);
@@ -225,7 +192,7 @@ private:
     }
 
     /// @todo Should we generate a repair if window_size() == 1?
-    if ((current_source_id_ + 1) % conf_.rate == 0)
+    if ((current_source_id_ + 1) % conf_.rate() == 0)
     {
       send_repair();
     }
@@ -243,17 +210,17 @@ private:
     {
       nb_acks_ += 1;
       const auto res = packetizer_.read_ack(data);
-      if (conf_.adaptative)
+      if (conf_.adaptative())
       {
         const auto loss_rate
           = (nb_sent_packets_ - res.first.nb_packets()) / static_cast<double>(nb_sent_packets_);
         if (loss_rate > previous_loss_rate_)
         {
-          conf_.rate = conf_.rate > 1 ? conf_.rate - 1 : 1;
+          conf_.set_rate(conf_.rate() > 1 ? conf_.rate() - 1 : 1);
         }
         else if (loss_rate < previous_loss_rate_)
         {
-          conf_.rate = conf_.rate > 1 ? conf_.rate + 1 : 1;
+          conf_.set_rate(conf_.rate() > 1 ? conf_.rate() + 1 : 1);
         }
         previous_loss_rate_ = loss_rate;
       }

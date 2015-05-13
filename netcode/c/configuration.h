@@ -28,7 +28,7 @@ enum ntc_code_type{ntc_systematic, ntc_non_systematic};
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_configuration_t*
-ntc_new_configuration();
+ntc_new_configuration(uint8_t galois_field_size);
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -39,11 +39,6 @@ ntc_new_default_configuration();
 
 void
 ntc_delete_configuration(ntc_configuration_t* conf);
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_configuration_set_galois_field_size(ntc_configuration_t* conf, uint8_t size);
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -63,7 +58,7 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_window(ntc_configuration_t* conf, size_t window);
+ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window);
 
 /*------------------------------------------------------------------------------------------------*/
 

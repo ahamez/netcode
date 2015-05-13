@@ -41,8 +41,8 @@ ntc_decoder_send_ack(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
-ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency);
+ntc_configuration_t*
+ntc_decoder_get_configuration(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 

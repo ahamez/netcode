@@ -39,7 +39,7 @@ TEST_CASE("Decoder gives a correct source to user")
 TEST_CASE("Decoder repairs a lost source")
 {
   configuration conf;
-  conf.rate = 1; // A repair for a source.
+  conf.set_rate(1); // A repair for a source.
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}};
@@ -68,8 +68,8 @@ TEST_CASE("Decoder repairs a lost source")
 TEST_CASE("Decoder generate correct ack")
 {
   configuration conf;
-  conf.rate = 100; // Make sure no repairs are sent.
-  conf.ack_frequency = std::chrono::milliseconds{100};
+  conf.set_rate(100); // Make sure no repairs are sent.
+  conf.set_ack_frequency(std::chrono::milliseconds{100});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}};
@@ -114,9 +114,9 @@ TEST_CASE("Decoder generate correct ack")
 TEST_CASE("Decoder generate acks when N packets are received")
 {
   configuration conf;
-  conf.rate = 100;
-  conf.ack_frequency = std::chrono::milliseconds{0};
-  conf.ack_nb_packets = 4;
+  conf.set_rate(100);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  conf.set_ack_nb_packets(4);
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
@@ -153,10 +153,10 @@ void
 test_case_0(bool in_order)
 {
   configuration conf;
-  conf.in_order = in_order;
-  conf.rate = 4;
-  conf.window = 3;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_in_order(in_order);
+  conf.set_rate(4);
+  conf.set_window_size(3);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
@@ -225,10 +225,10 @@ void
 test_case_1(bool in_order)
 {
   configuration conf;
-  conf.in_order = in_order;
-  conf.rate = 4;
-  conf.code_type = code::non_systematic;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_in_order(in_order);
+  conf.set_rate(4);
+  conf.set_code_type(code::non_systematic);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
@@ -340,9 +340,9 @@ TEST_CASE("Out of order decoder: non systematic code")
 TEST_CASE("Decoder invalid read scenario")
 {
   configuration conf;
-  conf.rate = 3;
-  conf.code_type = code::non_systematic;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_rate(3);
+  conf.set_code_type(code::non_systematic);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
@@ -390,9 +390,9 @@ TEST_CASE("Decoder invalid read scenario")
 TEST_CASE("In order decoder")
 {
   configuration conf;
-  conf.in_order = true;
-  conf.rate = 4;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_in_order(true);
+  conf.set_rate(4);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
@@ -485,10 +485,10 @@ TEST_CASE("In order decoder")
 TEST_CASE("In order decoder, missing sources")
 {
   configuration conf;
-  conf.in_order = true;
-  conf.window = 3;
-  conf.rate = 3;
-  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.set_in_order(true);
+  conf.set_window_size(3);
+  conf.set_rate(3);
+  conf.set_ack_frequency(std::chrono::milliseconds{0});
 
   encoder<packet_handler> enc{packet_handler{}, conf};
   decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};

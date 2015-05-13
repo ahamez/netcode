@@ -48,10 +48,9 @@ public:
     : conf_{conf}
     , last_ack_date_(std::chrono::steady_clock::now())
     , ack_{}
-    , decoder_{ conf.galois_field_size
+    , decoder_{ conf.galois_field_size()
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)
-              , conf.in_order
-              }
+              , conf.in_order()}
     , packet_handler_(std::forward<PacketHandler_>(packet_handler))
     , data_handler_(std::forward<DataHandler_>(data_handler))
     , packetizer_{packet_handler_}
@@ -213,15 +212,15 @@ public:
   void
   maybe_ack()
   {
-    if (ack_.nb_packets() >= conf_.ack_nb_packets)
+    if (ack_.nb_packets() >= conf_.ack_nb_packets())
     {
       send_ack();
       last_ack_date_ = std::chrono::steady_clock::now();
     }
-    else if (conf_.ack_frequency != std::chrono::milliseconds{0})
+    else if (conf_.ack_frequency() != std::chrono::milliseconds{0})
     {
       const auto now = std::chrono::steady_clock::now();
-      if ((now - last_ack_date_) >= conf_.ack_frequency)
+      if ((now - last_ack_date_) >= conf_.ack_frequency())
       {
         send_ack();
         last_ack_date_ = now;
@@ -229,28 +228,20 @@ public:
     }
   }
 
-  /// @brief Get the ack frequency.
-  std::chrono::milliseconds
-  ack_frequency()
+  /// @brief Get the configuration (mutable).
+  configuration&
+  conf()
+  noexcept
+  {
+    return conf_;
+  }
+
+  /// @brief Get the configuration.
+  const configuration&
+  conf()
   const noexcept
   {
-    return conf_.ack_frequency;
-  }
-
-  /// @brief Set the ack frequency.
-  void
-  set_ack_frequency(std::chrono::milliseconds f)
-  noexcept
-  {
-    conf_.ack_frequency = f;
-  }
-
-  ///
-  void
-  set_ack_nb_packets(std::size_t nb)
-  noexcept
-  {
-    conf_.ack_nb_packets = nb;
+    return conf_;
   }
 
 private:

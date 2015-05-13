@@ -50,35 +50,10 @@ ntc_encoder_window(ntc_encoder_t* enc)
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
-ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type type)
+ntc_configuration_t*
+ntc_encoder_get_configuration(ntc_encoder_t* enc)
 {
-  switch (type)
-  {
-    case ntc_systematic:
-      enc->code_type(ntc::code::systematic);
-      break;
-
-    case ntc_non_systematic:
-    default:
-      enc->code_type(ntc::code::non_systematic);
-  }
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_encoder_set_code_rate(ntc_encoder_t* enc, size_t rate)
-{
-  enc->code_rate(rate);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_encoder_set_window_max(ntc_encoder_t* enc, size_t window)
-{
-  enc->window_max(window);
+  return &enc->conf();
 }
 
 /*------------------------------------------------------------------------------------------------*/

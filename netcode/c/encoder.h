@@ -51,18 +51,8 @@ ntc_encoder_window(ntc_encoder_t* enc);
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
-ntc_encoder_set_code_type(ntc_encoder_t* enc, enum ntc_code_type type);
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_encoder_set_code_rate(ntc_encoder_t* enc, size_t rate);
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_encoder_set_window_max(ntc_encoder_t* enc, size_t window);
+ntc_configuration_t*
+ntc_encoder_get_configuration(ntc_encoder_t* enc);
 
 /*------------------------------------------------------------------------------------------------*/
 
