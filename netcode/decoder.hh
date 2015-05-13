@@ -59,7 +59,6 @@ public:
     , packetizer_{packet_handler_}
     , nb_received_repairs_{0}
     , nb_received_sources_{0}
-    , nb_handled_sources_{0}
     , nb_sent_ack_{0}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
@@ -250,8 +249,6 @@ private:
   void
   handle_source(const detail::source& src)
   {
-    nb_handled_sources_ += 1;
-
     // Ask user to read the bytes of this new source.
     data_handler_(src.buffer().data(), src.user_size());
 
@@ -287,9 +284,6 @@ private:
 
   /// @brief The counter of received sources.
   std::size_t nb_received_sources_;
-
-  /// @brief The counter of decoded sources.
-  std::size_t nb_handled_sources_;
 
   /// @brief The number of ack sent back to the encoder.
   std::size_t nb_sent_ack_;
