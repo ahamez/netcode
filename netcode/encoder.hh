@@ -50,6 +50,8 @@ public:
     , nb_sent_repairs_{0ul}
     , nb_acks_{0ul}
     , nb_sent_sources_{0ul}
+    , nb_sent_packets_{0}
+    , previous_loss_rate_{5.0} /// @todo Compute from conf.rate
   {
     assert(conf_.rate > 0);
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
@@ -241,10 +243,27 @@ private:
     {
       nb_acks_ += 1;
       const auto res = packetizer_.read_ack(data);
+      if (conf_.adaptative)
+      {
+        const auto loss_rate
+          = (nb_sent_packets_ - res.first.nb_packets()) / static_cast<double>(nb_sent_packets_);
+        if (loss_rate > previous_loss_rate_)
+        {
+          conf_.rate = conf_.rate > 1 ? conf_.rate - 1 : 1;
+        }
+        else if (loss_rate < previous_loss_rate_)
+        {
+          conf_.rate = conf_.rate > 1 ? conf_.rate + 1 : 1;
+        }
+        previous_loss_rate_ = loss_rate;
+      }
       sources_.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
     }
-    return 0ul;
+    else
+    {
+      return 0ul;
+    }
   }
 
   /// @brief Launch the generation of a repair.
@@ -297,6 +316,11 @@ private:
   /// @brief The number of sent sources.
   std::size_t nb_sent_sources_;
 
+  /// @brief The number of sent packets since last ack.
+  std::uint16_t nb_sent_packets_;
+
+  ///
+  double previous_loss_rate_;
 };
 
 /*------------------------------------------------------------------------------------------------*/

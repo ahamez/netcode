@@ -84,6 +84,7 @@ public:
       case detail::packet_type::repair:
       {
         nb_received_repairs_ += 1;
+        ack_.nb_packets() += 1;
         auto res = packetizer_.read_repair(packet);
         decoder_(std::move(res.first));
         return res.second;
@@ -92,6 +93,7 @@ public:
       case detail::packet_type::source:
       {
         nb_received_sources_ += 1;
+        ack_.nb_packets() += 1;
         auto res = packetizer_.read_source(packet);
         decoder_(std::move(res.first));
         return res.second;
@@ -211,9 +213,13 @@ public:
   void
   maybe_ack()
   {
-    if (conf_.ack_frequency != std::chrono::milliseconds{0})
+    if (ack_.nb_packets() >= conf_.ack_nb_packets)
     {
-      // Do we need to send an ack?
+      send_ack();
+      last_ack_date_ = std::chrono::steady_clock::now();
+    }
+    else if (conf_.ack_frequency != std::chrono::milliseconds{0})
+    {
       const auto now = std::chrono::steady_clock::now();
       if ((now - last_ack_date_) >= conf_.ack_frequency)
       {
@@ -233,10 +239,18 @@ public:
 
   /// @brief Set the ack frequency.
   void
-  ack_frequency(std::chrono::milliseconds f)
+  set_ack_frequency(std::chrono::milliseconds f)
   noexcept
   {
     conf_.ack_frequency = f;
+  }
+
+  ///
+  void
+  set_ack_nb_packets(std::size_t nb)
+  noexcept
+  {
+    conf_.ack_nb_packets = nb;
   }
 
 private:

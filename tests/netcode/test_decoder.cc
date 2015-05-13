@@ -111,6 +111,44 @@ TEST_CASE("Decoder generate correct ack")
 
 /*------------------------------------------------------------------------------------------------*/
 
+TEST_CASE("Decoder generate acks when N packets are received")
+{
+  configuration conf;
+  conf.rate = 100;
+  conf.ack_frequency = std::chrono::milliseconds{0};
+  conf.ack_nb_packets = 4;
+
+  encoder<packet_handler> enc{packet_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+
+  auto& enc_packet_handler = enc.packet_handler();
+  auto& dec_packet_handler = dec.packet_handler();
+
+  // Give a source to the encoder.
+  const auto s0 = {'a', 'b', 'c'};
+  enc(data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
+  enc(data{begin(s0), end(s0)});
+  REQUIRE(enc.window() == 4);
+  REQUIRE(enc_packet_handler.nb_packets() == 4);
+  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[3].data()) == detail::packet_type::source);
+
+  // Send sources to decoder.
+  dec(enc_packet_handler.vec[0].data());
+  dec(enc_packet_handler.vec[1].data());
+  dec(enc_packet_handler.vec[2].data());
+  dec(enc_packet_handler.vec[3].data());
+
+  REQUIRE(dec_packet_handler.nb_packets() == 1);
+  REQUIRE(detail::get_packet_type(dec_packet_handler.vec[0].data()) == detail::packet_type::ack);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 test_case_0(bool in_order)
 {

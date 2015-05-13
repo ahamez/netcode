@@ -29,14 +29,21 @@ struct configuration
 
   /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
   ///
-  /// If 0, the user has to take care of sending ack by calling decoder::send_ack() directly.
+  /// If 0, ack won't be sent automatically. The method decoder::send_ack() can still be called to
+  /// force the sending of an ack.
   std::chrono::milliseconds ack_frequency = std::chrono::milliseconds{100};
+
+  /// @brief
+  std::size_t ack_nb_packets = 50;
 
   /// @brief The maximal number of sources to keep on the encoder side before discarding them.
   std::size_t window = std::numeric_limits<std::size_t>::max();
 
   /// @brief Decoder gives back sources in order.
   bool in_order = true;
+
+  ///
+  bool adaptative = true;
 };
 
 /*------------------------------------------------------------------------------------------------*/

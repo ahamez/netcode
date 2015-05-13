@@ -45,8 +45,14 @@ public:
     // Prepare packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
 
+    // Prepare number of received packets.
+    const auto network_nb_packets = native_to_big(static_cast<std::uint16_t>(a.nb_packets()));
+
     // Write packet type.
     write(&packet_ty, sizeof(std::uint8_t));
+
+    // Write the number of packets received since last ack.
+    write(&network_nb_packets, sizeof(std::uint16_t));
 
     // Write source identifiers.
     write(a.source_ids());
@@ -69,11 +75,15 @@ public:
     // Skip packet type.
     data += sizeof(std::uint8_t);
 
+    // Read the number of packets received since last ack.
+    const auto nb_packets = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    data += sizeof(std::uint16_t);
+
     // Read source identifiers
     source_id_list ids;
     data += read_ids(data, ids);
 
-    return std::make_pair( ack{std::move(ids)}
+    return std::make_pair( ack{std::move(ids), nb_packets}
                          , reinterpret_cast<std::size_t>(data) - begin);
   }
 

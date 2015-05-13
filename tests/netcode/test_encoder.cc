@@ -132,7 +132,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   SECTION("incoming ack")
   {
     // Create an ack for some sources, with a wrong id, just to try.
-    const auto ack = detail::ack{{0,2,9}};
+    const auto ack = detail::ack{{0,2,9}, 0};
 
     // Serialize the ack.
     serializer.write_ack(ack);
@@ -148,7 +148,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   SECTION("incoming ack 2")
   {
     // Create an ack for some sources, with a wrong id, just to try.
-    const auto ack0 = detail::ack{{0,2,9}};
+    const auto ack0 = detail::ack{{0,2,9}, 0};
 
     // Serialize the ack.
     serializer.write_ack(ack0);
@@ -164,7 +164,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     h.written = 0;
 
     // Create an ack for some sources, with an already deleted source.
-    const auto ack1 = detail::ack{{0}};
+    const auto ack1 = detail::ack{{0}, 0};
 
     // Serialize the ack.
     serializer.write_ack(ack1);
@@ -180,7 +180,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     h.written = 0;
     
     // Create an ack for some sources, with a source that wasn't deleted before.
-    const auto ack2 = detail::ack{{1}};
+    const auto ack2 = detail::ack{{1}, 0};
 
     // Serialize the ack.
     serializer.write_ack(ack2);

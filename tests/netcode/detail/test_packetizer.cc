@@ -37,12 +37,13 @@ TEST_CASE("An ack is (de)serialized by packetizer")
   handler h;
   detail::packetizer<handler> serializer{h};
 
-  const detail::ack a_in{{0,1,2,3}};
+  const detail::ack a_in{{0,1,2,3}, 33};
 
   serializer.write_ack(a_in);
   
   const auto a_out = serializer.read_ack(h.data_).first;
   REQUIRE(a_in.source_ids() == a_out.source_ids());
+  REQUIRE(a_in.nb_packets() == a_out.nb_packets());
 }
 
 /*------------------------------------------------------------------------------------------------*/
