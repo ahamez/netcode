@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <limits> // numeric_limits
@@ -97,15 +98,15 @@ public:
   /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
   /// @note Must be greater than 0.
   void
-  set_ack_nb_packets(std::size_t nb)
+  set_ack_nb_packets(std::uint16_t nb)
   noexcept
   {
     assert(nb > 0);
-    ack_nb_packets_ = nb;
+    ack_nb_packets_ = std::min(nb, static_cast<std::uint16_t>(128));
   }
 
   /// @brief Get how many packets to receive before an ack is sent from the decoder to the encoder.
-  std::size_t
+  std::uint16_t
   ack_nb_packets()
   const noexcept
   {
@@ -177,7 +178,7 @@ private:
   std::chrono::milliseconds ack_frequency_;
 
   /// @brief How many packets to receive before an ack is sent from the decoder to the encoder.
-  std::size_t ack_nb_packets_;
+  std::uint16_t ack_nb_packets_;
 
   /// @brief The maximal number of sources to keep on the encoder side before discarding them.
   std::size_t window_;
