@@ -113,6 +113,7 @@ public:
     , other_side_seen_(false)
   {
     decoder_.conf().set_ack_frequency(std::chrono::milliseconds{0});
+    encoder_.conf().set_adaptative(true);
 
     start_handler();
     start_app_handler();
@@ -220,6 +221,7 @@ private:
                                 << "out repairs: " << encoder_.nb_sent_repairs() << '\n'
                                 << "out sources: " << encoder_.nb_sent_sources() << '\n'
                                 << "window : " << encoder_.window() << '\n'
+                                << "rate : " << encoder_.conf().rate() << '\n'
                                 << '\n'
                                 << "-- Decoder --\n"
                                 << "out acks   : " << decoder_.nb_sent_acks() << '\n'

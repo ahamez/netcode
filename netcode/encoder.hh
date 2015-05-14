@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/packetizer.hh"
@@ -51,7 +53,6 @@ public:
     , nb_acks_{0ul}
     , nb_sent_sources_{0ul}
     , nb_sent_packets_{0}
-    , previous_loss_rate_{5.0} /// @todo Compute from conf.rate
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
     repair_.buffer().reserve(2048);
@@ -141,6 +142,7 @@ public:
   {
     repair_.reset();
     mk_repair();
+    nb_sent_packets_ += 1;
     packetizer_.write_repair(repair_);
   }
 
@@ -183,8 +185,9 @@ private:
     if (conf_.code_type() == code::systematic)
     {
       // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-      packetizer_.write_source(insertion);
       nb_sent_sources_ += 1;
+      nb_sent_packets_ += 1;
+      packetizer_.write_source(insertion);
     }
     else // non_systematic code
     {
@@ -212,18 +215,18 @@ private:
       const auto res = packetizer_.read_ack(data);
       if (conf_.adaptative())
       {
-        const auto loss_rate
-          = (nb_sent_packets_ - res.first.nb_packets()) / static_cast<double>(nb_sent_packets_);
-        if (loss_rate > previous_loss_rate_)
+        if (nb_sent_packets_ > 0)
         {
-          conf_.set_rate(conf_.rate() > 1 ? conf_.rate() - 1 : 1);
+          const auto loss_rate
+            = (nb_sent_packets_ - res.first.nb_packets()) / static_cast<double>(nb_sent_packets_);
+          conf_.set_rate(rate_for_loss(loss_rate));
         }
-        else if (loss_rate < previous_loss_rate_)
+        else
         {
-          conf_.set_rate(conf_.rate() > 1 ? conf_.rate() + 1 : 1);
+          conf_.set_rate(rate_for_loss(0.0));
         }
-        previous_loss_rate_ = loss_rate;
       }
+      nb_sent_packets_ = 0;
       sources_.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
     }
@@ -246,6 +249,17 @@ private:
 
     current_repair_id_ += 1;
     nb_sent_repairs_ += 1;
+  }
+
+  /// @brief Compute the code rate needed for a given loss rate.
+  static
+  std::size_t
+  rate_for_loss(double loss)
+  noexcept
+  {
+    return loss < 0.01
+         ? 50
+         : ceil((1/loss)/2);
   }
 
 private:
@@ -285,9 +299,6 @@ private:
 
   /// @brief The number of sent packets since last ack.
   std::uint16_t nb_sent_packets_;
-
-  ///
-  double previous_loss_rate_;
 };
 
 /*------------------------------------------------------------------------------------------------*/
