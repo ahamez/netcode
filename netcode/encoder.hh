@@ -259,7 +259,7 @@ private:
   {
     return loss < 0.01
          ? 50
-         : ceil((1/loss)/2);
+         : static_cast<std::size_t>(ceil((1/loss)/2));
   }
 
 private:
