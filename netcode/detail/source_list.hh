@@ -23,8 +23,8 @@ public:
   const detail::source&
   emplace(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)
   {
-    sources_.emplace_back(id, std::move(buf), user_size);
-    return sources_.back();
+    m_sources.emplace_back(id, std::move(buf), user_size);
+    return m_sources.back();
   }
 
   /// @brief Remove source packets from a list of identifiers.
@@ -33,8 +33,8 @@ public:
   noexcept
   {
     // sources_ is sorted by insertion (and thus by identifier).
-    auto source_it = sources_.begin();
-    const auto source_end = sources_.end();
+    auto source_it = m_sources.begin();
+    const auto source_end = m_sources.end();
     while (source_it != source_end and id_cit != id_end)
     {
       if (source_it->id() == *id_cit)
@@ -43,7 +43,7 @@ public:
         auto to_erase = source_it;
         ++source_it;
         ++id_cit;
-        sources_.erase(to_erase);
+        m_sources.erase(to_erase);
       }
       else if (source_it->id() > *id_cit)
       {
@@ -64,7 +64,7 @@ public:
   size()
   const noexcept
   {
-    return sources_.size();
+    return m_sources.size();
   }
 
   /// @brief Get an iterator to the first source.
@@ -72,7 +72,7 @@ public:
   cbegin()
   const noexcept
   {
-    return sources_.cbegin();
+    return m_sources.cbegin();
   }
 
   /// @brief Get an iterator to the end of sources.
@@ -80,7 +80,7 @@ public:
   cend()
   const noexcept
   {
-    return sources_.cend();
+    return m_sources.cend();
   }
 
   /// @brief Drop the first source.
@@ -88,13 +88,13 @@ public:
   pop_front()
   noexcept
   {
-    sources_.pop_front();
+    m_sources.pop_front();
   }
 
 private:
 
   /// @brief The real container of source packets.
-  std::list<detail::source> sources_;
+  std::list<detail::source> m_sources;
 };
 
 /*------------------------------------------------------------------------------------------------*/

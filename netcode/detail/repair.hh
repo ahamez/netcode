@@ -28,18 +28,18 @@ public:
   /// @brief Construct with an existing list of source identifiers and a symbol.
   repair( std::uint32_t id, std::uint16_t encoded_size, source_id_list&& ids
         , detail::zero_byte_buffer&& buffer)
-    : id_{id}
-    , sources_ids_{std::move(ids)}
-    , encoded_size_{encoded_size}
-    , buffer_{std::move(buffer)}
+    : m_id{id}
+    , m_sources_ids{std::move(ids)}
+    , m_encoded_size{encoded_size}
+    , m_buffer{std::move(buffer)}
   {}
 
   /// @brief Construct a default repair, with a given identifier.
   explicit repair(std::uint32_t id)
-    : id_{id}
-    , sources_ids_{}
-    , encoded_size_{}
-    , buffer_{}
+    : m_id{id}
+    , m_sources_ids{}
+    , m_encoded_size{}
+    , m_buffer{}
   {}
 
   /// @brief This repair's identifier.
@@ -47,7 +47,7 @@ public:
   id()
   const noexcept
   {
-    return id_;
+    return m_id;
   }
 
   /// @brief This repair's identifier (mutable).
@@ -55,7 +55,7 @@ public:
   id()
   noexcept
   {
-    return id_;
+    return m_id;
   }
 
   /// @brief This repair's list of source identifiers.
@@ -63,7 +63,7 @@ public:
   source_ids()
   const noexcept
   {
-    return sources_ids_;
+    return m_sources_ids;
   }
 
   /// @brief This repair's list of source identifiers (mutable).
@@ -71,7 +71,7 @@ public:
   source_ids()
   noexcept
   {
-    return sources_ids_;
+    return m_sources_ids;
   }
 
   /// @brief This repair's symbol.
@@ -79,7 +79,7 @@ public:
   buffer()
   const noexcept
   {
-    return buffer_;
+    return m_buffer;
   }
 
   /// @brief This repair's symbol (mutable).
@@ -87,7 +87,7 @@ public:
   buffer()
   noexcept
   {
-    return buffer_;
+    return m_buffer;
   }
 
   /// @brief Reset this repair.
@@ -97,8 +97,8 @@ public:
   reset()
   noexcept
   {
-    sources_ids_.clear();
-    buffer_.clear();
+    m_sources_ids.clear();
+    m_buffer.clear();
   }
 
   /// @brief Get the encoded sizes of all sources this repair contains.
@@ -106,7 +106,7 @@ public:
   encoded_size()
   const noexcept
   {
-    return encoded_size_;
+    return m_encoded_size;
   }
 
   /// @brief Get the encoded sizes of all sources this repair contains.
@@ -114,22 +114,22 @@ public:
   encoded_size()
   noexcept
   {
-    return encoded_size_;
+    return m_encoded_size;
   }
 
 private:
 
   /// @brief This repair's unique identifier.
-  std::uint32_t id_;
+  std::uint32_t m_id;
 
   /// @brief The list of source identifiers.
-  source_id_list sources_ids_;
+  source_id_list m_sources_ids;
 
   /// @brief The encoded sizes of all sources this repair contains.
-  std::uint16_t encoded_size_;
+  std::uint16_t m_encoded_size;
 
   /// @brief This repair's symbol.
-  detail::zero_byte_buffer buffer_;
+  detail::zero_byte_buffer m_buffer;
 };
 
 /*------------------------------------------------------------------------------------------------*/

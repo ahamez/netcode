@@ -27,7 +27,7 @@ public:
 private:
 
   /// @brief The implementation of a Galois field.
-  detail::galois_field gf_;
+  detail::galois_field m_gf;
 };
 
 /*------------------------------------------------------------------------------------------------*/

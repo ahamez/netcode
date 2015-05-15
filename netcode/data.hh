@@ -26,8 +26,8 @@ public:
   ///
   /// Use this constructor when you intend to directly write in the underlying buffer to avoid copy.
   explicit data(std::uint16_t size)
-    : used_bytes_{0}
-    , buffer_(size)
+    : m_used_bytes{0}
+    , m_buffer(size)
   {}
 
   /// @brief Constructor.
@@ -36,10 +36,10 @@ public:
   ///
   /// Use this constructor when you need to copy the input data.
   data(const char* src, std::uint16_t len)
-    : used_bytes_{len}
-    , buffer_(len)
+    : m_used_bytes{len}
+    , m_buffer(len)
   {
-    std::copy_n(src, len, buffer_.begin());
+    std::copy_n(src, len, m_buffer.begin());
   }
 
   /// @brief Constructor.
@@ -49,10 +49,10 @@ public:
   /// Use this constructor when you need to copy the input data.
   template <typename InputIterator>
   data(InputIterator begin, InputIterator end)
-    : used_bytes_{static_cast<std::uint16_t>(std::distance(begin, end))}
-    , buffer_(used_bytes_)
+    : m_used_bytes{static_cast<std::uint16_t>(std::distance(begin, end))}
+    , m_buffer(m_used_bytes)
   {
-    std::copy(begin, end, buffer_.begin());
+    std::copy(begin, end, m_buffer.begin());
   }
 
   /// @brief Get the buffer where to write the data.
@@ -60,7 +60,7 @@ public:
   buffer()
   noexcept
   {
-    return buffer_.data();
+    return m_buffer.data();
   }
 
   /// @brief Resize the buffer.
@@ -70,7 +70,7 @@ public:
   void
   resize(std::uint16_t size)
   {
-    buffer_.resize(size);
+    m_buffer.resize(size);
   }
 
   /// @brief Get the the number of used bytes for this data (read-only).
@@ -78,7 +78,7 @@ public:
   used_bytes()
   const noexcept
   {
-    return used_bytes_;
+    return m_used_bytes;
   }
 
   /// @brief Get the the number of used bytes for this data.
@@ -88,7 +88,7 @@ public:
   used_bytes()
   noexcept
   {
-    return used_bytes_;
+    return m_used_bytes;
   }
 
   /// @brief Get the implementation-defined underlying buffer (read-only).
@@ -96,7 +96,7 @@ public:
   buffer_impl()
   const noexcept
   {
-    return buffer_;
+    return m_buffer;
   }
 
   /// @brief Get the implementation-defined underlying buffer.
@@ -104,7 +104,7 @@ public:
   buffer_impl()
   noexcept
   {
-    return buffer_;
+    return m_buffer;
   }
 
   /// @brief The useable size of the underlying buffer.
@@ -113,7 +113,7 @@ public:
   reserved_size()
   const noexcept
   {
-    return static_cast<std::uint16_t>(buffer_.size());
+    return static_cast<std::uint16_t>(m_buffer.size());
   }
 
   /// @brief Reset the data for further re-use.
@@ -123,17 +123,17 @@ public:
   reset(std::uint16_t size)
   noexcept
   {
-    used_bytes_ = 0;
-    buffer_.resize(size);
+    m_used_bytes = 0;
+    m_buffer.resize(size);
   }
 
 private:
 
   /// @brief The size of the data given by the user.
-  std::uint16_t used_bytes_;
+  std::uint16_t m_used_bytes;
 
   /// @brief The buffer storage.
-  detail::byte_buffer buffer_;
+  detail::byte_buffer m_buffer;
 };
 
 /*------------------------------------------------------------------------------------------------*/

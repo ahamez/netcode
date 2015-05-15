@@ -13,20 +13,20 @@ namespace ntc { namespace detail {
 
 decoder::decoder( std::uint8_t galois_field_size, std::function<void(const source&)> h
                 , bool in_order)
-  : gf_{galois_field_size}
-  , in_order_{in_order}
-  , first_missing_source_{0}
-  , ordered_sources_{}
-  , callback_(h)
-  , repairs_{}
-  , sources_{}
-  , last_id_{}
-  , missing_sources_{}
-  , nb_useless_repairs_{0}
-  , nb_failed_full_decodings_{0}
-  , nb_decoded_{0}
-  , coefficients_{32}
-  , inv_{32}
+  : m_gf{galois_field_size}
+  , m_in_order{in_order}
+  , m_first_missing_source{0}
+  , m_ordered_sources{}
+  , m_callback(h)
+  , m_repairs{}
+  , m_sources{}
+  , m_last_id{}
+  , m_missing_sources{}
+  , m_nb_useless_repairs{0}
+  , m_nb_failed_full_decodings{0}
+  , m_nb_decoded{0}
+  , m_coefficients{32}
+  , m_inv{32}
 {}
 
 /*------------------------------------------------------------------------------------------------*/
@@ -34,13 +34,13 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const sourc
 void
 decoder::operator()(source&& src)
 {
-  if (last_id_ and src.id() < *last_id_)
+  if (m_last_id and src.id() < *m_last_id)
   {
     // This source has already been seen in the past.
     return;
   }
 
-  if (sources_.count(src.id()))
+  if (m_sources.count(src.id()))
   {
     // This source exists in the set of received sources.
     return;
@@ -60,13 +60,13 @@ decoder::operator()(repair&& incoming_r)
 
   //                     last id in source_ids
   //               ------------------------------------
-  if (last_id_ and *(incoming_r.source_ids().end() - 1) < *last_id_)
+  if (m_last_id and *(incoming_r.source_ids().end() - 1) < *m_last_id)
   {
     // It's a repair that provide outdated informations, drop it.
     return;
   }
 
-  if (repairs_.count(incoming_r.id()))
+  if (m_repairs.count(incoming_r.id()))
   {
     // A duplicate repair. Drop it.
     return;
@@ -82,18 +82,18 @@ decoder::operator()(repair&& incoming_r)
   const auto useless = std::all_of( begin(incoming_r.source_ids()), end(incoming_r.source_ids())
                                   , [this](std::uint32_t src_id)
                                     {
-                                      return sources_.count(src_id);
+                                      return m_sources.count(src_id);
                                     });
   if (useless)
   {
     // Drop repair.
-    ++nb_useless_repairs_;
+    ++m_nb_useless_repairs;
     return;
   }
 
   // Add this repair to the set of known repairs.
   const auto r_id = incoming_r.id(); // to force evaluation order in the following call.
-  const auto insertion = repairs_.emplace(r_id, std::move(incoming_r));
+  const auto insertion = m_repairs.emplace(r_id, std::move(incoming_r));
   assert(insertion.second && "Repair with the same id already processed");
 
   // Don't use incoming_r beyond this point (as it was moved into repairs_), instead use r.
@@ -104,8 +104,8 @@ decoder::operator()(repair&& incoming_r)
   for ( auto id_rcit = r.source_ids().rbegin(), end = r.source_ids().rend(); id_rcit != end
       ; ++id_rcit)
   {
-    const auto search = sources_.find(*id_rcit);
-    if (search != sources_.end())
+    const auto search = m_sources.find(*id_rcit);
+    if (search != m_sources.end())
     {
       // The source has already been received.
       remove_source_data_from_repair(search->second /* source */, r);
@@ -118,11 +118,11 @@ decoder::operator()(repair&& incoming_r)
     else
     {
       // Link this repair with the missing sources it references.
-      auto search_src_id = missing_sources_.find(*id_rcit);
-      if (search_src_id == missing_sources_.end())
+      auto search_src_id = m_missing_sources.find(*id_rcit);
+      if (search_src_id == m_missing_sources.end())
       {
         // Create missing source.
-        missing_sources_.emplace(*id_rcit, repairs_iterators_type{r_cit});
+        m_missing_sources.emplace(*id_rcit, repairs_iterators_type{r_cit});
       }
       else
       {
@@ -139,10 +139,10 @@ decoder::operator()(repair&& incoming_r)
     auto src = create_source_from_repair(r);
 
     // Source is no longer missing.
-    missing_sources_.erase(src.id());
+    m_missing_sources.erase(src.id());
 
     // This repair is no longer needed.
-    repairs_.erase(r_cit);
+    m_repairs.erase(r_cit);
 
     // Give back the decoded source to the decoder.
     add_source_recursive(std::move(src));
@@ -163,18 +163,18 @@ noexcept
   const auto src_id = *r.source_ids().begin();
 
   // The inverse of the coefficient which was used to encode the missing source.
-  const auto inv = gf_.invert(gf_.coefficient(r.id(), src_id));
+  const auto inv = m_gf.invert(m_gf.coefficient(r.id(), src_id));
 
   // Reconstruct size.
-  const auto src_sz = gf_.multiply_size(r.encoded_size(), inv);
+  const auto src_sz = m_gf.multiply_size(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
   source src{src_id, byte_buffer(src_sz), src_sz};
 
   // Reconstruct missing source.
-  gf_.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
+  m_gf.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
 
-  nb_decoded_ += 1;
+  m_nb_decoded += 1;
 
   return src;
 }
@@ -198,7 +198,7 @@ const decoder::repairs_set_type&
 decoder::repairs()
 const noexcept
 {
-  return repairs_;
+  return m_repairs;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ const decoder::sources_set_type&
 decoder::sources()
 const noexcept
 {
-  return sources_;
+  return m_sources;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -216,7 +216,7 @@ const decoder::missing_sources_type&
 decoder::missing_sources()
 const noexcept
 {
-  return missing_sources_;
+  return m_missing_sources;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -225,7 +225,7 @@ std::size_t
 decoder::nb_useless_repairs()
 const noexcept
 {
-  return nb_useless_repairs_;
+  return m_nb_useless_repairs;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -234,7 +234,7 @@ std::size_t
 decoder::nb_failed_full_decodings()
 const noexcept
 {
-  return nb_failed_full_decodings_;
+  return m_nb_failed_full_decodings;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -243,7 +243,7 @@ std::size_t
 decoder::nb_decoded()
 const noexcept
 {
-  return nb_decoded_;
+  return m_nb_decoded;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -252,8 +252,8 @@ void
 decoder::add_source_recursive(source&& src)
 {
   // First, look for all repairs that encode this source.
-  const auto search = missing_sources_.find(src.id());
-  if (search != missing_sources_.end())
+  const auto search = m_missing_sources.find(src.id());
+  if (search != m_missing_sources.end())
   {
     for (auto r_cit : search->second)
     {
@@ -262,12 +262,12 @@ decoder::add_source_recursive(source&& src)
     }
 
     // It's no longer a missing source.
-    missing_sources_.erase(search);
+    m_missing_sources.erase(search);
   }
 
   // Now, look for repairs that encodes only 1 source. When one is found, the corresponding
   // encoded source is decoded and the repair is erased.
-  for ( auto miss_cit = missing_sources_.begin(), miss_end = missing_sources_.end()
+  for ( auto miss_cit = m_missing_sources.begin(), miss_end = m_missing_sources.end()
       ; miss_cit != miss_end;)
   {
     const auto& repairs_cits = miss_cit->second;
@@ -282,21 +282,21 @@ decoder::add_source_recursive(source&& src)
       if (r.source_ids().size() == 1)
       {
         // Check that this source wasn't decoded in the past.
-        assert(last_id_ ? *r.source_ids().begin() >= *last_id_ : true);
+        assert(m_last_id ? *r.source_ids().begin() >= *m_last_id : true);
         // Check that this source doesn't belong to the set of current sources.
-        assert(not sources_.count(*r.source_ids().begin()));
+        assert(not m_sources.count(*r.source_ids().begin()));
 
         // This missing source is referenced by only 1 repair and this repair references only 1
         // missing source. Thus, we can reconstruct the missing source.
         auto decoded_src = create_source_from_repair(r);
 
         // We can erase this repair.
-        repairs_.erase(r_cit);
+        m_repairs.erase(r_cit);
 
         // It's no longer a missing source.
         const auto to_erase = miss_cit;
         ++miss_cit;
-        missing_sources_.erase(to_erase);
+        m_missing_sources.erase(to_erase);
 
         // This newly decoded source might trigger the decoding of other sources.
         add_source_recursive(std::move(decoded_src));
@@ -317,7 +317,7 @@ decoder::add_source_recursive(source&& src)
 
   // Insert-move this new source in the set of known sources.
   const auto src_id = src.id(); // to force evaluation order in the following call.
-  const auto insertion = sources_.emplace(src_id, std::move(src));
+  const auto insertion = m_sources.emplace(src_id, std::move(src));
   assert(insertion.second && "source already added");
 
   handle_source(&insertion.first->second);
@@ -330,10 +330,10 @@ decoder::drop_outdated(std::uint32_t id)
 noexcept
 {
   // All sources with an identifier strictly less than last_id_ are now considered outdated.
-  last_id_ = id;
+  m_last_id = id;
 
   // Remove repairs which references this id.
-  for (auto cit = repairs_.begin(), end = repairs_.end(); cit != end;)
+  for (auto cit = m_repairs.begin(), end = m_repairs.end(); cit != end;)
   {
     const auto& r = cit->second;
     assert(not r.source_ids().empty());
@@ -343,7 +343,7 @@ noexcept
     {
       const auto to_erase = cit;
       ++cit;
-      repairs_.erase(to_erase);
+      m_repairs.erase(to_erase);
     }
     else
     {
@@ -351,25 +351,25 @@ noexcept
     }
   }
 
-  if (in_order_)
+  if (m_in_order)
   {
-    for (auto cit = ordered_sources_.begin(); cit != ordered_sources_.lower_bound(id);)
+    for (auto cit = m_ordered_sources.begin(); cit != m_ordered_sources.lower_bound(id);)
     {
-      callback_(*cit->second);
+      m_callback(*cit->second);
       const auto to_erase = cit;
       ++cit;
-      ordered_sources_.erase(to_erase);
+      m_ordered_sources.erase(to_erase);
     }
-    if (first_missing_source_ < id)
+    if (m_first_missing_source < id)
     {
-      first_missing_source_ = id;
+      m_first_missing_source = id;
     }
     flush_ordered_sources();
   }
 
   // Erase all sources and missing sources with an identifer smaller (strict) than id.
-  sources_.erase(sources_.begin(), sources_.lower_bound(id));
-  missing_sources_.erase(missing_sources_.begin(), missing_sources_.lower_bound(id));
+  m_sources.erase(m_sources.begin(), m_sources.lower_bound(id));
+  m_missing_sources.erase(m_missing_sources.begin(), m_missing_sources.lower_bound(id));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -381,14 +381,14 @@ noexcept
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
   assert(src.user_size() <= r.buffer().size());
 
-  const auto coeff = gf_.coefficient(r.id(), src.id());
+  const auto coeff = m_gf.coefficient(r.id(), src.id());
 
   // Remove source size.
   r.encoded_size()
-    = static_cast<std::uint16_t>(gf_.multiply_size(src.user_size(), coeff) ^ r.encoded_size());
+    = static_cast<std::uint16_t>(m_gf.multiply_size(src.user_size(), coeff) ^ r.encoded_size());
 
   // Remove symbol.
-  gf_.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
+  m_gf.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -396,45 +396,45 @@ noexcept
 void
 decoder::attempt_full_decoding()
 {
-  if (repairs_.empty() or missing_sources_.empty())
+  if (m_repairs.empty() or m_missing_sources.empty())
   {
     return;
   }
 
   // Do we have enough repairs to try to decode missing sources?
-  if (missing_sources_.size() > repairs().size())
+  if (m_missing_sources.size() > m_repairs.size())
   {
     return;
   }
 
-  assert(missing_sources_.size() == repairs().size() && "More repairs than missing sources");
-  assert(missing_sources_.size() > 1 && "Trying to create a matrix for only one missing source.");
+  assert(m_missing_sources.size() == m_repairs.size() && "More repairs than missing sources");
+  assert(m_missing_sources.size() > 1 && "Trying to create a matrix for only one missing source.");
 
   // Build coefficient matrix.
-  coefficients_.resize(repairs_.size());
+  m_coefficients.resize(m_repairs.size());
   auto col = 0ul;
-  for (const auto& r : repairs_)
+  for (const auto& r : m_repairs)
   {
     auto row = 0ul;
-    for (const auto& missing : missing_sources_)
+    for (const auto& missing : m_missing_sources)
     {
-      coefficients_(row, col) = r.second.source_ids().count(missing.first)
-                              ? gf_.coefficient(r.first, missing.first)
-                              : 0u; // repair doesn't encode the missing source.
+      m_coefficients(row, col) = r.second.source_ids().count(missing.first)
+                               ? m_gf.coefficient(r.first, missing.first)
+                               : 0u; // repair doesn't encode the missing source.
       ++row;
     }
     ++col;
   }
 
   // Invert it.
-  inv_.resize(coefficients_.dimension());
-  if (const auto r_col = invert(gf_, coefficients_, inv_))
+  m_inv.resize(m_coefficients.dimension());
+  if (const auto r_col = invert(m_gf, m_coefficients, m_inv))
   {
     // Inversion failed, remove the faulty repair.
-    ++nb_failed_full_decodings_;
+    m_nb_failed_full_decodings += 1;
 
     // Find the repair corresponding to r_col.
-    auto r_cit = repairs_.begin();
+    auto r_cit = m_repairs.begin();
     // To avoid a conversion warning with clang's -Wconversion.
     using difference_type = std::iterator_traits<decltype(r_cit)>::difference_type;
     std::advance(r_cit, static_cast<difference_type>(*r_col));
@@ -442,11 +442,11 @@ decoder::attempt_full_decoding()
     // Remove repair from missing sources that reference it.
     for (const auto src : r_cit->second.source_ids())
     {
-      missing_sources_[src].erase(r_cit);
+      m_missing_sources[src].erase(r_cit);
     }
 
     // We can now effectively remove the repair.
-    repairs_.erase(r_cit);
+    m_repairs.erase(r_cit);
     return;
   }
 
@@ -454,25 +454,25 @@ decoder::attempt_full_decoding()
 
   // Build an index for fast retreiving of repairs from the inv_ matrix.
   std::vector<repair*> index;
-  index.reserve(repairs_.size());
-  for (auto& rid_repair : repairs_)
+  index.reserve(m_repairs.size());
+  for (auto& rid_repair : m_repairs)
   {
     index.emplace_back(&rid_repair.second);
   }
 
   auto src_col = 0u;
-  for (const auto& miss : missing_sources_)
+  for (const auto& miss : m_missing_sources)
   {
     // First, decode the size of the source.
     const auto src_sz = [&,this]
     {
       std::uint16_t res = 0;
-      for (auto repair_row = 0ul; repair_row < inv_.dimension(); ++repair_row)
+      for (auto repair_row = 0ul; repair_row < m_inv.dimension(); ++repair_row)
       {
-        const auto coeff = inv_(repair_row, src_col);
+        const auto coeff = m_inv(repair_row, src_col);
         if (coeff != 0)
         {
-          const auto tmp = gf_.multiply_size(index[repair_row]->encoded_size(), coeff);
+          const auto tmp = m_gf.multiply_size(index[repair_row]->encoded_size(), coeff);
           res = static_cast<std::uint16_t>(tmp) ^ res;
         }
       }
@@ -487,43 +487,43 @@ decoder::attempt_full_decoding()
     // Find first non-zero coefficient.
     for (; repair_row < repairs().size(); ++repair_row)
     {
-      coeff = inv_(repair_row, src_col);
+      coeff = m_inv(repair_row, src_col);
       if (coeff != 0)
       {
         break;
       }
     }
-    assert(repair_row != repairs_.size() && "No coefficients for missing source");
+    assert(repair_row != m_repairs.size() && "No coefficients for missing source");
 
     // Repair's buffer might be smaller than the size of the source to decode, or it could be
     // the opposite situation. Thus, we need to make sure that we only read the right number of
     // bytes.
     auto sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
-    gf_.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
+    m_gf.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
 
-    for (++repair_row; repair_row < inv_.dimension(); ++repair_row)
+    for (++repair_row; repair_row < m_inv.dimension(); ++repair_row)
     {
-      coeff = inv_(repair_row, src_col);
+      coeff = m_inv(repair_row, src_col);
       if (coeff != 0)
       {
         sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
-        gf_.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
+        m_gf.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
       }
     }
     ++src_col;
 
     // Source decoded, add it to the set of known sources.
-    const auto insertion = sources_.emplace(miss.first, std::move(src));
+    const auto insertion = m_sources.emplace(miss.first, std::move(src));
     assert(insertion.second && "source already added");
 
     handle_source(&insertion.first->second);
   }
 
-  nb_decoded_ += missing_sources_.size();
+  m_nb_decoded += m_missing_sources.size();
 
   // Cleanup.
-  repairs_.clear();
-  missing_sources_.clear();
+  m_repairs.clear();
+  m_missing_sources.clear();
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -532,16 +532,16 @@ decoder::attempt_full_decoding()
 void
 decoder::handle_source(const source* src)
 {
-  if (not in_order_)
+  if (not m_in_order)
   {
-    callback_(*src);
+    m_callback(*src);
   }
   else
   {
-    if (src->id() == first_missing_source_)
+    if (src->id() == m_first_missing_source)
     {
-      callback_(*src);
-      first_missing_source_ += 1;
+      m_callback(*src);
+      m_first_missing_source += 1;
 
       // Send all sources that could not be previously sent because their ids were greater than
       // first_missing_source_.
@@ -549,10 +549,10 @@ decoder::handle_source(const source* src)
     }
     else
     {
-      assert(src->id() > first_missing_source_);
+      assert(src->id() > m_first_missing_source);
       // We can't send the current source as they are some older sources which has not been sent
       // yet.
-      ordered_sources_.emplace(src->id(), src);
+      m_ordered_sources.emplace(src->id(), src);
     }
   }
 }
@@ -562,17 +562,17 @@ decoder::handle_source(const source* src)
 void
 decoder::flush_ordered_sources()
 {
-  auto cit = ordered_sources_.find(first_missing_source_);
-  while (cit != ordered_sources_.end())
+  auto cit = m_ordered_sources.find(m_first_missing_source);
+  while (cit != m_ordered_sources.end())
   {
-    assert(cit->second->id() == first_missing_source_);
-    callback_(*cit->second);
+    assert(cit->second->id() == m_first_missing_source);
+    m_callback(*cit->second);
     const auto to_erase = cit;
     ++cit;
-    ordered_sources_.erase(to_erase);
-    first_missing_source_ += 1;
+    m_ordered_sources.erase(to_erase);
+    m_first_missing_source += 1;
 
-    if (cit == ordered_sources_.end() or cit->second->id() > first_missing_source_)
+    if (cit == m_ordered_sources.end() or cit->second->id() > m_first_missing_source)
     {
       break;
     }

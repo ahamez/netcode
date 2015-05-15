@@ -41,23 +41,23 @@ public:
   /// @brief Constructor.
   template <typename PacketHandler_>
   encoder(PacketHandler_&& packet_handler, configuration conf)
-    : conf_{conf}
-    , current_source_id_{0}
-    , current_repair_id_{0}
-    , sources_{}
-    , repair_{current_repair_id_}
-    , packet_handler_(std::forward<PacketHandler_>(packet_handler))
-    , encoder_{conf.galois_field_size()}
-    , packetizer_{packet_handler_}
-    , nb_sent_repairs_{0ul}
-    , nb_acks_{0ul}
-    , nb_sent_sources_{0ul}
-    , nb_sent_packets_{0}
+    : m_conf{conf}
+    , m_current_source_id{0}
+    , m_current_repair_id{0}
+    , m_sources{}
+    , m_repair{m_current_repair_id}
+    , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
+    , m_encoder{conf.galois_field_size()}
+    , m_packetizer{m_packet_handler}
+    , m_nb_sent_repairs{0ul}
+    , m_nb_acks{0ul}
+    , m_nb_sent_sources{0ul}
+    , m_nb_sent_packets{0}
   {
     // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
-    repair_.buffer().reserve(2048);
+    m_repair.buffer().reserve(2048);
     // Same thing for the list of source identifiers.
-    repair_.source_ids().reserve(128);
+    m_repair.source_ids().reserve(128);
   }
 
   /// @brief Constructor with a default configuration.
@@ -93,7 +93,7 @@ public:
   window()
   const noexcept
   {
-    return sources_.size();
+    return m_sources.size();
   }
 
   /// @brief Get the number of received acks.
@@ -101,7 +101,7 @@ public:
   nb_received_acks()
   const noexcept
   {
-    return nb_acks_;
+    return m_nb_acks;
   }
 
   /// @brief Get the number of sent repairs.
@@ -109,7 +109,7 @@ public:
   nb_sent_repairs()
   const noexcept
   {
-    return nb_sent_repairs_;
+    return m_nb_sent_repairs;
   }
 
   /// @brief Get the number of sent sources.
@@ -117,7 +117,7 @@ public:
   nb_sent_sources()
   const noexcept
   {
-    return nb_sent_sources_;
+    return m_nb_sent_sources;
   }
 
   /// @brief Get the data handler.
@@ -125,7 +125,7 @@ public:
   packet_handler()
   const noexcept
   {
-    return packet_handler_;
+    return m_packet_handler;
   }
 
   /// @brief Get the data handler.
@@ -133,17 +133,17 @@ public:
   packet_handler()
   noexcept
   {
-    return packet_handler_;
+    return m_packet_handler;
   }
 
   /// @brief Force the sending of a repair.
   void
   send_repair()
   {
-    repair_.reset();
+    m_repair.reset();
     mk_repair();
-    nb_sent_packets_ += 1;
-    packetizer_.write_repair(repair_);
+    m_nb_sent_packets += 1;
+    m_packetizer.write_repair(m_repair);
   }
 
   /// @brief Get the configuration (mutable).
@@ -151,7 +151,7 @@ public:
   conf()
   noexcept
   {
-    return conf_;
+    return m_conf;
   }
 
   /// @brief Get the configuration.
@@ -159,7 +159,7 @@ public:
   conf()
   const noexcept
   {
-    return conf_;
+    return m_conf;
   }
 
 private:
@@ -172,22 +172,22 @@ private:
   {
     assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
 
-    if (sources_.size() == conf_.window_size())
+    if (m_sources.size() == m_conf.window_size())
     {
-      sources_.pop_front();
+      m_sources.pop_front();
     }
 
     // Create a new source in-place at the end of the list of sources, "stealing" the data
     // buffer from d.
     const auto& insertion
-      = sources_.emplace(current_source_id_, std::move(d.buffer_impl()), d.used_bytes());
+      = m_sources.emplace(m_current_source_id, std::move(d.buffer_impl()), d.used_bytes());
 
-    if (conf_.code_type() == code::systematic)
+    if (m_conf.code_type() == code::systematic)
     {
       // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-      nb_sent_sources_ += 1;
-      nb_sent_packets_ += 1;
-      packetizer_.write_source(insertion);
+      m_nb_sent_sources += 1;
+      m_nb_sent_packets += 1;
+      m_packetizer.write_source(insertion);
     }
     else // non_systematic code
     {
@@ -195,12 +195,12 @@ private:
     }
 
     /// @todo Should we generate a repair if window_size() == 1?
-    if ((current_source_id_ + 1) % conf_.rate() == 0)
+    if ((m_current_source_id + 1) % m_conf.rate() == 0)
     {
       send_repair();
     }
 
-    current_source_id_ += 1;
+    m_current_source_id += 1;
   }
 
   /// @brief Notify the encoder that some data has been received.
@@ -211,23 +211,23 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      nb_acks_ += 1;
-      const auto res = packetizer_.read_ack(data);
-      if (conf_.adaptative())
+      m_nb_acks += 1;
+      const auto res = m_packetizer.read_ack(data);
+      if (m_conf.adaptative())
       {
-        if (nb_sent_packets_ > 0)
+        if (m_nb_sent_packets > 0)
         {
           const auto loss_rate
-            = (nb_sent_packets_ - res.first.nb_packets()) / static_cast<double>(nb_sent_packets_);
-          conf_.set_rate(rate_for_loss(loss_rate));
+            = (m_nb_sent_packets - res.first.nb_packets()) / static_cast<double>(m_nb_sent_packets);
+          m_conf.set_rate(rate_for_loss(loss_rate));
         }
         else
         {
-          conf_.set_rate(rate_for_loss(0.0));
+          m_conf.set_rate(rate_for_loss(0.0));
         }
       }
-      nb_sent_packets_ = 0;
-      sources_.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
+      m_nb_sent_packets = 0;
+      m_sources.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
     }
     else
@@ -241,14 +241,14 @@ private:
   mk_repair()
   {
     // Set the identifier of the new repair (needed by the coder to generate coefficients).
-    repair_.id() = current_repair_id_;
+    m_repair.id() = m_current_repair_id;
 
     // Create the repair packet from the list of sources.
-    assert(sources_.size() > 0 && "Empty source list");
-    encoder_(repair_, sources_);
+    assert(m_sources.size() > 0 && "Empty source list");
+    m_encoder(m_repair, m_sources);
 
-    current_repair_id_ += 1;
-    nb_sent_repairs_ += 1;
+    m_current_repair_id += 1;
+    m_nb_sent_repairs += 1;
   }
 
   /// @brief Compute the code rate needed for a given loss rate.
@@ -265,40 +265,40 @@ private:
 private:
 
   /// @brief The configuration.
-  configuration conf_;
+  configuration m_conf;
 
   /// @brief The counter for source packets identifiers.
-  std::uint32_t current_source_id_;
+  std::uint32_t m_current_source_id;
 
   /// @brief The counter for repair packets identifiers.
-  std::uint32_t current_repair_id_;
+  std::uint32_t m_current_repair_id;
 
   /// @brief The set of souces which have not yet been acknowledged.
-  detail::source_list sources_;
+  detail::source_list m_sources;
 
   /// @brief Re-use the same memory to prepare a repair packet.
-  detail::repair repair_;
+  detail::repair m_repair;
 
   /// @brief The user's handler.
-  packet_handler_type packet_handler_;
+  packet_handler_type m_packet_handler;
 
   /// @brief The component that handles the coding process.
-  detail::encoder encoder_;
+  detail::encoder m_encoder;
 
   /// @brief How to serialize packets.
-  packetizer_type packetizer_;
+  packetizer_type m_packetizer;
 
   /// @brief The number of generated repairs.
-  std::size_t nb_sent_repairs_;
+  std::size_t m_nb_sent_repairs;
 
   /// @brief The number of received ack.
-  std::size_t nb_acks_;
+  std::size_t m_nb_acks;
 
   /// @brief The number of sent sources.
-  std::size_t nb_sent_sources_;
+  std::size_t m_nb_sent_sources;
 
   /// @brief The number of sent packets since last ack.
-  std::uint16_t nb_sent_packets_;
+  std::uint16_t m_nb_sent_packets;
 };
 
 /*------------------------------------------------------------------------------------------------*/

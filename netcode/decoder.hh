@@ -45,21 +45,21 @@ public:
   template <typename PacketHandler_, typename DataHandler_>
   decoder( PacketHandler_&& packet_handler, DataHandler_&& data_handler
          , configuration conf)
-    : conf_{conf}
-    , last_ack_date_(std::chrono::steady_clock::now())
-    , ack_{}
-    , decoder_{ conf.galois_field_size()
+    : m_conf{conf}
+    , m_last_ack_date(std::chrono::steady_clock::now())
+    , m_ack{}
+    , m_decoder{ conf.galois_field_size()
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)
               , conf.in_order()}
-    , packet_handler_(std::forward<PacketHandler_>(packet_handler))
-    , data_handler_(std::forward<DataHandler_>(data_handler))
-    , packetizer_{packet_handler_}
-    , nb_received_repairs_{0}
-    , nb_received_sources_{0}
-    , nb_sent_ack_{0}
+    , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
+    , m_data_handler(std::forward<DataHandler_>(data_handler))
+    , m_packetizer{m_packet_handler}
+    , m_nb_received_repairs{0}
+    , m_nb_received_sources{0}
+    , m_nb_sent_ack{0}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
-    ack_.source_ids().reserve(128);
+    m_ack.source_ids().reserve(128);
   }
 
   /// @brief Constructor with a default configuration.
@@ -82,19 +82,19 @@ public:
     {
       case detail::packet_type::repair:
       {
-        nb_received_repairs_ += 1;
-        ack_.nb_packets() += 1;
-        auto res = packetizer_.read_repair(packet);
-        decoder_(std::move(res.first));
+        m_nb_received_repairs += 1;
+        m_ack.nb_packets() += 1;
+        auto res = m_packetizer.read_repair(packet);
+        m_decoder(std::move(res.first));
         return res.second;
       }
 
       case detail::packet_type::source:
       {
-        nb_received_sources_ += 1;
-        ack_.nb_packets() += 1;
-        auto res = packetizer_.read_source(packet);
-        decoder_(std::move(res.first));
+        m_nb_received_sources += 1;
+        m_ack.nb_packets() += 1;
+        auto res = m_packetizer.read_source(packet);
+        m_decoder(std::move(res.first));
         return res.second;
       }
 
@@ -107,7 +107,7 @@ public:
   packet_handler()
   const noexcept
   {
-    return packet_handler_;
+    return m_packet_handler;
   }
 
   /// @brief Get the data handler.
@@ -115,7 +115,7 @@ public:
   packet_handler()
   noexcept
   {
-    return packet_handler_;
+    return m_packet_handler;
   }
 
   /// @brief Get the data handler.
@@ -123,7 +123,7 @@ public:
   data_handler()
   const noexcept
   {
-    return data_handler_;
+    return m_data_handler;
   }
 
   /// @brief Get the data handler.
@@ -131,7 +131,7 @@ public:
   data_handler()
   noexcept
   {
-    return data_handler_;
+    return m_data_handler;
   }
 
   /// @brief Get the total number of decoded sources.
@@ -139,7 +139,7 @@ public:
   nb_decoded()
   const noexcept
   {
-    return decoder_.nb_decoded();
+    return m_decoder.nb_decoded();
   }
 
   /// @brief Get the number of times the full decodong failed.
@@ -147,7 +147,7 @@ public:
   nb_failed_full_decodings()
   const noexcept
   {
-    return decoder_.nb_failed_full_decodings();
+    return m_decoder.nb_failed_full_decodings();
   }
 
   /// @brief Get the current number of missing sources.
@@ -155,7 +155,7 @@ public:
   nb_missing_sources()
   const noexcept
   {
-    return decoder_.missing_sources().size();
+    return m_decoder.missing_sources().size();
   }
 
   /// @brief Get the total number of received repairs.
@@ -163,7 +163,7 @@ public:
   nb_received_repairs()
   const noexcept
   {
-    return nb_received_repairs_;
+    return m_nb_received_repairs;
   }
 
   /// @brief Get the total number of received sources.
@@ -171,7 +171,7 @@ public:
   nb_received_sources()
   const noexcept
   {
-    return nb_received_sources_;
+    return m_nb_received_sources;
   }
 
   /// @brief Get the number of sent ack.
@@ -179,7 +179,7 @@ public:
   nb_sent_acks()
   const noexcept
   {
-    return nb_sent_ack_;
+    return m_nb_sent_ack;
   }
 
   /// @brief Get the number of repairs that were dropped because they wereuseless.
@@ -187,7 +187,7 @@ public:
   nb_useless_repairs()
   const noexcept
   {
-    return decoder_.nb_useless_repairs();
+    return m_decoder.nb_useless_repairs();
   }
 
   /// @brief Force the sending of an ack.
@@ -195,35 +195,35 @@ public:
   send_ack()
   {
     // Add all currently known source identifiers to the ack to be sent.
-    for (const auto& id_src : decoder_.sources())
+    for (const auto& id_src : m_decoder.sources())
     {
-      ack_.source_ids().insert(ack_.source_ids().end(), id_src.first);
+      m_ack.source_ids().insert(m_ack.source_ids().end(), id_src.first);
     }
 
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
-    packetizer_.write_ack(ack_);
-    nb_sent_ack_ +=1;
+    m_packetizer.write_ack(m_ack);
+    m_nb_sent_ack +=1;
 
     // Start a fresh new ack.
-    ack_.reset();
+    m_ack.reset();
   }
 
   /// @brief Send an ack if needed.
   void
   maybe_ack()
   {
-    if (ack_.nb_packets() >= conf_.ack_nb_packets())
+    if (m_ack.nb_packets() >= m_conf.ack_nb_packets())
     {
       send_ack();
-      last_ack_date_ = std::chrono::steady_clock::now();
+      m_last_ack_date = std::chrono::steady_clock::now();
     }
-    else if (conf_.ack_frequency() != std::chrono::milliseconds{0})
+    else if (m_conf.ack_frequency() != std::chrono::milliseconds{0})
     {
       const auto now = std::chrono::steady_clock::now();
-      if ((now - last_ack_date_) >= conf_.ack_frequency())
+      if ((now - m_last_ack_date) >= m_conf.ack_frequency())
       {
         send_ack();
-        last_ack_date_ = now;
+        m_last_ack_date = now;
       }
     }
   }
@@ -233,7 +233,7 @@ public:
   conf()
   noexcept
   {
-    return conf_;
+    return m_conf;
   }
 
   /// @brief Get the configuration.
@@ -241,7 +241,7 @@ public:
   conf()
   const noexcept
   {
-    return conf_;
+    return m_conf;
   }
 
 private:
@@ -251,7 +251,7 @@ private:
   handle_source(const detail::source& src)
   {
     // Ask user to read the bytes of this new source.
-    data_handler_(src.buffer().data(), src.user_size());
+    m_data_handler(src.buffer().data(), src.user_size());
 
     // Send an ack if necessary.
     maybe_ack();
@@ -260,34 +260,34 @@ private:
 private:
 
   /// @brief The configuration.
-  configuration conf_;
+  configuration m_conf;
 
   /// @brief The last time an ack was sent.
-  std::chrono::steady_clock::time_point last_ack_date_;
+  std::chrono::steady_clock::time_point m_last_ack_date;
 
   /// @brief Re-use the same memory to prepare an ack packet.
-  detail::ack ack_;
+  detail::ack m_ack;
 
   /// @brief The component that rebuilds sources using repairs.
-  detail::decoder decoder_;
+  detail::decoder m_decoder;
 
   /// @brief The user's handler to output data on network.
-  packet_handler_type packet_handler_;
+  packet_handler_type m_packet_handler;
 
   /// @brief The user's handler to read decoded data.
-  data_handler_type data_handler_;
+  data_handler_type m_data_handler;
 
   /// @brief How to serialize packets.
-  packetizer_type packetizer_;
+  packetizer_type m_packetizer;
 
   /// @brief The counter of received repairs.
-  std::size_t nb_received_repairs_;
+  std::size_t m_nb_received_repairs;
 
   /// @brief The counter of received sources.
-  std::size_t nb_received_sources_;
+  std::size_t m_nb_received_sources;
 
   /// @brief The number of ack sent back to the encoder.
-  std::size_t nb_sent_ack_;
+  std::size_t m_nb_sent_ack;
 };
 
 /*------------------------------------------------------------------------------------------------*/

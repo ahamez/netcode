@@ -12,77 +12,77 @@ class square_matrix final
 public:
 
   explicit square_matrix(std::size_t n)
-    : n_{n}
-    , vec_(n*n)
+    : m_dimension{n}
+    , m_vec(n*n)
   {}
 
   std::uint32_t
   operator()(std::size_t row, std::size_t col)
   const noexcept
   {
-    return vec_[col * n_ + row];
+    return m_vec[col * m_dimension + row];
   }
 
   std::uint32_t&
   operator()(std::size_t row, std::size_t col)
   noexcept
   {
-     return vec_[col * n_ + row];
+     return m_vec[col * m_dimension + row];
   }
 
   const std::uint32_t*
   column(std::size_t col)
   const noexcept
   {
-    return vec_.data() + (col * n_);
+    return m_vec.data() + (col * m_dimension);
   }
 
   std::uint32_t*
   column(std::size_t col)
   noexcept
   {
-    return vec_.data() + (col * n_);
+    return m_vec.data() + (col * m_dimension);
   }
 
   std::uint32_t
   operator[](std::size_t index)
   const noexcept
   {
-    return vec_[index];
+    return m_vec[index];
   }
 
   std::uint32_t&
   operator[](std::size_t index)
   noexcept
   {
-    return vec_[index];
+    return m_vec[index];
   }
 
   void
   resize(std::size_t n)
   {
-    vec_.resize(n*n);
-    n_ = n;
+    m_vec.resize(n*n);
+    m_dimension = n;
   }
 
   std::size_t
   dimension()
   const noexcept
   {
-    return n_;
+    return m_dimension;
   }
 
   const buffer<std::uint32_t>&
   vec()
   const noexcept
   {
-    return vec_;
+    return m_vec;
   }
 
 private:
 
-  std::size_t n_;
-  buffer<std::uint32_t> vec_;
+  std::size_t m_dimension;
+  buffer<std::uint32_t> m_vec;
 };
 
 /*------------------------------------------------------------------------------------------------*/

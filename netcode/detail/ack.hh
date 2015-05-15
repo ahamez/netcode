@@ -26,13 +26,13 @@ public:
 
   /// @brief Constructor
   ack()
-    : source_ids_{}, nb_packets_{0}
+    : m_source_ids{}, m_nb_packets{0}
   {}
 
   /// @brief Constructor.
   explicit ack(source_id_list&& source_ids, std::uint16_t nb_packets)
-    : source_ids_{std::move(source_ids)}
-    , nb_packets_{nb_packets}
+    : m_source_ids{std::move(source_ids)}
+    , m_nb_packets{nb_packets}
   {}
 
   /// @brief Get the list of acknowledged sources.
@@ -40,7 +40,7 @@ public:
   source_ids()
   const noexcept
   {
-    return source_ids_;
+    return m_source_ids;
   }
 
   /// @brief Get the list of acknowledged sources.
@@ -48,7 +48,7 @@ public:
   source_ids()
   noexcept
   {
-    return source_ids_;
+    return m_source_ids;
   }
 
   /// @brief Reset this ack.
@@ -58,8 +58,8 @@ public:
   reset()
   noexcept
   {
-    source_ids_.clear();
-    nb_packets_ = 0;
+    m_source_ids.clear();
+    m_nb_packets = 0;
   }
 
   /// @brief Get the number of packets received by the decoder since the last ack.
@@ -67,7 +67,7 @@ public:
   nb_packets()
   const noexcept
   {
-    return nb_packets_;
+    return m_nb_packets;
   }
 
   /// @brief Get the number of packets received by the decoder since the last ack.
@@ -75,16 +75,16 @@ public:
   nb_packets()
   noexcept
   {
-    return nb_packets_;
+    return m_nb_packets;
   }
 
 private:
 
   /// @brief The list of acknowledged sources.
-  source_id_list source_ids_;
+  source_id_list m_source_ids;
 
   /// @brief The number of received packet since the last ack.
-  std::uint16_t nb_packets_;
+  std::uint16_t m_nb_packets;
 };
 
 /*------------------------------------------------------------------------------------------------*/

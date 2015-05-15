@@ -34,11 +34,11 @@ public:
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
   explicit galois_field(std::uint8_t w)
-    : gf_{}
-    , w_{w}
+    : m_gf{}
+    , m_w{w}
   {
     assert(w== 4 or w == 8 or w == 16 or w == 32);
-    if (gf_init_easy(&gf_, static_cast<int>(w_)) == 0)
+    if (gf_init_easy(&m_gf, static_cast<int>(m_w)) == 0)
     {
       throw std::runtime_error("Can't allocate galois field");
     }
@@ -48,7 +48,7 @@ public:
   /// @brief Destructor.
   ~galois_field()
   {
-    gf_free(&gf_, 0 /* non-recursive */);
+    gf_free(&m_gf, 0 /* non-recursive */);
   }
 
   /// @brief Get the size of this Galois field
@@ -56,7 +56,7 @@ public:
   size()
   const noexcept
   {
-    return w_;
+    return m_w;
   }
 
   /// @brief Multiply a region with a constant.
@@ -68,7 +68,7 @@ public:
   multiply(const char* src, char* dst, std::size_t len, std::uint32_t coeff)
   noexcept
   {
-    gf_.multiply_region.w32( &gf_
+    m_gf.multiply_region.w32( &m_gf
                            , const_cast<char*>(src)
                            , dst
                            , coeff
@@ -85,7 +85,7 @@ public:
   multiply_add(const char* src, char* dst, std::size_t len, std::uint32_t coeff)
   noexcept
   {
-    gf_.multiply_region.w32( &gf_
+    m_gf.multiply_region.w32( &m_gf
                            , const_cast<char*>(src)
                            , dst
                            , coeff
@@ -99,7 +99,7 @@ public:
   multiply_size(std::uint16_t size, std::uint32_t coeff)
   noexcept
   {
-    assert(  (((w_ == 4 or w_ == 8 or w_ == 16 ) and coeff < (1u << w_)) or (w_ == 32))
+    assert(  (((m_w == 4 or m_w == 8 or m_w == 16 ) and coeff < (1u << m_w)) or (m_w == 32))
           && "Invalid coefficient");
 
     if (size == 0 or coeff == 0)
@@ -107,7 +107,7 @@ public:
       return 0;
     }
 
-    if (w_ <= 8) // 4 or 8
+    if (m_w <= 8) // 4 or 8
     {
       __attribute__((aligned(16))) std::uint16_t res;
       __attribute__((aligned(16))) std::uint16_t size_ = size;
@@ -117,7 +117,7 @@ public:
     }
     else // w = 16 or 32
     {
-      return static_cast<std::uint16_t>(gf_.multiply.w32(&gf_, size, coeff));
+      return static_cast<std::uint16_t>(m_gf.multiply.w32(&m_gf, size, coeff));
     }
   }
 
@@ -130,7 +130,7 @@ public:
     {
       return 0;
     }
-    return gf_.multiply.w32(&gf_, x, y);
+    return m_gf.multiply.w32(&m_gf, x, y);
   }
 
   /// @brief Invert a coeeficient.
@@ -139,7 +139,7 @@ public:
   noexcept
   {
     assert(coef != 0);
-    return gf_.divide.w32(&gf_, 1, coef);
+    return m_gf.divide.w32(&m_gf, 1, coef);
   }
 
   /// @brief Get the coefficient for a repair and a source.
@@ -149,18 +149,18 @@ public:
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
   noexcept
   {
-    return w_ == 32
+    return m_w == 32
          ? (((repair_id + 1) + (src_id + 1)) * (repair_id + 1))
-         : (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << w_) - 1) + 1;
+         : (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << m_w) - 1) + 1;
   }
 
 private:
 
   /// @brief The real underlying galois field.
-  gf_t gf_;
+  gf_t m_gf;
 
   /// @brief This field size.
-  std::uint8_t  w_;
+  std::uint8_t  m_w;
 };
 
 /*------------------------------------------------------------------------------------------------*/

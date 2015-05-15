@@ -146,51 +146,51 @@ private:
 private:
 
   /// @brief The implementation of a Galois field.
-  galois_field gf_;
+  galois_field m_gf;
 
   /// @brief Indicates if sources should be given in-order to the callback.
-  const bool in_order_;
+  const bool m_in_order;
 
   /// @brief The identifier of the first source which has not yet been given to callback.
   ///
   /// Used to give sources in-order to the callback.
-  std::uint32_t first_missing_source_;
+  std::uint32_t m_first_missing_source;
 
   /// @brief Maintains a list of sources which could not be given to callback when some older
   /// sources are still missing.
-  boost::container::map<std::uint32_t, const source*> ordered_sources_;
+  boost::container::map<std::uint32_t, const source*> m_ordered_sources;
 
   /// @brief The callback to call when a source has been decoded or received.
-  const std::function<void(const source&)> callback_;
+  const std::function<void(const source&)> m_callback;
 
   /// @brief The set of received repairs.
-  repairs_set_type repairs_;
+  repairs_set_type m_repairs;
 
   /// @brief The set of received sources.
-  sources_set_type sources_;
+  sources_set_type m_sources;
 
   /// @brief Remember the last source identifier.
   ///
   /// All sources with an identifier smaller than @p last_id_ were received or decoded in the past.
-  boost::optional<std::uint32_t> last_id_;
+  boost::optional<std::uint32_t> m_last_id;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
-  missing_sources_type missing_sources_;
+  missing_sources_type m_missing_sources;
 
   /// @brief The number of repairs which were dropped because they were useless.
-  std::size_t nb_useless_repairs_;
+  std::size_t m_nb_useless_repairs;
 
   /// @brief The number of time a full decoding failed.
-  std::size_t nb_failed_full_decodings_;
+  std::size_t m_nb_failed_full_decodings;
 
-  ///
-  std::size_t nb_decoded_;
+  /// @brief The number of decoded sources.
+  std::size_t m_nb_decoded;
 
   /// @brief Re-use the same memory for the matrix of coefficients.
-  square_matrix coefficients_;
+  square_matrix m_coefficients;
 
   /// @brief Re-use the same memory for the inverted matrix of coefficients.
-  square_matrix inv_;
+  square_matrix m_inv;
 };
 
 /*------------------------------------------------------------------------------------------------*/

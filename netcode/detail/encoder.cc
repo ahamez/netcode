@@ -5,7 +5,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 encoder::encoder(std::uint8_t galois_field_size)
-  : gf_{galois_field_size}
+  : m_gf{galois_field_size}
 {}
 
 /*------------------------------------------------------------------------------------------------*/
@@ -27,13 +27,13 @@ encoder::operator()(repair& repair, source_list& sources)
   repair.source_ids().insert(repair.source_ids().end(), cit->id());
 
   // The coefficient for this repair and source.
-  auto c = gf_.coefficient(repair.id(), cit->id());
+  auto c = m_gf.coefficient(repair.id(), cit->id());
 
   // Only multiply for the first source, no need to add with repair.
-  gf_.multiply(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
+  m_gf.multiply(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
   // Initialize the user's size.
-  repair.encoded_size() = gf_.multiply_size(cit->user_size(), c);
+  repair.encoded_size() = m_gf.multiply_size(cit->user_size(), c);
 
   // Then, for each remaining source, multiply it with a coefficient and add it with
   // current repair.
@@ -46,18 +46,18 @@ encoder::operator()(repair& repair, source_list& sources)
     }
 
     // The coefficient for this repair and source.
-    c = gf_.coefficient(repair.id(), cit->id());
+    c = m_gf.coefficient(repair.id(), cit->id());
 
     // Add the current source id to the list of encoded sources by this repair.
     repair.source_ids().insert(repair.source_ids().end(), cit->id());
 
     // Multiply and add for all following sources.
-    gf_.multiply_add(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
+    m_gf.multiply_add(cit->buffer().data(), repair.buffer().data(), cit->user_size(), c);
 
     // Finally, add the user size.
     // Cast is necessary to inhibit conversion warning as xor implicitly convert to a signed value.
     repair.encoded_size()
-      = static_cast<std::uint16_t>(gf_.multiply_size(cit->user_size(), c) ^ repair.encoded_size());
+      = static_cast<std::uint16_t>(m_gf.multiply_size(cit->user_size(), c) ^ repair.encoded_size());
   }
 }
 

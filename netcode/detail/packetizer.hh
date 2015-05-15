@@ -32,9 +32,9 @@ public:
 
   /// @brief Constructor.
   explicit packetizer(PacketHandler& h)
-    : packet_handler_(h)
-    , difference_buffer_(32)
-    , rle_buffer_(32)
+    : m_packet_handler(h)
+    , m_difference_buffer(32)
+    , m_rle_buffer(32)
   {}
 
   void
@@ -232,7 +232,7 @@ private:
   void
   write(const void* data, std::size_t len)
   {
-    packet_handler_(reinterpret_cast<const char*>(data), len);
+    m_packet_handler(reinterpret_cast<const char*>(data), len);
   }
 
   /// @brief Serialize a list of source identifiers.
@@ -243,8 +243,8 @@ private:
   {
     using namespace boost::endian;
 
-    difference_buffer_.clear();
-    rle_buffer_.clear();
+    m_difference_buffer.clear();
+    m_rle_buffer.clear();
 
     if (ids.size() == 0)
     {
@@ -254,11 +254,11 @@ private:
     }
 
     // Compute adjacent differences.
-    std::adjacent_difference(ids.begin(), ids.end(), std::back_inserter(difference_buffer_));
+    std::adjacent_difference(ids.begin(), ids.end(), std::back_inserter(m_difference_buffer));
 
     // Skip first id as we need to keep it on 32 bits and as its running length will always be 1.
-    auto cit = std::next(difference_buffer_.begin());
-    const auto end = difference_buffer_.end();
+    auto cit = std::next(m_difference_buffer.begin());
+    const auto end = m_difference_buffer.end();
 
     // Running length encoding.
     while (cit != end)
@@ -273,19 +273,19 @@ private:
       }
       // The cast to 16 bits is important: differences are always small and rle_buffer only
       // stores 16 bits differences.
-      rle_buffer_.emplace_back(run_length, native_to_big(static_cast<std::uint16_t>(*cit)));
+      m_rle_buffer.emplace_back(run_length, native_to_big(static_cast<std::uint16_t>(*cit)));
       ++cit;
     }
 
     // Write the number of elements (number of pairs + the first identifier).
-    const auto nb_elements = native_to_big(static_cast<std::uint16_t>(rle_buffer_.size() + 1));
+    const auto nb_elements = native_to_big(static_cast<std::uint16_t>(m_rle_buffer.size() + 1));
     write(&nb_elements, sizeof(std::uint16_t));
 
     // Write first identifier.
     const auto first_id = native_to_big(*ids.begin());
     write(&first_id, sizeof(std::uint32_t));
 
-    for (const auto& pair : rle_buffer_)
+    for (const auto& pair : m_rle_buffer)
     {
       write(&pair.first, sizeof(std::uint8_t));
       write(&pair.second, sizeof(std::uint16_t));
@@ -298,8 +298,8 @@ private:
   {
     using namespace boost::endian;
 
-    difference_buffer_.clear();
-    rle_buffer_.clear();
+    m_difference_buffer.clear();
+    m_rle_buffer.clear();
 
     const auto nb_elements = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
     if (nb_elements == 0)
@@ -311,7 +311,7 @@ private:
     // Read first identifier.
     const auto first_id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
     data += sizeof(std::uint32_t);
-    difference_buffer_.push_back(first_id);
+    m_difference_buffer.push_back(first_id);
 
     // Reverse running length encoding on the fly.
     const auto nb_pairs = nb_elements - 1u; /* remove the first identifier */
@@ -324,12 +324,12 @@ private:
 
       for (auto j = 0u; j < run_length; ++j)
       {
-        difference_buffer_.push_back(value);
+        m_difference_buffer.push_back(value);
       }
     }
 
     // Revert to list of source identifiers.
-    std::partial_sum( difference_buffer_.begin(), difference_buffer_.end()
+    std::partial_sum( m_difference_buffer.begin(), m_difference_buffer.end()
                     , std::inserter(ids, ids.end()));
 
     // We read 1 identifier + nb_pairs + 1 size (number of elements).
@@ -342,21 +342,21 @@ private:
   mark_end()
   noexcept
   {
-    packet_handler_();
+    m_packet_handler();
   }
 
 private:
 
   /// @brief The handler which serializes packets.
-  PacketHandler& packet_handler_;
+  PacketHandler& m_packet_handler;
 
   /// @brief A pre-allocated buffer to re-use when computing adjacent difference for ids list.
   /// @note We use a 32-bits type as the first element will always be exactly the same as the
   /// ids list, which are on 32 bits.
-  std::vector<std::uint32_t> difference_buffer_;
+  std::vector<std::uint32_t> m_difference_buffer;
 
   /// @brief A pre-allocated buffer to re-use when performing the running length encoding.
-  std::vector<std::pair<std::uint8_t, std::uint16_t>> rle_buffer_;
+  std::vector<std::pair<std::uint8_t, std::uint16_t>> m_rle_buffer;
 };
 
 /*------------------------------------------------------------------------------------------------*/

@@ -26,9 +26,9 @@ public:
 
   /// @brief Constructor.
   source(std::uint32_t id, byte_buffer&& buf, std::uint16_t user_size)
-    : id_{id}
-    , symbol_buffer_{std::move(buf)}
-    , user_size_{user_size}
+    : m_id{id}
+    , m_symbol_buffer{std::move(buf)}
+    , m_user_size{user_size}
   {}
 
   /// @brief Get this source's identifier.
@@ -36,7 +36,7 @@ public:
   id()
   const noexcept
   {
-    return id_;
+    return m_id;
   }
 
   /// @brief Get the bytes of the symbol.
@@ -44,7 +44,7 @@ public:
   buffer()
   const noexcept
   {
-    return symbol_buffer_;
+    return m_symbol_buffer;
   }
 
   /// @brief Get the bytes of the symbol.
@@ -52,7 +52,7 @@ public:
   buffer()
   noexcept
   {
-    return symbol_buffer_;
+    return m_symbol_buffer;
   }
 
   /// @brief Get the number of bytes really used by the user's symbol.
@@ -60,19 +60,19 @@ public:
   user_size()
   const noexcept
   {
-    return user_size_;
+    return m_user_size;
   }
 
 private:
 
   /// @brief This source's unique identifier.
-  std::uint32_t id_;
+  std::uint32_t m_id;
 
   /// @brief This source's symbol.
-  byte_buffer symbol_buffer_;
+  byte_buffer m_symbol_buffer;
 
   /// @brief The number of bytes really used by the user's symbol in the buffer.
-  std::uint16_t user_size_;
+  std::uint16_t m_user_size;
 };
 
 /*------------------------------------------------------------------------------------------------*/

@@ -21,14 +21,14 @@ public:
   /// @attention When 4 or 8, length of data handled to the library can be any value. However, for
   /// size 16 and 32, length must be a multiple of 2 and 4, respectively.
   configuration(std::uint8_t galois_field_size = 8)
-    : galois_field_size_{galois_field_size}
-    , code_type_{code::systematic}
-    , rate_{5}
-    , ack_frequency_{std::chrono::milliseconds{100}}
-    , ack_nb_packets_{50}
-    , window_{std::numeric_limits<std::size_t>::max()}
-    , in_order_{true}
-    , adaptative_{false}
+    : m_galois_field_size{galois_field_size}
+    , m_code_type{code::systematic}
+    , m_rate{5}
+    , m_ack_frequency{std::chrono::milliseconds{100}}
+    , m_ack_nb_packets{50}
+    , m_window_size{std::numeric_limits<std::size_t>::max()}
+    , m_in_order{true}
+    , m_adaptative{false}
   {
     assert( galois_field_size == 4 or galois_field_size == 8 or galois_field_size == 16
             or galois_field_size == 32);
@@ -39,7 +39,7 @@ public:
   galois_field_size()
   const noexcept
   {
-    return galois_field_size_;
+    return m_galois_field_size;
   }
 
   /// @brief Set the systematic/non-systematic mode of the code.
@@ -47,7 +47,7 @@ public:
   set_code_type(code c)
   noexcept
   {
-    code_type_ = c;
+    m_code_type = c;
   }
 
   /// @brief Get the systematic/non-systematic mode of the code.
@@ -55,7 +55,7 @@ public:
   code_type()
   const noexcept
   {
-    return code_type_;
+    return m_code_type;
   }
 
   /// @brief Set how many sources are sent before a repair is generated.
@@ -65,7 +65,7 @@ public:
   noexcept
   {
     assert(rate > 0);
-    rate_ = rate;
+    m_rate = rate;
   }
 
   /// @brief Get how many sources are sent before a repair is generated.
@@ -73,7 +73,7 @@ public:
   rate()
   const noexcept
   {
-    return rate_;
+    return m_rate;
   }
 
   /// @brief Set the frequency at which ack will be sent from the decoder to the encoder.
@@ -84,7 +84,7 @@ public:
   set_ack_frequency(std::chrono::milliseconds f)
   noexcept
   {
-    ack_frequency_ = f;
+    m_ack_frequency = f;
   }
 
   /// @brief Get the frequency at which ack will be sent from the decoder to the encoder.
@@ -92,7 +92,7 @@ public:
   ack_frequency()
   const noexcept
   {
-    return ack_frequency_;
+    return m_ack_frequency;
   }
 
   /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
@@ -102,7 +102,7 @@ public:
   noexcept
   {
     assert(nb > 0);
-    ack_nb_packets_ = std::min(nb, static_cast<std::uint16_t>(128));
+    m_ack_nb_packets = std::min(nb, static_cast<std::uint16_t>(128));
   }
 
   /// @brief Get how many packets to receive before an ack is sent from the decoder to the encoder.
@@ -110,7 +110,7 @@ public:
   ack_nb_packets()
   const noexcept
   {
-    return ack_nb_packets_;
+    return m_ack_nb_packets;
   }
 
   /// @brief Set the maximal permitted size of the encoder's window.
@@ -120,7 +120,7 @@ public:
   noexcept
   {
     assert(sz > 0);
-    window_ = sz;
+    m_window_size = sz;
   }
 
   /// @brief Get the maximal permitted size of the encoder's window.
@@ -128,7 +128,7 @@ public:
   window_size()
   const noexcept
   {
-    return window_;
+    return m_window_size;
   }
 
   /// @brief Instruct decoder to give back data in order.
@@ -136,7 +136,7 @@ public:
   set_in_order(bool in_order)
   noexcept
   {
-    in_order_ = in_order;
+    m_in_order = in_order;
   }
 
   /// @brief Tell if data are given back in order.
@@ -144,7 +144,7 @@ public:
   in_order()
   const noexcept
   {
-    return in_order_;
+    return m_in_order;
   }
 
   /// @brief Set the adaptative mode of the code.
@@ -152,7 +152,7 @@ public:
   set_adaptative(bool adaptative)
   noexcept
   {
-    adaptative_ = adaptative;
+    m_adaptative = adaptative;
   }
 
   /// @brief Get the adaptative mode of the code.
@@ -160,34 +160,34 @@ public:
   adaptative()
   const noexcept
   {
-    return adaptative_;
+    return m_adaptative;
   }
 
 private:
 
   /// @brief The Galois field size.
-  std::uint8_t galois_field_size_;
+  std::uint8_t m_galois_field_size;
 
   /// @brief Tell if the code is systematic or not.
-  code code_type_;
+  code m_code_type;
 
   /// @brief How many sources to send before a repair is generated.
-  std::size_t rate_;
+  std::size_t m_rate;
 
   /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
-  std::chrono::milliseconds ack_frequency_;
+  std::chrono::milliseconds m_ack_frequency;
 
   /// @brief How many packets to receive before an ack is sent from the decoder to the encoder.
-  std::uint16_t ack_nb_packets_;
+  std::uint16_t m_ack_nb_packets;
 
   /// @brief The maximal number of sources to keep on the encoder side before discarding them.
-  std::size_t window_;
+  std::size_t m_window_size;
 
   /// @brief Decoder gives back sources in order.
-  bool in_order_;
+  bool m_in_order;
 
   /// @brief Tell if the code is adaptative.
-  bool adaptative_;
+  bool m_adaptative;
 };
 
 /*------------------------------------------------------------------------------------------------*/
