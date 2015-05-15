@@ -353,7 +353,7 @@ noexcept
 
   if (m_in_order)
   {
-    for (auto cit = m_ordered_sources.begin(); cit != m_ordered_sources.lower_bound(id);)
+    for (auto cit = m_ordered_sources.begin(), end = m_ordered_sources.lower_bound(id); cit != end;)
     {
       m_callback(*cit->second);
       const auto to_erase = cit;
