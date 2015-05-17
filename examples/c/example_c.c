@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   memset(data_cxt.buffer, 'x', 4096);
 
   // A default configuration for encoder and decoder.
-  ntc_configuration_t* conf = ntc_new_configuration(8);
+  ntc_configuration_t* conf = ntc_new_default_configuration();
   ntc_configuration_set_window_size(conf, 1024);
 
   // Create an encoder.

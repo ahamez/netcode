@@ -10,6 +10,14 @@ ntc_new_configuration(uint8_t galois_field_size)
 
 /*------------------------------------------------------------------------------------------------*/
 
+ntc_configuration_t*
+ntc_new_default_configuration()
+{
+  return new ntc_configuration_t{8};
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 ntc_delete_configuration(ntc_configuration_t* conf)
 {
