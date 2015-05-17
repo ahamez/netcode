@@ -7,6 +7,8 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
+/// @brief A resizable square matrix suitable for value on 32 bits, stored in contiguous memory.
+/// @note The matrix is not initialized to 0, even when constructed or resized.
 class square_matrix final
 {
 public:

@@ -32,7 +32,7 @@ public:
   erase(source_id_list::const_iterator id_cit, source_id_list::const_iterator id_end)
   noexcept
   {
-    // sources_ is sorted by insertion (and thus by identifier).
+    // m_sources is sorted by insertion (and thus by identifier).
     auto source_it = m_sources.begin();
     const auto source_end = m_sources.end();
     while (source_it != source_end and id_cit != id_end)
@@ -48,7 +48,7 @@ public:
       else if (source_it->id() > *id_cit)
       {
         // The current source has an identifier greater than the current id to erase.
-        // This means that this id was already removed in a previous erase procedure.
+        // This means that this id was already removed in a previous call to erase().
         // We can safely ignore it.
         ++id_cit;
       }
