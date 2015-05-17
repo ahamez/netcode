@@ -24,7 +24,7 @@ public:
   /// @brief Can move an ack.
   ack& operator=(ack&&) = default;
 
-  /// @brief Constructor
+  /// @brief Default constructor.
   ack()
     : m_source_ids{}, m_nb_packets{0}
   {}

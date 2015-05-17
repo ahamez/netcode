@@ -100,7 +100,7 @@ decoder::operator()(repair&& incoming_r)
   auto r_cit = insertion.first;
   auto& r = insertion.first->second;
 
-  // Reverse loop as flat_set::erase() invalidates iterators past the one being erased.
+  // Reverse loop as flat_set::erase() invalidates iterators behind the one being erased.
   for ( auto id_rcit = r.source_ids().rbegin(), end = r.source_ids().rend(); id_rcit != end
       ; ++id_rcit)
   {
@@ -144,7 +144,7 @@ decoder::operator()(repair&& incoming_r)
     // This repair is no longer needed.
     m_repairs.erase(r_cit);
 
-    // Give back the decoded source to the decoder.
+    // This newly decode source might trigger the decoding of several other sources.
     add_source_recursive(std::move(src));
 
     return;
@@ -452,7 +452,7 @@ decoder::attempt_full_decoding()
 
   // Matrix successfully inverted, we can now decode missing sources. Phew!
 
-  // Build an index for fast retreiving of repairs from the inv_ matrix.
+  // Build an index for fast retreiving of repairs from the inverted matrix.
   std::vector<repair*> index;
   index.reserve(m_repairs.size());
   for (auto& rid_repair : m_repairs)
