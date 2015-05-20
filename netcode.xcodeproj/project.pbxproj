@@ -1157,6 +1157,8 @@
 		2B516BE11AC944AE00133F38 /* invert_matrix.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
 		2B516BEE1AC944DD00133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B516BF21AC9997200133F38 /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
+		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
+		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1182,7 +1184,7 @@
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
-		2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = test_end_to_end; path = "end_to_end-mt"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "end_to_end-mt"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end_mt.cc; sourceTree = "<group>"; };
 		2B9BD1061AF2A18600856E96 /* udp_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = udp_generator.py; sourceTree = "<group>"; };
 		2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end.cc; sourceTree = "<group>"; };
@@ -3082,7 +3084,9 @@
 				2B6F62431AC7604600A34953 /* configuration.hh */,
 				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
+				2B5FFAC41B0D181500CAB33E /* dispatch.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
+				2B5FFAC51B0D1C0800CAB33E /* errors.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";
@@ -3104,7 +3108,7 @@
 			isa = PBXGroup;
 			children = (
 				2BBBC5E41B022061005C1669 /* end_to_end */,
-				2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */,
+				2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */,
 				2B4DC0281ADBE4F2006C548B /* example_c */,
 				2B218B171AD8066B000D2657 /* libc++.dylib */,
 				2B218AEB1AD7C736000D2657 /* libcnetcode.a */,
@@ -3275,7 +3279,7 @@
 			);
 			name = "end_to_end-mt";
 			productName = test_end_to_end;
-			productReference = 2B9BD0FB1AF2A0B100856E96 /* test_end_to_end */;
+			productReference = 2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */;
 			productType = "com.apple.product-type.tool";
 		};
 		2BBA82A21AF7FA3200FB22BD /* end_to_end */ = {

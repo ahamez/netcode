@@ -14,6 +14,7 @@
 #pragma GCC diagnostic pop
 
 #include <netcode/decoder.hh>
+#include <netcode/dispatch.hh>
 #include <netcode/encoder.hh>
 
 /*------------------------------------------------------------------------------------------------*/
@@ -114,6 +115,7 @@ public:
   {
     decoder_.conf().set_ack_frequency(std::chrono::milliseconds{0});
     encoder_.conf().set_adaptative(true);
+    encoder_.conf().set_window_size(32);
 
     start_handler();
     start_app_handler();
@@ -136,30 +138,7 @@ private:
                                   }
 
                                   other_side_seen_ = true;
-
-                                  auto res = 0ul;
-                                  switch (ntc::detail::get_packet_type(packet_))
-                                  {
-                                      case ntc::detail::packet_type::ack:
-                                      {
-                                        res = encoder_(packet_);
-                                        break;
-                                      }
-
-                                      case ntc::detail::packet_type::repair:
-                                      case ntc::detail::packet_type::source:
-                                      {
-                                        res = decoder_(packet_);
-                                        break;
-                                      }
-
-                                      default:;
-                                  }
-
-                                  if (res == 0)
-                                  {
-                                    throw std::runtime_error("Invalid packet format");
-                                  }
+                                  ntc::dispatch(encoder_, decoder_, packet_);
 
                                   // Listen again for incoming packets.
                                   start_handler();
