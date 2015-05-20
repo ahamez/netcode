@@ -135,9 +135,10 @@ private:
   void
   attempt_full_decoding();
 
-  /// @brief Manage in-order if needed.
+  /// @brief Give sources to callback in order.
+  /// @attention A pointer to the source is stored.
   void
-  handle_source(const source*);
+  handle_source_in_order(const source*);
 
   /// @brief Give to callback ordered sources, if possible.
   void
