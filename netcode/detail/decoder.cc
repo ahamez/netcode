@@ -255,6 +255,14 @@ decoder::add_source_recursive(source&& src)
   {
     m_callback(src);
   }
+  else if (src.id() == m_first_missing_source)
+  {
+    m_callback(src);
+    m_first_missing_source += 1;
+    // Send all sources that could not be previously sent because their ids were greater than
+    // first_missing_source_.
+    flush_ordered_sources();
+  }
 
   // First, look for all repairs that encode this source.
   const auto search = m_missing_sources.find(src.id());
@@ -325,9 +333,10 @@ decoder::add_source_recursive(source&& src)
   const auto insertion = m_sources.emplace(src_id, std::move(src));
   assert(insertion.second && "source already added");
 
-  if (m_in_order)
+  if (m_in_order and insertion.first->second.id() > m_first_missing_source)
   {
-    handle_source_in_order(&insertion.first->second);
+    // We can't send the current source as there are some older sources which have not been sent.
+    m_ordered_sources.emplace(insertion.first->second.id(), &insertion.first->second);
   }
 }
 
@@ -524,13 +533,24 @@ decoder::attempt_full_decoding()
     const auto insertion = m_sources.emplace(miss.first, std::move(src));
     assert(insertion.second && "source already added");
 
+    const auto& inserted_src = insertion.first->second;
     if (not m_in_order)
     {
-      m_callback(insertion.first->second);
+      m_callback(inserted_src);
+    }
+    else if (inserted_src.id() == m_first_missing_source)
+    {
+      m_callback(inserted_src);
+      m_first_missing_source += 1;
+      // Send all sources that could not be previously sent because their ids were greater than
+      // first_missing_source_.
+      flush_ordered_sources();
     }
     else
     {
-      handle_source_in_order(&insertion.first->second);
+      // We can't send the current source as there are some older sources which have not been sent.
+      m_ordered_sources.emplace(inserted_src.id(), &inserted_src);
+
     }
   }
 
@@ -539,31 +559,6 @@ decoder::attempt_full_decoding()
   // Cleanup.
   m_repairs.clear();
   m_missing_sources.clear();
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-decoder::handle_source_in_order(const source* src)
-{
-  assert(m_in_order);
-  if (src->id() == m_first_missing_source)
-  {
-    m_callback(*src);
-    m_first_missing_source += 1;
-
-    // Send all sources that could not be previously sent because their ids were greater than
-    // first_missing_source_.
-    flush_ordered_sources();
-  }
-  else
-  {
-    assert(src->id() > m_first_missing_source);
-    // We can't send the current source as they are some older sources which has not been sent
-    // yet.
-    m_ordered_sources.emplace(src->id(), src);
-  }
-
 }
 
 /*------------------------------------------------------------------------------------------------*/
