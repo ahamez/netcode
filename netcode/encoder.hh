@@ -222,7 +222,7 @@ private:
     {
       m_nb_acks += 1;
       const auto res = m_packetizer.read_ack(data);
-      if (m_conf.adaptative())
+      if (m_conf.adaptive())
       {
         if (m_nb_sent_packets > 0)
         {

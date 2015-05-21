@@ -74,3 +74,11 @@ ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order)
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_configuration_set_adaptive(ntc_configuration_t* conf, bool adaptive)
+{
+  conf->set_adaptive(adaptive);
+}
+
+/*------------------------------------------------------------------------------------------------*/
