@@ -93,7 +93,7 @@ public:
   /// @param packet The incoming packet stored in a vector.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
-  operator()(const std::vector<char>& buffer)
+  operator()(const std::vector<char>& packet)
   {
     return operator()(buffer.data(), buffer.size());
   }
@@ -152,7 +152,7 @@ public:
   {
     m_repair.reset();
     mk_repair();
-    m_nb_sent_packets += 1;
+    ++m_nb_sent_packets;
     m_packetizer.write_repair(m_repair);
   }
 
@@ -194,9 +194,9 @@ private:
 
     if (m_conf.code_type() == code::systematic)
     {
+      ++m_nb_sent_sources;
+      ++m_nb_sent_packets;
       // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-      m_nb_sent_sources += 1;
-      m_nb_sent_packets += 1;
       m_packetizer.write_source(insertion);
     }
     else // non_systematic code
@@ -210,7 +210,7 @@ private:
       send_repair();
     }
 
-    m_current_source_id += 1;
+    ++m_current_source_id;
   }
 
   /// @brief Notify the encoder that some data has been received.
@@ -257,8 +257,8 @@ private:
     assert(m_sources.size() > 0 && "Empty source list");
     m_encoder(m_repair, m_sources);
 
-    m_current_repair_id += 1;
-    m_nb_sent_repairs += 1;
+    ++m_current_repair_id;
+    ++m_nb_sent_repairs;
   }
 
   /// @brief Compute the code rate needed for a given loss rate.

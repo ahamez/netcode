@@ -108,7 +108,7 @@ public:
   ///
   /// To fulfill memory alignement requirements, a copy will occur.
   std::size_t
-  operator()(const std::vector<char>& buffer)
+  operator()(const std::vector<char>& packet)
   {
     return operator()(buffer.data(), buffer.size());
   }
@@ -153,7 +153,7 @@ public:
     return m_decoder.nb_decoded();
   }
 
-  /// @brief Get the number of times the full decodong failed.
+  /// @brief Get the number of times the full decoding failed.
   std::size_t
   nb_failed_full_decodings()
   const noexcept
@@ -213,7 +213,7 @@ public:
 
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
     m_packetizer.write_ack(m_ack);
-    m_nb_sent_ack +=1;
+    ++m_nb_sent_ack;
 
     // Start a fresh new ack.
     m_ack.reset();

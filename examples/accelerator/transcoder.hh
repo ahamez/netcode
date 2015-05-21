@@ -114,7 +114,7 @@ public:
     , other_side_seen_(false)
   {
     decoder_.conf().set_ack_frequency(std::chrono::milliseconds{0});
-    encoder_.conf().set_adaptative(true);
+    encoder_.conf().set_adaptive(true);
     encoder_.conf().set_window_size(32);
 
     start_handler();

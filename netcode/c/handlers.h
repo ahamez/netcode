@@ -38,7 +38,6 @@ typedef struct
 /// @brief The type of the handler called by decoder each time a data has been received or decoded.
 typedef struct
 {
-
   /// @brief Let user have a pointer to a context each time a callback is called.
   void* context;
 

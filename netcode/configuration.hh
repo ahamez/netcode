@@ -28,7 +28,7 @@ public:
     , m_ack_nb_packets{50}
     , m_window_size{std::numeric_limits<std::size_t>::max()}
     , m_in_order{true}
-    , m_adaptative{false}
+    , m_adaptive{false}
   {
     assert( galois_field_size == 4 or galois_field_size == 8 or galois_field_size == 16
             or galois_field_size == 32);
@@ -147,20 +147,20 @@ public:
     return m_in_order;
   }
 
-  /// @brief Set the adaptative mode of the code.
+  /// @brief Set the adaptive mode of the code.
   void
-  set_adaptative(bool adaptative)
+  set_adaptive(bool adaptive)
   noexcept
   {
-    m_adaptative = adaptative;
+    m_adaptive = adaptive;
   }
 
   /// @brief Get the adaptative mode of the code.
   bool
-  adaptative()
+  adaptive()
   const noexcept
   {
-    return m_adaptative;
+    return m_adaptive;
   }
 
 private:
@@ -186,8 +186,8 @@ private:
   /// @brief Decoder gives back sources in order.
   bool m_in_order;
 
-  /// @brief Tell if the code is adaptative.
-  bool m_adaptative;
+  /// @brief Tell if the code is adaptive.
+  bool m_adaptive;
 };
 
 /*------------------------------------------------------------------------------------------------*/
