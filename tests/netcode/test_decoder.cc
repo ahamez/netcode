@@ -55,7 +55,7 @@ TEST_CASE("Decoder repairs a lost source")
   auto repair = enc_packet_handler.vec[1];
 
   // Send repair to decoder.
-  REQUIRE(dec(repair));
+  REQUIRE(dec(repair.data(), repair.size()));
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded() == 1);
@@ -83,7 +83,7 @@ TEST_CASE("Decoder generate correct ack")
   REQUIRE(enc.window() == 1);
 
   // Send source to decoder.
-  dec(enc_packet_handler.vec[0].data());
+  dec(enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size());
 
   SECTION("Force ack")
   {
@@ -92,7 +92,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(dec_packet_handler.vec[0].data());
+    enc(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size());
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -190,12 +190,12 @@ test_case_0(bool in_order)
 
   // Now send to decoder.
   // Lost first source.
-  dec(enc_handler.vec[1].data());
-  dec(enc_handler.vec[2].data());
-  dec(enc_handler.vec[3].data());
+  dec(enc_handler.vec[1]);
+  dec(enc_handler.vec[2]);
+  dec(enc_handler.vec[3]);
   // Because the encoder's window is 3, the incoming repair only encode s1, s2 and s3. Thus,
   // s0 is completely lost and cannot be recovered.
-  dec(enc_handler.vec[4].data());
+  dec(enc_handler.vec[4]);
   REQUIRE(dec.nb_received_sources() == 3);
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_missing_sources() == 0);

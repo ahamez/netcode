@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_notify_packet(dec, encoder_cxt.buffer);
+  ntc_decoder_notify_packet(dec, encoder_cxt.buffer, 4096);
 
   // Now the context of the decoder's data handler contains the sent data.
   assert(data_cxt.buffer[0] == 'a');

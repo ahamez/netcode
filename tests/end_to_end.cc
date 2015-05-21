@@ -198,7 +198,7 @@ int main()
       const auto& packet = *cit;
       if (not loss())
       {
-        dec(packet.data());
+        dec(packet.data(), packet.size());
       }
       else
       {
@@ -221,7 +221,7 @@ int main()
         const auto& packet = *cit;
         if (not loss())
         {
-          enc(packet.data());
+          enc(packet.data(), packet.size());
         }
         else
         {

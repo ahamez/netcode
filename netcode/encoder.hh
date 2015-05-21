@@ -81,11 +81,12 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
   /// @param packet The incoming packet.
+  /// @param len The maximum number of bytes to read from @p packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
-  operator()(const char* packet)
+  operator()(const char* packet, std::size_t len)
   {
-    return notify_impl(packet);
+    return notify_impl(packet, len);
   }
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
@@ -94,7 +95,7 @@ public:
   std::size_t
   operator()(const std::vector<char>& buffer)
   {
-    return operator()(buffer.data());
+    return operator()(buffer.data(), buffer.size());
   }
 
   /// @brief The number of packets which have not been acknowledged.
@@ -215,13 +216,13 @@ private:
   /// @brief Notify the encoder that some data has been received.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
-  notify_impl(const char* data)
+  notify_impl(const char* data, std::size_t max_len)
   {
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
       m_nb_acks += 1;
-      const auto res = m_packetizer.read_ack(data);
+      const auto res = m_packetizer.read_ack(data, max_len);
       if (m_conf.adaptative())
       {
         if (m_nb_sent_packets > 0)

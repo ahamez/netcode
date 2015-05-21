@@ -32,7 +32,7 @@ ntc_delete_decoder(ntc_decoder_t* dec);
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet);
+ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t len);
 
 /*------------------------------------------------------------------------------------------------*/
 

@@ -194,7 +194,7 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
       std::lock_guard<std::mutex> lock{to_enc_mutex};
       if (not to_enc.empty())
       {
-        enc(to_enc.front().data());
+        enc(to_enc.front().data(), to_enc.front().size());
         to_enc.pop();
       }
     }
@@ -224,7 +224,7 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
       std::lock_guard<std::mutex> lock{to_dec_mutex};
       if (not to_dec.empty())
       {
-        dec(to_dec.front().data());
+        dec(to_dec.front().data(), to_dec.front().size());
         to_dec.pop();
       }
     }

@@ -138,7 +138,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack);
 
     // Finally, notify the encoder.
-    const auto result = encoder(h.pkt);
+    const auto result = encoder(h.pkt, 2048);
     REQUIRE(result);
 
     // The number of sources should have decreased.
@@ -154,7 +154,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack0);
 
     // Finally, notify the encoder.
-    const auto result0 = encoder(h.pkt);
+    const auto result0 = encoder(h.pkt, 2048);
     REQUIRE(result0);
 
     // The number of sources should have decreased.
@@ -170,7 +170,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack1);
 
     // Finally, notify the encoder.
-    const auto result1 = encoder(h.pkt);
+    const auto result1 = encoder(h.pkt, 2048);
     REQUIRE(result1);
 
     // The number of sources should have decreased.
@@ -186,7 +186,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_ack(ack2);
 
     // Finally, notify the encoder.
-    const auto result2 = encoder(h.pkt);
+    const auto result2 = encoder(h.pkt, 2048);
     REQUIRE(result2);
 
     // The number of sources should have decreased.
@@ -202,7 +202,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_repair(repair);
 
     // Finally, notify the encoder.
-    const auto result = encoder(h.pkt);
+    const auto result = encoder(h.pkt, 2048);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.
@@ -218,7 +218,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_source(source);
 
     // Finally, notify the encoder.
-    const auto result = encoder(h.pkt);
+    const auto result = encoder(h.pkt, 2048);
     REQUIRE(not result);
 
     // The number of sources should not have decreased.

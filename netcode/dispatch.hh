@@ -52,7 +52,7 @@ struct is_decoder<ntc::decoder<PacketHandler, DataHandler, Packetizer>>
 /// @throw packet_format_error if the type could not have been read.
 template <typename Encoder, typename Decoder>
 std::size_t
-dispatch(Encoder& encoder, Decoder& decoder, const char* packet)
+dispatch(Encoder& encoder, Decoder& decoder, const char* packet, std::size_t len)
 {
   static_assert(detail::is_encoder<Encoder>::value, "parameter encoder is not a ntc::encoder");
   static_assert(detail::is_decoder<Decoder>::value, "parameter decoder is not a ntc::decoder");
@@ -61,13 +61,13 @@ dispatch(Encoder& encoder, Decoder& decoder, const char* packet)
   {
     case ntc::detail::packet_type::ack:
     {
-      return encoder(packet);
+      return encoder(packet, len);
     }
 
     case ntc::detail::packet_type::repair:
     case ntc::detail::packet_type::source:
     {
-      return decoder(packet);
+      return decoder(packet, len);
     }
 
     default:

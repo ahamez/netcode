@@ -76,7 +76,7 @@ public:
   ///
   /// To fulfill memory alignement requirements, a copy will occur.
   std::size_t
-  operator()(const char* packet)
+  operator()(const char* packet, std::size_t max_len)
   {
     switch (detail::get_packet_type(packet))
     {
@@ -84,7 +84,7 @@ public:
       {
         m_nb_received_repairs += 1;
         m_ack.nb_packets() += 1;
-        auto res = m_packetizer.read_repair(packet);
+        auto res = m_packetizer.read_repair(packet, max_len);
         m_decoder(std::move(res.first));
         return res.second;
       }
@@ -93,7 +93,7 @@ public:
       {
         m_nb_received_sources += 1;
         m_ack.nb_packets() += 1;
-        auto res = m_packetizer.read_source(packet);
+        auto res = m_packetizer.read_source(packet, max_len);
         m_decoder(std::move(res.first));
         return res.second;
       }
@@ -105,10 +105,12 @@ public:
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
   /// @param packet The incoming packet stored in a vector.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  ///
+  /// To fulfill memory alignement requirements, a copy will occur.
   std::size_t
   operator()(const std::vector<char>& buffer)
   {
-    return operator()(buffer.data());
+    return operator()(buffer.data(), buffer.size());
   }
 
   /// @brief Get the data handler.

@@ -62,7 +62,7 @@ public:
   }
 
   std::pair<ack, std::size_t>
-  read_ack(const char* data)
+  read_ack(const char* data, std::size_t max_len)
   {
     using namespace boost::endian;
 
@@ -127,7 +127,7 @@ public:
   }
 
   std::pair<repair, std::size_t>
-  read_repair(const char* data)
+  read_repair(const char* data, std::size_t max_len)
   {
     using namespace boost::endian;
 
@@ -196,7 +196,7 @@ public:
   }
 
   std::pair<source, std::size_t>
-  read_source(const char* data)
+  read_source(const char* data, std::size_t max_len)
   {
     using namespace boost::endian;
 

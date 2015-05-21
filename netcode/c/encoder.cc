@@ -27,9 +27,9 @@ ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet)
+ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t len)
 {
-  (*enc)(packet);
+  (*enc)(packet, len);
 }
 
 /*------------------------------------------------------------------------------------------------*/

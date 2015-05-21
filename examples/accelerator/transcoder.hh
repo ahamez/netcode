@@ -130,7 +130,7 @@ private:
   {
     socket_.async_receive_from( asio::buffer(packet_, buffer_size)
                               , endpoint_
-                              , [this](const asio::error_code& err, std::size_t)
+                              , [this](const asio::error_code& err, std::size_t len)
                                 {
                                   if (err)
                                   {
@@ -138,7 +138,7 @@ private:
                                   }
 
                                   other_side_seen_ = true;
-                                  ntc::dispatch(encoder_, decoder_, packet_);
+                                  ntc::dispatch(encoder_, decoder_, packet_, len);
 
                                   // Listen again for incoming packets.
                                   start_handler();
@@ -150,13 +150,13 @@ private:
   {
     app_socket_.async_receive_from( asio::buffer(data_.buffer(), buffer_size)
                                   , app_endpoint_
-                                  , [this](const asio::error_code& err, std::size_t sz)
+                                  , [this](const asio::error_code& err, std::size_t len)
                                     {
                                       if (err)
                                       {
                                         throw std::runtime_error(err.message());
                                       }
-                                      data_.used_bytes() = static_cast<std::uint16_t>(sz);
+                                      data_.used_bytes() = static_cast<std::uint16_t>(len);
                                       encoder_(std::move(data_));
 
                                       data_.reset(buffer_size);
