@@ -82,8 +82,8 @@ public:
     {
       case detail::packet_type::repair:
       {
-        m_nb_received_repairs += 1;
-        m_ack.nb_packets() += 1;
+        ++m_nb_received_repairs;
+        ++m_ack.nb_packets();
         auto res = m_packetizer.read_repair(packet);
         m_decoder(std::move(res.first));
         return res.second;
@@ -91,8 +91,8 @@ public:
 
       case detail::packet_type::source:
       {
-        m_nb_received_sources += 1;
-        m_ack.nb_packets() += 1;
+        ++m_nb_received_sources;
+        ++m_ack.nb_packets();
         auto res = m_packetizer.read_source(packet);
         m_decoder(std::move(res.first));
         return res.second;
@@ -211,7 +211,7 @@ public:
 
     // Ask packetizer to handle the bytes of the new ack (will be routed to user's handler).
     m_packetizer.write_ack(m_ack);
-    m_nb_sent_ack +=1;
+    ++m_nb_sent_ack;
 
     // Start a fresh new ack.
     m_ack.reset();

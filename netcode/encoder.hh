@@ -151,7 +151,7 @@ public:
   {
     m_repair.reset();
     mk_repair();
-    m_nb_sent_packets += 1;
+    ++m_nb_sent_packets;
     m_packetizer.write_repair(m_repair);
   }
 
@@ -193,9 +193,9 @@ private:
 
     if (m_conf.code_type() == code::systematic)
     {
+      ++m_nb_sent_sources;
+      ++m_nb_sent_packets;
       // Ask packetizer to handle the bytes of the new source (will be routed to user's handler).
-      m_nb_sent_sources += 1;
-      m_nb_sent_packets += 1;
       m_packetizer.write_source(insertion);
     }
     else // non_systematic code
@@ -209,7 +209,7 @@ private:
       send_repair();
     }
 
-    m_current_source_id += 1;
+    ++m_current_source_id;
   }
 
   /// @brief Notify the encoder that some data has been received.
@@ -220,7 +220,7 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      m_nb_acks += 1;
+      ++m_nb_acks;
       const auto res = m_packetizer.read_ack(data);
       if (m_conf.adaptive())
       {
@@ -256,8 +256,8 @@ private:
     assert(m_sources.size() > 0 && "Empty source list");
     m_encoder(m_repair, m_sources);
 
-    m_current_repair_id += 1;
-    m_nb_sent_repairs += 1;
+    ++m_current_repair_id;
+    ++m_nb_sent_repairs;
   }
 
   /// @brief Compute the code rate needed for a given loss rate.
