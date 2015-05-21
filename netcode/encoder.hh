@@ -92,9 +92,9 @@ public:
   /// @param packet The incoming packet stored in a vector.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
-  operator()(const std::vector<char>& buffer)
+  operator()(const std::vector<char>& packet)
   {
-    return operator()(buffer.data());
+    return operator()(packet.data());
   }
 
   /// @brief The number of packets which have not been acknowledged.

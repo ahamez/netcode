@@ -106,9 +106,9 @@ public:
   /// @param packet The incoming packet stored in a vector.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   std::size_t
-  operator()(const std::vector<char>& buffer)
+  operator()(const std::vector<char>& packet)
   {
-    return operator()(buffer.data());
+    return operator()(packet.data());
   }
 
   /// @brief Get the data handler.
@@ -151,7 +151,7 @@ public:
     return m_decoder.nb_decoded();
   }
 
-  /// @brief Get the number of times the full decodong failed.
+  /// @brief Get the number of times the full decoding failed.
   std::size_t
   nb_failed_full_decodings()
   const noexcept
