@@ -95,7 +95,7 @@ public:
   std::size_t
   operator()(const std::vector<char>& packet)
   {
-    return operator()(buffer.data(), buffer.size());
+    return operator()(packet.data(), packet.size());
   }
 
   /// @brief The number of packets which have not been acknowledged.
@@ -221,9 +221,9 @@ private:
     assert(data != nullptr);
     if (detail::get_packet_type(data) == detail::packet_type::ack)
     {
-      m_nb_acks += 1;
+      ++m_nb_acks;
       const auto res = m_packetizer.read_ack(data, max_len);
-      if (m_conf.adaptative())
+      if (m_conf.adaptive())
       {
         if (m_nb_sent_packets > 0)
         {

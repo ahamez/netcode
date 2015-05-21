@@ -82,8 +82,8 @@ public:
     {
       case detail::packet_type::repair:
       {
-        m_nb_received_repairs += 1;
-        m_ack.nb_packets() += 1;
+        ++m_nb_received_repairs;
+        ++m_ack.nb_packets();
         auto res = m_packetizer.read_repair(packet, max_len);
         m_decoder(std::move(res.first));
         return res.second;
@@ -91,8 +91,8 @@ public:
 
       case detail::packet_type::source:
       {
-        m_nb_received_sources += 1;
-        m_ack.nb_packets() += 1;
+        ++m_nb_received_sources;
+        ++m_ack.nb_packets();
         auto res = m_packetizer.read_source(packet, max_len);
         m_decoder(std::move(res.first));
         return res.second;
@@ -110,7 +110,7 @@ public:
   std::size_t
   operator()(const std::vector<char>& packet)
   {
-    return operator()(buffer.data(), buffer.size());
+    return operator()(packet.data(), packet.size());
   }
 
   /// @brief Get the data handler.
