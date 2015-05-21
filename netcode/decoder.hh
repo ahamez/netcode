@@ -102,6 +102,15 @@ public:
     }
   }
 
+  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @param packet The incoming packet stored in a vector.
+  /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  std::size_t
+  operator()(const std::vector<char>& buffer)
+  {
+    return operator()(buffer.data());
+  }
+
   /// @brief Get the data handler.
   const packet_handler_type&
   packet_handler()
