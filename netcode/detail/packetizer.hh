@@ -41,19 +41,12 @@ public:
   void
   write_ack(const ack& a)
   {
-    using namespace boost::endian;
-
-    // Prepare packet type.
-    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
-
-    // Prepare number of received packets.
-    const auto network_nb_packets = native_to_big(static_cast<std::uint16_t>(a.nb_packets()));
-
     // Write packet type.
-    write(&packet_ty, sizeof(std::uint8_t));
+    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::ack);
+    write<std::uint8_t>(packet_ty);
 
     // Write the number of packets received since last ack.
-    write(&network_nb_packets, sizeof(std::uint16_t));
+    write<std::uint16_t>(a.nb_packets());
 
     // Write source identifiers.
     write(a.source_ids());
@@ -88,34 +81,21 @@ public:
   void
   write_repair(const repair& r)
   {
-    using namespace boost::endian;
-
-    // Prepare packet type.
+    // Write packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
-
-    // Prepare packet identifier.
-    const auto network_id = native_to_big(r.id());
-
-    // Prepare encoded size.
-    const auto network_encoded_sz = native_to_big(static_cast<std::uint16_t>(r.encoded_size()));
-
-    // Prepare repair symbol size.
-    const auto network_sz = native_to_big(static_cast<std::uint16_t>(r.buffer().size()));
-
-    // Packet type.
-    write(&packet_ty, sizeof(std::uint8_t));
+    write<std::uint8_t>(packet_ty);
 
     // Write packet identifier.
-    write(&network_id, sizeof(std::uint32_t));
+    write<std::uint32_t>(r.id());
 
     // Write source identifiers.
     write(r.source_ids());
 
     // Write encoded size.
-    write(&network_encoded_sz, sizeof(std::uint16_t));
+    write<std::uint16_t>(r.encoded_size());
 
     // Write size of the repair symbol.
-    write(&network_sz, sizeof(std::uint16_t));
+    write<std::uint16_t>(r.buffer().size());
 
     // Write repair symbol.
     write(r.buffer().data(), r.buffer().size());
@@ -161,25 +141,15 @@ public:
   void
   write_source(const source& src)
   {
-    using namespace boost::endian;
-
-    // Prepare packet type.
-    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
-
-    // Prepare packet identifier.
-    const auto network_id = native_to_big(src.id());
-
-    // Prepare user symbol size.
-    const auto network_user_sz = native_to_big(static_cast<std::uint16_t>(src.user_size()));
-
     // Write packet type.
-    write(&packet_ty, sizeof(std::uint8_t));
+    static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
+    write<std::uint8_t>(packet_ty);
 
     // Write source identifier.
-    write(&network_id, sizeof(std::uint32_t));
+    write<std::uint32_t>(src.id());
 
     // Write user size of the repair symbol.
-    write(&network_user_sz, sizeof(std::uint16_t));
+    write<std::uint16_t>(src.user_size());
 
     // Write source symbol.
     write(src.buffer().data(), src.user_size());
@@ -225,12 +195,11 @@ private:
   T
   read(const char*& data, std::size_t& max_len)
   {
-    using namespace boost::endian;
     if (max_len < sizeof(T))
     {
       throw overflow_error{};
     }
-    const auto res = big_to_native(*reinterpret_cast<const T*>(data));
+    const auto res = boost::endian::big_to_native(*reinterpret_cast<const T*>(data));
     data += sizeof(T);
     max_len -= sizeof(T);
     return res;
@@ -238,10 +207,21 @@ private:
 
   /// @brief Convenient method to write data using user's handler.
   void
-  write(const void* data, std::size_t len)
+  write(const char* data, std::size_t len)
   noexcept(noexcept(std::declval<PacketHandler>()(nullptr, 0ul)))
   {
     m_packet_handler(reinterpret_cast<const char*>(data), len);
+  }
+
+
+  /// @brief Convenient method to write data using user's handler.
+  template <typename T>
+  void
+  write(const T& data)
+  noexcept(noexcept(std::declval<PacketHandler>()(nullptr, 0ul)))
+  {
+    const auto native = boost::endian::native_to_big(static_cast<T>(data));
+    m_packet_handler(reinterpret_cast<const char*>(&native), sizeof(T));
   }
 
   /// @brief Serialize a list of source identifiers.
@@ -250,15 +230,13 @@ private:
   void
   write(const source_id_list& ids)
   {
-    using namespace boost::endian;
-
     m_difference_buffer.clear();
     m_rle_buffer.clear();
 
     if (ids.size() == 0)
     {
       static constexpr std::uint16_t zero = 0;
-      write(&zero, sizeof(std::uint16_t));
+      write<std::uint16_t>(zero);
       return;
     }
 
@@ -282,22 +260,20 @@ private:
       }
       // The cast to 16 bits is important: differences are always small and rle_buffer only
       // stores 16 bits differences.
-      m_rle_buffer.emplace_back(run_length, native_to_big(static_cast<std::uint16_t>(*cit)));
+      m_rle_buffer.emplace_back(run_length, *cit);
       ++cit;
     }
 
     // Write the number of elements (number of pairs + the first identifier).
-    const auto nb_elements = native_to_big(static_cast<std::uint16_t>(m_rle_buffer.size() + 1));
-    write(&nb_elements, sizeof(std::uint16_t));
+    write<std::uint16_t>(m_rle_buffer.size() + 1);
 
     // Write first identifier.
-    const auto first_id = native_to_big(*ids.begin());
-    write(&first_id, sizeof(std::uint32_t));
+    write<std::uint32_t>(*ids.begin());
 
     for (const auto& pair : m_rle_buffer)
     {
-      write(&pair.first, sizeof(std::uint8_t));
-      write(&pair.second, sizeof(std::uint16_t));
+      write<std::uint8_t>(pair.first);
+      write<std::uint16_t>(pair.second);
     }
   }
 
