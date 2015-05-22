@@ -81,12 +81,13 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
   /// @param packet The incoming packet.
-  /// @param len The maximum number of bytes to read from @p packet.
+  /// @param max_len The maximum number of bytes to read from @p packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  /// @throw overflow_error when the number of read bytes > @p max_len
   std::size_t
-  operator()(const char* packet, std::size_t len)
+  operator()(const char* packet, std::size_t max_len)
   {
-    return notify_impl(packet, len);
+    return notify_impl(packet, max_len);
   }
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.

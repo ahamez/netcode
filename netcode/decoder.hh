@@ -72,6 +72,7 @@ public:
 
   /// @brief Notify the encoder of a new incoming packet, typically from the network.
   /// @param packet The incoming packet.
+  /// @param max_len The maximum number of bytes to read from @p packet.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   ///
   /// To fulfill memory alignement requirements, a copy will occur.

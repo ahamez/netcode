@@ -18,6 +18,7 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_id_list.hh"
 #include "netcode/detail/repair.hh"
+#include "netcode/errors.hh"
 
 namespace ntc { namespace detail {
 
@@ -64,27 +65,23 @@ public:
   std::pair<ack, std::size_t>
   read_ack(const char* data, std::size_t max_len)
   {
-    using namespace boost::endian;
-
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::ack);
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
 
-    // Skip packet type.
-    data += sizeof(std::uint8_t);
+    // Skip packet type
+    read<std::uint8_t>(data, max_len);
 
     // Read the number of packets received since last ack.
-    const auto nb_packets = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
+    const auto nb_packets = read<std::uint16_t>(data, max_len);
 
     // Read source identifiers
-    source_id_list ids;
-    data += read_ids(data, ids);
+    auto ids = read_ids(data, max_len);
 
     return std::make_pair( ack{std::move(ids), nb_packets}
-                         , reinterpret_cast<std::size_t>(data) - begin);
+                         , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
   void
@@ -129,8 +126,6 @@ public:
   std::pair<repair, std::size_t>
   read_repair(const char* data, std::size_t max_len)
   {
-    using namespace boost::endian;
-
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::repair);
 
@@ -138,23 +133,19 @@ public:
     const auto begin = reinterpret_cast<std::size_t>(data);
 
     // Skip packet type.
-    data += sizeof(std::uint8_t);
+    read<std::uint8_t>(data, max_len);
 
     // Read identifier.
-    const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
-    data += sizeof(std::uint32_t);
+    const auto id = read<std::uint32_t>(data, max_len);
 
     // Read source identifiers
-    source_id_list ids;
-    data += read_ids(data, ids);
+    auto ids = read_ids(data, max_len);
 
     // Read encoded size.
-    const auto encoded_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
+    const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
     // Read size of the repair symbol.
-    const auto sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
+    const auto sz = read<std::uint16_t>(data, max_len);
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
@@ -162,7 +153,7 @@ public:
     std::copy_n(data, sz, std::back_inserter(buffer));
 
     return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
-                         , reinterpret_cast<std::size_t>(data) - begin);
+                         , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
   void
@@ -198,8 +189,6 @@ public:
   std::pair<source, std::size_t>
   read_source(const char* data, std::size_t max_len)
   {
-    using namespace boost::endian;
-
     // Packet type should have been verified by the caller.
     assert(get_packet_type(data) == packet_type::source);
 
@@ -207,15 +196,13 @@ public:
     const auto begin = reinterpret_cast<std::size_t>(data);
 
     // Skip packet type.
-    data += sizeof(std::uint8_t);
+    read<std::uint8_t>(data, max_len);
 
     // Read identifier.
-    const auto id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
-    data += sizeof(std::uint32_t);
+    const auto id = read<std::uint32_t>(data, max_len);
 
     // Read user size of the source symbol.
-    const auto user_sz = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-    data += sizeof(std::uint16_t);
+    const auto user_sz = read<std::uint16_t>(data, max_len);
 
     // Read the source symbol.
     byte_buffer buffer;
@@ -223,10 +210,27 @@ public:
     std::copy_n(data, user_sz, std::back_inserter(buffer));
 
     return std::make_pair( source{id, std::move(buffer), user_sz}
-                         , reinterpret_cast<std::size_t>(data) - begin);
+                         , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
 private:
+
+  /// @brief Convenient method to read data and verify thz size of read data.
+  template <typename T>
+  static
+  T
+  read(const char*& data, std::size_t& max_len)
+  {
+    using namespace boost::endian;
+    if (max_len < sizeof(T))
+    {
+      throw overflow_error{};
+    }
+    const auto res = big_to_native(*reinterpret_cast<const T*>(data));
+    data += sizeof(T);
+    max_len -= sizeof(T);
+    return res;
+  }
 
   /// @brief Convenient method to write data using user's handler.
   void
@@ -293,34 +297,32 @@ private:
   }
 
   /// @brief Deserialize a list of source identifiers.
-  std::size_t
-  read_ids(const char* data, source_id_list& ids)
+  source_id_list
+  read_ids(const char*& data, std::size_t& max_len)
   {
     using namespace boost::endian;
+
+    source_id_list ids;
 
     m_difference_buffer.clear();
     m_rle_buffer.clear();
 
-    const auto nb_elements = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
+    const auto nb_elements = read<std::uint16_t>(data, max_len);
     if (nb_elements == 0)
     {
-      return sizeof(std::uint16_t);
+      return ids;
     }
-    data += sizeof(std::uint16_t);
 
     // Read first identifier.
-    const auto first_id = big_to_native(*reinterpret_cast<const std::uint32_t*>(data));
-    data += sizeof(std::uint32_t);
+    const auto first_id = read<std::uint32_t>(data, max_len);
     m_difference_buffer.push_back(first_id);
 
     // Reverse running length encoding on the fly.
     const auto nb_pairs = nb_elements - 1u; /* remove the first identifier */
     for (auto i = 0ul; i < nb_pairs; ++i)
     {
-      const auto run_length = *reinterpret_cast<const std::uint8_t*>(data);
-      data += sizeof(std::uint8_t);
-      const auto value = big_to_native(*reinterpret_cast<const std::uint16_t*>(data));
-      data += sizeof(std::uint16_t);
+      const auto run_length = read<std::uint8_t>(data, max_len);
+      const auto value = read<std::uint16_t>(data, max_len);
 
       for (auto j = 0u; j < run_length; ++j)
       {
@@ -332,9 +334,7 @@ private:
     std::partial_sum( m_difference_buffer.begin(), m_difference_buffer.end()
                     , std::inserter(ids, ids.end()));
 
-    // We read 1 identifier + nb_pairs + 1 size (number of elements).
-    return sizeof(std::uint32_t) + (nb_pairs * (sizeof(std::uint8_t) + sizeof(std::uint16_t)))
-         + sizeof(std::uint16_t);
+    return ids;
   }
 
   /// @brief Convenient method to indicate end of data to user's handler.

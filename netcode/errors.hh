@@ -1,24 +1,22 @@
 #pragma once
 
-#include <stdexcept>
+#include <exception>
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Exception raised when a packet type could not have been decoded.
-class packet_type_error
-  : public std::domain_error
-{
-public:
+/// @brief Exception thrown when a packet type could not have been decoded.
+struct packet_type_error
+  : public std::exception
+{};
 
-  /// @internal
-  /// @brief Constructor forwards all arguments to base class.
-  template <typename... Args>
-  packet_type_error(Args&&... args)
-    : std::domain_error{std::forward<Args>(args)...}
-  {}
-};
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief Exception raised
+struct overflow_error
+  : public std::exception
+{};
 
 /*------------------------------------------------------------------------------------------------*/
 

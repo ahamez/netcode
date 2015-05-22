@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "netcode/errors.hh"
 
 namespace ntc { namespace detail {
@@ -32,7 +30,7 @@ get_packet_type(const char* data)
       return packet_type::source;
 
     default:
-      throw packet_type_error{"Invalid packet type" + std::to_string(ty)};
+      throw packet_type_error{};
   }
 }
 
