@@ -16,15 +16,9 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the receiver side.
-template < typename PacketHandler, typename DataHandler
-         , typename Packetizer = detail::packetizer<PacketHandler>>
+template <typename PacketHandler, typename DataHandler>
 class decoder final
 {
-private:
-
-  /// @brief The type of the component that de/serializes packets.
-  using packetizer_type = Packetizer;
-
 public:
 
   /// @brief The type of the handler that processes data ready to be sent on the network.
@@ -290,7 +284,7 @@ private:
   data_handler_type m_data_handler;
 
   /// @brief How to serialize packets.
-  packetizer_type m_packetizer;
+  detail::packetizer<packet_handler_type> m_packetizer;
 
   /// @brief The counter of received repairs.
   std::size_t m_nb_received_repairs;

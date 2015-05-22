@@ -22,8 +22,8 @@ struct is_encoder
 
 /// @internal
 /// @brief Trait to detect if a type is ntc::encoder.
-template <typename PacketHandler, typename Packetizer>
-struct is_encoder<ntc::encoder<PacketHandler, Packetizer>>
+template <typename PacketHandler>
+struct is_encoder<ntc::encoder<PacketHandler>>
 {
   static constexpr auto value = true;
 };
@@ -38,8 +38,8 @@ struct is_decoder
 
 /// @internal
 /// @brief Trait to detect if a type is ntc::encoder.
-template <typename PacketHandler, typename DataHandler, typename Packetizer>
-struct is_decoder<ntc::decoder<PacketHandler, DataHandler, Packetizer>>
+template <typename PacketHandler, typename DataHandler>
+struct is_decoder<ntc::decoder<PacketHandler, DataHandler>>
 {
   static constexpr auto value = true;
 };
