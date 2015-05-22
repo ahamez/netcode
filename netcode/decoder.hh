@@ -10,6 +10,7 @@
 #include "netcode/detail/source.hh"
 #include "netcode/code.hh"
 #include "netcode/configuration.hh"
+#include "netcode/errors.hh"
 
 namespace ntc {
 
@@ -64,12 +65,13 @@ public:
              , configuration{}}
   {}
 
-  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param packet The incoming packet.
   /// @param max_len The maximum number of bytes to read from @p packet.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  ///
-  /// To fulfill memory alignement requirements, a copy will occur.
+  /// @return The number of bytes that have been read.
+  /// @throw overflow_error when the number of read bytes > @p max_len.
+  /// @throw packet_type_error when the packet has an incorrect type.
+  /// @note To fulfill memory alignement requirements, a copy will occur.
   std::size_t
   operator()(const char* packet, std::size_t max_len)
   {
@@ -93,15 +95,18 @@ public:
         return res.second;
       }
 
-      default: return 0ul;
+      default:
+      {
+        throw packet_type_error{};
+      }
     }
   }
 
-  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param packet The incoming packet stored in a vector.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  ///
-  /// To fulfill memory alignement requirements, a copy will occur.
+  /// @return The number of bytes that have been read.
+  /// @throw packet_type_error when the packet has an incorrect type.
+  /// @note To fulfill memory alignement requirements, a copy will occur.
   std::size_t
   operator()(const std::vector<char>& packet)
   {
@@ -283,7 +288,7 @@ private:
   /// @brief The user's handler to read decoded data.
   data_handler_type m_data_handler;
 
-  /// @brief How to serialize packets.
+  /// @brief How to read and write packets.
   detail::packetizer<packet_handler_type> m_packetizer;
 
   /// @brief The counter of received repairs.

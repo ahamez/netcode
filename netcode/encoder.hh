@@ -11,6 +11,7 @@
 #include "netcode/configuration.hh"
 #include "netcode/code.hh"
 #include "netcode/data.hh"
+#include "netcode/errors.hh"
 
 namespace ntc {
 
@@ -74,20 +75,22 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param packet The incoming packet.
   /// @param max_len The maximum number of bytes to read from @p packet.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
-  /// @throw overflow_error when the number of read bytes > @p max_len
+  /// @return The number of bytes that have been read.
+  /// @throw overflow_error when the number of read bytes > @p max_len.
+  /// @throw packet_type_error when the packet has an incorrect type.
   std::size_t
   operator()(const char* packet, std::size_t max_len)
   {
     return notify_impl(packet, max_len);
   }
 
-  /// @brief Notify the encoder of a new incoming packet, typically from the network.
+  /// @brief Notify the encoder of a new incoming packet.
   /// @param packet The incoming packet stored in a vector.
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  /// @return The number of bytes that have been read.
+  /// @throw packet_type_error when the packet has an incorrect type.
   std::size_t
   operator()(const std::vector<char>& packet)
   {
@@ -211,6 +214,7 @@ private:
 
   /// @brief Notify the encoder that some data has been received.
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  /// @throw packet_type_error
   std::size_t
   notify_impl(const char* data, std::size_t max_len)
   {
@@ -238,7 +242,7 @@ private:
     }
     else
     {
-      return 0ul;
+      throw packet_type_error{};
     }
   }
 
@@ -291,7 +295,7 @@ private:
   /// @brief The component that handles the coding process.
   detail::encoder m_encoder;
 
-  /// @brief How to serialize packets.
+  /// @brief How to read and write packets.
   detail::packetizer<packet_handler_type> m_packetizer;
 
   /// @brief The number of generated repairs.
