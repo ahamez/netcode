@@ -122,7 +122,6 @@ public:
   /// moved data.
   void
   reset(std::uint16_t size)
-  noexcept
   {
     m_used_bytes = 0;
     m_buffer.resize(size);
