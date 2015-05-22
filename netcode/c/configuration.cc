@@ -60,6 +60,14 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 /*------------------------------------------------------------------------------------------------*/
 
 void
+ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, size_t nb)
+{
+  conf->set_ack_nb_packets(nb);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
 ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window)
 {
   conf->set_window_size(window);

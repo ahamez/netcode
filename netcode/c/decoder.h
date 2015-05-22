@@ -7,6 +7,8 @@
 #include "netcode/c/configuration.h"
 #include "netcode/c/handlers.h"
 
+/*------------------------------------------------------------------------------------------------*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,32 +17,38 @@ extern "C" {
 
 #ifndef __cplusplus
 /// @brief The type of a decoder.
+/// @ingroup c_decoder
 typedef struct ntc_decoder_t ntc_decoder_t;
 #endif
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_decoder
 ntc_decoder_t*
 ntc_new_decoder( ntc_configuration_t* conf, ntc_packet_handler packet_handler
                , ntc_data_handler data_handler);
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_decoder
 void
 ntc_delete_decoder(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_decoder
 void
 ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t len);
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_decoder
 void
 ntc_decoder_send_ack(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_decoder
 ntc_configuration_t*
 ntc_decoder_get_configuration(ntc_decoder_t* dec);
 

@@ -13,6 +13,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @internal
 /// @brief A Galois field.
 class galois_field
 {

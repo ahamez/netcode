@@ -12,12 +12,13 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The type to configure ntc::encoder and ntc::decoder.
+/// @ingroup netcode
 class configuration
 {
 public:
 
   /// @brief Default constructor.
-  /// @note Possible values for @p galois_field_size are: 4, 8, 16 and 32.
+  /// @pre @p galois_field_size == 4, 8, 16 or 32
   /// @attention When 4 or 8, length of data handled to the library can be any value. However, for
   /// size 16 and 32, length must be a multiple of 2 and 4, respectively.
   configuration(std::uint8_t galois_field_size = 8)
@@ -59,7 +60,7 @@ public:
   }
 
   /// @brief Set how many sources are sent before a repair is generated.
-  /// @note Must be greater than 0.
+  /// @pre @p rate > 0
   void
   set_rate(std::size_t rate)
   noexcept
@@ -96,7 +97,7 @@ public:
   }
 
   /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
-  /// @note Must be greater than 0.
+  /// @pre @p nb > 0
   void
   set_ack_nb_packets(std::uint16_t nb)
   noexcept
@@ -114,7 +115,7 @@ public:
   }
 
   /// @brief Set the maximal permitted size of the encoder's window.
-  /// @note Must be greater than 0.
+  /// @pre @p sz > 0
   void
   set_window_size(std::size_t sz)
   noexcept

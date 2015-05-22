@@ -18,6 +18,7 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
+/// @ingroup netcode
 template <typename PacketHandler>
 class encoder final
 {

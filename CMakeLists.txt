@@ -20,6 +20,11 @@ find_package (Threads)
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
+  if (INTERNAL_DOC)
+    set(GEN_INTERNAL_DOC "YES")
+  else ()
+    set(GEN_INTERNAL_DOC "NO")
+  endif ()
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
   add_custom_target(doc
                     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile

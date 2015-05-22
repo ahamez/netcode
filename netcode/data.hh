@@ -17,6 +17,7 @@ namespace ntc {
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
+/// @ingroup netcode
 class data final
 {
 public:

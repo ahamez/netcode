@@ -50,6 +50,7 @@ struct is_decoder<ntc::decoder<PacketHandler, DataHandler>>
 
 /// @brief Dispatch the processing of an incoming packet.
 /// @throw packet_format_error if the type could not have been read.
+/// @ingroup netcode
 template <typename Encoder, typename Decoder>
 std::size_t
 dispatch(Encoder& encoder, Decoder& decoder, const char* packet, std::size_t len)
