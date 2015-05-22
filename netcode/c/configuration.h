@@ -64,18 +64,23 @@ ntc_configuration_set_code_type(ntc_configuration_t* conf, ntc_code_type code_ty
 
 /// @ingroup c_configuration
 /// @pre @p rate > 0
+/// @note If the adaptive mode is set, the rate will change automatically.
 void
 ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Configure the frequency at which acknowledgment will be sent (decoder).
+/// @param conf The configuration to modify.
+/// @param The requested frequency, if 0, deactivate this feature.
 void
 ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Configure the number of packets to receive before sending an acknowledgment (decoder).
 /// @pre @p nb > 0
 void
 ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb) noexcept;
@@ -83,6 +88,7 @@ ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb) noe
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Configure the maximal number of data to keep before discarding oldest data (encoder).
 /// @pre @p sz > 0
 void
 ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window) noexcept;
@@ -90,12 +96,14 @@ ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window) noex
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Configure the in-order mode (encoder).
 void
 ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Configure the in-adaptive mode (encoder).
 void
 ntc_configuration_set_adaptive(ntc_configuration_t* conf, bool adaptive) noexcept;
 
