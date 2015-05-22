@@ -202,8 +202,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_repair(repair);
 
     // Finally, notify the encoder.
-    const auto result = encoder(h.pkt, 2048);
-    REQUIRE(not result);
+    REQUIRE_THROWS_AS(encoder(h.pkt, 2048), ntc::packet_type_error);
 
     // The number of sources should not have decreased.
     REQUIRE(encoder.window() == 4);
@@ -218,8 +217,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     serializer.write_source(source);
 
     // Finally, notify the encoder.
-    const auto result = encoder(h.pkt, 2048);
-    REQUIRE(not result);
+    REQUIRE_THROWS_AS(encoder(h.pkt, 2048), ntc::packet_type_error);
 
     // The number of sources should not have decreased.
     REQUIRE(encoder.window() == 4);
