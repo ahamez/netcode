@@ -67,12 +67,14 @@ public:
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
   /// except for one case: calling data::reset() will put back @p d in a usable state.
-  /// @todo Check gf-complete requirements on size of data which must be a multiple of w/8 (1 for
-  /// w = 4 and w = 8.
   void
   operator()(data&& d)
   {
     assert(d.used_bytes() != 0 && "please use data::used_bytes()");
+    assert( m_conf.galois_field_size() != 16
+            or (m_conf.galois_field_size() == 16 and d.used_bytes() % (16/8) == 0));
+    assert( m_conf.galois_field_size() != 32
+            or (m_conf.galois_field_size() == 32 and d.used_bytes() % (32/8) == 0));
     commit_impl(std::move(d));
   }
 
