@@ -1,4 +1,5 @@
 #include <new> // nothrow
+#include <stdexcept>
 
 #include "netcode/c/data.h"
 
@@ -49,11 +50,23 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
+ntc_error
 ntc_data_reset(ntc_data_t* d, uint16_t sz)
 noexcept
 {
-  d->reset(sz);
+  try
+  {
+    d->reset(sz);
+    return ntc_no_error;
+  }
+  catch (const std::bad_alloc&)
+  {
+    return ntc_no_memory;
+  }
+  catch (const std::exception&)
+  {
+    return ntc_unknown_error;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

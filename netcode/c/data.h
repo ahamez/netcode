@@ -7,6 +7,8 @@
 #include <stdint.h>
 #endif
 
+#include "netcode/c/errors.h"
+
 /*------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
@@ -69,7 +71,7 @@ ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz) noexcept;
 
 /// @brief Reset a data for future use (to avoid a memory allocation).
 /// @ingroup c_data
-void
+ntc_error
 ntc_data_reset(ntc_data_t* d, uint16_t sz) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/

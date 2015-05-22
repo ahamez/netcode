@@ -1,5 +1,5 @@
-#include <exception>
 #include <new> // nothrow
+#include <stdexcept>
 
 #include "netcode/c/decoder.h"
 #include "netcode/errors.hh"
@@ -26,36 +26,48 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
-int
+ntc_error
 ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_len)
 noexcept
 {
   try
   {
     (*dec)(packet, max_len);
-    return 0;
+    return ntc_no_error;
   }
   catch (const ntc::packet_type_error&)
   {
-    return 1;
+    return ntc_packet_type_error;
   }
   catch (const ntc::overflow_error&)
   {
-    return 2;
+    return ntc_overflow_error;
+  }
+  catch (const std::bad_alloc&)
+  {
+    return ntc_no_memory;
   }
   catch (const std::exception&)
   {
-    return -1;
+    return ntc_unknown_error;
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-void
+ntc_error
 ntc_decoder_generate_ack(ntc_decoder_t* dec)
 noexcept
 {
-  dec->generate_ack();
+  try
+  {
+    dec->generate_ack();
+    return ntc_no_error;
+  }
+  catch (const std::exception&)
+  {
+    return ntc_unknown_error;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

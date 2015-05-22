@@ -176,7 +176,6 @@ private:
 
   /// @brief Create a source from the given data and generate a repair if needed.
   /// @param d The data to add.
-  /// @todo Handle possible allocation errors.
   void
   commit_impl(data&& d)
   {

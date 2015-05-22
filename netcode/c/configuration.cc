@@ -33,7 +33,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type)
+ntc_configuration_set_code_type(ntc_configuration_t* conf, ntc_code_type code_type)
 noexcept
 {
   switch (code_type)

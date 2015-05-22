@@ -6,6 +6,7 @@
 
 #include "netcode/c/configuration.h"
 #include "netcode/c/data.h"
+#include "netcode/c/errors.h"
 #include "netcode/c/handlers.h"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -42,19 +43,19 @@ ntc_delete_encoder(ntc_encoder_t* enc) noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-void
+ntc_error
 ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-int
+ntc_error
 ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t max_len) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-void
+ntc_error
 ntc_encoder_generate_repair(ntc_encoder_t* enc) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/

@@ -30,7 +30,7 @@ typedef struct ntc_configuration_t ntc_configuration_t;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
-enum ntc_code_type{ntc_systematic, ntc_non_systematic};
+typedef enum {ntc_systematic, ntc_non_systematic} ntc_code_type;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -54,7 +54,7 @@ ntc_delete_configuration(ntc_configuration_t* conf) noexcept;
 
 /// @ingroup c_configuration
 void
-ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type) noexcept;
+ntc_configuration_set_code_type(ntc_configuration_t* conf, ntc_code_type code_type) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 

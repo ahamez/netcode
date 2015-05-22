@@ -5,6 +5,7 @@
 #endif
 
 #include "netcode/c/configuration.h"
+#include "netcode/c/errors.h"
 #include "netcode/c/handlers.h"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -42,13 +43,13 @@ ntc_delete_decoder(ntc_decoder_t* dec) noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-int
+ntc_error
 ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_len) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-void
+ntc_error
 ntc_decoder_generate_ack(ntc_decoder_t* dec) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
