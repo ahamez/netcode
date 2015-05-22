@@ -1,25 +1,31 @@
+#include <exception>
+#include <new> // nothrow
+
 #include "netcode/c/configuration.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_configuration_t*
 ntc_new_configuration(uint8_t galois_field_size)
+noexcept
 {
-  return new ntc_configuration_t{galois_field_size};
+  return new (std::nothrow) ntc_configuration_t{galois_field_size};
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_configuration_t*
 ntc_new_default_configuration()
+noexcept
 {
-  return new ntc_configuration_t{8};
+  return new (std::nothrow) ntc_configuration_t{8};
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
 ntc_delete_configuration(ntc_configuration_t* conf)
+noexcept
 {
   delete conf;
 }
@@ -28,6 +34,7 @@ ntc_delete_configuration(ntc_configuration_t* conf)
 
 void
 ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type)
+noexcept
 {
   switch (code_type)
   {
@@ -45,6 +52,7 @@ ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type co
 
 void
 ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate)
+noexcept
 {
   conf->set_rate(rate);
 }
@@ -53,6 +61,7 @@ ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate)
 
 void
 ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
+noexcept
 {
   conf->set_ack_frequency(std::chrono::milliseconds{frequency});
 }
@@ -61,6 +70,7 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 
 void
 ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb)
+noexcept
 {
   conf->set_ack_nb_packets(nb);
 }
@@ -69,6 +79,7 @@ ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb)
 
 void
 ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window)
+noexcept
 {
   conf->set_window_size(window);
 }
@@ -77,6 +88,7 @@ ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window)
 
 void
 ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order)
+noexcept
 {
   conf->set_in_order(in_order);
 }
@@ -85,6 +97,7 @@ ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order)
 
 void
 ntc_configuration_set_adaptive(ntc_configuration_t* conf, bool adaptive)
+noexcept
 {
   conf->set_adaptive(adaptive);
 }

@@ -17,9 +17,14 @@ extern "C" {
 /*------------------------------------------------------------------------------------------------*/
 
 #ifndef __cplusplus
+
 /// @brief The type to configure the decoder and the encoder.
 /// @ingroup c_configuration
 typedef struct ntc_configuration_t ntc_configuration_t;
+
+// Hide this C++ keyword from C
+#define noexcept
+
 #endif
 
 /*------------------------------------------------------------------------------------------------*/
@@ -31,64 +36,64 @@ enum ntc_code_type{ntc_systematic, ntc_non_systematic};
 
 /// @ingroup c_configuration
 ntc_configuration_t*
-ntc_new_configuration(uint8_t galois_field_size);
+ntc_new_configuration(uint8_t galois_field_size) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 ntc_configuration_t*
-ntc_new_default_configuration();
+ntc_new_default_configuration() noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 void
-ntc_delete_configuration(ntc_configuration_t* conf);
+ntc_delete_configuration(ntc_configuration_t* conf) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 void
-ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type);
+ntc_configuration_set_code_type(ntc_configuration_t* conf, enum ntc_code_type code_type) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 /// @pre @p rate > 0
 void
-ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate);
+ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 void
-ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency);
+ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 /// @pre @p nb > 0
 void
-ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb);
+ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 /// @pre @p sz > 0
 void
-ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window);
+ntc_configuration_set_window_size(ntc_configuration_t* conf, size_t window) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 void
-ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order);
+ntc_configuration_set_in_order(ntc_configuration_t* conf, bool in_order) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
 void
-ntc_configuration_set_adaptive(ntc_configuration_t* conf, bool adaptive);
+ntc_configuration_set_adaptive(ntc_configuration_t* conf, bool adaptive) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
