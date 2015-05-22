@@ -20,5 +20,5 @@ add_library(cntc STATIC ${CNTC_SOURCES})
 install(TARGETS ntc cntc DESTINATION lib)
 install(
   DIRECTORY ${PROJECT_SOURCE_DIR}/netcode DESTINATION include
-  FILES_MATCHING PATTERN "*.hh" PATTERN "*.h"
+  FILES_MATCHING PATTERN "*.hh" PATTERN "*.h" PATTERN "doxygen.hh" EXCLUDE
 )
