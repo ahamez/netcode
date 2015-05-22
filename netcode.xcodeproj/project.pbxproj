@@ -3036,8 +3036,8 @@
 				2B7E42BC1ADC26D90035DA89 /* decoder.h */,
 				2B7E42BB1ADC26D90035DA89 /* decoder.cc */,
 				2B7E42B81ADC26C70035DA89 /* encoder.h */,
-				2B7E42BF1ADC28BF0035DA89 /* handlers.h */,
 				2B7E42B71ADC26C70035DA89 /* encoder.cc */,
+				2B7E42BF1ADC28BF0035DA89 /* handlers.h */,
 			);
 			path = c;
 			sourceTree = "<group>";

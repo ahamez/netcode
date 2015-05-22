@@ -178,7 +178,7 @@ private:
                         }
                         if (other_side_seen_)
                         {
-                          decoder_.send_ack();
+                          decoder_.generate_ack();
                         }
                         start_timer_handler();
                       });

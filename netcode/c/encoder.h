@@ -50,7 +50,7 @@ ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t len);
 
 /// @ingroup c_encoder
 void
-ntc_encoder_send_repair(ntc_encoder_t* enc);
+ntc_encoder_generate_repair(ntc_encoder_t* enc);
 
 /*------------------------------------------------------------------------------------------------*/
 

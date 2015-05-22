@@ -213,7 +213,7 @@ int main()
       dec_packet_handler.buffer.emplace_back();
       dec_packet_handler.buffer.back().reserve(buffer_sz);
 
-      dec.send_ack();
+      dec.generate_ack();
 
       for ( auto cit = dec_packet_handler.buffer.begin(), end = dec_packet_handler.buffer.end() - 1
           ; cit != end; ++cit)

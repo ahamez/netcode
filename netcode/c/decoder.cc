@@ -29,9 +29,9 @@ ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t len)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_decoder_send_ack(ntc_decoder_t* dec)
+ntc_decoder_generate_ack(ntc_decoder_t* dec)
 {
-  dec->send_ack();
+  dec->generate_ack();
 }
 
 /*------------------------------------------------------------------------------------------------*/

@@ -35,9 +35,9 @@ ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t len)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_encoder_send_repair(ntc_encoder_t* enc)
+ntc_encoder_generate_repair(ntc_encoder_t* enc)
 {
-  enc->send_repair();
+  enc->generate_repair();
 }
 
 /*------------------------------------------------------------------------------------------------*/

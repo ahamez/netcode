@@ -146,9 +146,9 @@ public:
     return m_packet_handler;
   }
 
-  /// @brief Force the sending of a repair.
+  /// @brief Force the generation of a repair.
   void
-  send_repair()
+  generate_repair()
   {
     m_repair.reset();
     mk_repair();
@@ -201,13 +201,13 @@ private:
     }
     else // non_systematic code
     {
-      send_repair();
+      generate_repair();
     }
 
     /// @todo Should we generate a repair if window_size() == 1?
     if ((m_current_source_id + 1) % m_conf.rate() == 0)
     {
-      send_repair();
+      generate_repair();
     }
 
     ++m_current_source_id;

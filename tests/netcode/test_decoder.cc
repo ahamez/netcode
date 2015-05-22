@@ -88,7 +88,7 @@ TEST_CASE("Decoder generate correct ack")
   SECTION("Force ack")
   {
     // Now force the sending of an ack.
-    dec.send_ack();
+    dec.generate_ack();
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.

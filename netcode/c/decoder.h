@@ -44,7 +44,7 @@ ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t len);
 
 /// @ingroup c_decoder
 void
-ntc_decoder_send_ack(ntc_decoder_t* dec);
+ntc_decoder_generate_ack(ntc_decoder_t* dec);
 
 /*------------------------------------------------------------------------------------------------*/
 

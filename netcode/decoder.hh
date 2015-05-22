@@ -202,9 +202,9 @@ public:
     return m_decoder.nb_useless_repairs();
   }
 
-  /// @brief Force the sending of an ack.
+  /// @brief Force the generation of an ack.
   void
-  send_ack()
+  generate_ack()
   {
     // Add all currently known source identifiers to the ack to be sent.
     for (const auto& id_src : m_decoder.sources())
@@ -220,13 +220,13 @@ public:
     m_ack.reset();
   }
 
-  /// @brief Send an ack if needed.
+  /// @brief Generate an ack if needed.
   void
   maybe_ack()
   {
     if (m_ack.nb_packets() >= m_conf.ack_nb_packets())
     {
-      send_ack();
+      generate_ack();
       m_last_ack_date = std::chrono::steady_clock::now();
     }
     else if (m_conf.ack_frequency() != std::chrono::milliseconds{0})
@@ -234,7 +234,7 @@ public:
       const auto now = std::chrono::steady_clock::now();
       if ((now - m_last_ack_date) >= m_conf.ack_frequency())
       {
-        send_ack();
+        generate_ack();
         m_last_ack_date = now;
       }
     }
