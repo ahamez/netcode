@@ -67,9 +67,9 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
-/// @pre @p rate > 0
+/// @pre @p nb > 0
 void
-ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, size_t nb);
+ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb);
 
 /*------------------------------------------------------------------------------------------------*/
 

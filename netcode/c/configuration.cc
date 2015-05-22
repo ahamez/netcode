@@ -60,7 +60,7 @@ ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, size_t nb)
+ntc_configuration_set_ack_nb_packets(ntc_configuration_t* conf, uint16_t nb)
 {
   conf->set_ack_nb_packets(nb);
 }
