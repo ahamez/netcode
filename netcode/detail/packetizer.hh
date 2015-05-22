@@ -4,7 +4,7 @@
 #include <iterator> // back_inserter
 #include <limits>
 #include <numeric>  // adjacent_difference, partial_sum
-#include <utility>  // pair
+#include <utility>  // declval, pair
 #include <vector>
 
 #pragma GCC diagnostic push
@@ -239,6 +239,7 @@ private:
   /// @brief Convenient method to write data using user's handler.
   void
   write(const void* data, std::size_t len)
+  noexcept(noexcept(std::declval<PacketHandler>()(nullptr, 0ul)))
   {
     m_packet_handler(reinterpret_cast<const char*>(data), len);
   }
@@ -344,7 +345,7 @@ private:
   /// @brief Convenient method to indicate end of data to user's handler.
   void
   mark_end()
-  noexcept
+  noexcept(noexcept(std::declval<PacketHandler>()()))
   {
     m_packet_handler();
   }
