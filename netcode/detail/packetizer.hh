@@ -62,6 +62,7 @@ public:
     mark_end();
   }
 
+  /// @throw overflow_error
   std::pair<ack, std::size_t>
   read_ack(const char* data, std::size_t max_len)
   {
@@ -123,6 +124,7 @@ public:
     mark_end();
   }
 
+  /// @throw overflow_error
   std::pair<repair, std::size_t>
   read_repair(const char* data, std::size_t max_len)
   {
@@ -186,6 +188,7 @@ public:
     mark_end();
   }
 
+  /// @throw overflow_error
   std::pair<source, std::size_t>
   read_source(const char* data, std::size_t max_len)
   {
@@ -215,7 +218,8 @@ public:
 
 private:
 
-  /// @brief Convenient method to read data and verify thz size of read data.
+  /// @brief Convenient method to read data and verify the size of read data.
+  /// @throw overflow_error
   template <typename T>
   static
   T
@@ -318,7 +322,7 @@ private:
     m_difference_buffer.push_back(first_id);
 
     // Reverse running length encoding on the fly.
-    const auto nb_pairs = nb_elements - 1u; /* remove the first identifier */
+    const auto nb_pairs = nb_elements - 1u; // Remove the first identifier.
     for (auto i = 0ul; i < nb_pairs; ++i)
     {
       const auto run_length = read<std::uint8_t>(data, max_len);

@@ -13,7 +13,7 @@ struct packet_type_error
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Exception raised
+/// @brief Exception raised when the maximum authorized number of bytes have been read.
 struct overflow_error
   : public std::exception
 {};
