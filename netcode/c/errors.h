@@ -3,6 +3,7 @@
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_interfaces
+/// @brief Describe errors reported by the library.
 typedef enum { ntc_no_error
              , ntc_unknown_error
              , ntc_no_memory

@@ -19,8 +19,8 @@ public:
 
   /// @brief Default constructor.
   /// @pre @p galois_field_size == 4, 8, 16 or 32
-  /// @attention When 4 or 8, length of data handled to the library can be any value. However, for
-  /// size 16 and 32, length must be a multiple of 2 and 4, respectively.
+  /// @attention When 4 or 8, length of @ref data handled to the library can be any value. However,
+  /// for size 16 and 32, length must be a multiple of 2 and 4, respectively.
   configuration(std::uint8_t galois_field_size = 8)
     : m_galois_field_size{galois_field_size}
     , m_code_type{code::systematic}

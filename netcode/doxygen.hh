@@ -1,6 +1,6 @@
-/// @defgroup netcode C++ interfaces
+/// @defgroup netcode The netcode C++ library
 
-/// @defgroup c_interfaces C interfaces
+/// @defgroup c_interfaces C interfaces for the netcode library
 
 /// @defgroup c_encoder C interfaces to manipulate the encoder
 /// @ingroup c_interfaces

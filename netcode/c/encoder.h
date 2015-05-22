@@ -31,6 +31,7 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @return A new decoder if allocation suceeded; a null pointer otherwise.
 ntc_encoder_t*
 ntc_new_encoder(ntc_configuration_t* conf, ntc_packet_handler handler) noexcept;
 

@@ -35,12 +35,16 @@ typedef enum {ntc_systematic, ntc_non_systematic} ntc_code_type;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Create a default configuration.
+/// @return A new configuration if allocation suceeded; a null pointer otherwise.
 ntc_configuration_t*
 ntc_new_configuration(uint8_t galois_field_size) noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_configuration
+/// @brief Create a default configuration.
+/// @return A new configuration if allocation suceeded; a null pointer otherwise.
 ntc_configuration_t*
 ntc_new_default_configuration() noexcept;
 
