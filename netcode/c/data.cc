@@ -1,24 +1,24 @@
 #include <new> // nothrow
-#include <stdexcept>
 
+#include "netcode/c/detail/check_error.hh"
 #include "netcode/c/data.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_data_t*
-ntc_new_data(uint16_t sz)
+ntc_new_data(uint16_t size)
 noexcept
 {
-  return new (std::nothrow) ntc_data_t{sz};
+  return new (std::nothrow) ntc_data_t{size};
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_data_t*
-ntc_new_data_copy(const char* src, uint16_t sz)
+ntc_new_data_copy(const char* src, uint16_t size)
 noexcept
 {
-  return new (std::nothrow) ntc_data_t{src, sz};
+  return new (std::nothrow) ntc_data_t{src, size};
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -42,31 +42,19 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz)
+ntc_data_set_used_bytes(ntc_data_t* d, uint16_t size)
 noexcept
 {
-  d->used_bytes() = sz;
+  d->used_bytes() = size;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_error
-ntc_data_reset(ntc_data_t* d, uint16_t sz)
+void
+ntc_data_reset(ntc_data_t* d, uint16_t new_size, ntc_error* error)
 noexcept
 {
-  try
-  {
-    d->reset(sz);
-    return ntc_no_error;
-  }
-  catch (const std::bad_alloc&)
-  {
-    return ntc_no_memory;
-  }
-  catch (const std::exception&)
-  {
-    return ntc_unknown_error;
-  }
+  ntc::detail::check_error([&]{d->reset(new_size);}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/

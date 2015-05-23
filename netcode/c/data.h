@@ -7,7 +7,7 @@
 #include <stdint.h>
 #endif
 
-#include "netcode/c/errors.h"
+#include "netcode/c/error.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -36,7 +36,8 @@ typedef struct ntc_data_t ntc_data_t;
 /// to indicate how much bytes were written. An assert will check this pre-condition in debug mode.
 /// @ingroup c_data
 ntc_data_t*
-ntc_new_data(uint16_t sz) noexcept;
+ntc_new_data(uint16_t size)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -44,35 +45,40 @@ ntc_new_data(uint16_t sz) noexcept;
 /// @note There's no need to call ntc_data_set_used_bytes() when creating a data with this function.
 /// @ingroup c_data
 ntc_data_t*
-ntc_new_data_copy(const char* src, uint16_t sz) noexcept;
+ntc_new_data_copy(const char* src, uint16_t sz)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Release the memory of a data.
 /// @ingroup c_data
 void
-ntc_delete_data(ntc_data_t* d) noexcept;
+ntc_delete_data(ntc_data_t* d)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Access the underlying buffer of a data.
 /// @ingroup c_data
 char*
-ntc_data_buffer(ntc_data_t* d) noexcept;
+ntc_data_buffer(ntc_data_t* d)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Tell to the library how much bytes were written in a data.
 /// @ingroup c_data
 void
-ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz) noexcept;
+ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Reset a data for future use (to avoid a memory allocation).
 /// @ingroup c_data
-ntc_error
-ntc_data_reset(ntc_data_t* d, uint16_t sz) noexcept;
+void
+ntc_data_reset(ntc_data_t* d, uint16_t new_size, ntc_error* error)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 

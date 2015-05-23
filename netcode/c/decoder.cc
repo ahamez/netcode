@@ -1,6 +1,6 @@
 #include <new> // nothrow
-#include <stdexcept>
 
+#include "netcode/c/detail/check_error.hh"
 #include "netcode/c/decoder.h"
 #include "netcode/errors.hh"
 
@@ -26,48 +26,20 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_error
-ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_len)
+size_t
+ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
 noexcept
 {
-  try
-  {
-    (*dec)(packet, max_len);
-    return ntc_no_error;
-  }
-  catch (const ntc::packet_type_error&)
-  {
-    return ntc_packet_type_error;
-  }
-  catch (const ntc::overflow_error&)
-  {
-    return ntc_overflow_error;
-  }
-  catch (const std::bad_alloc&)
-  {
-    return ntc_no_memory;
-  }
-  catch (const std::exception&)
-  {
-    return ntc_unknown_error;
-  }
+  return ntc::detail::check_error([&]{return (*dec)(packet, max_size);}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_error
-ntc_decoder_generate_ack(ntc_decoder_t* dec)
+void
+ntc_decoder_generate_ack(ntc_decoder_t* dec, ntc_error* error)
 noexcept
 {
-  try
-  {
-    dec->generate_ack();
-    return ntc_no_error;
-  }
-  catch (const std::exception&)
-  {
-    return ntc_unknown_error;
-  }
+  ntc::detail::check_error([&]{dec->generate_ack();}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/

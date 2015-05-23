@@ -97,12 +97,15 @@ int main(int argc, char** argv)
   // Don't forget to tell how many bytes were written.
   ntc_data_set_used_bytes(data, 3);
 
+  // Filled by the library if an error happen.
+  ntc_error error;
+
   // Give this data to the encoder.
-  ntc_encoder_commit_data(enc, data);
+  ntc_encoder_commit_data(enc, data, &error);
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_notify_packet(dec, encoder_cxt.buffer, 4096);
+  ntc_decoder_notify_packet(dec, encoder_cxt.buffer, 4096, &error);
 
   // Now the context of the decoder's data handler contains the sent data.
   assert(data_cxt.nb_read == 3);
@@ -111,7 +114,7 @@ int main(int argc, char** argv)
   assert(data_cxt.buffer[2] == 'c');
 
   // Now send a new data (we use again the same ntc_data).
-  ntc_data_reset(data, 1024);
+  ntc_data_reset(data, 1024, &error);
   ntc_data_buffer(data)[0] = 'd';
   ntc_data_buffer(data)[1] = 'e';
   ntc_data_buffer(data)[2] = 'f';
@@ -119,11 +122,11 @@ int main(int argc, char** argv)
   ntc_data_set_used_bytes(data, 4);
 
   // Give this new data to the encoder.
-  ntc_encoder_commit_data(enc, data);
+  ntc_encoder_commit_data(enc, data, &error);
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_notify_packet(dec, encoder_cxt.buffer, 4096);
+  ntc_decoder_notify_packet(dec, encoder_cxt.buffer, 4096, &error);
 
   // Now the context of the decoder's data handler contains the sent data.
   assert(data_cxt.nb_read == 4);

@@ -5,7 +5,7 @@
 #endif
 
 #include "netcode/c/configuration.h"
-#include "netcode/c/errors.h"
+#include "netcode/c/error.h"
 #include "netcode/c/handlers.h"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -33,31 +33,36 @@ typedef struct ntc_decoder_t ntc_decoder_t;
 /// @return A new decoder if allocation suceeded; a null pointer otherwise.
 ntc_decoder_t*
 ntc_new_decoder( ntc_configuration_t* conf, ntc_packet_handler packet_handler
-               , ntc_data_handler data_handler) noexcept;
+               , ntc_data_handler data_handler)
+               noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
 void
-ntc_delete_decoder(ntc_decoder_t* dec) noexcept;
+ntc_delete_decoder(ntc_decoder_t* dec)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-ntc_error
-ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_len) noexcept;
+size_t
+ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-ntc_error
-ntc_decoder_generate_ack(ntc_decoder_t* dec) noexcept;
+void
+ntc_decoder_generate_ack(ntc_decoder_t* dec, ntc_error* error)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
 ntc_configuration_t*
-ntc_decoder_get_configuration(ntc_decoder_t* dec) noexcept;
+ntc_decoder_get_configuration(ntc_decoder_t* dec)
+noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
