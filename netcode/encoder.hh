@@ -9,7 +9,6 @@
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
 #include "netcode/configuration.hh"
-#include "netcode/code.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
 

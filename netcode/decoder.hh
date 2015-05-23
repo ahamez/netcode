@@ -8,7 +8,6 @@
 #include "netcode/detail/packetizer.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
-#include "netcode/code.hh"
 #include "netcode/configuration.hh"
 #include "netcode/errors.hh"
 
