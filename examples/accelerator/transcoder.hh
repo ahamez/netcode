@@ -95,27 +95,26 @@ class transcoder
 public:
 
   /// @brief Constructor.
-  transcoder( const ntc::configuration& conf
-            , asio::io_service& io
+  transcoder( asio::io_service& io
             , udp::socket& app_socket
             , udp::endpoint& app_endpoint
             , udp::socket& socket
             , udp::endpoint& endpoint)
-    : timer_(io, boost::posix_time::milliseconds(100))
-    , stats_timer_(io, boost::posix_time::seconds(5))
-    , app_socket_(app_socket)
-    , app_endpoint_(app_endpoint)
-    , socket_(socket)
-    , endpoint_(endpoint)
-    , decoder_(packet_handler(socket_, endpoint_), data_handler(app_socket_, app_endpoint_), conf)
-    , encoder_(packet_handler(socket_, endpoint_), conf)
-    , packet_()
-    , data_(buffer_size)
-    , other_side_seen_(false)
+    : m_timer(io, boost::posix_time::milliseconds(100))
+    , m_stats_timer(io, boost::posix_time::seconds(5))
+    , m_app_socket(app_socket)
+    , m_app_endpoint(app_endpoint)
+    , m_socket(socket)
+    , m_endpoint(endpoint)
+    , m_decoder(8, true, packet_handler(m_socket, m_endpoint), data_handler(m_app_socket, m_app_endpoint))
+    , m_encoder(8, packet_handler(m_socket, m_endpoint))
+    , m_packet()
+    , m_data(buffer_size)
+    , m_other_side_seen(false)
   {
-    decoder_.conf().set_ack_frequency(std::chrono::milliseconds{0});
-    encoder_.conf().set_adaptive(true);
-    encoder_.conf().set_window_size(32);
+    m_decoder.set_ack_frequency(std::chrono::milliseconds{0});
+    m_encoder.set_window_size(32);
+    m_encoder.set_adaptive(true);
 
     start_handler();
     start_app_handler();
@@ -128,8 +127,8 @@ private:
   void
   start_handler()
   {
-    socket_.async_receive_from( asio::buffer(packet_, buffer_size)
-                              , endpoint_
+    m_socket.async_receive_from( asio::buffer(m_packet, buffer_size)
+                              , m_endpoint
                               , [this](const asio::error_code& err, std::size_t len)
                                 {
                                   if (err)
@@ -137,8 +136,8 @@ private:
                                     throw std::runtime_error(err.message());
                                   }
 
-                                  other_side_seen_ = true;
-                                  ntc::dispatch(encoder_, decoder_, packet_, len);
+                                  m_other_side_seen = true;
+                                  ntc::dispatch(m_encoder, m_decoder, m_packet, len);
 
                                   // Listen again for incoming packets.
                                   start_handler();
@@ -148,18 +147,18 @@ private:
   void
   start_app_handler()
   {
-    app_socket_.async_receive_from( asio::buffer(data_.buffer(), buffer_size)
-                                  , app_endpoint_
+    m_app_socket.async_receive_from( asio::buffer(m_data.buffer(), buffer_size)
+                                  , m_app_endpoint
                                   , [this](const asio::error_code& err, std::size_t len)
                                     {
                                       if (err)
                                       {
                                         throw std::runtime_error(err.message());
                                       }
-                                      data_.used_bytes() = static_cast<std::uint16_t>(len);
-                                      encoder_(std::move(data_));
+                                      m_data.used_bytes() = static_cast<std::uint16_t>(len);
+                                      m_encoder(std::move(m_data));
 
-                                      data_.reset(buffer_size);
+                                      m_data.reset(buffer_size);
 
                                       // Listen again.
                                       start_app_handler();
@@ -169,16 +168,16 @@ private:
   void
   start_timer_handler()
   {
-    timer_.expires_from_now(boost::posix_time::milliseconds(100));
-    timer_.async_wait([this](const asio::error_code& err)
+    m_timer.expires_from_now(boost::posix_time::milliseconds(100));
+    m_timer.async_wait([this](const asio::error_code& err)
                       {
                         if (err)
                         {
                           throw std::runtime_error(err.message());
                         }
-                        if (other_side_seen_)
+                        if (m_other_side_seen)
                         {
-                          decoder_.generate_ack();
+                          m_decoder.generate_ack();
                         }
                         start_timer_handler();
                       });
@@ -187,71 +186,71 @@ private:
   void
   start_stats_timer_handler()
   {
-    stats_timer_.expires_from_now(boost::posix_time::seconds(5));
-    stats_timer_.async_wait([this](const asio::error_code& err)
-                            {
-                              if (err)
-                              {
-                                throw std::runtime_error(err.message());
-                              }
-                              std::cout
-                                << "-- Encoder --\n"
-                                << "in  acks   : " << encoder_.nb_received_acks() << '\n'
-                                << "out repairs: " << encoder_.nb_sent_repairs() << '\n'
-                                << "out sources: " << encoder_.nb_sent_sources() << '\n'
-                                << "window : " << encoder_.window() << '\n'
-                                << "rate : " << encoder_.conf().rate() << '\n'
-                                << '\n'
-                                << "-- Decoder --\n"
-                                << "out acks   : " << decoder_.nb_sent_acks() << '\n'
-                                << "in  repairs: " << decoder_.nb_received_repairs() << '\n'
-                                << "in  sources: " << decoder_.nb_received_sources() << '\n'
-                                << "decoded: " << decoder_.nb_decoded() << '\n'
-                                << "failed : " << decoder_.nb_failed_full_decodings() << '\n'
-                                << "useless: " << decoder_.nb_useless_repairs() << '\n'
-                                << "missing: " << decoder_.nb_missing_sources() << '\n'
-                                << '\n'
-                                << std::endl;
+    m_stats_timer.expires_from_now(boost::posix_time::seconds(5));
+    m_stats_timer.async_wait([this](const asio::error_code& err)
+                             {
+                               if (err)
+                               {
+                                 throw std::runtime_error(err.message());
+                               }
+                               std::cout
+                                 << "-- Encoder --\n"
+                                 << "in  acks   : " << m_encoder.nb_received_acks() << '\n'
+                                 << "out repairs: " << m_encoder.nb_sent_repairs() << '\n'
+                                 << "out sources: " << m_encoder.nb_sent_sources() << '\n'
+                                 << "window : " << m_encoder.window() << '\n'
+                                 << "rate : " << m_encoder.rate() << '\n'
+                                 << '\n'
+                                 << "-- Decoder --\n"
+                                 << "out acks   : " << m_decoder.nb_sent_acks() << '\n'
+                                 << "in  repairs: " << m_decoder.nb_received_repairs() << '\n'
+                                 << "in  sources: " << m_decoder.nb_received_sources() << '\n'
+                                 << "decoded: " << m_decoder.nb_decoded() << '\n'
+                                 << "failed : " << m_decoder.nb_failed_full_decodings() << '\n'
+                                 << "useless: " << m_decoder.nb_useless_repairs() << '\n'
+                                 << "missing: " << m_decoder.nb_missing_sources() << '\n'
+                                 << '\n'
+                                 << std::endl;
 
-                              start_stats_timer_handler();
-                            });
+                               start_stats_timer_handler();
+                             });
   }
 
 
 private:
 
   /// @brief
-  asio::deadline_timer timer_;
+  asio::deadline_timer m_timer;
 
   /// @brief
-  asio::deadline_timer stats_timer_;
+  asio::deadline_timer m_stats_timer;
 
   /// @brief
-  udp::socket& app_socket_;
+  udp::socket& m_app_socket;
 
   /// @brief
-  udp::endpoint& app_endpoint_;
+  udp::endpoint& m_app_endpoint;
 
   /// @brief
-  udp::socket& socket_;
+  udp::socket& m_socket;
 
   /// @brief
-  udp::endpoint& endpoint_;
+  udp::endpoint& m_endpoint;
 
   /// @brief
-  ntc::decoder<packet_handler, data_handler> decoder_;
+  ntc::decoder<packet_handler, data_handler> m_decoder;
 
   /// @brief
-  ntc::encoder<packet_handler> encoder_;
+  ntc::encoder<packet_handler> m_encoder;
 
   /// @brief
-  char packet_[buffer_size];
+  char m_packet[buffer_size];
 
   /// @brief
-  ntc::data data_;
+  ntc::data m_data;
 
   /// @brief
-  bool other_side_seen_;
+  bool m_other_side_seen;
 };
 
 /*------------------------------------------------------------------------------------------------*/

@@ -8,9 +8,6 @@
 /// @defgroup ntc_decoder Decoding data
 /// @ingroup ntc
 
-/// @defgroup ntc_configuration Configuring the library
-/// @ingroup ntc
-
 /// @defgroup ntc_data Manipulating data
 /// @ingroup ntc
 
@@ -25,9 +22,6 @@
 /// @ingroup c_ntc
 
 /// @defgroup c_decoder Decoding data
-/// @ingroup c_ntc
-
-/// @defgroup c_configuration Configuring the library
 /// @ingroup c_ntc
 
 /// @defgroup c_data Manipulating data

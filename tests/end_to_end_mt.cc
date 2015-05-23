@@ -179,10 +179,10 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 
 void
 encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const ntc::configuration& conf, const bool& run, std::uint16_t packet_size)
+       , const bool& run, std::uint16_t packet_size)
 {
   burst_loss loss{85, 15};
-  ntc::encoder<packet_handler> enc{packet_handler{loss, to_dec, to_dec_mutex}, conf};
+  ntc::encoder<packet_handler> enc{8, packet_handler{loss, to_dec, to_dec_mutex}};
   std::uint32_t id = 0;
 
   while (run)
@@ -211,11 +211,11 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
 void
 decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const ntc::configuration& conf, const bool& run, std::uint16_t packet_size)
+       , const bool& run, std::uint16_t packet_size)
 {
   burst_loss loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
-    dec{packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}, conf};
+    dec{8, true, packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}};
 
   while (run)
   {
@@ -259,12 +259,10 @@ int main()
   queue_type to_enc;
   std::mutex to_enc_mutex;
 
-  ntc::configuration conf;
-
   std::thread encoder_thread{ encoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run), packet_size};
+                            , std::ref(to_enc_mutex), std::cref(run), packet_size};
   std::thread decoder_thread{ decoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(conf), std::cref(run), packet_size};
+                            , std::ref(to_enc_mutex), std::cref(run), packet_size};
 
   std::this_thread::sleep_for(std::chrono::seconds{10});
 

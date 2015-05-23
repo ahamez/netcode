@@ -7,12 +7,13 @@
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_decoder_t*
-ntc_new_decoder( ntc_configuration_t* conf, ntc_packet_handler packet_handler
+ntc_new_decoder( uint8_t galois_field_size, bool in_order, ntc_packet_handler packet_handler
                , ntc_data_handler data_handler)
 noexcept
 {
-  return new (std::nothrow) ntc_decoder_t{ ntc::detail::c_packet_handler{packet_handler}
-                                         , ntc::detail::c_data_handler{data_handler}, *conf};
+  return new (std::nothrow) ntc_decoder_t{ galois_field_size, in_order
+                                         , ntc::detail::c_packet_handler{packet_handler}
+                                         , ntc::detail::c_data_handler{data_handler}};
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -27,7 +28,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 size_t
-ntc_decoder_notify_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
+ntc_decoder_add_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
 noexcept
 {
   return ntc::detail::check_error([&]{return (*dec)(packet, max_size);}, error);
@@ -44,11 +45,20 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_configuration_t*
-ntc_decoder_get_configuration(ntc_decoder_t* dec)
+void
+ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
 noexcept
 {
-  return &dec->conf();
+  dec->set_ack_frequency(std::chrono::milliseconds{frequency});
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_decoder_set_ack_nb_packets(ntc_decoder_t* dec, uint16_t nb)
+noexcept
+{
+  dec->set_ack_nb_packets(nb);
 }
 
 /*------------------------------------------------------------------------------------------------*/

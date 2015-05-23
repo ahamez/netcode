@@ -17,8 +17,8 @@ using namespace ntc;
 
 TEST_CASE("Decoder gives a correct source to user")
 {
-  encoder<packet_handler> enc{packet_handler{}};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}};
+  encoder<packet_handler> enc{8, packet_handler{}};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -38,11 +38,10 @@ TEST_CASE("Decoder gives a correct source to user")
 
 TEST_CASE("Decoder repairs a lost source")
 {
-  configuration conf;
-  conf.set_rate(1); // A repair for a source.
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(1);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -67,12 +66,11 @@ TEST_CASE("Decoder repairs a lost source")
 
 TEST_CASE("Decoder generate correct ack")
 {
-  configuration conf;
-  conf.set_rate(100); // Make sure no repairs are sent.
-  conf.set_ack_frequency(std::chrono::milliseconds{100});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(100);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{100});
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_packet_handler = dec.packet_handler();
@@ -113,13 +111,12 @@ TEST_CASE("Decoder generate correct ack")
 
 TEST_CASE("Decoder generate acks when N packets are received")
 {
-  configuration conf;
-  conf.set_rate(100);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
-  conf.set_ack_nb_packets(4);
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(100);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
+  dec.set_ack_nb_packets(4);
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_packet_handler = dec.packet_handler();
@@ -152,14 +149,12 @@ TEST_CASE("Decoder generate acks when N packets are received")
 void
 test_case_0(bool in_order)
 {
-  configuration conf;
-  conf.set_in_order(in_order);
-  conf.set_rate(4);
-  conf.set_window_size(3);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(4);
+  enc.set_window_size(3);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, in_order, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -224,14 +219,12 @@ TEST_CASE("Out of order decoder: lost packet with an encoder's limited window")
 void
 test_case_1(bool in_order)
 {
-  configuration conf;
-  conf.set_in_order(in_order);
-  conf.set_rate(4);
-  conf.set_code_type(code::non_systematic);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(4);
+  enc.set_code_type(code::non_systematic);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, in_order, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -339,13 +332,12 @@ TEST_CASE("Out of order decoder: non systematic code")
 
 TEST_CASE("Decoder invalid read scenario")
 {
-  configuration conf;
-  conf.set_rate(3);
-  conf.set_code_type(code::non_systematic);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(3);
+  enc.set_code_type(code::non_systematic);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -389,13 +381,11 @@ TEST_CASE("Decoder invalid read scenario")
 
 TEST_CASE("In order decoder")
 {
-  configuration conf;
-  conf.set_in_order(true);
-  conf.set_rate(4);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(4);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -484,14 +474,12 @@ TEST_CASE("In order decoder")
 
 TEST_CASE("In order decoder, missing sources")
 {
-  configuration conf;
-  conf.set_in_order(true);
-  conf.set_window_size(3);
-  conf.set_rate(3);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_window_size(3);
+  enc.set_rate(3);
 
-  encoder<packet_handler> enc{packet_handler{}, conf};
-  decoder<packet_handler, data_handler> dec{packet_handler{}, data_handler{}, conf};
+  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();

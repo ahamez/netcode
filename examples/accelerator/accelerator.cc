@@ -9,8 +9,6 @@
 #include <asio.hpp>
 #pragma GCC diagnostic pop
 
-#include <netcode/configuration.hh>
-
 #include "accelerator/transcoder.hh"
 
 /*------------------------------------------------------------------------------------------------*/
@@ -42,9 +40,6 @@ main(int argc, char** argv)
     udp::socket socket{io};
     udp::endpoint endpoint;
 
-    // netcode configuration
-    ntc::configuration conf;
-
     if (std::strncmp(argv[1], "server", 7) == 0)
     {
       const auto server_port = static_cast<unsigned short>(std::atoi(argv[2]));
@@ -74,7 +69,7 @@ main(int argc, char** argv)
       usage();
     }
 
-    transcoder t{conf, io, app_socket, app_endpoint, socket, endpoint};
+    transcoder t{io, app_socket, app_endpoint, socket, endpoint};
     io.run();
   }
   catch (const std::exception& e)

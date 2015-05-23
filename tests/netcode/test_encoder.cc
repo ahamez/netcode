@@ -28,9 +28,8 @@ TEST_CASE("Encoder's window size")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  configuration conf;
-  conf.set_rate(1);
-  encoder<dummy_handler> encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder.set_rate(1);
 
   auto data0 = ntc::data(data.begin(), data.begin() + 13);
   encoder(std::move(data0));
@@ -51,9 +50,8 @@ TEST_CASE("Encoder can limit the window size")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  configuration conf;
-  conf.set_window_size(4);
-  encoder<dummy_handler> encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder.set_window_size(4);
 
   auto data0 = ntc::data(data.begin(), data.begin() + 8);
   encoder(std::move(data0));
@@ -82,9 +80,8 @@ TEST_CASE("Encoder generates repairs")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  configuration conf;
-  conf.set_rate(5);
-  encoder<dummy_handler> encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder.set_rate(5);
 
   for (auto i = 0ul; i < 100; ++i)
   {
@@ -97,9 +94,8 @@ TEST_CASE("Encoder generates repairs")
 
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
-  configuration conf;
-  conf.set_rate(5);
-  encoder<dummy_handler> encoder{dummy_handler{}, conf};
+  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder.set_rate(5);
 
   // First, add some sources.
   for (auto i = 0ul; i < 4; ++i)
@@ -255,7 +251,7 @@ struct my_handler
 
 TEST_CASE("Encoder sends correct sources")
 {
-  encoder<my_handler> enc{my_handler{}};
+  encoder<my_handler> enc{8, my_handler{}};
 
   auto& enc_handler = enc.packet_handler();
 
@@ -278,10 +274,8 @@ TEST_CASE("Encoder sends correct sources")
 
 TEST_CASE("Encoder sends repairs")
 {
-  configuration conf;
-  conf.set_rate(1); // A repair for a source
-
-  encoder<my_handler> enc{my_handler{}, conf};
+  encoder<my_handler> enc{8, my_handler{}};
+  enc.set_rate(1);
 
   auto& enc_handler = enc.packet_handler();
 
@@ -305,11 +299,8 @@ TEST_CASE("Decoder: invalid memory access scenerio")
   // repair in the encoder.
   static constexpr auto max_len = 4096;
 
-  configuration conf;
-  conf.set_rate(5);
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
-
-  encoder<packet_handler> enc{packet_handler{}, conf};
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(5);
 
   auto& enc_handler = enc.packet_handler();
 
@@ -357,11 +348,9 @@ TEST_CASE("Decoder: invalid memory access scenerio")
 
 TEST_CASE("Non systematic encoder")
 {
-  configuration conf;
-  conf.set_code_type(code::non_systematic);
-  conf.set_rate(3);
-
-  encoder<packet_handler> encoder{packet_handler{}, conf};
+  encoder<packet_handler> encoder{8, packet_handler{}};
+  encoder.set_rate(3);
+  encoder.set_code_type(code::non_systematic);
   auto& enc_handler = encoder.packet_handler();
 
   const auto data = std::vector<char>(100, 'x');

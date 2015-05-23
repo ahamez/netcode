@@ -8,7 +8,6 @@
 #include "netcode/detail/packetizer.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
-#include "netcode/configuration.hh"
 #include "netcode/errors.hh"
 
 namespace ntc {
@@ -38,14 +37,16 @@ public:
 
   /// @brief Constructor.
   template <typename PacketHandler_, typename DataHandler_>
-  decoder( PacketHandler_&& packet_handler, DataHandler_&& data_handler
-         , configuration conf)
-    : m_conf{conf}
+  decoder( std::uint8_t galois_field_size, bool in_order, PacketHandler_&& packet_handler
+         , DataHandler_&& data_handler)
+    : m_galois_field_size{galois_field_size}
+    , m_ack_frequency{std::chrono::milliseconds{100}}
+    , m_ack_nb_packets{50}
     , m_last_ack_date(std::chrono::steady_clock::now())
     , m_ack{}
-    , m_decoder{ conf.galois_field_size()
+    , m_decoder{ m_galois_field_size
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)
-              , conf.in_order()}
+              , in_order}
     , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
     , m_data_handler(std::forward<DataHandler_>(data_handler))
     , m_packetizer{m_packet_handler}
@@ -56,14 +57,6 @@ public:
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     m_ack.source_ids().reserve(128);
   }
-
-  /// @brief Constructor with a default configuration.
-  template <typename PacketHandler_, typename DataHandler_>
-  decoder(PacketHandler_&& packet_handler, DataHandler_&& data_handler)
-    : decoder{ std::forward<PacketHandler_>(packet_handler)
-             , std::forward<DataHandler_>(data_handler)
-             , configuration{}}
-  {}
 
   /// @brief Notify the encoder of a new incoming packet.
   /// @param packet The incoming packet.
@@ -223,15 +216,15 @@ public:
   void
   maybe_ack()
   {
-    if (m_ack.nb_packets() >= m_conf.ack_nb_packets())
+    if (m_ack.nb_packets() >= m_ack_nb_packets)
     {
       generate_ack();
       m_last_ack_date = std::chrono::steady_clock::now();
     }
-    else if (m_conf.ack_frequency() != std::chrono::milliseconds{0})
+    else if (m_ack_frequency != std::chrono::milliseconds{0})
     {
       const auto now = std::chrono::steady_clock::now();
-      if ((now - m_last_ack_date) >= m_conf.ack_frequency())
+      if ((now - m_last_ack_date) >= m_ack_frequency)
       {
         generate_ack();
         m_last_ack_date = now;
@@ -239,20 +232,41 @@ public:
     }
   }
 
-  /// @brief Get the configuration (mutable).
-  configuration&
-  conf()
+  /// @brief Set the frequency at which ack will be sent from the decoder to the encoder.
+  ///
+  /// If 0, ack won't be sent automatically. The method @ref decoder::generate_ack can still be
+  /// called to force the generation of an ack.
+  void
+  set_ack_frequency(std::chrono::milliseconds f)
   noexcept
   {
-    return m_conf;
+    m_ack_frequency = f;
   }
 
-  /// @brief Get the configuration.
-  const configuration&
-  conf()
+  /// @brief Get the frequency at which ack will be sent from the decoder to the encoder.
+  std::chrono::milliseconds
+  ack_frequency()
   const noexcept
   {
-    return m_conf;
+    return m_ack_frequency;
+  }
+
+  /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
+  /// @pre @p nb > 0
+  void
+  set_ack_nb_packets(std::uint16_t nb)
+  noexcept
+  {
+    assert(nb > 0);
+    m_ack_nb_packets = std::min(nb, static_cast<std::uint16_t>(128));
+  }
+
+  /// @brief Get how many packets to receive before an ack is sent from the decoder to the encoder.
+  std::uint16_t
+  ack_nb_packets()
+  const noexcept
+  {
+    return m_ack_nb_packets;
   }
 
 private:
@@ -270,8 +284,14 @@ private:
 
 private:
 
-  /// @brief The configuration.
-  configuration m_conf;
+  /// @brief The Galois field size.
+  const std::uint8_t m_galois_field_size;
+
+  /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
+  std::chrono::milliseconds m_ack_frequency;
+
+  /// @brief How many packets to receive before an ack is sent from the decoder to the encoder.
+  std::uint16_t m_ack_nb_packets;
 
   /// @brief The last time an ack was sent.
   std::chrono::steady_clock::time_point m_last_ack_date;

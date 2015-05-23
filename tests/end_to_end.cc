@@ -167,13 +167,11 @@ int main()
     return 1;
   }
 
-  ntc::configuration conf;
-  // deactivate automatic ack.
-  conf.set_ack_frequency(std::chrono::milliseconds{0});
-  ntc::encoder<packet_handler> enc{packet_handler{}, conf};
-  ntc::decoder<packet_handler, in_order_data_handler> dec{ packet_handler{}
-                                                         , in_order_data_handler{packet_size}
-                                                         , conf};
+  ntc::encoder<packet_handler> enc{8, packet_handler{}};
+  ntc::decoder<packet_handler, in_order_data_handler> dec{ 8, true
+                                                         , packet_handler{}
+                                                         , in_order_data_handler{packet_size}};
+  dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_packet_handler = dec.packet_handler();

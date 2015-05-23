@@ -54,8 +54,6 @@
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B7E42B11ADC26960035DA89 /* data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42AF1ADC26960035DA89 /* data.cc */; };
 		2B7E42B21ADC26960035DA89 /* data.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42B01ADC26960035DA89 /* data.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B7E42B51ADC26AC0035DA89 /* configuration.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42B31ADC26AC0035DA89 /* configuration.cc */; };
-		2B7E42B61ADC26AC0035DA89 /* configuration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42B41ADC26AC0035DA89 /* configuration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7E42B91ADC26C70035DA89 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42B71ADC26C70035DA89 /* encoder.cc */; };
 		2B7E42BA1ADC26C70035DA89 /* encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42B81ADC26C70035DA89 /* encoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7E42BD1ADC26D90035DA89 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42BB1ADC26D90035DA89 /* decoder.cc */; };
@@ -1160,7 +1158,6 @@
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
-		2B6F62431AC7604600A34953 /* configuration.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = configuration.hh; sourceTree = "<group>"; };
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
@@ -1169,8 +1166,6 @@
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
 		2B7E42AF1ADC26960035DA89 /* data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = data.cc; sourceTree = "<group>"; };
 		2B7E42B01ADC26960035DA89 /* data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = data.h; sourceTree = "<group>"; };
-		2B7E42B31ADC26AC0035DA89 /* configuration.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = configuration.cc; sourceTree = "<group>"; };
-		2B7E42B41ADC26AC0035DA89 /* configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 		2B7E42B71ADC26C70035DA89 /* encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encoder.cc; sourceTree = "<group>"; };
 		2B7E42B81ADC26C70035DA89 /* encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoder.h; sourceTree = "<group>"; };
 		2B7E42BB1ADC26D90035DA89 /* decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder.cc; sourceTree = "<group>"; };
@@ -3030,8 +3025,6 @@
 			isa = PBXGroup;
 			children = (
 				2B7E42C01ADC2BE50035DA89 /* detail */,
-				2B7E42B41ADC26AC0035DA89 /* configuration.h */,
-				2B7E42B31ADC26AC0035DA89 /* configuration.cc */,
 				2B7E42B01ADC26960035DA89 /* data.h */,
 				2B7E42AF1ADC26960035DA89 /* data.cc */,
 				2B7E42BC1ADC26D90035DA89 /* decoder.h */,
@@ -3084,7 +3077,6 @@
 				2B516BEE1AC944DD00133F38 /* CMakeLists.txt */,
 				2B7E42AE1ADC266B0035DA89 /* c */,
 				2BE3196E1AB2357F001AA9DF /* detail */,
-				2B6F62431AC7604600A34953 /* configuration.hh */,
 				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B5FFAC81B0F527200CAB33E /* doxygen.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
@@ -3193,7 +3185,6 @@
 			files = (
 				2B7E42BE1ADC26D90035DA89 /* decoder.h in Headers */,
 				2B7E42B21ADC26960035DA89 /* data.h in Headers */,
-				2B7E42B61ADC26AC0035DA89 /* configuration.h in Headers */,
 				2B7E42BA1ADC26C70035DA89 /* encoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3406,7 +3397,6 @@
 				2B218B0F1AD80586000D2657 /* invert_matrix.cc in Sources */,
 				2B7E42B91ADC26C70035DA89 /* encoder.cc in Sources */,
 				2B7E42BD1ADC26D90035DA89 /* decoder.cc in Sources */,
-				2B7E42B51ADC26AC0035DA89 /* configuration.cc in Sources */,
 				2B7E42B11ADC26960035DA89 /* data.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

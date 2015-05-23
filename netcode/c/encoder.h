@@ -4,7 +4,6 @@
 #include "netcode/c/detail/types.hh"
 #endif
 
-#include "netcode/c/configuration.h"
 #include "netcode/c/data.h"
 #include "netcode/c/error.h"
 #include "netcode/c/handlers.h"
@@ -31,9 +30,14 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+typedef enum {ntc_systematic, ntc_non_systematic} ntc_code_type;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @ingroup c_encoder
 /// @return A new decoder if allocation suceeded; a null pointer otherwise.
 ntc_encoder_t*
-ntc_new_encoder(ntc_configuration_t* conf, ntc_packet_handler handler)
+ntc_new_encoder(uint8_t galois_field_size, ntc_packet_handler handler)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -47,14 +51,14 @@ noexcept;
 
 /// @ingroup c_encoder
 void
-ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
+ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
 size_t
-ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
+ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -74,13 +78,37 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-ntc_configuration_t*
-ntc_encoder_get_configuration(ntc_encoder_t* enc)
+void
+ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type code_type)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @}
+/// @ingroup c_encoder
+/// @pre @p rate > 0
+/// @note If the adaptive mode is set, the rate will change automatically.
+void
+ntc_encoder_set_rate(ntc_encoder_t* enc, size_t rate)
+noexcept;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @ingroup c_encoder
+/// @brief Configure the maximal number of data to keep before discarding oldest data.
+/// @pre @p size > 0
+void
+ntc_encoder_set_window_size(ntc_encoder_t* enc, size_t size)
+noexcept;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @ingroup c_encoder
+/// @brief Configure the in-adaptive mode.
+void
+ntc_encoder_set_adaptive(ntc_encoder_t* enc, bool adaptive)
+noexcept;
+
+/*------------------------------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
 } // extern "C"

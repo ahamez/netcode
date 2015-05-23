@@ -7,7 +7,6 @@ set(
 
 set(
   CNTC_SOURCES
-  c/configuration.cc
   c/data.cc
   c/decoder.cc
   c/encoder.cc

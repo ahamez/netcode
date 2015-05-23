@@ -1,6 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <cassert>
+#include <chrono>
 #include <cmath>
+#include <limits> // numeric_limits
 
 #include "netcode/detail/encoder.hh"
 #include "netcode/detail/packet_type.hh"
@@ -8,11 +12,16 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
-#include "netcode/configuration.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
 
 namespace ntc {
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief Describe if a code is systematic or not.
+/// @ingroup ntc_configuration
+enum class code {systematic, non_systematic};
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -36,14 +45,18 @@ public:
 
   /// @brief Constructor.
   template <typename PacketHandler_>
-  encoder(PacketHandler_&& packet_handler, configuration conf)
-    : m_conf{conf}
+  encoder(std::uint8_t galois_field_size, PacketHandler_&& packet_handler)
+    : m_galois_field_size{galois_field_size}
+    , m_code_type{code::systematic}
+    , m_rate{5}
+    , m_window_size{std::numeric_limits<std::size_t>::max()}
+    , m_adaptive{false}
     , m_current_source_id{0}
     , m_current_repair_id{0}
     , m_sources{}
     , m_repair{m_current_repair_id}
     , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
-    , m_encoder{conf.galois_field_size()}
+    , m_encoder{m_galois_field_size}
     , m_packetizer{m_packet_handler}
     , m_nb_sent_repairs{0ul}
     , m_nb_acks{0ul}
@@ -56,12 +69,6 @@ public:
     m_repair.source_ids().reserve(128);
   }
 
-  /// @brief Constructor with a default configuration.
-  template <typename PacketHandler_>
-  explicit encoder(PacketHandler_&& packet_handler)
-    : encoder{std::forward<PacketHandler_>(packet_handler), configuration{}}
-  {}
-
   /// @brief Give the encoder a new data.
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
@@ -71,10 +78,10 @@ public:
   operator()(data&& d)
   {
     assert(d.used_bytes() != 0 && "please use data::used_bytes()");
-    assert( m_conf.galois_field_size() != 16
-            or (m_conf.galois_field_size() == 16 and d.used_bytes() % (16/8) == 0));
-    assert( m_conf.galois_field_size() != 32
-            or (m_conf.galois_field_size() == 32 and d.used_bytes() % (32/8) == 0));
+    assert( m_galois_field_size != 16
+            or (m_galois_field_size == 16 and d.used_bytes() % (16/8) == 0));
+    assert( m_galois_field_size != 32
+            or (m_galois_field_size == 32 and d.used_bytes() % (32/8) == 0));
     commit_impl(std::move(d));
   }
 
@@ -158,20 +165,80 @@ public:
     m_packetizer.write_repair(m_repair);
   }
 
-  /// @brief Get the configuration (mutable).
-  configuration&
-  conf()
-  noexcept
-  {
-    return m_conf;
-  }
-
-  /// @brief Get the configuration.
-  const configuration&
-  conf()
+  /// @brief Get the Galois's field size.
+  std::uint8_t
+  galois_field_size()
   const noexcept
   {
-    return m_conf;
+    return m_galois_field_size;
+  }
+
+  /// @brief Set the systematic/non-systematic mode of the code.
+  void
+  set_code_type(code c)
+  noexcept
+  {
+    m_code_type = c;
+  }
+
+  /// @brief Get the systematic/non-systematic mode of the code.
+  code
+  code_type()
+  const noexcept
+  {
+    return m_code_type;
+  }
+
+  /// @brief Set how many sources are sent before a repair is generated.
+  /// @pre @p rate > 0
+  void
+  set_rate(std::size_t rate)
+  noexcept
+  {
+    assert(rate > 0);
+    m_rate = rate;
+  }
+
+  /// @brief Get how many sources are sent before a repair is generated.
+  std::size_t
+  rate()
+  const noexcept
+  {
+    return m_rate;
+  }
+
+  /// @brief Set the maximal permitted size of the encoder's window.
+  /// @pre @p sz > 0
+  void
+  set_window_size(std::size_t sz)
+  noexcept
+  {
+    assert(sz > 0);
+    m_window_size = sz;
+  }
+
+  /// @brief Get the maximal permitted size of the encoder's window.
+  std::size_t
+  window_size()
+  const noexcept
+  {
+    return m_window_size;
+  }
+
+  /// @brief Set the adaptive mode of the code.
+  void
+  set_adaptive(bool adaptive)
+  noexcept
+  {
+    m_adaptive = adaptive;
+  }
+
+  /// @brief Get the adaptative mode of the code.
+  bool
+  adaptive()
+  const noexcept
+  {
+    return m_adaptive;
   }
 
 private:
@@ -183,7 +250,7 @@ private:
   {
     assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
 
-    if (m_sources.size() == m_conf.window_size())
+    if (m_sources.size() == m_window_size)
     {
       m_sources.pop_front();
     }
@@ -193,7 +260,7 @@ private:
     const auto& insertion
       = m_sources.emplace(m_current_source_id, std::move(d.buffer_impl()), d.used_bytes());
 
-    if (m_conf.code_type() == code::systematic)
+    if (m_code_type == code::systematic)
     {
       ++m_nb_sent_sources;
       ++m_nb_sent_packets;
@@ -206,7 +273,7 @@ private:
     }
 
     /// @todo Should we generate a repair if window_size() == 1?
-    if ((m_current_source_id + 1) % m_conf.rate() == 0)
+    if ((m_current_source_id + 1) % m_rate == 0)
     {
       generate_repair();
     }
@@ -225,17 +292,17 @@ private:
     {
       ++m_nb_acks;
       const auto res = m_packetizer.read_ack(data, max_len);
-      if (m_conf.adaptive())
+      if (m_adaptive)
       {
         if (m_nb_sent_packets > 0)
         {
           const auto loss_rate
             = (m_nb_sent_packets - res.first.nb_packets()) / static_cast<double>(m_nb_sent_packets);
-          m_conf.set_rate(rate_for_loss(loss_rate));
+          m_rate = rate_for_loss(loss_rate);
         }
         else
         {
-          m_conf.set_rate(rate_for_loss(0.0));
+          m_rate = rate_for_loss(0.0);
         }
       }
       m_nb_sent_packets = 0;
@@ -276,8 +343,20 @@ private:
 
 private:
 
-  /// @brief The configuration.
-  configuration m_conf;
+  /// @brief The Galois field size.
+  const std::uint8_t m_galois_field_size;
+
+  /// @brief Tell if the code is systematic or not.
+  code m_code_type;
+
+  /// @brief How many sources to send before a repair is generated.
+  std::size_t m_rate;
+
+  /// @brief The maximal number of sources to keep on the encoder side before discarding them.
+  std::size_t m_window_size;
+
+  /// @brief Tell if the code is adaptive.
+  bool m_adaptive;
 
   /// @brief The counter for source packets identifiers.
   std::uint32_t m_current_source_id;

@@ -6,10 +6,11 @@
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_encoder_t*
-ntc_new_encoder(ntc_configuration_t* conf, ntc_packet_handler handler)
+ntc_new_encoder(uint8_t galois_field_size, ntc_packet_handler handler)
 noexcept
 {
-  return new (std::nothrow) ntc_encoder_t{ntc::detail::c_packet_handler{handler}, *conf};
+  return new (std::nothrow) ntc_encoder_t{ galois_field_size
+                                         , ntc::detail::c_packet_handler{handler}};
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -24,7 +25,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_encoder_commit_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
+ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept
 {
   ntc::detail::check_error([&]{(*enc)(std::move(*data));}, error);
@@ -33,7 +34,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 size_t
-ntc_encoder_notify_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
+ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
 noexcept
 {
   return ntc::detail::check_error([&]{return (*enc)(packet, max_size);}, error);
@@ -59,11 +60,52 @@ noexcept
 
 /*------------------------------------------------------------------------------------------------*/
 
-ntc_configuration_t*
-ntc_encoder_get_configuration(ntc_encoder_t* enc)
+void
+ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type code_type)
 noexcept
 {
-  return &enc->conf();
+  switch (code_type)
+  {
+    case ntc_systematic:
+    {
+      enc->set_code_type(ntc::code::systematic);
+      break;
+    }
+
+    case ntc_non_systematic:
+    default:
+    {
+      enc->set_code_type(ntc::code::non_systematic);
+    }
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_rate(ntc_encoder_t* enc, size_t rate)
+noexcept
+{
+  enc->set_rate(rate);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_window_size(ntc_encoder_t* enc, size_t size)
+noexcept
+{
+  enc->set_window_size(size);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+ntc_encoder_set_adaptive(ntc_encoder_t* enc, bool adaptive)
+noexcept
+{
+  enc->set_adaptive(adaptive);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+

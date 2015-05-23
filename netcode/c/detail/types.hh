@@ -1,15 +1,9 @@
 #pragma once
 
-#include "netcode/configuration.hh"
 #include "netcode/data.hh"
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
 #include "netcode/c/detail/handlers.hh"
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @internal
-using ntc_configuration_t = ntc::configuration;
 
 /*------------------------------------------------------------------------------------------------*/
 
