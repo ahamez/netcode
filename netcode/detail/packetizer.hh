@@ -215,9 +215,9 @@ private:
 
 
   /// @brief Convenient method to write data using user's handler.
-  template <typename T>
+  template <typename T, typename U>
   void
-  write(const T& data)
+  write(const U& data)
   noexcept(noexcept(std::declval<PacketHandler>()(nullptr, 0ul)))
   {
     const auto native = boost::endian::native_to_big(static_cast<T>(data));
