@@ -18,7 +18,7 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The class to interact with on the sender side.
-/// @ingroup netcode
+/// @ingroup ntc_encoder
 template <typename PacketHandler>
 class encoder final
 {
@@ -67,6 +67,7 @@ public:
   /// @param d The data to add.
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
   /// except for one case: calling data::reset() will put back @p d in a usable state.
+  /// @see data::reset
   void
   operator()(data&& d)
   {

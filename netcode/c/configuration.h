@@ -73,7 +73,7 @@ ntc_configuration_set_rate(ntc_configuration_t* conf, size_t rate) noexcept;
 /// @ingroup c_configuration
 /// @brief Configure the frequency at which acknowledgment will be sent (decoder).
 /// @param conf The configuration to modify.
-/// @param The requested frequency, if 0, deactivate this feature.
+/// @param frequency The requested frequency, if 0, deactivate this feature.
 void
 ntc_configuration_set_ack_frequency(ntc_configuration_t* conf, size_t frequency) noexcept;
 

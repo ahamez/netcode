@@ -5,14 +5,18 @@
 #include <chrono>
 #include <limits> // numeric_limits
 
-#include "netcode/code.hh"
-
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief Describe if a code is systematic or not.
+/// @ingroup ntc_configuration
+enum class code {systematic, non_systematic};
+
+/*------------------------------------------------------------------------------------------------*/
+
 /// @brief The type to configure ntc::encoder and ntc::decoder.
-/// @ingroup netcode
+/// @ingroup ntc_configuration
 class configuration
 {
 public:
@@ -79,8 +83,8 @@ public:
 
   /// @brief Set the frequency at which ack will be sent from the decoder to the encoder.
   ///
-  /// If 0, ack won't be sent automatically. The method decoder::send_ack() can still be called to
-  /// force the sending of an ack.
+  /// If 0, ack won't be sent automatically. The method @ref decoder::generate_ack can still be
+  /// called to force the generation of an ack.
   void
   set_ack_frequency(std::chrono::milliseconds f)
   noexcept

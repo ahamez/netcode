@@ -1,18 +1,44 @@
-/// @defgroup netcode The netcode C++ library
+/*------------------------------------------------------------------------------------------------*/
 
-/// @defgroup c_interfaces C interfaces for the netcode library
+/// @defgroup ntc C++ interfaces
 
-/// @defgroup c_encoder C interfaces to manipulate the encoder
-/// @ingroup c_interfaces
+/// @defgroup ntc_encoder Encoding data
+/// @ingroup ntc
 
-/// @defgroup c_decoder C interfaces to manipulate the decoder
-/// @ingroup c_interfaces
+/// @defgroup ntc_decoder Decoding data
+/// @ingroup ntc
 
-/// @defgroup c_configuration C interfaces to manipulate the configuration
-/// @ingroup c_interfaces
+/// @defgroup ntc_configuration Configuring the library
+/// @ingroup ntc
 
-/// @defgroup c_data C interfaces to manipulate data
-/// @ingroup c_interfaces
+/// @defgroup ntc_data Manipulating data
+/// @ingroup ntc
+
+/// @defgroup ntc_error Error reporting
+/// @ingroup ntc
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @defgroup c_ntc C interfaces
+
+/// @defgroup c_encoder Encoding data
+/// @ingroup c_ntc
+
+/// @defgroup c_decoder Decoding data
+/// @ingroup c_ntc
+
+/// @defgroup c_configuration Configuring the library
+/// @ingroup c_ntc
+
+/// @defgroup c_data Manipulating data
+/// @ingroup c_ntc
+
+/// @defgroup c_error Error reporting
+/// @ingroup c_ntc
+///
+/// Several functions take a parameter of type ntc_error as pointer.
+
+/*------------------------------------------------------------------------------------------------*/
 
 /// @brief The top level namespace of the netcode library.
 namespace ntc {
@@ -23,3 +49,5 @@ namespace detail {
 
 } // namespace detail
 } // namespace ntc
+
+/*------------------------------------------------------------------------------------------------*/

@@ -2,7 +2,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @ingroup c_interfaces
+/// @ingroup c_error
 /// @brief Describe possible errors reported by the library.
 typedef enum { ntc_no_error
              , ntc_unknown_error
@@ -11,7 +11,7 @@ typedef enum { ntc_no_error
              , ntc_overflow_error
              } ntc_error_type;
 
-/// @ingroup c_interfaces
+/// @ingroup c_error
 /// @brief Type to store reported errors, if any.
 typedef struct
 {

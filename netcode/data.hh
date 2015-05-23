@@ -17,7 +17,7 @@ namespace ntc {
 /// This method indicates how many bytes of the allocated buffer are really used. In debug mode, an
 /// assertion will be raised if it's not the case.
 /// @note It's possible to resize the buffer using resize_buffer().
-/// @ingroup netcode
+/// @ingroup ntc_data
 class data final
 {
 public:
@@ -65,13 +65,12 @@ public:
   }
 
   /// @brief Resize the buffer.
-  /// @param size The new buffer size.
-  ///
-  /// May cause a copy.
+  /// @param new_size The new buffer size.
+  /// @note May cause a copy.
   void
-  resize(std::uint16_t size)
+  resize(std::uint16_t new_size)
   {
-    m_buffer.resize(size);
+    m_buffer.resize(new_size);
   }
 
   /// @brief Get the the number of used bytes for this data (read-only).
@@ -84,7 +83,8 @@ public:
 
   /// @brief Get the the number of used bytes for this data.
   ///
-  /// When set, it must be smaller than the reserved size.
+  /// When set, it must be smaller than the reserved size, that is, smaller than the value given
+  /// when calling constructors or resize().
   std::uint16_t&
   used_bytes()
   noexcept
@@ -118,13 +118,14 @@ public:
   }
 
   /// @brief Reset the data for further re-use.
+  /// @param new_size The wanted size for the newly allocated underlying buffer.
   /// @note Can be used on a moved data. As a matter of fact, it's the only way to use again a
-  /// moved data.
+  /// data which has been given to encoder::operator()(data&&).
   void
-  reset(std::uint16_t size)
+  reset(std::uint16_t new_size)
   {
     m_used_bytes = 0;
-    m_buffer.resize(size);
+    m_buffer.resize(new_size);
   }
 
 private:

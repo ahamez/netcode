@@ -7,7 +7,7 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Exception thrown when a packet type could not have been decoded.
-/// @ingroup netcode
+/// @ingroup ntc_error
 struct packet_type_error
   : public std::exception
 {};
@@ -15,7 +15,7 @@ struct packet_type_error
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Exception raised when the maximum authorized number of bytes have been read.
-/// @ingroup netcode
+/// @ingroup ntc_error
 struct overflow_error
   : public std::exception
 {};

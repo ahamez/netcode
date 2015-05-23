@@ -31,7 +31,7 @@ typedef struct ntc_data_t ntc_data_t;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Create an uninitialized data to be given to the encoder.
-/// @param sz The maximal size of the data.
+/// @param size The maximal size of the data.
 /// @attention When the data has been completely written, ntc_data_set_used_bytes() must be called
 /// to indicate how much bytes were written. An assert will check this pre-condition in debug mode.
 /// @ingroup c_data

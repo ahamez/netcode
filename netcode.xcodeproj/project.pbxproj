@@ -1195,7 +1195,6 @@
 		2BBC052B1ACD08C700EEDAC0 /* common.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hh; sourceTree = "<group>"; };
 		2BD072741B1053B40010282D /* check_error.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = check_error.hh; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder.hh; sourceTree = "<group>"; };
-		2BE319561AB0C550001AA9DF /* code.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = code.hh; sourceTree = "<group>"; };
 		2BE3196D1AB206FC001AA9DF /* data.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = data.hh; sourceTree = "<group>"; };
 		2BE319701AB237CA001AA9DF /* repair.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = repair.hh; sourceTree = "<group>"; };
 		2BE319711AB237CA001AA9DF /* source.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = source.hh; sourceTree = "<group>"; };
@@ -3085,7 +3084,6 @@
 				2B516BEE1AC944DD00133F38 /* CMakeLists.txt */,
 				2B7E42AE1ADC266B0035DA89 /* c */,
 				2BE3196E1AB2357F001AA9DF /* detail */,
-				2BE319561AB0C550001AA9DF /* code.hh */,
 				2B6F62431AC7604600A34953 /* configuration.hh */,
 				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B5FFAC81B0F527200CAB33E /* doxygen.hh */,
