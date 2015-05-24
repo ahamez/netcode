@@ -127,12 +127,18 @@ public:
     const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
     // Read size of the repair symbol.
-    const auto sz = read<std::uint16_t>(data, max_len);
+    const auto symbol_sz = read<std::uint16_t>(data, max_len);
+
+    // There's still the repair symbol to read.
+    if (max_len < symbol_sz)
+    {
+      throw overflow_error{};
+    }
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
-    buffer.reserve(sz);
-    std::copy_n(data, sz, std::back_inserter(buffer));
+    buffer.reserve(symbol_sz);
+    std::copy_n(data, symbol_sz, std::back_inserter(buffer));
 
     return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
@@ -175,14 +181,20 @@ public:
     const auto id = read<std::uint32_t>(data, max_len);
 
     // Read user size of the source symbol.
-    const auto user_sz = read<std::uint16_t>(data, max_len);
+    const auto symbol_sz = read<std::uint16_t>(data, max_len);
+
+    // There's still the source symbol to read.
+    if (max_len < symbol_sz)
+    {
+      throw overflow_error{};
+    }
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(user_sz);
-    std::copy_n(data, user_sz, std::back_inserter(buffer));
+    buffer.reserve(symbol_sz);
+    std::copy_n(data, symbol_sz, std::back_inserter(buffer));
 
-    return std::make_pair( source{id, std::move(buffer), user_sz}
+    return std::make_pair( source{id, std::move(buffer), symbol_sz}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
@@ -212,7 +224,6 @@ private:
   {
     m_packet_handler(reinterpret_cast<const char*>(data), len);
   }
-
 
   /// @brief Convenient method to write data using user's handler.
   template <typename T, typename U>
