@@ -1,50 +1,11 @@
 #pragma once
 
-#include <type_traits>
-
 #include "netcode/detail/packet_type.hh"
+#include "netcode/detail/traits.hh"
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
 
 namespace ntc {
-
-/*------------------------------------------------------------------------------------------------*/
-
-namespace detail {
-
-/// @internal
-/// @brief Trait to detect if a type is ntc::encoder.
-template <typename T>
-struct is_encoder
-{
-  static constexpr auto value = false;
-};
-
-/// @internal
-/// @brief Trait to detect if a type is ntc::encoder.
-template <typename PacketHandler>
-struct is_encoder<ntc::encoder<PacketHandler>>
-{
-  static constexpr auto value = true;
-};
-
-/// @internal
-/// @brief Trait to detect if a type is ntc::decoder.
-template <typename T>
-struct is_decoder
-{
-  static constexpr auto value = false;
-};
-
-/// @internal
-/// @brief Trait to detect if a type is ntc::encoder.
-template <typename PacketHandler, typename DataHandler>
-struct is_decoder<ntc::decoder<PacketHandler, DataHandler>>
-{
-  static constexpr auto value = true;
-};
-
-} // namespace detail
 
 /*------------------------------------------------------------------------------------------------*/
 
