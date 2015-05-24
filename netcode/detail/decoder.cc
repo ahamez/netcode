@@ -15,7 +15,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const sourc
                 , bool in_order)
   : m_gf{galois_field_size}
   , m_in_order{in_order}
-  , m_first_missing_source{0}
+  , m_first_missing_source_in_order{0}
   , m_ordered_sources{}
   , m_callback(h)
   , m_repairs{}
@@ -255,10 +255,10 @@ decoder::add_source_recursive(source&& src)
   {
     m_callback(src);
   }
-  else if (src.id() == m_first_missing_source)
+  else if (src.id() == m_first_missing_source_in_order)
   {
     m_callback(src);
-    m_first_missing_source += 1;
+    m_first_missing_source_in_order += 1;
     // Send all sources that could not be previously sent because their ids were greater than
     // first_missing_source_.
     flush_ordered_sources();
@@ -333,7 +333,7 @@ decoder::add_source_recursive(source&& src)
   const auto insertion = m_sources.emplace(src_id, std::move(src));
   assert(insertion.second && "source already added");
 
-  if (m_in_order and insertion.first->second.id() > m_first_missing_source)
+  if (m_in_order and insertion.first->second.id() > m_first_missing_source_in_order)
   {
     // We can't send the current source as there are some older sources which have not been sent.
     m_ordered_sources.emplace(insertion.first->second.id(), &insertion.first->second);
@@ -371,6 +371,8 @@ noexcept
 
   if (m_in_order)
   {
+    // flush_ordered_sources() won't give to user sources with identifier smaller than id, thus we
+    // take care of it now.
     for (auto cit = m_ordered_sources.begin(), end = m_ordered_sources.lower_bound(id); cit != end;)
     {
       m_callback(*cit->second);
@@ -378,9 +380,9 @@ noexcept
       ++cit;
       m_ordered_sources.erase(to_erase);
     }
-    if (m_first_missing_source < id)
+    if (m_first_missing_source_in_order < id)
     {
-      m_first_missing_source = id;
+      m_first_missing_source_in_order = id;
     }
     flush_ordered_sources();
   }
@@ -539,10 +541,10 @@ decoder::attempt_full_decoding()
     {
       m_callback(inserted_src);
     }
-    else if (inserted_src.id() == m_first_missing_source)
+    else if (inserted_src.id() == m_first_missing_source_in_order)
     {
       m_callback(inserted_src);
-      m_first_missing_source += 1;
+      m_first_missing_source_in_order += 1;
       // Send all sources that could not be previously sent because their ids were greater than
       // first_missing_source_.
       flush_ordered_sources();
@@ -551,7 +553,6 @@ decoder::attempt_full_decoding()
     {
       // We can't send the current source as there are some older sources which have not been sent.
       m_ordered_sources.emplace(inserted_src.id(), &inserted_src);
-
     }
   }
 
@@ -567,17 +568,19 @@ decoder::attempt_full_decoding()
 void
 decoder::flush_ordered_sources()
 {
-  auto cit = m_ordered_sources.find(m_first_missing_source);
+  // If we find the first missing source, we can give to user all sources with a identifier
+  // that follow m_first_missing_source in sequence.
+  auto cit = m_ordered_sources.find(m_first_missing_source_in_order);
   while (cit != m_ordered_sources.end())
   {
-    assert(cit->first == m_first_missing_source);
+    assert(cit->first == m_first_missing_source_in_order);
     m_callback(*cit->second);
     const auto to_erase = cit;
     ++cit;
     m_ordered_sources.erase(to_erase);
-    m_first_missing_source += 1;
+    m_first_missing_source_in_order += 1;
 
-    if (cit->first > m_first_missing_source)
+    if (cit->first > m_first_missing_source_in_order)
     {
       break;
     }

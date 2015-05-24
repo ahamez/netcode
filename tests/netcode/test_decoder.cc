@@ -601,6 +601,36 @@ TEST_CASE("In order decoder, missing sources")
     REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[1])));
     REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[2])));
   }
+
+  SECTION("Outdated sources")
+  {
+    // s0 is lost.
+    // dec(enc_handler[0]); // s0
+    dec(enc_handler[1]); // s1
+    dec(enc_handler[2]); // s2
+    // r0 is lost
+    // dec(enc_handler[3]); // << repair for 0, 1 and 2
+    dec(enc_handler[4]); // s3
+    dec(enc_handler[5]); // s4
+    dec(enc_handler[6]); // s5
+    dec(enc_handler[7]); // << repair for s3, s4 and s5, outdating s0, s1 and s2
+
+    // Source s0 was never received and the repair which could have decoded it was also missing.
+    // Thus, the library will give all sources available from s1.
+
+    REQUIRE(dec.nb_received_sources() == 5);
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
+
+    // Sources were given in the correct order the user handler.
+    REQUIRE(dec_data_handler.nb_data() == 5);
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[3])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[4])));
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

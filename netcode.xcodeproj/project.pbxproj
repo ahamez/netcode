@@ -69,7 +69,7 @@
 		2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2BBC05281ACC477D00EEDAC0 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2BBC05291ACC477D00EEDAC0 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2BD072781B119E810010282D /* test_packetizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B272C511AC75C1800E6FEDC /* test_packetizer.cc */; };
+		2BD072791B121C170010282D /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */; };
 		2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */; };
@@ -3456,7 +3456,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BD072781B119E810010282D /* test_packetizer.cc in Sources */,
+				2BD072791B121C170010282D /* test_decoder.cc in Sources */,
 				2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */,
 				2BBC05281ACC477D00EEDAC0 /* encoder.cc in Sources */,
 				2BBC05291ACC477D00EEDAC0 /* invert_matrix.cc in Sources */,

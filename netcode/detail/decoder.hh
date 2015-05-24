@@ -147,10 +147,10 @@ private:
   /// @brief Indicates if sources should be given in-order to the callback.
   const bool m_in_order;
 
-  /// @brief The identifier of the first source which has not yet been given to callback.
+  /// @brief The identifier of the first source which has not yet been given in order to callback.
   ///
   /// Used to give sources in-order to the callback.
-  std::uint32_t m_first_missing_source;
+  std::uint32_t m_first_missing_source_in_order;
 
   /// @brief Maintains a list of sources which could not be given to callback when some older
   /// sources are still missing.
@@ -167,7 +167,7 @@ private:
 
   /// @brief Remember the last source identifier.
   ///
-  /// All sources with an identifier smaller than @p last_id_ were received or decoded in the past.
+  /// All sources with an identifier smaller than this value were received or decoded in the past.
   boost::optional<std::uint32_t> m_last_id;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
