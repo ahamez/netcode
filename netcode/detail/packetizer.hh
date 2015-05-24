@@ -1,10 +1,11 @@
 #pragma once
 
+#include <algorithm> // copy_n
 #include <cassert>
-#include <iterator> // back_inserter
+#include <iterator>  // back_inserter
 #include <limits>
-#include <numeric>  // adjacent_difference, partial_sum
-#include <utility>  // declval, pair
+#include <numeric>   // adjacent_difference, partial_sum
+#include <utility>   // declval, pair
 #include <vector>
 
 #pragma GCC diagnostic push
@@ -127,18 +128,12 @@ public:
     const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
     // Read size of the repair symbol.
-    const auto symbol_sz = read<std::uint16_t>(data, max_len);
-
-    // There's still the repair symbol to read.
-    if (max_len < symbol_sz)
-    {
-      throw overflow_error{};
-    }
+    const auto symbol_size = read<std::uint16_t>(data, max_len);
 
     // Read the repair symbol.
     zero_byte_buffer buffer;
-    buffer.reserve(symbol_sz);
-    std::copy_n(data, symbol_sz, std::back_inserter(buffer));
+    buffer.reserve(symbol_size);
+    read(data, symbol_size, max_len, std::back_inserter(buffer));
 
     return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
@@ -181,20 +176,14 @@ public:
     const auto id = read<std::uint32_t>(data, max_len);
 
     // Read user size of the source symbol.
-    const auto symbol_sz = read<std::uint16_t>(data, max_len);
-
-    // There's still the source symbol to read.
-    if (max_len < symbol_sz)
-    {
-      throw overflow_error{};
-    }
+    const auto symbol_size = read<std::uint16_t>(data, max_len);
 
     // Read the source symbol.
     byte_buffer buffer;
-    buffer.reserve(symbol_sz);
-    std::copy_n(data, symbol_sz, std::back_inserter(buffer));
+    buffer.reserve(symbol_size);
+    read(data, symbol_size, max_len, std::back_inserter(buffer));
 
-    return std::make_pair( source{id, std::move(buffer), symbol_sz}
+    return std::make_pair( source{id, std::move(buffer), symbol_size}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
@@ -215,6 +204,22 @@ private:
     data += sizeof(T);
     max_len -= sizeof(T);
     return res;
+  }
+
+  /// @brief Convenient method to read data and verify the size of read data.
+  /// @throw overflow_error
+  template <typename OutputIterator>
+  static
+  void
+  read(const char*& data, std::size_t size, std::size_t& max_len, OutputIterator it)
+  {
+    if (max_len < size)
+    {
+      throw overflow_error{};
+    }
+    std::copy_n(data, size, it);
+    data += size;
+    max_len -= size;
   }
 
   /// @brief Convenient method to write data using user's handler.
