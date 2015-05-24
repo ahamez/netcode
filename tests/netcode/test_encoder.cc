@@ -351,8 +351,6 @@ TEST_CASE("Non systematic encoder")
 
 TEST_CASE("Encoder rejects sources and repairs")
 {
-  const auto data = std::vector<char>(100, 'x');
-
   encoder<packet_handler> encoder{8, packet_handler{}};
   packet_handler h;
   detail::packetizer<packet_handler> serializer{h};
@@ -374,6 +372,56 @@ TEST_CASE("Encoder rejects sources and repairs")
     char garbage[4] = {33,35,1,0};
     REQUIRE_THROWS_AS(encoder(garbage, 4), packet_type_error);
   }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Encoder adapts rate automatically")
+{
+  encoder<packet_handler> enc{8, packet_handler{}};
+  enc.set_rate(1);
+  enc.set_adaptive(true);
+
+  // Simulate decoder.
+  packet_handler h_decoder;
+  detail::packetizer<packet_handler> serializer{h_decoder};
+
+  const auto d = std::vector<char>(32, 'x');
+  for (auto i = 0ul; i < 100; ++i)
+  {
+    enc(data(d.begin(), d.end()));
+  }
+  REQUIRE(enc.window() == 100);
+  REQUIRE(enc.rate() == 1);
+
+  // An ack that indicates that no packets were lost.
+  auto ids0 = detail::source_id_list{};
+  for (auto i = 0u; i < 100; ++i)
+  {
+    ids0.insert(i);
+  }
+  serializer.write_ack(detail::ack{std::move(ids0), 200});
+
+  REQUIRE_NOTHROW(enc(h_decoder[0]));
+  REQUIRE(enc.window() == 0);
+  REQUIRE(enc.rate() == 50); // default maximal rate
+
+  for (auto i = 100ul; i < 200; ++i)
+  {
+    enc(data(d.begin(), d.end()));
+  }
+  REQUIRE(enc.window() == 100);
+
+  // An ack that indicates that half of the packets were lost.
+  auto ids1 = detail::source_id_list{};
+  for (auto i = 0u; i < 50; ++i)
+  {
+    ids1.insert(100 + 2*i);
+  }
+  serializer.write_ack(detail::ack{std::move(ids1), 50});
+
+  REQUIRE_NOTHROW(enc(h_decoder[1]));
+  REQUIRE(enc.rate() == 1); // minimal rate
 }
 
 /*------------------------------------------------------------------------------------------------*/

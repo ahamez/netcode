@@ -281,17 +281,17 @@ private:
     ++m_current_source_id;
   }
 
-  /// @brief Notify the encoder that some data has been received.
+  /// @brief Notify the encoder that some packet has been received (should be an ack).
   /// @return The number of bytes that have been read (0 if the packet was not decoded).
   /// @throw packet_type_error
   std::size_t
-  notify_impl(const char* data, std::size_t max_len)
+  notify_impl(const char* packet, std::size_t max_len)
   {
-    assert(data != nullptr);
-    if (detail::get_packet_type(data) == detail::packet_type::ack)
+    assert(packet != nullptr);
+    if (detail::get_packet_type(packet) == detail::packet_type::ack)
     {
       ++m_nb_acks;
-      const auto res = m_packetizer.read_ack(data, max_len);
+      const auto res = m_packetizer.read_ack(packet, max_len);
       if (m_adaptive)
       {
         if (m_nb_sent_packets > 0)
