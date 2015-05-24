@@ -604,3 +604,26 @@ TEST_CASE("In order decoder, missing sources")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Decoder rejects ack")
+{
+  const auto data = std::vector<char>(100, 'x');
+
+  decoder<packet_handler, data_handler> decoder{8, false, packet_handler{}, data_handler{}};
+  packet_handler h;
+  detail::packetizer<packet_handler> serializer{h};
+
+  SECTION("ack")
+  {
+    serializer.write_ack(detail::ack{{0,1,2,3}, 33});
+    REQUIRE_THROWS_AS(decoder(h.vec[0]), packet_type_error);
+  }
+
+  SECTION("Garbage")
+  {
+    char garbage[4] = {33,35,1,0};
+    REQUIRE_THROWS_AS(decoder(garbage, 4), packet_type_error);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/

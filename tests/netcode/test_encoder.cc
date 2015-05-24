@@ -388,3 +388,32 @@ TEST_CASE("Non systematic encoder")
 }
 
 /*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("Encoder rejects sources and repairs")
+{
+  const auto data = std::vector<char>(100, 'x');
+
+  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  my_handler h;
+  detail::packetizer<my_handler> serializer{h};
+
+  SECTION("repair")
+  {
+    serializer.write_repair( detail::repair{42, 54, {0,1}, detail::zero_byte_buffer(1024, 'x')});
+    REQUIRE_THROWS_AS(encoder(h.data, 2048), packet_type_error);
+  }
+
+  SECTION("source")
+  {
+    serializer.write_source(detail::source{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4});
+    REQUIRE_THROWS_AS(encoder(h.data, 2048), packet_type_error);
+  }
+
+  SECTION("Garbage")
+  {
+    char garbage[4] = {33,35,1,0};
+    REQUIRE_THROWS_AS(encoder(garbage, 4), packet_type_error);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
