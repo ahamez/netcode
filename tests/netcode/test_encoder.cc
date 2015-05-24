@@ -11,24 +11,11 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-namespace /* unnamed */ {
-
-struct dummy_handler
-{
-  void operator()(const char*, std::size_t) const noexcept {}
-  void operator()()                         const noexcept {} // end of data
-};
-
-
-} // namespace unnamed
-
-/*------------------------------------------------------------------------------------------------*/
-
 TEST_CASE("Encoder's window size")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder<packet_handler> encoder{8, packet_handler{}};
   encoder.set_rate(1);
 
   auto data0 = ntc::data(data.begin(), data.begin() + 13);
@@ -50,7 +37,7 @@ TEST_CASE("Encoder can limit the window size")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder<packet_handler> encoder{8, packet_handler{}};
   encoder.set_window_size(4);
 
   auto data0 = ntc::data(data.begin(), data.begin() + 8);
@@ -80,7 +67,7 @@ TEST_CASE("Encoder generates repairs")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder<packet_handler> encoder{8, packet_handler{}};
   encoder.set_rate(5);
 
   for (auto i = 0ul; i < 100; ++i)
@@ -94,7 +81,7 @@ TEST_CASE("Encoder generates repairs")
 
 TEST_CASE("Encoder correctly handles new incoming packets")
 {
-  encoder<dummy_handler> encoder{8, dummy_handler{}};
+  encoder<packet_handler> encoder{8, packet_handler{}};
   encoder.set_rate(5);
 
   // First, add some sources.
@@ -222,50 +209,23 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 
 /*------------------------------------------------------------------------------------------------*/
 
-namespace /* unnamed */ {
-
-struct my_handler
-{
-  char data[2048];
-  std::size_t written = 0;
-  std::size_t nb_packets = 0;
-
-  void
-  operator()(const char* src, std::size_t len)
-  {
-    std::copy_n(src, len, data + written);
-    written += len;
-  }
-
-  void operator()()
-  noexcept
-  {
-    // end of data
-    nb_packets += 1;
-  }
-};
-
-} // namespace unnamed
-
-/*------------------------------------------------------------------------------------------------*/
-
 TEST_CASE("Encoder sends correct sources")
 {
-  encoder<my_handler> enc{8, my_handler{}};
+  encoder<packet_handler> enc{8, packet_handler{}};
 
   auto& enc_handler = enc.packet_handler();
 
   const auto s0 = {'A', 'B', 'C'};
 
   enc(data{begin(s0), end(s0)});
-  REQUIRE(enc_handler.written == ( sizeof(std::uint8_t)      // type
-                                 + sizeof(std::uint32_t)     // id
-                                 + sizeof(std::uint16_t)     // user data size
-                                 + s0.size()                 // data
-                                 ));
+  REQUIRE(enc_handler[0].size() == ( sizeof(std::uint8_t)      // type
+                                   + sizeof(std::uint32_t)     // id
+                                   + sizeof(std::uint16_t)     // user data size
+                                   + s0.size()                 // data
+                                   ));
   REQUIRE(std::equal( begin(s0), end(s0)
-                    , enc_handler.data + sizeof(std::uint8_t) + sizeof(std::uint32_t)
-                                       + sizeof(std::uint16_t)
+                    , enc_handler[0].begin() + sizeof(std::uint8_t) + sizeof(std::uint32_t)
+                                             + sizeof(std::uint16_t)
                     ));
 
 }
@@ -274,7 +234,7 @@ TEST_CASE("Encoder sends correct sources")
 
 TEST_CASE("Encoder sends repairs")
 {
-  encoder<my_handler> enc{8, my_handler{}};
+  encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(1);
 
   auto& enc_handler = enc.packet_handler();
@@ -287,8 +247,8 @@ TEST_CASE("Encoder sends repairs")
                     + sizeof(std::uint16_t)     // user data size
                     + s0.size();                // data
 
-  REQUIRE(enc_handler.nb_packets == 2 /* 1 source +  1 repair */);
-  REQUIRE(detail::get_packet_type(enc_handler.data + src_sz) == detail::packet_type::repair);
+  REQUIRE(enc_handler.nb_packets() == 2 /* 1 source +  1 repair */);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -380,11 +340,11 @@ TEST_CASE("Non systematic encoder")
   REQUIRE(encoder.nb_sent_repairs() == 5);
 
   REQUIRE(enc_handler.nb_packets() == 5 /* 5 repairs */);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -393,20 +353,20 @@ TEST_CASE("Encoder rejects sources and repairs")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  encoder<dummy_handler> encoder{8, dummy_handler{}};
-  my_handler h;
-  detail::packetizer<my_handler> serializer{h};
+  encoder<packet_handler> encoder{8, packet_handler{}};
+  packet_handler h;
+  detail::packetizer<packet_handler> serializer{h};
 
   SECTION("repair")
   {
     serializer.write_repair( detail::repair{42, 54, {0,1}, detail::zero_byte_buffer(1024, 'x')});
-    REQUIRE_THROWS_AS(encoder(h.data, 2048), packet_type_error);
+    REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
   }
 
   SECTION("source")
   {
     serializer.write_source(detail::source{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4});
-    REQUIRE_THROWS_AS(encoder(h.data, 2048), packet_type_error);
+    REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
   }
 
   SECTION("Garbage")

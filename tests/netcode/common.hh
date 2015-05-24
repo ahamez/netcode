@@ -19,51 +19,80 @@ add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf, 
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct packet_handler
+class packet_handler
 {
-  // Stores all packets.
-  std::vector<std::vector<char>> vec;
+public:
 
   packet_handler()
-    : vec(1)
+    : m_vec(1)
   {}
 
   void
   operator()(const char* src, std::size_t len)
   {
-    std::copy_n(src, len, std::back_inserter(vec.back()));
+    std::copy_n(src, len, std::back_inserter(m_vec.back()));
   }
 
   void
   operator()()
   {
-    vec.emplace_back();
+    m_vec.emplace_back();
+  }
+
+  std::vector<char>
+  operator[](std::size_t pos)
+  const noexcept
+  {
+    return m_vec[pos];
   }
 
   std::size_t
   nb_packets()
   const noexcept
   {
-    return vec.size() - 1;
+    return m_vec.size() - 1;
   }
+
+private:
+
+  // Stores all packets.
+  std::vector<std::vector<char>> m_vec;
 };
 
 /*------------------------------------------------------------------------------------------------*/
 
-struct data_handler
+class data_handler
 {
-  // Stores all symbols.
-  std::vector<std::vector<char>> vec;
+public:
 
   data_handler()
-    : vec()
+    : m_vec()
   {}
 
   void
   operator()(const char* src, std::size_t len)
   {
-    vec.emplace_back(src, src + len);
+    m_vec.emplace_back(src, src + len);
   }
+
+  std::vector<char>
+  operator[](std::size_t pos)
+  const noexcept
+  {
+    return m_vec[pos];
+  }
+
+  std::size_t
+  nb_data()
+  const noexcept
+  {
+    return m_vec.size();
+  }
+
+private:
+
+  // Stores all symbols.
+  std::vector<std::vector<char>> m_vec;
 };
 
 /*------------------------------------------------------------------------------------------------*/

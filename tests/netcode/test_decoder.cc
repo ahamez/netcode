@@ -28,10 +28,10 @@ TEST_CASE("Decoder gives a correct source to user")
   enc(data{begin(s0), end(s0)});
 
   // Send serialized data to decoder.
-  dec(enc_packet_handler.vec[0]);
+  dec(enc_packet_handler[0]);
 
-  REQUIRE(dec_data_handler.vec[0].size() == s0.size());
-  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+  REQUIRE(dec_data_handler[0].size() == s0.size());
+  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -51,15 +51,15 @@ TEST_CASE("Decoder repairs a lost source")
   enc(data{begin(s0), end(s0)});
 
   // Skip first source.
-  auto repair = enc_packet_handler.vec[1];
+  auto repair = enc_packet_handler[1];
 
   // Send repair to decoder.
   REQUIRE(dec(repair.data(), repair.size()));
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_received_sources() == 0);
   REQUIRE(dec.nb_decoded() == 1);
-  REQUIRE(dec_data_handler.vec[0].size() == s0.size());
-  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
+  REQUIRE(dec_data_handler[0].size() == s0.size());
+  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ TEST_CASE("Decoder generate correct ack")
   REQUIRE(enc.window() == 1);
 
   // Send source to decoder.
-  dec(enc_packet_handler.vec[0].data(), enc_packet_handler.vec[0].size());
+  dec(enc_packet_handler[0].data(), enc_packet_handler[0].size());
 
   SECTION("Force ack")
   {
@@ -90,7 +90,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(dec_packet_handler.vec[0].data(), dec_packet_handler.vec[0].size());
+    enc(dec_packet_handler[0].data(), dec_packet_handler[0].size());
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 
@@ -102,7 +102,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(dec.nb_sent_acks() == 1);
 
     // Sent it to the encoder.
-    enc(dec_packet_handler.vec[0]);
+    enc(dec_packet_handler[0]);
     REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
   }
 }
@@ -129,19 +129,19 @@ TEST_CASE("Decoder generate acks when N packets are received")
   enc(data{begin(s0), end(s0)});
   REQUIRE(enc.window() == 4);
   REQUIRE(enc_packet_handler.nb_packets() == 4);
-  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler.vec[3].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_packet_handler[3].data()) == detail::packet_type::source);
 
   // Send sources to decoder.
-  dec(enc_packet_handler.vec[0]);
-  dec(enc_packet_handler.vec[1]);
-  dec(enc_packet_handler.vec[2]);
-  dec(enc_packet_handler.vec[3]);
+  dec(enc_packet_handler[0]);
+  dec(enc_packet_handler[1]);
+  dec(enc_packet_handler[2]);
+  dec(enc_packet_handler[3]);
 
   REQUIRE(dec_packet_handler.nb_packets() == 1);
-  REQUIRE(detail::get_packet_type(dec_packet_handler.vec[0].data()) == detail::packet_type::ack);
+  REQUIRE(detail::get_packet_type(dec_packet_handler[0].data()) == detail::packet_type::ack);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -177,30 +177,30 @@ test_case_0(bool in_order)
   REQUIRE(enc.window() == 3);
 
   REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
 
   // Now send to decoder.
   // Lost first source.
-  dec(enc_handler.vec[1]);
-  dec(enc_handler.vec[2]);
-  dec(enc_handler.vec[3]);
+  dec(enc_handler[1]);
+  dec(enc_handler[2]);
+  dec(enc_handler[3]);
   // Because the encoder's window is 3, the incoming repair only encode s1, s2 and s3. Thus,
   // s0 is completely lost and cannot be recovered.
-  dec(enc_handler.vec[4]);
+  dec(enc_handler[4]);
   REQUIRE(dec.nb_received_sources() == 3);
   REQUIRE(dec.nb_received_repairs() == 1);
   REQUIRE(dec.nb_missing_sources() == 0);
   REQUIRE(dec.nb_decoded() == 0);
 
   // Sources were correctly given to the user handler.
-  REQUIRE(dec_data_handler.vec.size() == 3);
-  REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[0])));
-  REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[1])));
-  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[2])));
+  REQUIRE(dec_data_handler.nb_data() == 3);
+  REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[0])));
+  REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[1])));
+  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[2])));
 }
 
 
@@ -247,20 +247,20 @@ test_case_1(bool in_order)
 
   // Only repairs
   REQUIRE(enc_handler.nb_packets() == 5 /* repairs */);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
 
   SECTION("Lost first repair")
   {
     // Now send to decoder.
     // Lost first repair.
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[2]);
-    dec(enc_handler.vec[3]);
-    dec(enc_handler.vec[4]);
+    dec(enc_handler[1]);
+    dec(enc_handler[2]);
+    dec(enc_handler[3]);
+    dec(enc_handler[4]);
 
     REQUIRE(dec.nb_received_sources() == 0);
     REQUIRE(dec.nb_received_repairs() == 4);
@@ -268,20 +268,20 @@ test_case_1(bool in_order)
     REQUIRE(dec.nb_decoded() == 4);
 
     // All sources were correctly given to the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
   SECTION("Lost a repair")
   {
     // Now send to decoder.
     // Lost repair 2.
-    dec(enc_handler.vec[0]);
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[3]);
-    dec(enc_handler.vec[4]);
+    dec(enc_handler[0]);
+    dec(enc_handler[1]);
+    dec(enc_handler[3]);
+    dec(enc_handler[4]);
 
     REQUIRE(dec.nb_received_sources() == 0);
     REQUIRE(dec.nb_received_repairs() == 4);
@@ -289,20 +289,20 @@ test_case_1(bool in_order)
     REQUIRE(dec.nb_decoded() == 4);
 
     // All sources were correctly given to the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
   SECTION("Lost last repair")
   {
     // Now send to decoder.
     // Lost last repair.
-    dec(enc_handler.vec[0]);
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[2]);
-    dec(enc_handler.vec[3]);
+    dec(enc_handler[0]);
+    dec(enc_handler[1]);
+    dec(enc_handler[2]);
+    dec(enc_handler[3]);
 
     REQUIRE(dec.nb_received_sources() == 0);
     REQUIRE(dec.nb_received_repairs() == 4);
@@ -310,11 +310,11 @@ test_case_1(bool in_order)
     REQUIRE(dec.nb_decoded() == 4);
 
     // All sources were correctly given to the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
 }
 
@@ -354,26 +354,26 @@ TEST_CASE("Decoder invalid read scenario")
 
   // Only repairs
   REQUIRE(enc_handler.nb_packets() == 4 /* repairs */);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::repair);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
 
   SECTION("Lost 1st repair")
   {
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[2]);
-    dec(enc_handler.vec[3]);
+    dec(enc_handler[1]);
+    dec(enc_handler[2]);
+    dec(enc_handler[3]);
 
     REQUIRE(dec.nb_received_sources() == 0);
     REQUIRE(dec.nb_received_repairs() == 3);
     REQUIRE(dec.nb_decoded() == 3);
 
     // All sources were correctly given to the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 3);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
+    REQUIRE(dec_data_handler.nb_data() == 3);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
   }
 }
 
@@ -401,72 +401,72 @@ TEST_CASE("In order decoder")
   enc(data{begin(s3), end(s3)});
 
   REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
 
   SECTION("Wrong order of sources")
   {
     // Now send to decoder in wrong order.
-    dec(enc_handler.vec[0]);
-    dec(enc_handler.vec[3]);
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[2]);
-    dec(enc_handler.vec[4]);
+    dec(enc_handler[0]);
+    dec(enc_handler[3]);
+    dec(enc_handler[1]);
+    dec(enc_handler[2]);
+    dec(enc_handler[4]);
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 1);
     REQUIRE(dec.nb_missing_sources() == 0);
     REQUIRE(dec.nb_decoded() == 0);
 
     // Sources were given to in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
 
   SECTION("Reverse order of sources")
   {
     // Now send to decoder in wrong order.
-    dec(enc_handler.vec[3]);
-    dec(enc_handler.vec[2]);
-    dec(enc_handler.vec[1]);
-    dec(enc_handler.vec[0]);
-    dec(enc_handler.vec[4]); // << repair
+    dec(enc_handler[3]);
+    dec(enc_handler[2]);
+    dec(enc_handler[1]);
+    dec(enc_handler[0]);
+    dec(enc_handler[4]); // << repair
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 1);
     REQUIRE(dec.nb_missing_sources() == 0);
     REQUIRE(dec.nb_decoded() == 0);
 
     // Sources were given to in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
 
   SECTION("Repair in middle")
   {
-    dec(enc_handler.vec[0]); // s0
-    dec(enc_handler.vec[4]); // << repair
-    dec(enc_handler.vec[3]); // s3
-    dec(enc_handler.vec[1]); // s1
-    dec(enc_handler.vec[2]); // s2, will be reconstructed
+    dec(enc_handler[0]); // s0
+    dec(enc_handler[4]); // << repair
+    dec(enc_handler[3]); // s3
+    dec(enc_handler[1]); // s1
+    dec(enc_handler[2]); // s2, will be reconstructed
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 1);
     REQUIRE(dec.nb_missing_sources() == 0);
     REQUIRE(dec.nb_decoded() == 1); //
 
     // Sources were given in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[3])));
   }
 }
 
@@ -500,27 +500,27 @@ TEST_CASE("In order decoder, missing sources")
 
   REQUIRE(enc_handler.nb_packets() == 8 /* 6 src + 2 repair */);
 
-  REQUIRE(detail::get_packet_type(enc_handler.vec[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[3].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
 
-  REQUIRE(detail::get_packet_type(enc_handler.vec[4].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[5].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[6].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler.vec[7].data()) == detail::packet_type::repair);
+  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[5].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[6].data()) == detail::packet_type::source);
+  REQUIRE(detail::get_packet_type(enc_handler[7].data()) == detail::packet_type::repair);
 
   SECTION("Right order")
   {
     // s1 and s2 are lost, unable to reconstruct them.
-    dec(enc_handler.vec[0]);
-    dec(enc_handler.vec[3]); // << repair
+    dec(enc_handler[0]);
+    dec(enc_handler[3]); // << repair
     REQUIRE(dec.nb_missing_sources() == 2);
 
-    dec(enc_handler.vec[4]);
-    dec(enc_handler.vec[5]);
-    dec(enc_handler.vec[6]);
-    dec(enc_handler.vec[7]); // << repair, outdating sources 0, 1 and 2
+    dec(enc_handler[4]);
+    dec(enc_handler[5]);
+    dec(enc_handler[6]);
+    dec(enc_handler[7]); // << repair, outdating sources 0, 1 and 2
 
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 2);
@@ -528,22 +528,22 @@ TEST_CASE("In order decoder, missing sources")
     REQUIRE(dec.nb_decoded() == 0);
 
   // Sources were given in the correct order the user handler.
-  REQUIRE(dec_data_handler.vec.size() == 4);
-  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[1])));
-  REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[2])));
-  REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[3])));
+  REQUIRE(dec_data_handler.nb_data() == 4);
+  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[1])));
+  REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[2])));
+  REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[3])));
   }
 
   SECTION("Wrong order 1")
   {
     // s1 and s2 are lost, unable to reconstruct them.
-    dec(enc_handler.vec[0]); // s0
-    dec(enc_handler.vec[4]); // s3
-    dec(enc_handler.vec[5]); // s4
-    dec(enc_handler.vec[6]); // s5
-    dec(enc_handler.vec[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
-    dec(enc_handler.vec[3]); // << repair for 0, 1 and 2
+    dec(enc_handler[0]); // s0
+    dec(enc_handler[4]); // s3
+    dec(enc_handler[5]); // s4
+    dec(enc_handler[6]); // s5
+    dec(enc_handler[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler[3]); // << repair for 0, 1 and 2
 
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 2);
@@ -551,22 +551,22 @@ TEST_CASE("In order decoder, missing sources")
     REQUIRE(dec.nb_decoded() == 0);
 
     // Sources were given in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 4);
-    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[2])));
-    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[3])));
+    REQUIRE(dec_data_handler.nb_data() == 4);
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[2])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[3])));
   }
 
   SECTION("Wrong order 2")
   {
     // s1 and s2 are lost, unable to reconstruct them.
-    dec(enc_handler.vec[4]); // s3
-    dec(enc_handler.vec[5]); // s4
-    dec(enc_handler.vec[6]); // s5
-    dec(enc_handler.vec[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
-    dec(enc_handler.vec[3]); // << repair for 0, 1 and 2
-    dec(enc_handler.vec[0]); // s0
+    dec(enc_handler[4]); // s3
+    dec(enc_handler[5]); // s4
+    dec(enc_handler[6]); // s5
+    dec(enc_handler[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler[3]); // << repair for 0, 1 and 2
+    dec(enc_handler[0]); // s0
 
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 2);
@@ -574,21 +574,21 @@ TEST_CASE("In order decoder, missing sources")
     REQUIRE(dec.nb_decoded() == 0);
 
     // Sources were given in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 3);
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[2])));
+    REQUIRE(dec_data_handler.nb_data() == 3);
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[2])));
   }
 
   SECTION("Wrong order 3")
   {
     // s1 and s2 are lost, unable to reconstruct them.
-    dec(enc_handler.vec[5]); // s4
-    dec(enc_handler.vec[6]); // s5
-    dec(enc_handler.vec[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
-    dec(enc_handler.vec[3]); // << repair for 0, 1 and 2
-    dec(enc_handler.vec[0]); // s0
-    dec(enc_handler.vec[4]); // s3
+    dec(enc_handler[5]); // s4
+    dec(enc_handler[6]); // s5
+    dec(enc_handler[7]); // << repair for 3, 4 and 5; outdating sources 0, 1 and 2
+    dec(enc_handler[3]); // << repair for 0, 1 and 2
+    dec(enc_handler[0]); // s0
+    dec(enc_handler[4]); // s3
 
     REQUIRE(dec.nb_received_sources() == 4);
     REQUIRE(dec.nb_received_repairs() == 2);
@@ -596,10 +596,10 @@ TEST_CASE("In order decoder, missing sources")
     REQUIRE(dec.nb_decoded() == 1);
 
     // Sources were given in the correct order the user handler.
-    REQUIRE(dec_data_handler.vec.size() == 3);
-    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler.vec[0])));
-    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler.vec[1])));
-    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler.vec[2])));
+    REQUIRE(dec_data_handler.nb_data() == 3);
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s4), end(s4), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s5), end(s5), begin(dec_data_handler[2])));
   }
 }
 
@@ -616,7 +616,7 @@ TEST_CASE("Decoder rejects ack")
   SECTION("ack")
   {
     serializer.write_ack(detail::ack{{0,1,2,3}, 33});
-    REQUIRE_THROWS_AS(decoder(h.vec[0]), packet_type_error);
+    REQUIRE_THROWS_AS(decoder(h[0]), packet_type_error);
   }
 
   SECTION("Garbage")
