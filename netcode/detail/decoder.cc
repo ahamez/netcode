@@ -355,7 +355,8 @@ noexcept
     const auto& r = cit->second;
     assert(not r.source_ids().empty());
 
-    // Does this repair encodes sources with identifiers strictly less than id?
+    // Does this repair encodes sources with identifiers strictly less than id? If so, it's no
+    // longer useful.
     if (id > *r.source_ids().begin())
     {
       const auto to_erase = cit;
@@ -569,14 +570,14 @@ decoder::flush_ordered_sources()
   auto cit = m_ordered_sources.find(m_first_missing_source);
   while (cit != m_ordered_sources.end())
   {
-    assert(cit->second->id() == m_first_missing_source);
+    assert(cit->first == m_first_missing_source);
     m_callback(*cit->second);
     const auto to_erase = cit;
     ++cit;
     m_ordered_sources.erase(to_erase);
     m_first_missing_source += 1;
 
-    if (cit == m_ordered_sources.end() or cit->second->id() > m_first_missing_source)
+    if (cit->first > m_first_missing_source)
     {
       break;
     }
