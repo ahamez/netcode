@@ -242,12 +242,8 @@ TEST_CASE("Encoder sends repairs")
   const auto s0 = {'a', 'b', 'c'};
 
   enc(data{begin(s0), end(s0)});
-  const auto src_sz = sizeof(std::uint8_t)      // type
-                    + sizeof(std::uint32_t)     // id
-                    + sizeof(std::uint16_t)     // user data size
-                    + s0.size();                // data
-
   REQUIRE(enc_handler.nb_packets() == 2 /* 1 source +  1 repair */);
+  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
   REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
 }
 
