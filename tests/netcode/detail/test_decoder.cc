@@ -799,7 +799,7 @@ TEST_CASE("Decoder: 1 packet loss")
   detail::byte_buffer s2_data{'g','h','i'};
   detail::byte_buffer s3_data{'j','k','l'};
 
-  // Push the source.
+  // Push the sources.
   detail::source_list sl;
   add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
   add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
@@ -835,7 +835,68 @@ TEST_CASE("Decoder: 1 packet loss")
   REQUIRE(decoder.repairs().size() == 0);
   REQUIRE(decoder.nb_useless_repairs() == 0);
   REQUIRE(decoder.nb_failed_full_decodings() == 0);
+}
 
+/*------------------------------------------------------------------------------------------------*/
+
+TEST_CASE("2 repairs for 3 sources")
+{
+  // The payloads that should be reconstructed.
+  detail::byte_buffer s0_data{'a','b','c',};
+  detail::byte_buffer s1_data{'d','e','f'};
+  detail::byte_buffer s2_data{'g','h','i'};
+
+  // Push the sources.
+  detail::source_list sl;
+  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+  add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
+
+  // Two repairs to store encoded sources
+  detail::repair r0{0};
+  detail::repair r1{1};
+
+  // We need an encoder to fill the repair.
+  detail::encoder{8}(r0, sl);
+  detail::encoder{8}(r1, sl);
+
+  // Now test the decoder.
+  detail::decoder decoder{ 8
+                         , [&](const detail::source& src)
+                           {
+                             const auto& buffer = src.buffer();
+                             if (src.id() == 0)
+                             {
+                               REQUIRE(src.user_size() == s0_data.size());
+                               REQUIRE(std::equal(begin(s0_data), end(s0_data), begin(buffer)));
+                             }
+                             else if (src.id() == 1)
+                             {
+                               REQUIRE(src.user_size() == s1_data.size());
+                               REQUIRE(std::equal(begin(s1_data), end(s1_data), begin(buffer)));
+                             }
+                             else if (src.id() == 2)
+                             {
+                               REQUIRE(src.user_size() == s2_data.size());
+                               REQUIRE(std::equal(begin(s2_data), end(s2_data), begin(buffer)));
+                             }
+                             else
+                             {
+                               REQUIRE(false);
+                             }
+                           }
+                         , false};
+
+  // r0 is received
+  decoder(std::move(r0));
+  decoder(std::move(r1));
+  REQUIRE(decoder.nb_decoded() == 0);
+  REQUIRE(decoder.missing_sources().size() == 3);
+
+  // s2 is received, s0 and s1 should be decoded.
+  decoder(detail::source{2, detail::byte_buffer{s2_data}, static_cast<std::uint16_t>(s2_data.size())});
+  REQUIRE(decoder.nb_decoded() == 2);
+  REQUIRE(decoder.missing_sources().size() == 0);
 }
 
 /*------------------------------------------------------------------------------------------------*/
