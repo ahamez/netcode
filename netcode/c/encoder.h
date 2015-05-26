@@ -50,6 +50,8 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @pre @ref ntc_data_get_used_bytes (@p data) > 0
+/// @pre @p error != NULL
 void
 ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept;
@@ -57,6 +59,7 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @pre @p error != NULL
 size_t
 ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
 noexcept;

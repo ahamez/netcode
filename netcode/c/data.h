@@ -45,7 +45,7 @@ noexcept;
 /// @note There's no need to call ntc_data_set_used_bytes() when creating a data with this function.
 /// @ingroup c_data
 ntc_data_t*
-ntc_new_data_copy(const char* src, uint16_t sz)
+ntc_new_data_copy(const char* src, uint16_t size)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -66,15 +66,37 @@ noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Tell to the library how much bytes were written in a data.
+/// @brief Get how much bytes were reserved for the underlying buffer.
 /// @ingroup c_data
-void
-ntc_data_set_used_bytes(ntc_data_t* d, uint16_t sz)
+///
+/// This reserved size can be set :
+/// - at construction with ntc_new_data()
+/// - at copy construction with ntc_new_data_copy()
+/// - when resetting with ntc_data_reset()
+uint16_t
+ntc_data_get_reserved_size(const ntc_data_t* data)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Reset a data for future use (to avoid a memory allocation).
+/// @brief Tell to the library how much bytes were written in a data.
+/// @ingroup c_data
+/// @pre @p nb <= ntc_data_get_reserved_size()
+void
+ntc_data_set_used_bytes(ntc_data_t* d, uint16_t nb)
+noexcept;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief Get the number of bytes which were written in a data.
+/// @ingroup c_data
+uint16_t
+ntc_data_get_used_bytes(const ntc_data_t* d)
+noexcept;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @brief Reset a data for future use with a new wanted size.
 /// @ingroup c_data
 void
 ntc_data_reset(ntc_data_t* d, uint16_t new_size, ntc_error* error)

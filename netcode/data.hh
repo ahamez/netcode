@@ -125,7 +125,7 @@ public:
   reset(std::uint16_t new_size)
   {
     m_used_bytes = 0;
-    m_buffer.resize(new_size);
+    resize(new_size);
   }
 
 private:

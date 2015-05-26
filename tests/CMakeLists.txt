@@ -1,5 +1,6 @@
 set(SOURCES
    tests.cc
+   netcode/c/test_data.cc
    netcode/detail/test_buffer.cc
    netcode/detail/test_decoder.cc
    netcode/detail/test_encoder.cc
@@ -15,7 +16,7 @@ set(SOURCES
    )
 
 add_executable(tests ${SOURCES})
-target_link_libraries(tests ntc ${GF_COMPLETE_LIBRARY})
+target_link_libraries(tests ntc cntc ${GF_COMPLETE_LIBRARY})
 
 
 set(END_TO_END_SOURCES
