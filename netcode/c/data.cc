@@ -24,19 +24,19 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_delete_data(ntc_data_t* d)
+ntc_delete_data(ntc_data_t* data)
 noexcept
 {
-  delete d;
+  delete data;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 char*
-ntc_data_buffer(ntc_data_t* d)
+ntc_data_buffer(ntc_data_t* data)
 noexcept
 {
-  return d->buffer();
+  return data->buffer();
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -51,10 +51,10 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_set_used_bytes(ntc_data_t* d, uint16_t size)
+ntc_data_set_used_bytes(ntc_data_t* data, uint16_t size)
 noexcept
 {
-  d->used_bytes() = size;
+  data->used_bytes() = size;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -69,10 +69,10 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_reset(ntc_data_t* d, uint16_t new_size, ntc_error* error)
+ntc_data_reset(ntc_data_t* data, uint16_t new_size, ntc_error* error)
 noexcept
 {
-  ntc::detail::check_error([&]{d->reset(new_size);}, error);
+  ntc::detail::check_error([&]{data->reset(new_size);}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/

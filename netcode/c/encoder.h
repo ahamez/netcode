@@ -30,12 +30,13 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Describe if an encoder uses a systematic code or not
 typedef enum {ntc_systematic, ntc_non_systematic} ntc_code_type;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-/// @return A new decoder if allocation suceeded; a null pointer otherwise.
+/// @return A new decoder if allocation suceeded; a null pointer otherwise
 ntc_encoder_t*
 ntc_new_encoder(uint8_t galois_field_size, ntc_packet_handler handler)
 noexcept;
@@ -43,6 +44,7 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @param enc The encoder to delete
 void
 ntc_delete_encoder(ntc_encoder_t* enc)
 noexcept;
@@ -50,8 +52,13 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Let an encoder handle a new data
+/// @param enc The encoder to notify
+/// @param data The data to add
+/// @param error The reported error, if any
 /// @pre @ref ntc_data_get_used_bytes (@p data) > 0
-/// @pre @p error != NULL
+/// @attention @p data won't be usable after this call. However, it's possible to put it back in
+/// an usable state by calling ntc_data_reset(), rather than creating a new data with ntc_new_data()
 void
 ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept;
@@ -59,7 +66,13 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-/// @pre @p error != NULL
+/// @brief Notify an encoder with a new incoming packet
+/// @param enc The encoder to notify
+/// @param packet The pointer to the beginning of the incoming packet
+/// @param max_size The maximal number of bytes the encoder is allowed to read from @p packet
+/// @param error The reported error, if any
+/// @return The number of read bytes from packet
+/// @note The returned value is invalid if an error occurred
 size_t
 ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
 noexcept;
@@ -67,6 +80,9 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Force an encoder to generate a repair
+/// @param enc The encoder to force
+/// @param error The reported error, if any
 void
 ntc_encoder_generate_repair(ntc_encoder_t* enc, ntc_error* error)
 noexcept;
@@ -74,6 +90,8 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Get the current number of data an encoder still holds
+/// @param enc The encoder to query
 size_t
 ntc_encoder_window(ntc_encoder_t* enc)
 noexcept;
@@ -81,6 +99,10 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Configure an encoder to be systematic or not
+/// @param enc The encoder to configure
+/// @param code_type The code type
+/// @note The default mode of an encoder is systematic
 void
 ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type code_type)
 noexcept;
@@ -88,8 +110,11 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Configure the code rate of an encoder
+/// @param enc The encoder to configure
+/// @param rate The desired rate
 /// @pre @p rate > 0
-/// @note If the adaptive mode is set, the rate will change automatically.
+/// @note If the adaptive mode is set, the rate will change automatically
 void
 ntc_encoder_set_rate(ntc_encoder_t* enc, size_t rate)
 noexcept;
@@ -97,7 +122,9 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-/// @brief Configure the maximal number of data to keep before discarding oldest data.
+/// @brief Configure the maximal number of data to keep before discarding oldest data
+/// @param enc The encoder to configure
+/// @param size The required maximal window size
 /// @pre @p size > 0
 void
 ntc_encoder_set_window_size(ntc_encoder_t* enc, size_t size)
@@ -106,7 +133,10 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
-/// @brief Configure the in-adaptive mode.
+/// @brief Configure the adaptive mode
+/// @param enc The encoder to configure
+/// @param adaptive Set to true if the adaptive mode is desired
+/// @note An encoder is not adaptive by default
 void
 ntc_encoder_set_adaptive(ntc_encoder_t* enc, bool adaptive)
 noexcept;
