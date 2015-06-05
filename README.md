@@ -1,14 +1,14 @@
-# Description
+### Description
 
-The netcode library is C++11 network coding library, with C interfaces.
+The netcode library is a C++11 network coding library, with C interfaces.
 
-# Requirements
+### Requirements
 
 - gcc >= 4.7 or clang >= 3.3
 - gf-complete (https://github.com/ceph/gf-complete)
 - cmake >= 2.8.9
 
-# Building and installing
+### Building and installing
 
 ```
 $ mkdir build && cd build
