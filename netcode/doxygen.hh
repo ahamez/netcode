@@ -17,6 +17,7 @@
 /*------------------------------------------------------------------------------------------------*/
 
 /// @defgroup c_ntc C interfaces
+/// @attention In all cases, a @p ntc_* function shall never be given a NULL pointer
 
 /// @defgroup c_encoder Encoding data
 /// @ingroup c_ntc
@@ -25,6 +26,9 @@
 /// @ingroup c_ntc
 
 /// @defgroup c_data Manipulating data
+/// @ingroup c_ntc
+
+/// @defgroup c_handlers Signature of handlers to interact with encoder and decoder
 /// @ingroup c_ntc
 
 /// @defgroup c_error Error reporting

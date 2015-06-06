@@ -44,6 +44,7 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_encoder
+/// @brief Release the memory of an encoder
 /// @param enc The encoder to delete
 void
 ntc_delete_encoder(ntc_encoder_t* enc)
@@ -57,8 +58,8 @@ noexcept;
 /// @param data The data to add
 /// @param error The reported error, if any
 /// @pre @ref ntc_data_get_used_bytes (@p data) > 0
-/// @attention @p data won't be usable after this call. However, it's possible to put it back in
-/// an usable state by calling ntc_data_reset(), rather than creating a new data with ntc_new_data()
+/// @post @p data is invalid
+/// @note It's possible to put @p data back in an usable state by calling ntc_data_reset()
 void
 ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept;
@@ -92,6 +93,7 @@ noexcept;
 /// @ingroup c_encoder
 /// @brief Get the current number of data an encoder still holds
 /// @param enc The encoder to query
+/// @return The queried size
 size_t
 ntc_encoder_window(ntc_encoder_t* enc)
 noexcept;

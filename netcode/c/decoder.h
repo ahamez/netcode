@@ -38,6 +38,8 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
+/// @brief Release the memory of a decoder
+/// @param dec The decoder to delete
 void
 ntc_delete_decoder(ntc_decoder_t* dec)
 noexcept;
@@ -46,7 +48,7 @@ noexcept;
 
 /// @ingroup c_decoder
 /// @brief Notify an decoder with a new incoming packet
-/// @param enc The decoder to notify
+/// @param dec The decoder to notify
 /// @param packet The pointer to the beginning of the incoming packet
 /// @param max_size The maximal number of bytes the decoder is allowed to read from @p packet
 /// @param error The reported error, if any
@@ -59,6 +61,9 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
+/// @brief Force an decoder to generate an acknowledgment packet
+/// @param dec The decoder to force
+/// @param error The reported error, if any
 void
 ntc_decoder_generate_ack(ntc_decoder_t* dec, ntc_error* error)
 noexcept;
@@ -66,8 +71,8 @@ noexcept;
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-/// @brief Configure the frequency at which acknowledgment will be sent
-/// @param conf The configuration to modify
+/// @brief Configure the frequency at which acknowledgments will be sent
+/// @param dec The decoder to configure
 /// @param frequency The requested frequency, if 0, deactivate this feature
 void
 ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
