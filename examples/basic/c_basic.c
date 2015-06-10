@@ -18,8 +18,7 @@ typedef struct
 
 /*------------------------------------------------------------------------------------------------*/
 
-// This callback is invoked repeatedly (by the encoder or the decoder) until the whole packet is
-// complete.
+// This callback is invoked repeatedly (by the encoder or the decoder) until the packet is complete.
 void
 prepare_packet(void* c, const char* packet, size_t sz)
 {
@@ -47,7 +46,7 @@ send_packet(void* cxt)
 void
 receive_data(void* cxt, const char* data, size_t sz)
 {
-  printf("data has been received!\n");
+  printf("%lu bytes of data have been received!\n", sz);
   memcpy(((context*)cxt)->buffer, data, sz);
   ((context*)cxt)->nb_read = sz;
 }
@@ -102,7 +101,7 @@ int main(int argc, char** argv)
 
   // Give this data to the encoder.
   // Be aware that the 'data' parameter will be invalid after this call. You can only call two
-  // particular functions on an invalid data: ntc_data_reset or ntc_delete_data.
+  // functions on an invalid data: ntc_data_reset or ntc_delete_data.
   ntc_encoder_add_data(enc, data, &error);
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
@@ -118,7 +117,7 @@ int main(int argc, char** argv)
   // Reset data: it's now legit to use it again.
   ntc_data_reset(data, 1024, &error);
 
-  // Send a new data.
+  // Fill some more data.
   ntc_data_buffer(data)[0] = 'd';
   ntc_data_buffer(data)[1] = 'e';
   ntc_data_buffer(data)[2] = 'f';
@@ -128,8 +127,8 @@ int main(int argc, char** argv)
   // Give this new data to the encoder.
   ntc_encoder_add_data(enc, data, &error);
 
-  // The context of the packet handler for the encoder is now given to the decoder, as if it was
-  // received from the network.
+  // Again, the context of the packet handler for the encoder is now given to the decoder, as if it
+  //  was received from the network.
   ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
 
   // Now the context of the decoder's data handler contains the sent data.
@@ -146,3 +145,5 @@ int main(int argc, char** argv)
 
   return 0;
 }
+
+/*------------------------------------------------------------------------------------------------*/
