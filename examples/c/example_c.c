@@ -9,6 +9,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
+// A context to save informations needed by callbacks (like a socket or a buffer).
 typedef struct
 {
   size_t nb_read;
@@ -17,6 +18,8 @@ typedef struct
 
 /*------------------------------------------------------------------------------------------------*/
 
+// This callback is invoked repeatedly (by the encoder or the decoder) until the whole packet is
+// complete.
 void
 prepare_packet(void* c, const char* packet, size_t sz)
 {
@@ -28,6 +31,8 @@ prepare_packet(void* c, const char* packet, size_t sz)
 
 /*------------------------------------------------------------------------------------------------*/
 
+// This callback is invoked (by the encoder or the decoder) when the packet received by the callback
+// prepare_packet is complete.
 void
 send_packet(void* cxt)
 {
@@ -37,6 +42,8 @@ send_packet(void* cxt)
 
 /*------------------------------------------------------------------------------------------------*/
 
+// This callback is invoked (by the decoder) whenever a data is ready, that is a data which has been
+// received or decoded.
 void
 receive_data(void* cxt, const char* data, size_t sz)
 {
@@ -94,6 +101,8 @@ int main(int argc, char** argv)
   ntc_error error;
 
   // Give this data to the encoder.
+  // Be aware that the 'data' parameter will be invalid after this call. You can only call two
+  // particular functions on an invalid data: ntc_data_reset or ntc_delete_data.
   ntc_encoder_add_data(enc, data, &error);
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
@@ -106,8 +115,10 @@ int main(int argc, char** argv)
   assert(data_cxt.buffer[1] == 'b');
   assert(data_cxt.buffer[2] == 'c');
 
-  // Now send a new data (we use again the same ntc_data).
+  // Reset data: it's now legit to use it again.
   ntc_data_reset(data, 1024, &error);
+
+  // Send a new data.
   ntc_data_buffer(data)[0] = 'd';
   ntc_data_buffer(data)[1] = 'e';
   ntc_data_buffer(data)[2] = 'f';
