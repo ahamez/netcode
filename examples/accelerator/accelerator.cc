@@ -32,14 +32,16 @@ main(int argc, char** argv)
   {
     asio::io_service io;
 
-    // Connection with the application.
+    // Connection with the proxied application.
     udp::socket app_socket{io};
     udp::endpoint app_endpoint;
 
-    // Encoded connection.
+    // Encoded tunnel.
     udp::socket socket{io};
     udp::endpoint endpoint;
 
+    // The transcoder is fully symmetric as it handles two-ways communications. Still, UDP
+    // requires a client and a server.
     if (std::strncmp(argv[1], "server", 7) == 0)
     {
       const auto server_port = static_cast<unsigned short>(std::atoi(argv[2]));
@@ -69,7 +71,11 @@ main(int argc, char** argv)
       usage();
     }
 
+    // Create and configure the transcoder that handles encoding/decoding. The client/server status
+    // is completely transparent to the transcoder.
     transcoder t{io, app_socket, app_endpoint, socket, endpoint};
+
+    // Launch the event loop (runs forever).
     io.run();
   }
   catch (const std::exception& e)

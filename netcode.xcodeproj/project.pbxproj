@@ -756,7 +756,6 @@
 		2B282BBE1AB861C200640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B2A96261AC59120001B8F66 /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_encoder.cc; sourceTree = "<group>"; };
 		2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_reconstruction.cc; sourceTree = "<group>"; };
-		2B4DC0281ADBE4F2006C548B /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = c_basic; path = /Users/hal/code/netcode/build/Debug/c_basic; sourceTree = "<absolute>"; };
 		2B4DC02A1ADBE515006C548B /* accelerator.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = accelerator.cc; sourceTree = "<group>"; };
 		2B4DC02B1ADBE515006C548B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B4DC02C1ADBE515006C548B /* transcoder.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transcoder.hh; sourceTree = "<group>"; };
@@ -1201,6 +1200,8 @@
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
+		2B97BE8F1B2DC78000E496D8 /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c_basic; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B97BE901B2DCD3900E496D8 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "end_to_end-mt"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end_mt.cc; sourceTree = "<group>"; };
 		2B9BD1061AF2A18600856E96 /* udp_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = udp_generator.py; sourceTree = "<group>"; };
@@ -2456,6 +2457,7 @@
 				2B4DC02B1ADBE515006C548B /* CMakeLists.txt */,
 				2B4DC02A1ADBE515006C548B /* accelerator.cc */,
 				2B4DC02C1ADBE515006C548B /* transcoder.hh */,
+				2B97BE901B2DCD3900E496D8 /* README.txt */,
 			);
 			path = accelerator;
 			sourceTree = "<group>";
@@ -3124,6 +3126,7 @@
 				2BE3194F1AB0C550001AA9DF /* netcode */,
 				2BE319571AB0C550001AA9DF /* tests */,
 				2B7F12631AD051A300CAA199 /* tools */,
+				2B97BE8F1B2DC78000E496D8 /* c_basic */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3281,7 +3284,7 @@
 			);
 			name = c_basic;
 			productName = example_c;
-			productReference = 2B4DC0281ADBE4F2006C548B /* c_basic */;
+			productReference = 2B97BE8F1B2DC78000E496D8 /* c_basic */;
 			productType = "com.apple.product-type.tool";
 		};
 		2B516BC81AC8881C00133F38 /* accelerator */ = {
@@ -4477,6 +4480,7 @@
 				2BAD81981B287C7F0010EAC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2BBA82A71AF7FA3200FB22BD /* Build configuration list for PBXNativeTarget "end_to_end" */ = {
 			isa = XCConfigurationList;

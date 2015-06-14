@@ -24,12 +24,12 @@ using asio::ip::udp;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief
+/// @brief The maximal size of an UDP packet
 static constexpr auto buffer_size = 65504;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Called by encoder when a packet is ready to be written to the network.
+/// @brief Called by encoder when a packet is ready to be written to the network
 class packet_handler
 {
 private:
@@ -51,16 +51,16 @@ public:
     : socket(sock), endpoint(end), buffer()
   {}
 
+  /// @brief This function is invoked repeatedly until the packet is complete
   void
   operator()(const char* data, std::size_t sz)
-  noexcept
   {
     std::copy_n(data, sz, std::back_inserter(buffer));
   }
 
+  /// @brief This function is invoked when the packet received by the previous callback is complete
   void
   operator()()
-  noexcept
   {
     // End of packet, we can now send it.
     socket.send_to(asio::buffer(buffer), endpoint);
@@ -70,7 +70,7 @@ public:
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Called by decoder when a data has been decoded or received.
+/// @brief Called by decoder when a data has been decoded or received
 struct data_handler
 {
   udp::socket& socket;
@@ -90,32 +90,38 @@ struct data_handler
 
 /*------------------------------------------------------------------------------------------------*/
 
+/// @brief A side of the encoded tunnel.
+///
+/// It contains a decoder and an encoder to provide two-ways communications.
 class transcoder
 {
 public:
 
-  /// @brief Constructor.
+  /// @brief Constructor
   transcoder( asio::io_service& io
             , udp::socket& app_socket
             , udp::endpoint& app_endpoint
             , udp::socket& socket
             , udp::endpoint& endpoint)
-    : m_timer(io, boost::posix_time::milliseconds(100))
+    : m_ack_timer(io, boost::posix_time::milliseconds(100))
     , m_stats_timer(io, boost::posix_time::seconds(5))
     , m_app_socket(app_socket)
     , m_app_endpoint(app_endpoint)
     , m_socket(socket)
     , m_endpoint(endpoint)
-    , m_decoder(8, true, packet_handler(m_socket, m_endpoint), data_handler(m_app_socket, m_app_endpoint))
+    , m_decoder(8, true, packet_handler( m_socket, m_endpoint)
+                                       , data_handler(m_app_socket, m_app_endpoint))
     , m_encoder(8, packet_handler(m_socket, m_endpoint))
     , m_packet()
     , m_data(buffer_size)
     , m_other_side_seen(false)
   {
+    // Deactivate automatic sending of ack by the library, we'll take care of it.
     m_decoder.set_ack_frequency(std::chrono::milliseconds{0});
     m_encoder.set_window_size(32);
     m_encoder.set_adaptive(true);
 
+    // Start all handlers.
     start_handler();
     start_app_handler();
     start_timer_handler();
@@ -124,52 +130,66 @@ public:
 
 private:
 
+  /// @brief Listen for incomging packets from the other side (decoder or encoder)
   void
   start_handler()
   {
     m_socket.async_receive_from( asio::buffer(m_packet, buffer_size)
-                              , m_endpoint
-                              , [this](const asio::error_code& err, std::size_t len)
-                                {
-                                  if (err)
-                                  {
-                                    throw std::runtime_error(err.message());
-                                  }
+                               , m_endpoint
+                               , [this](const asio::error_code& err, std::size_t len)
+                                 {
+                                   if (err)
+                                   {
+                                     throw std::runtime_error(err.message());
+                                   }
 
-                                  m_other_side_seen = true;
-                                  ntc::dispatch(m_encoder, m_decoder, m_packet, len);
+                                   m_other_side_seen = true;
 
-                                  // Listen again for incoming packets.
-                                  start_handler();
-                                });
+                                   // The received packet might be for the encoder or the decoder.
+                                   // The netcode library provides the following function to
+                                   // dispatch to the appropriate component using the packet's type
+                                   // (source, ack or repair).
+                                   ntc::dispatch(m_encoder, m_decoder, m_packet, len);
+
+                                   // Listen again for incoming packets.
+                                   start_handler();
+                                 });
   }
 
+  /// @brief Listen for incoming data from the application
   void
   start_app_handler()
   {
     m_app_socket.async_receive_from( asio::buffer(m_data.buffer(), buffer_size)
-                                  , m_app_endpoint
-                                  , [this](const asio::error_code& err, std::size_t len)
-                                    {
-                                      if (err)
-                                      {
-                                        throw std::runtime_error(err.message());
-                                      }
-                                      m_data.used_bytes() = static_cast<std::uint16_t>(len);
-                                      m_encoder(std::move(m_data));
+                                   , m_app_endpoint
+                                   , [this](const asio::error_code& err, std::size_t len)
+                                     {
+                                       if (err)
+                                       {
+                                         throw std::runtime_error(err.message());
+                                       }
 
-                                      m_data.reset(buffer_size);
+                                       // m_data has been filled by asio, but we still need to tell
+                                       // the netcode library how many bytes were written.
+                                       m_data.used_bytes() = static_cast<std::uint16_t>(len);
 
-                                      // Listen again.
-                                      start_app_handler();
-                                    });
+                                       // We can now safely give the data to the encoder.
+                                       m_encoder(std::move(m_data));
+
+                                       // To avoid allocating a new data, we reset m_data.
+                                       m_data.reset(buffer_size);
+
+                                       // Listen again for incoming data.
+                                       start_app_handler();
+                                     });
   }
 
+  /// @brief Generate an ack every 100 ms
   void
   start_timer_handler()
   {
-    m_timer.expires_from_now(boost::posix_time::milliseconds(100));
-    m_timer.async_wait([this](const asio::error_code& err)
+    m_ack_timer.expires_from_now(boost::posix_time::milliseconds(100));
+    m_ack_timer.async_wait([this](const asio::error_code& err)
                       {
                         if (err)
                         {
@@ -183,6 +203,7 @@ private:
                       });
   }
 
+  /// @brief Display statistics every 5 seconds
   void
   start_stats_timer_handler()
   {
@@ -219,37 +240,37 @@ private:
 
 private:
 
-  /// @brief
-  asio::deadline_timer m_timer;
+  /// @brief Timer to send ack
+  asio::deadline_timer m_ack_timer;
 
-  /// @brief
+  /// @brief Timer to display statistics
   asio::deadline_timer m_stats_timer;
 
-  /// @brief
+  /// @brief The proxied application's socket
   udp::socket& m_app_socket;
 
-  /// @brief
+  /// @brief The proxied application communication point
   udp::endpoint& m_app_endpoint;
 
-  /// @brief
+  /// @brief The encoded tunnel socket
   udp::socket& m_socket;
 
-  /// @brief
+  /// @brief The encoded tunnel communication point
   udp::endpoint& m_endpoint;
 
-  /// @brief
+  /// @brief The decoder on this side of the tunnel
   ntc::decoder<packet_handler, data_handler> m_decoder;
 
-  /// @brief
+  /// @brief The encoder on this side of the tunnel
   ntc::encoder<packet_handler> m_encoder;
 
-  /// @brief
+  /// @brief Store packets received from the tunnel
   char m_packet[buffer_size];
 
-  /// @brief
+  /// @brief Store data received from the proxied application
   ntc::data m_data;
 
-  /// @brief
+  /// @brief Set the first time a packet has been exchanged with the other side of the tunnel
   bool m_other_side_seen;
 };
 

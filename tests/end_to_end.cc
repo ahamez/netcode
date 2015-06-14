@@ -155,11 +155,11 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 int main()
 {
   std::uint32_t id = 0;
-  burst_loss loss{95, 5};
+  burst_loss loss{100, 0};
   std::size_t to_dec_nb_loss = 0;
   std::size_t to_enc_nb_loss = 0;
   std::size_t nb_packets = 999999;
-  std::size_t ack_frequency = 10;
+  std::size_t ack_frequency = 50;
   std::uint16_t packet_size = 1024;
   if ((packet_size % sizeof(std::uint32_t)) != 0)
   {
@@ -180,7 +180,10 @@ int main()
   {
     if (id % 100 == 0)
     {
-      std::cout << (id+1) << '/' << nb_packets << '\r';
+      std::cout << (id+1) << '/' << nb_packets
+                << " | " << enc_packet_handler.buffer.size()
+                << " | " << dec_packet_handler.buffer.size()
+                << '\r';
       std::cout.flush();
     }
 
