@@ -1202,6 +1202,7 @@
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B97BE8F1B2DC78000E496D8 /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c_basic; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B97BE901B2DCD3900E496D8 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		2B97BE911B2DCE2000E496D8 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "end_to_end-mt"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end_mt.cc; sourceTree = "<group>"; };
 		2B9BD1061AF2A18600856E96 /* udp_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = udp_generator.py; sourceTree = "<group>"; };
@@ -3101,6 +3102,7 @@
 				2BAD818B1B287C0C0010EAC4 /* CMakeLists.txt */,
 				2BAD818C1B287C570010EAC4 /* c_basic.c */,
 				2BAD819B1B287D0B0010EAC4 /* cpp_basic.cc */,
+				2B97BE911B2DCE2000E496D8 /* README.txt */,
 			);
 			path = basic;
 			sourceTree = "<group>";
