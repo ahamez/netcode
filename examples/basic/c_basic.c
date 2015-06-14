@@ -104,9 +104,21 @@ int main(int argc, char** argv)
   // functions on an invalid data: ntc_data_reset or ntc_delete_data.
   ntc_encoder_add_data(enc, data, &error);
 
+  // Check if the previous operation succeeded.
+  if (error.type != ntc_no_error)
+  {
+    goto handle_error;
+  }
+
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
+  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 1, &error);
+
+  // Check if the previous operation succeeded.
+  if (error.type != ntc_no_error)
+  {
+    goto handle_error;
+  }
 
   // Now the context of the decoder's data handler contains the sent data.
   assert(data_cxt.nb_read == 3);
@@ -116,6 +128,12 @@ int main(int argc, char** argv)
 
   // Reset data: it's now legit to use it again.
   ntc_data_reset(data, 1024, &error);
+
+  // Check if the previous operation succeeded.
+  if (error.type != ntc_no_error)
+  {
+    goto handle_error;
+  }
 
   // Fill some more data.
   ntc_data_buffer(data)[0] = 'd';
@@ -127,9 +145,21 @@ int main(int argc, char** argv)
   // Give this new data to the encoder.
   ntc_encoder_add_data(enc, data, &error);
 
+  // Check if the previous operation succeeded.
+  if (error.type != ntc_no_error)
+  {
+    goto handle_error;
+  }
+
   // Again, the context of the packet handler for the encoder is now given to the decoder, as if it
   //  was received from the network.
   ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
+
+  // Check if the previous operation succeeded.
+  if (error.type != ntc_no_error)
+  {
+    goto handle_error;
+  }
 
   // Now the context of the decoder's data handler contains the sent data.
   assert(data_cxt.nb_read == 4);
@@ -144,6 +174,10 @@ int main(int argc, char** argv)
   ntc_delete_decoder(dec);
 
   return 0;
+
+handle_error:
+  printf("An error occurred %s\n", error.message ? error.message : "");
+  return 1;
 }
 
 /*------------------------------------------------------------------------------------------------*/
