@@ -297,8 +297,6 @@ private:
   source_id_list
   read_ids(const char*& data, std::size_t& max_len)
   {
-    using namespace boost::endian;
-
     source_id_list ids;
 
     m_difference_buffer.clear();
