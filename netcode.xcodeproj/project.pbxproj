@@ -3128,7 +3128,6 @@
 				2BE3194F1AB0C550001AA9DF /* netcode */,
 				2BE319571AB0C550001AA9DF /* tests */,
 				2B7F12631AD051A300CAA199 /* tools */,
-				2B97BE8F1B2DC78000E496D8 /* c_basic */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3164,6 +3163,7 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				2B97BE8F1B2DC78000E496D8 /* c_basic */,
 				2BAD81921B287C7F0010EAC4 /* cpp_basic */,
 				2BBBC5E41B022061005C1669 /* end_to_end */,
 				2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */,
