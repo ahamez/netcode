@@ -63,10 +63,14 @@ public:
     , m_nb_sent_sources{0ul}
     , m_nb_sent_packets{0}
   {
-    // Let's reserve some memory for the repair, it will most likely avoid memory re-allocations.
+    // Let's reserve some memory for the repair, it will most likely avoid initial memory
+    // allocations.
     m_repair.buffer().reserve(2048);
     // Same thing for the list of source identifiers.
-    m_repair.source_ids().reserve(128);
+    // Uncomment the following when the undefined behavior spotted by GCC 5.1 -fsanitize=undefined
+    // is fixed. In the meantime, it's not a real problem,it will just cost a few initial
+    // allocations before the source ids list grows to a suitable size.
+    // m_repair.source_ids().reserve(128);
   }
 
   /// @brief Give the encoder a new data.

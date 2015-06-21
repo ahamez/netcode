@@ -55,7 +55,10 @@ public:
     , m_nb_sent_ack{0}
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
-    m_ack.source_ids().reserve(128);
+    // Uncomment the following when the undefined behavior spotted by GCC 5.1 -fsanitize=undefined
+    // is fixed. In the meantime, it's not a real problem,it will just cost a few initial
+    // allocations before the source ids list grows to a suitable size.
+    // m_ack.source_ids().reserve(128);
   }
 
   /// @brief Notify the encoder of a new incoming packet.
