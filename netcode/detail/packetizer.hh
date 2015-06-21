@@ -200,7 +200,9 @@ private:
     {
       throw overflow_error{};
     }
-    const auto res = boost::endian::big_to_native(*reinterpret_cast<const T*>(data));
+    T tmp;
+    std::copy_n(data, sizeof(T), reinterpret_cast<char*>(&tmp));
+    const auto res = boost::endian::big_to_native(tmp);
     data += sizeof(T);
     max_len -= sizeof(T);
     return res;
