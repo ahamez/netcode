@@ -10,7 +10,7 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief Allocator to avoid value initialization.
+/// @brief Allocator to avoid value initialization
 /// @see http://stackoverflow.com/a/21028912/21584
 template <typename T, typename Alloc = std::allocator<T>>
 class default_init_allocator
@@ -22,8 +22,7 @@ private:
 
 public:
 
-  /// @brief Constructor. Forward to base clase constructor.
-  ///
+  /// @brief Constructor. Forward to base clase constructor
   /// @note @code using Alloc::Alloc @endcode would be the right way to write it,
   /// but GCC 4.7 doesn't support this feature.
   template <typename... Args>
@@ -55,27 +54,29 @@ public:
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief An aligned allocator that aligns and avoid value initialization.
+/// @brief An aligned allocator that aligns and avoid value initialization
 template <typename T, std::size_t Align>
 using default_init_aligned_alloc
   = boost::alignment::aligned_allocator_adaptor<default_init_allocator<T>, Align>;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief A generic buffer aligned on 16 bytes.
+/// @internal
+/// @brief A generic buffer aligned on 16 bytes
 template <typename T>
 using buffer = std::vector<T, default_init_aligned_alloc<T, 16>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief An buffer of bytes on 16 bytes.
+/// @internal
+/// @brief An buffer of bytes aligned on 16 bytes
 using byte_buffer = buffer<char>;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief An aligned buffer of bytes.
-/// @note Will set new bytes to 0 when resized.
+/// @brief An buffer of bytes aligned on 16 bytes
+/// @note Will set new bytes to 0 when resized
 ///
 /// Use when a buffer with a default initialization is required.
 using zero_byte_buffer = std::vector<char, boost::alignment::aligned_allocator<char, 16>>;

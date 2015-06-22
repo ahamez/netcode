@@ -202,6 +202,7 @@ private:
     {
       throw overflow_error{};
     }
+    // A temporary placeholder is needed to have the correct alignment for type T.
     T tmp;
     std::copy_n(data, sizeof(T), reinterpret_cast<char*>(&tmp));
     const auto res = boost::endian::big_to_native(tmp);

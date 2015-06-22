@@ -7,12 +7,13 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief A resizable square matrix suitable for value on 32 bits, stored in contiguous memory.
-/// @note The matrix is not initialized to 0, even when constructed or resized.
+/// @brief A resizable square matrix suitable for value on 32 bits, stored in contiguous memory
+/// @note The matrix is not initialized to 0, even when constructed or resized
 class square_matrix final
 {
 public:
 
+  /// @brief Construct a @p n * @p n square matrix
   explicit square_matrix(std::size_t n)
     : m_dimension{n}
     , m_vec(n*n)
