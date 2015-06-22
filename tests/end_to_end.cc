@@ -183,12 +183,15 @@ int main()
       std::cout << (id+1) << '/' << nb_packets
                 << " | " << enc_packet_handler.buffer.size()
                 << " | " << dec_packet_handler.buffer.size()
-                << '\r';
-      std::cout.flush();
+                << '\r'
+                << std::flush;
     }
 
     enc_packet_handler.buffer.emplace_back();
     enc_packet_handler.buffer.back().reserve(buffer_sz);
+
+    dec_packet_handler.buffer.emplace_back();
+    dec_packet_handler.buffer.back().reserve(buffer_sz);
 
     enc(generate_data(id++, packet_size));
 
@@ -206,14 +209,10 @@ int main()
         ++to_dec_nb_loss;
       }
     }
-    enc_packet_handler.buffer.clear();
 
     // Possibly send an ack.
     if (((dec.nb_received_sources() + dec.nb_received_repairs()) % ack_frequency) == 0)
     {
-      dec_packet_handler.buffer.emplace_back();
-      dec_packet_handler.buffer.back().reserve(buffer_sz);
-
       dec.generate_ack();
 
       for ( auto cit = dec_packet_handler.buffer.begin(), end = dec_packet_handler.buffer.end() - 1
@@ -229,8 +228,10 @@ int main()
           ++to_enc_nb_loss;
         }
       }
-      dec_packet_handler.buffer.clear();
     }
+
+    enc_packet_handler.buffer.clear();
+    dec_packet_handler.buffer.clear();
   }
 
   std::cout << "\n\nEncoder\n";
