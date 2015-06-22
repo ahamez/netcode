@@ -278,8 +278,6 @@ private:
         ++run_length;
         ++cit;
       }
-      // The cast to 16 bits is important: differences are always small and rle_buffer only
-      // stores 16 bits differences.
       m_rle_buffer.emplace_back(run_length, *cit);
       ++cit;
     }
