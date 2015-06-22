@@ -180,11 +180,7 @@ int main()
   {
     if (id % 100 == 0)
     {
-      std::cout << (id+1) << '/' << nb_packets
-                << " | " << enc_packet_handler.buffer.size()
-                << " | " << dec_packet_handler.buffer.size()
-                << '\r'
-                << std::flush;
+      std::cout << (id+1) << '/' << nb_packets << '\r' << std::flush;
     }
 
     enc_packet_handler.buffer.emplace_back();
