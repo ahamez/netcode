@@ -179,7 +179,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   SECTION("incoming repair")
   {
     // Create a repair.
-    const auto repair = detail::repair{0};
+    const auto repair = detail::repair{0, 42, {0,1}, detail::zero_byte_buffer{'x'}};
 
     // Serialize the repair.
     serializer.write_repair(repair);

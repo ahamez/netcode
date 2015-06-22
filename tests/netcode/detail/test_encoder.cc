@@ -84,7 +84,7 @@ TEST_CASE("Encoder is deterministic")
 
   // A dummy source.
   detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{}, 0);
+  sl.emplace(0, detail::byte_buffer{'x'}, 1);
 
   // First encoder.
   detail::repair r0_0{0};
@@ -98,7 +98,7 @@ TEST_CASE("Encoder is deterministic")
   REQUIRE(r0_0.buffer() == r0_1.buffer());
 
   // Once more.
-  sl.emplace(1, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{'y'}, 1);
 
   // First encoder.
   detail::repair r1_0{1};

@@ -112,18 +112,6 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.buffer() == r_out.buffer());
   }
 
-  SECTION("Empty repair")
-  {
-    const detail::repair r_in{ 0, 54, detail::source_id_list{}, detail::zero_byte_buffer{}};
-    serializer.write_repair(r_in);
-
-    const auto r_out = serializer.read_repair(h.data_, 2048).first;
-    REQUIRE(r_in.id() == r_out.id());
-    REQUIRE(r_in.source_ids() == r_out.source_ids());
-    REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
-  }
-
   SECTION("Repair with only one source")
   {
     const detail::repair r_in{ 0, 33, {4242}, detail::zero_byte_buffer{'x'}};
@@ -135,7 +123,6 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
     REQUIRE(r_in.buffer() == r_out.buffer());
   }
-
 }
 
 /*------------------------------------------------------------------------------------------------*/
