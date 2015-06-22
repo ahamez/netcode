@@ -88,7 +88,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
   for (auto i = 0ul; i < 4; ++i)
   {
     auto data = ntc::data{512};
-    data.used_bytes() = 512;
+    data.set_used_bytes(512);
     encoder(std::move(data));
   }
   REQUIRE(encoder.window() == 4);
@@ -267,31 +267,31 @@ TEST_CASE("Decoder: invalid memory access scenerio")
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(x.begin(),  x.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = static_cast<std::uint16_t>(x.size());
+    data_ptr->set_used_bytes(static_cast<std::uint16_t>(x.size()));
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
+    data_ptr->set_used_bytes(static_cast<std::uint16_t>(empty.size()));
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
+    data_ptr->set_used_bytes(static_cast<std::uint16_t>(empty.size()));
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
+    data_ptr->set_used_bytes(static_cast<std::uint16_t>(empty.size()));
     enc(std::move(*data_ptr));
   }
   {
     auto data_ptr = std::make_shared<ntc::data>(max_len);
     std::copy(empty.begin(),  empty.end(), data_ptr->buffer());
-    data_ptr->used_bytes() = static_cast<std::uint16_t>(empty.size());
+    data_ptr->set_used_bytes(static_cast<std::uint16_t>(empty.size()));
     enc(std::move(*data_ptr));
   }
   REQUIRE(enc_handler.nb_packets() == 6);

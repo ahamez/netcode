@@ -82,6 +82,8 @@ public:
   void
   write_repair(const repair& r)
   {
+    assert(r.buffer().size() > 0 && "A repair's symbol shall not be empty");
+
     // Write packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
     write<std::uint8_t>(packet_ty);

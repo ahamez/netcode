@@ -17,7 +17,7 @@ TEST_CASE("manual data")
 
   auto s = data{128};
   std::copy_n(begin(tab), 5, s.buffer());
-  s.used_bytes() = 5;
+  s.set_used_bytes(5);
   REQUIRE(std::equal(s.buffer(), s.buffer() + 5, begin(tab)));
   s.resize(1024);
   REQUIRE(std::equal(s.buffer(), s.buffer() + 5, begin(tab)));

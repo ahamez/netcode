@@ -171,7 +171,7 @@ private:
 
                                        // m_data has been filled by asio, but we still need to tell
                                        // the netcode library how many bytes were written.
-                                       m_data.used_bytes() = static_cast<std::uint16_t>(len);
+                                       m_data.set_used_bytes(static_cast<std::uint16_t>(len));
 
                                        // We can now safely give the data to the encoder.
                                        m_encoder(std::move(m_data));

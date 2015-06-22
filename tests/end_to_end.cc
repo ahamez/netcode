@@ -146,7 +146,7 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
   ntc::data data{packet_size};
   auto data_as_int = reinterpret_cast<std::uint32_t*>(data.buffer());
   std::fill(data_as_int, data_as_int + packet_size/sizeof(std::uint32_t), id);
-  data.used_bytes() = packet_size;
+  data.set_used_bytes(packet_size);
   return data;
 }
 

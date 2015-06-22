@@ -54,7 +54,7 @@ void
 ntc_data_set_used_bytes(ntc_data_t* data, uint16_t size)
 noexcept
 {
-  data->used_bytes() = size;
+  data->set_used_bytes(size);
 }
 
 /*------------------------------------------------------------------------------------------------*/

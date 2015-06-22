@@ -81,15 +81,15 @@ public:
     return m_used_bytes;
   }
 
-  /// @brief Get the the number of used bytes for this data.
-  ///
-  /// When set, it must be smaller than the reserved size, that is, smaller than the value given
-  /// when calling constructors or resize().
-  std::uint16_t&
-  used_bytes()
+  /// @brief Set the the number of used bytes for this data
+  /// @pre @p nb > 0
+  /// @pre @p nb <= reserved_size()
+  void
+  set_used_bytes(std::uint16_t nb)
   noexcept
   {
-    return m_used_bytes;
+    assert(nb > 0 && "A data shall not be empty");
+    m_used_bytes = nb;
   }
 
   /// @brief Get the implementation-defined underlying buffer (read-only).

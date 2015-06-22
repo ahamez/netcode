@@ -88,6 +88,7 @@ noexcept;
 /// @brief Tell to the library how much bytes were written in a data
 /// @ingroup c_data
 /// @pre @p nb <= ntc_data_get_reserved_size (@p data)
+/// @pre @p nb > 0
 ///
 /// This function shall be invoked after some bytes were written in the buffer returned by
 /// ntc_data_buffer()

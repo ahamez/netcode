@@ -77,7 +77,7 @@ int main()
     data.buffer()[2] = 'c';
 
     // Don't forget to tell how many bytes were written.
-    data.used_bytes() = 3;
+    data.set_used_bytes(3);
 
     // Give this data to the encoder.
     // Be aware that the 'data' parameter will be invalid after this call. You can only call one
@@ -105,7 +105,7 @@ int main()
     data.buffer()[1] = 'e';
     data.buffer()[2] = 'f';
     data.buffer()[3] = 'g';
-    data.used_bytes() = 4;
+    data.set_used_bytes(4);
 
     // Give this new data to the encoder.
     enc(std::move(data));

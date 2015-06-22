@@ -177,7 +177,8 @@ TEST_CASE("Prevent buffer overflow")
 
   SECTION("repair 2")
   {
-    const detail::repair r{42, 54, {0,1,4,6,9,15,16,30,33,40,42,60,63}, detail::zero_byte_buffer{}};
+    const detail::repair r{ 42, 54, {0,1,4,6,9,15,16,30,33,40,42,60,63}
+                          , detail::zero_byte_buffer{'x'}};
     serializer.write_repair(r);
     REQUIRE_THROWS_AS(serializer.read_repair(h.data_, 8), overflow_error);
   }
