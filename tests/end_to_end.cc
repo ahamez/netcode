@@ -87,13 +87,26 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 
 /*------------------------------------------------------------------------------------------------*/
 
-int main()
+int main(int argc, char** argv)
 {
   std::uint32_t id = 0;
   loss::burst loss{100, 0};
   std::size_t to_dec_nb_loss = 0;
   std::size_t to_enc_nb_loss = 0;
-  std::size_t nb_packets = 999999;
+  std::size_t nb_packets = 9999;
+  if (argc == 2)
+  {
+    try
+    {
+      nb_packets = static_cast<std::size_t>(std::stoi(argv[1]));
+    }
+    catch (std::exception&)
+    {
+      std::cerr << "Can't read number of packets\n";
+      std::exit(1);
+    }
+  }
+
   std::size_t ack_frequency = 50;
   std::uint16_t packet_size = 1024;
   if ((packet_size % sizeof(std::uint32_t)) != 0)
