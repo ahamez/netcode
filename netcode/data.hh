@@ -4,12 +4,13 @@
 #include <iterator>  // distance
 
 #include "netcode/detail/buffer.hh"
+#include "netcode/detail/traits.hh"
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Class to store data given to encoder.
+/// @brief Class to store data given to encoder
 /// @attention When using buffer() to directly write data, because it's not possible for the library
 /// to keep track of the number of written bytes, when the data is completely written in the
 /// buffer, used_bytes() must be called.
@@ -21,8 +22,8 @@ class data final
 {
 public:
 
-  /// @brief Constructor.
-  /// @param size The size of the buffer to allocate.
+  /// @brief Constructor
+  /// @param size The size of the buffer to allocate
   ///
   /// Use this constructor when you intend to directly write in the underlying buffer to avoid copy.
   explicit data(std::uint16_t size)
@@ -30,11 +31,9 @@ public:
     , m_buffer(size)
   {}
 
-  /// @brief Constructor.
-  /// @param src The address of the data to copy.
-  /// @param len The size of the data to copy.
-  ///
-  /// Use this constructor when you need to copy the input data.
+  /// @brief Constructor
+  /// @param src The address of the data to copy
+  /// @param len The size of the data to copy
   data(const char* src, std::uint16_t len)
     : m_used_bytes{len}
     , m_buffer(len)
@@ -42,11 +41,9 @@ public:
     std::copy_n(src, len, m_buffer.begin());
   }
 
-  /// @brief Constructor.
-  /// @param begin The beginning of the data to copy.
-  /// @param end The end of the data to copy.
-  ///
-  /// Use this constructor when you need to copy the input data.
+  /// @brief Constructor
+  /// @param begin The beginning of the data to copy
+  /// @param end The end of the data to copy
   template <typename InputIterator>
   data(InputIterator begin, InputIterator end)
     : m_used_bytes{static_cast<std::uint16_t>(std::distance(begin, end))}
@@ -55,7 +52,14 @@ public:
     std::copy(begin, end, m_buffer.begin());
   }
 
-  /// @brief Get the buffer where to write the data.
+  /// @brief Constructor with an iterable container
+  template < typename Container
+           , typename Iterable = detail::enable_if_t<detail::has_begin<Container>::value, void>>
+  data(Container&& c)
+    : data{begin(c), end(c)}
+  {}
+
+  /// @brief Get the buffer where to write the data
   char*
   buffer()
   noexcept
@@ -63,16 +67,16 @@ public:
     return m_buffer.data();
   }
 
-  /// @brief Resize the buffer.
-  /// @param new_size The new buffer size.
-  /// @note May cause a copy.
+  /// @brief Resize the buffer
+  /// @param new_size The new buffer size
+  /// @note May cause a copy
   void
   resize(std::uint16_t new_size)
   {
     m_buffer.resize(new_size);
   }
 
-  /// @brief Get the the number of used bytes for this data (read-only).
+  /// @brief Get the the number of used bytes for this data (read-only)
   std::uint16_t
   used_bytes()
   const noexcept
@@ -91,7 +95,7 @@ public:
     m_used_bytes = nb;
   }
 
-  /// @brief Get the implementation-defined underlying buffer (read-only).
+  /// @brief Get the implementation-defined underlying buffer (read-only)
   const detail::byte_buffer&
   buffer_impl()
   const noexcept
@@ -99,7 +103,7 @@ public:
     return m_buffer;
   }
 
-  /// @brief Get the implementation-defined underlying buffer.
+  /// @brief Get the implementation-defined underlying buffer
   detail::byte_buffer&
   buffer_impl()
   noexcept
@@ -107,8 +111,8 @@ public:
     return m_buffer;
   }
 
-  /// @brief The useable size of the underlying buffer.
-  /// @note It might be greater than the requested size at construction or by resize().
+  /// @brief The useable size of the underlying buffer
+  /// @note It might be greater than the requested size at construction or by resize()
   std::uint16_t
   reserved_size()
   const noexcept
@@ -116,8 +120,8 @@ public:
     return static_cast<std::uint16_t>(m_buffer.size());
   }
 
-  /// @brief Reset the data for further re-use.
-  /// @param new_size The wanted size for the newly allocated underlying buffer.
+  /// @brief Reset the data for further re-use
+  /// @param new_size The wanted size for the newly allocated underlying buffer
   /// @note Can be used on a moved data. As a matter of fact, it's the only way to use again a
   /// data which has been given to encoder::operator()(data&&).
   void
@@ -129,10 +133,10 @@ public:
 
 private:
 
-  /// @brief The size of the data given by the user.
+  /// @brief The size of the data given by the user
   std::uint16_t m_used_bytes;
 
-  /// @brief The buffer storage.
+  /// @brief The buffer storage
   detail::byte_buffer m_buffer;
 };
 

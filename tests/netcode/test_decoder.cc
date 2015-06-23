@@ -392,13 +392,13 @@ TEST_CASE("In order decoder")
 
   // Packets will be stored in enc_handler.vec.
   const auto s0 = {'a', 'b', 'c'};
-  enc(data{begin(s0), end(s0)});
+  enc(data{s0});
   const auto s1 = {'d', 'e', 'f'};
-  enc(data{begin(s1), end(s1)});
+  enc(data{s1});
   const auto s2 = {'g', 'h', 'i'};
-  enc(data{begin(s2), end(s2)});
+  enc(data{s2});
   const auto s3 = {'j', 'k', 'l'};
-  enc(data{begin(s3), end(s3)});
+  enc(data{s3});
 
   REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
   REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);

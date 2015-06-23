@@ -69,16 +69,8 @@ int main()
       dec{8, ntc::in_order::yes, packet_handler{}, data_handler{}};
     dec.set_ack_frequency(std::chrono::milliseconds{200});
 
-    // Create an holder for some data with a size up to 1024 bytes.
-    ntc::data data{1024};
-
-    // Fill the data.
-    data.buffer()[0] = 'a';
-    data.buffer()[1] = 'b';
-    data.buffer()[2] = 'c';
-
-    // Don't forget to tell how many bytes were written.
-    data.set_used_bytes(3);
+    // Create some data.
+    ntc::data data{std::vector<char>{'a','b','c'}};
 
     // Give this data to the encoder.
     // Be aware that the 'data' parameter will be invalid after this call. You can only call one
@@ -101,7 +93,8 @@ int main()
     enc.packet_handler().buffer.clear();
     dec.data_handler().buffer.clear();
 
-    // Fill some more data.
+    // Fill some more data. Notice how we can directly modify the data's buffer if we want
+    // to avoid copy.
     data.buffer()[0] = 'd';
     data.buffer()[1] = 'e';
     data.buffer()[2] = 'f';

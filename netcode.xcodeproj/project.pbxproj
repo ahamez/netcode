@@ -1180,6 +1180,8 @@
 		2B59931D1B38EFC300DCBB13 /* uniform.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uniform.hh; sourceTree = "<group>"; };
 		2B59931E1B39561500DCBB13 /* in_order.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = in_order.hh; sourceTree = "<group>"; };
 		2B59931F1B397A1A00DCBB13 /* systematic.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = systematic.hh; sourceTree = "<group>"; };
+		2B5993201B39919600DCBB13 /* decoder_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder_fwd.hh; sourceTree = "<group>"; };
+		2B5993211B3991C000DCBB13 /* encoder_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder_fwd.hh; sourceTree = "<group>"; };
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
@@ -3154,8 +3156,10 @@
 				2BE3196D1AB206FC001AA9DF /* data.hh */,
 				2B5FFAC81B0F527200CAB33E /* doxygen.hh */,
 				2B92226B1AB5BC4E009A2843 /* decoder.hh */,
+				2B5993201B39919600DCBB13 /* decoder_fwd.hh */,
 				2B5FFAC41B0D181500CAB33E /* dispatch.hh */,
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
+				2B5993211B3991C000DCBB13 /* encoder_fwd.hh */,
 				2B5FFAC51B0D1C0800CAB33E /* errors.hh */,
 				2B59931E1B39561500DCBB13 /* in_order.hh */,
 				2B59931F1B397A1A00DCBB13 /* systematic.hh */,
