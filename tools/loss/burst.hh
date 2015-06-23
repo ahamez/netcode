@@ -11,11 +11,11 @@ class burst
 public:
 
   burst(unsigned int good, unsigned int bad)
-    : state_{state::good}
-    , gen_{}
-    , dist_{1, 100}
-    , good_{good}
-    , bad_{bad}
+    : m_state{state::good}
+    , m_gen{}
+    , m_dist{1, 100}
+    , m_good{good}
+    , m_bad{bad}
   {}
 
   /// @return true if packet should be lost.
@@ -23,30 +23,30 @@ public:
   operator()()
   noexcept
   {
-    switch (state_)
+    switch (m_state)
     {
         case state::good:
         {
-          if (dist_(gen_) < good_)
+          if (m_dist(m_gen) < m_good)
           {
             return false; // no loss
           }
           else
           {
-            state_ = state::bad;
+            m_state = state::bad;
             return true; // loss
           }
         }
 
         case state::bad:
         {
-          if (dist_(gen_) < bad_)
+          if (m_dist(m_gen) < m_bad)
           {
             return true; // loss
           }
           else
           {
-            state_ = state::good;
+            m_state = state::good;
             return false; // no loss
           }
         }
@@ -57,24 +57,12 @@ public:
 
 private:
 
-  /// @brief
   enum class state {good, bad};
-
-  /// @brief
-  state state_;
-
-  /// @brief
-  std::default_random_engine gen_;
-
-  /// @brief
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  /// @brief
-  unsigned int good_;
-
-  /// @bief
-  unsigned int bad_;
-
+  state m_state;
+  std::default_random_engine m_gen;
+  std::uniform_int_distribution<unsigned int> m_dist;
+  unsigned int m_good;
+  unsigned int m_bad;
 };
 
 /*------------------------------------------------------------------------------------------------*/

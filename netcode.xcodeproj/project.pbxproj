@@ -1218,6 +1218,7 @@
 		2BAD818C1B287C570010EAC4 /* c_basic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = c_basic.c; sourceTree = "<group>"; };
 		2BAD81921B287C7F0010EAC4 /* cpp_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cpp_basic; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BAD819B1B287D0B0010EAC4 /* cpp_basic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpp_basic.cc; sourceTree = "<group>"; };
+		2BB2F2C41B39FA8E00AFB903 /* file.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = file.hh; sourceTree = "<group>"; };
 		2BBA00BD1B21CCD700633CA3 /* CodeCoverage.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CodeCoverage.cmake; sourceTree = "<group>"; };
 		2BBA00BE1B21CCD700633CA3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end.cc; sourceTree = "<group>"; };
@@ -3062,6 +3063,7 @@
 			isa = PBXGroup;
 			children = (
 				2B59931C1B38EF3000DCBB13 /* burst.hh */,
+				2BB2F2C41B39FA8E00AFB903 /* file.hh */,
 				2B59931D1B38EFC300DCBB13 /* uniform.hh */,
 			);
 			path = loss;

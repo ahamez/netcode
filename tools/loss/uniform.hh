@@ -11,12 +11,12 @@ class uniform
 {
 public:
 
-  uniform(unsigned int threshold)
-    : gen_{}
-    , dist_{1, 100}
-    , threshold_{threshold}
+  explicit uniform(unsigned int threshold)
+    : m_gen{}
+    , m_dist{1, 100}
+    , m_threshold{threshold}
   {
-    assert(threshold_ > 0 and threshold < 100);
+    assert(threshold > 0 and threshold < 100);
   }
 
   /// @return true if packet should be lost.
@@ -24,20 +24,14 @@ public:
   operator()()
   noexcept
   {
-    return dist_(gen_) > threshold_;
+    return m_dist(m_gen) > m_threshold;
   }
 
 private:
 
-
-  /// @brief
-  std::default_random_engine gen_;
-
-  /// @brief
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  /// @brief
-  unsigned int threshold_;
+  std::default_random_engine m_gen;
+  std::uniform_int_distribution<unsigned int> m_dist;
+  unsigned int m_threshold;
 };
 
 /*------------------------------------------------------------------------------------------------*/
