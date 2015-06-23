@@ -25,7 +25,7 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 // Hide this C++ keyword from C
 #define noexcept
 
-#endif
+#endif // __cplusplus
 
 /*------------------------------------------------------------------------------------------------*/
 

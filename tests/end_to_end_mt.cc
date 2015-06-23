@@ -150,7 +150,8 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 {
   loss::burst loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
-    dec{8, true, packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}};
+    dec{ 8, ntc::in_order::yes, packet_handler{loss, to_enc, to_enc_mutex}
+       , in_order_data_handler{packet_size}};
 
   while (*run)
   {

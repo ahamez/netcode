@@ -9,6 +9,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/errors.hh"
+#include "netcode/in_order.hh"
 
 namespace ntc {
 
@@ -37,7 +38,7 @@ public:
 
   /// @brief Constructor.
   template <typename PacketHandler_, typename DataHandler_>
-  decoder( std::uint8_t galois_field_size, bool in_order, PacketHandler_&& packet_handler
+  decoder( std::uint8_t galois_field_size, in_order ordered, PacketHandler_&& packet_handler
          , DataHandler_&& data_handler)
     : m_galois_field_size{galois_field_size}
     , m_ack_frequency{std::chrono::milliseconds{100}}
@@ -46,7 +47,7 @@ public:
     , m_ack{}
     , m_decoder{ m_galois_field_size
               , std::bind(&decoder::handle_source, this, std::placeholders::_1)
-              , in_order}
+              , ordered}
     , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
     , m_data_handler(std::forward<DataHandler_>(data_handler))
     , m_packetizer{m_packet_handler}

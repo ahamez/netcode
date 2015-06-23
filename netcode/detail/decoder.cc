@@ -12,9 +12,9 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 decoder::decoder( std::uint8_t galois_field_size, std::function<void(const source&)> h
-                , bool in_order)
+                , in_order order)
   : m_gf{galois_field_size}
-  , m_in_order{in_order}
+  , m_in_order{order == in_order::yes ? true : false}
   , m_first_missing_source_in_order{0}
   , m_ordered_sources{}
   , m_callback(h)

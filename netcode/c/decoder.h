@@ -24,15 +24,21 @@ typedef struct ntc_decoder_t ntc_decoder_t;
 // Hide this C++ keyword from C
 #define noexcept
 
-#endif
+#endif // __cplusplus
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @ingroup c_decoder
+/// @brief Describe if an decoder gives data in order or not
+typedef enum {ntc_in_order, ntc_non_in_order} ntc_ordering_type;
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
 /// @return A new decoder if allocation suceeded; a null pointer otherwise
 ntc_decoder_t*
-ntc_new_decoder( uint8_t galois_field_size, bool in_order, ntc_packet_handler packet_handler
-               , ntc_data_handler data_handler)
+ntc_new_decoder( uint8_t galois_field_size, ntc_ordering_type order
+               , ntc_packet_handler packet_handler, ntc_data_handler data_handler)
 noexcept;
 
 /*------------------------------------------------------------------------------------------------*/

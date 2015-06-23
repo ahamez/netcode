@@ -18,7 +18,7 @@ using namespace ntc;
 TEST_CASE("Decoder gives a correct source to user")
 {
   encoder<packet_handler> enc{8, packet_handler{}};
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -41,7 +41,7 @@ TEST_CASE("Decoder repairs a lost source")
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(1);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
 
   auto& enc_packet_handler = enc.packet_handler();
   auto& dec_data_handler = dec.data_handler();
@@ -69,7 +69,7 @@ TEST_CASE("Decoder generate correct ack")
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(100);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{100});
 
   auto& enc_packet_handler = enc.packet_handler();
@@ -114,7 +114,7 @@ TEST_CASE("Decoder generate acks when N packets are received")
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(100);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
   dec.set_ack_nb_packets(4);
 
@@ -147,13 +147,13 @@ TEST_CASE("Decoder generate acks when N packets are received")
 /*------------------------------------------------------------------------------------------------*/
 
 void
-test_case_0(bool in_order)
+test_case_0(ntc::in_order order)
 {
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(4);
   enc.set_window_size(3);
 
-  decoder<packet_handler, data_handler> dec{8, in_order, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, order, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
@@ -206,24 +206,24 @@ test_case_0(bool in_order)
 
 TEST_CASE("In order decoder: lost packet with an encoder's limited window")
 {
-  test_case_0(true);
+  test_case_0(ntc::in_order::yes);
 }
 
 TEST_CASE("Out of order decoder: lost packet with an encoder's limited window")
 {
-  test_case_0(false);
+  test_case_0(ntc::in_order::no);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-test_case_1(bool in_order)
+test_case_1(ntc::in_order order)
 {
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(4);
   enc.set_code_type(code::non_systematic);
 
-  decoder<packet_handler, data_handler> dec{8, in_order, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, order, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
@@ -320,12 +320,12 @@ test_case_1(bool in_order)
 
 TEST_CASE("In order decoder: non systematic code")
 {
-  test_case_1(true);
+  test_case_1(ntc::in_order::yes);
 }
 
 TEST_CASE("Out of order decoder: non systematic code")
 {
-  test_case_1(false);
+  test_case_1(ntc::in_order::no);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -336,7 +336,7 @@ TEST_CASE("Decoder invalid read scenario")
   enc.set_rate(3);
   enc.set_code_type(code::non_systematic);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
@@ -384,7 +384,7 @@ TEST_CASE("In order decoder")
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(4);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
@@ -478,7 +478,7 @@ TEST_CASE("In order decoder, missing sources")
   enc.set_window_size(3);
   enc.set_rate(3);
 
-  decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
 
   auto& enc_handler = enc.packet_handler();
@@ -639,7 +639,7 @@ TEST_CASE("Decoder rejects ack")
 {
   const auto data = std::vector<char>(100, 'x');
 
-  decoder<packet_handler, data_handler> decoder{8, false, packet_handler{}, data_handler{}};
+  decoder<packet_handler, data_handler> decoder{8, in_order::yes, packet_handler{}, data_handler{}};
   packet_handler h;
   detail::packetizer<packet_handler> serializer{h};
 

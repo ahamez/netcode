@@ -103,7 +103,7 @@ int main()
   }
 
   ntc::encoder<packet_handler> enc{8, packet_handler{}};
-  ntc::decoder<packet_handler, in_order_data_handler> dec{ 8, true
+  ntc::decoder<packet_handler, in_order_data_handler> dec{ 8, ntc::in_order::yes
                                                          , packet_handler{}
                                                          , in_order_data_handler{packet_size}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});

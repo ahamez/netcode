@@ -65,7 +65,8 @@ int main()
     enc.set_window_size(32);
 
     // Create a decoder.
-    ntc::decoder<packet_handler, data_handler> dec{8, true, packet_handler{}, data_handler{}};
+    ntc::decoder<packet_handler, data_handler>
+      dec{8, ntc::in_order::yes, packet_handler{}, data_handler{}};
     dec.set_ack_frequency(std::chrono::milliseconds{200});
 
     // Create an holder for some data with a size up to 1024 bytes.

@@ -14,6 +14,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/square_matrix.hh"
+#include "netcode/in_order.hh"
 
 namespace ntc { namespace detail {
 
@@ -57,7 +58,7 @@ public:
 public:
 
   /// @brief Constructor.
-  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h, bool in_order);
+  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h, in_order order);
 
   /// @brief What to do when a source is received.
   void
