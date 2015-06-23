@@ -1176,6 +1176,8 @@
 		2B516BE11AC944AE00133F38 /* invert_matrix.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = invert_matrix.hh; sourceTree = "<group>"; };
 		2B516BEE1AC944DD00133F38 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B516BF21AC9997200133F38 /* test_invert_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_invert_matrix.cc; sourceTree = "<group>"; };
+		2B59931C1B38EF3000DCBB13 /* burst.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = burst.hh; sourceTree = "<group>"; };
+		2B59931D1B38EFC300DCBB13 /* uniform.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uniform.hh; sourceTree = "<group>"; };
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
@@ -3052,6 +3054,15 @@
 			path = windows;
 			sourceTree = "<group>";
 		};
+		2B59931B1B38EF2000DCBB13 /* loss */ = {
+			isa = PBXGroup;
+			children = (
+				2B59931C1B38EF3000DCBB13 /* burst.hh */,
+				2B59931D1B38EFC300DCBB13 /* uniform.hh */,
+			);
+			path = loss;
+			sourceTree = "<group>";
+		};
 		2B7E42AE1ADC266B0035DA89 /* c */ = {
 			isa = PBXGroup;
 			children = (
@@ -3081,9 +3092,10 @@
 		2B7F12631AD051A300CAA199 /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				2B9BD1061AF2A18600856E96 /* udp_generator.py */,
+				2B59931B1B38EF2000DCBB13 /* loss */,
 				2B7F12741AD162FD00CAA199 /* CMakeLists.txt */,
 				2B7F12711AD0523200CAA199 /* lossy_proxy.cc */,
+				2B9BD1061AF2A18600856E96 /* udp_generator.py */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -3459,14 +3471,14 @@
 			targets = (
 				2B516BF41AC9B86400133F38 /* all */,
 				2B516BC81AC8881C00133F38 /* accelerator */,
-				2BE3197B1AB32D7F001AA9DF /* tests */,
-				2BBC050D1ACC472C00EEDAC0 /* test-one */,
-				2B7F12671AD0520B00CAA199 /* lossy_proxy */,
-				2B9BD0FA1AF2A0B100856E96 /* end_to_end-mt */,
-				2B218AEA1AD7C736000D2657 /* cnetcode */,
-				2BBA82A21AF7FA3200FB22BD /* end_to_end */,
 				2B218AF81AD7FBC4000D2657 /* c_basic */,
 				2BAD81911B287C7F0010EAC4 /* cpp_basic */,
+				2B218AEA1AD7C736000D2657 /* cnetcode */,
+				2BBA82A21AF7FA3200FB22BD /* end_to_end */,
+				2B9BD0FA1AF2A0B100856E96 /* end_to_end-mt */,
+				2B7F12671AD0520B00CAA199 /* lossy_proxy */,
+				2BE3197B1AB32D7F001AA9DF /* tests */,
+				2BBC050D1ACC472C00EEDAC0 /* test-one */,
 			);
 		};
 /* End PBXProject section */

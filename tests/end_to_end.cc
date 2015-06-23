@@ -1,80 +1,15 @@
 #include <algorithm>
 #include <iostream>
-#include <random>
 #include <vector>
 
 #include <netcode/decoder.hh>
 #include <netcode/encoder.hh>
 
+#include "tools/loss/burst.hh"
+
 /*------------------------------------------------------------------------------------------------*/
 
 static constexpr auto buffer_sz = 4096ul;
-
-/*------------------------------------------------------------------------------------------------*/
-
-class burst_loss
-{
-public:
-
-  burst_loss(unsigned int good, unsigned int bad)
-    : state_(state::good)
-    , gen_()
-    , dist_(1, 100)
-    , good_(good)
-    , bad_(bad)
-  {}
-
-  /// @return true if packet should be lost.
-  bool
-  operator()()
-  noexcept
-  {
-    switch (state_)
-    {
-        case state::good:
-        {
-          if (dist_(gen_) < good_)
-          {
-            return false; // no loss
-          }
-          else
-          {
-            state_ = state::bad;
-            return true; // loss
-          }
-        }
-
-        case state::bad:
-        {
-          if (dist_(gen_) < bad_)
-          {
-            return true; // loss
-          }
-          else
-          {
-            state_ = state::good;
-            return false; // no loss
-          }
-        }
-
-        default: __builtin_unreachable();
-    }
-  }
-
-private:
-
-  enum class state {good, bad};
-
-  state state_;
-
-  std::default_random_engine gen_;
-
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  unsigned int good_;
-
-  unsigned int bad_;
-};
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -155,7 +90,7 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 int main()
 {
   std::uint32_t id = 0;
-  burst_loss loss{100, 0};
+  loss::burst loss{100, 0};
   std::size_t to_dec_nb_loss = 0;
   std::size_t to_enc_nb_loss = 0;
   std::size_t nb_packets = 999999;

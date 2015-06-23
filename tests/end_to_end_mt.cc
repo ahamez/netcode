@@ -3,12 +3,13 @@
 #include <iostream>
 #include <mutex>
 #include <queue>
-#include <random>
 #include <thread>
 #include <vector>
 
 #include <netcode/decoder.hh>
 #include <netcode/encoder.hh>
+
+#include "tools/loss/burst.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -17,82 +18,16 @@ using queue_type = std::queue<std::vector<char>>;
 
 /*------------------------------------------------------------------------------------------------*/
 
-class burst_loss
-{
-public:
-
-  burst_loss(unsigned int good, unsigned int bad)
-    : state_(state::good)
-    , gen_()
-    , dist_(1, 100)
-    , good_(good)
-    , bad_(bad)
-  {}
-
-  /// @return true if packet should be lost.
-  bool
-  operator()()
-  noexcept
-  {
-    switch (state_)
-    {
-        case state::good:
-        {
-          if (dist_(gen_) < good_)
-          {
-            return false; // no loss
-          }
-          else
-          {
-            state_ = state::bad;
-            return true; // loss
-          }
-        }
-
-        case state::bad:
-        {
-          if (dist_(gen_) < bad_)
-          {
-            return true; // loss
-          }
-          else
-          {
-            state_ = state::good;
-            return false; // no loss
-          }
-        }
-
-        default: __builtin_unreachable();
-    }
-  }
-
-private:
-
-  enum class state {good, bad};
-
-  state state_;
-
-  std::default_random_engine gen_;
-
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  unsigned int good_;
-
-  unsigned int bad_;
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
 struct packet_handler
 {
   std::vector<char> buffer;
-  burst_loss& loss;
+  loss::burst& loss;
   bool lost_current_packet;
   std::size_t nb_loss;
   queue_type& queue;
   std::mutex& mutex;
 
-  packet_handler(burst_loss& l, queue_type& q, std::mutex& m)
+  packet_handler(loss::burst& l, queue_type& q, std::mutex& m)
     : buffer(), loss(l), lost_current_packet(loss()), nb_loss(lost_current_packet ? 1u : 0u)
     , queue(q), mutex(m)
   {
@@ -181,7 +116,7 @@ void
 encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
        , const bool& run, std::uint16_t packet_size)
 {
-  burst_loss loss{85, 15};
+  loss::burst loss{85, 15};
   ntc::encoder<packet_handler> enc{8, packet_handler{loss, to_dec, to_dec_mutex}};
   std::uint32_t id = 0;
 
@@ -213,7 +148,7 @@ void
 decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
        , const bool& run, std::uint16_t packet_size)
 {
-  burst_loss loss{85, 15};
+  loss::burst loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
     dec{8, true, packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}};
 

@@ -1,9 +1,5 @@
 #include <array>
-#include <cassert>
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <random>
 #include <stdexcept>
 #include <string>
 
@@ -16,113 +12,8 @@
 #include <asio.hpp>
 #pragma GCC diagnostic pop
 
-/*------------------------------------------------------------------------------------------------*/
-
-class burst_loss
-{
-public:
-
-  burst_loss(unsigned int good, unsigned int bad)
-    : state_{state::good}
-    , gen_{}
-    , dist_{1, 100}
-    , good_{good}
-    , bad_{bad}
-  {}
-
-  /// @return true if packet should be lost.
-  bool
-  operator()()
-  noexcept
-  {
-    switch (state_)
-    {
-        case state::good:
-        {
-          if (dist_(gen_) < good_)
-          {
-            return false; // no loss
-          }
-          else
-          {
-            state_ = state::bad;
-            return true; // loss
-          }
-        }
-
-        case state::bad:
-        {
-          if (dist_(gen_) < bad_)
-          {
-            return true; // loss
-          }
-          else
-          {
-            state_ = state::good;
-            return false; // no loss
-          }
-        }
-
-        default: __builtin_unreachable();
-    }
-  }
-
-private:
-
-  /// @brief
-  enum class state {good, bad};
-
-  /// @brief
-  state state_;
-
-  /// @brief
-  std::default_random_engine gen_;
-
-  /// @brief
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  /// @brief
-  unsigned int good_;
-
-  /// @bief
-  unsigned int bad_;
-
-};
-
-/*------------------------------------------------------------------------------------------------*/
-
-class uniform_loss
-{
-public:
-
-  uniform_loss(unsigned int threshold)
-    : gen_{}
-    , dist_{1, 100}
-    , threshold_{threshold}
-  {
-    assert(threshold_ > 0 and threshold < 100);
-  }
-
-  /// @return true if packet should be lost.
-  bool
-  operator()()
-  noexcept
-  {
-    return dist_(gen_) > threshold_;
-  }
-
-private:
-
-
-  /// @brief
-  std::default_random_engine gen_;
-
-  /// @brief
-  std::uniform_int_distribution<unsigned int> dist_;
-
-  /// @brief
-  unsigned int threshold_;
-};
+#include "tools/loss/burst.hh"
+#include "tools/loss/uniform.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -254,12 +145,12 @@ main(int argc, char** argv)
     {
       const auto p_good = static_cast<unsigned int>(std::atoi(argv[5]));
       const auto p_bad = static_cast<unsigned int>(std::atoi(argv[6]));
-      proxy(from_port, to_ip, to_port, burst_loss{p_good, p_bad});
+      proxy(from_port, to_ip, to_port, loss::burst{p_good, p_bad});
     }
     else if (std::strncmp(argv[4], "uniform", 8) == 0)
     {
       const auto p = static_cast<unsigned int>(std::atoi(argv[5]));
-      proxy(from_port, to_ip, to_port, uniform_loss{100 - p});
+      proxy(from_port, to_ip, to_port, loss::uniform{100 - p});
     }
     else
     {
