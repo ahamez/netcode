@@ -1,4 +1,4 @@
-#include <cstdlib>
+#include <cstring> // strncmp
 #include <iostream>
 
 #pragma GCC diagnostic push
