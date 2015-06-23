@@ -17,6 +17,7 @@ template <typename Fn>
 auto
 __attribute__((nonnull))
 check_error(Fn&& fn, ntc_error* error)
+noexcept
 -> decltype(fn())
 {
   error->type = ntc_no_error;
