@@ -114,13 +114,13 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 
 void
 encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const bool& run, std::uint16_t packet_size)
+       , const bool* run, std::uint16_t packet_size)
 {
   loss::burst loss{85, 15};
   ntc::encoder<packet_handler> enc{8, packet_handler{loss, to_dec, to_dec_mutex}};
   std::uint32_t id = 0;
 
-  while (run)
+  while (*run)
   {
     enc(generate_data(id++, packet_size));
 
@@ -146,13 +146,13 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
 void
 decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::mutex& to_enc_mutex
-       , const bool& run, std::uint16_t packet_size)
+       , const bool* run, std::uint16_t packet_size)
 {
   loss::burst loss{85, 15};
   ntc::decoder<packet_handler, in_order_data_handler>
     dec{8, true, packet_handler{loss, to_enc, to_enc_mutex}, in_order_data_handler{packet_size}};
 
-  while (run)
+  while (*run)
   {
     // Read source or repair if any.
     {
@@ -186,7 +186,9 @@ int main()
     return 1;
   }
 
-  bool run = true;
+  // Avoid warning with clang static analyser.
+  bool _run = true;
+  bool* run = &_run;
 
   queue_type to_dec;
   std::mutex to_dec_mutex;
@@ -195,13 +197,13 @@ int main()
   std::mutex to_enc_mutex;
 
   std::thread encoder_thread{ encoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(run), packet_size};
+                            , std::ref(to_enc_mutex), run, packet_size};
   std::thread decoder_thread{ decoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
-                            , std::ref(to_enc_mutex), std::cref(run), packet_size};
+                            , std::ref(to_enc_mutex), run, packet_size};
 
   std::this_thread::sleep_for(std::chrono::seconds{10});
 
-  run = false;
+  *run = false;
 
   encoder_thread.join();
   decoder_thread.join();
