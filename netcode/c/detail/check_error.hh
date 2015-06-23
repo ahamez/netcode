@@ -51,6 +51,12 @@ noexcept
     std::copy_n(e.what(), sz, error->message);
   }
 
+  catch (...)
+  {
+    error->type = ntc_unknown_error;
+    delete error->message;
+  }
+
   // Return the default value of the type returned by fn when an error occurs.
   return decltype(fn())();
 }
