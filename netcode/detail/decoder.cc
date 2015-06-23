@@ -20,7 +20,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const sourc
   , m_callback(h)
   , m_repairs{}
   , m_sources{}
-  , m_last_id{}
+  , m_last_id{nullptr}
   , m_missing_sources{}
   , m_nb_useless_repairs{0}
   , m_nb_failed_full_decodings{0}
@@ -347,7 +347,14 @@ decoder::drop_outdated(std::uint32_t id)
 noexcept
 {
   // All sources with an identifier strictly less than last_id_ are now considered outdated.
-  m_last_id = id;
+  if (not m_last_id)
+  {
+    m_last_id = std::unique_ptr<std::uint32_t>(new std::uint32_t{id});
+  }
+  else
+  {
+    *m_last_id = id;
+  }
 
   // Remove repairs which references this id.
   for (auto cit = m_repairs.begin(), end = m_repairs.end(); cit != end;)
@@ -448,7 +455,8 @@ decoder::attempt_full_decoding()
 
   // Invert it.
   m_inv.resize(m_coefficients.dimension());
-  if (const auto r_col = invert(m_gf, m_coefficients, m_inv))
+  const auto r_col = invert(m_gf, m_coefficients, m_inv);
+  if (r_col.first)
   {
     // Inversion failed, remove the faulty repair.
     m_nb_failed_full_decodings += 1;
@@ -457,7 +465,7 @@ decoder::attempt_full_decoding()
     auto r_cit = m_repairs.begin();
     // To avoid a conversion warning with clang's -Wconversion.
     using difference_type = std::iterator_traits<decltype(r_cit)>::difference_type;
-    std::advance(r_cit, static_cast<difference_type>(*r_col));
+    std::advance(r_cit, static_cast<difference_type>(r_col.second));
 
     // Remove repair from missing sources that reference it.
     for (const auto src : r_cit->second.source_ids())

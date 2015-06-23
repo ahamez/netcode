@@ -1,12 +1,13 @@
 #pragma once
 
+#include <memory> // unique_ptr
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wshadow"
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
-#include <boost/optional.hpp>
 #pragma GCC diagnostic pop
 
 #include "netcode/detail/galois_field.hh"
@@ -168,7 +169,7 @@ private:
   /// @brief Remember the last source identifier.
   ///
   /// All sources with an identifier smaller than this value were received or decoded in the past.
-  boost::optional<std::uint32_t> m_last_id;
+  std::unique_ptr<std::uint32_t> m_last_id;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   missing_sources_type m_missing_sources;

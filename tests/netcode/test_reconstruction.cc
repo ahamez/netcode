@@ -231,7 +231,7 @@ TEST_CASE("Two sources lost")
   // s1 = C*r0 + D*r1
 
   detail::square_matrix inv{mat.dimension()};
-  REQUIRE(not detail::invert(gf, mat, inv));
+  REQUIRE(not detail::invert(gf, mat, inv).first);
 
   // Reconstruct s0.
 
