@@ -189,7 +189,7 @@ public:
     return m_nb_sent_ack;
   }
 
-  /// @brief Get the number of repairs that were dropped because they wereuseless.
+  /// @brief Get the number of repairs that were dropped because they were useless.
   std::size_t
   nb_useless_repairs()
   const noexcept
