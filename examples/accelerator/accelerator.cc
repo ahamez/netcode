@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cstring> // strncmp
 #include <iostream>
 
@@ -5,8 +6,6 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
-#define BOOST_DATE_TIME_NO_LIB
-#define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
 #pragma GCC diagnostic pop
 

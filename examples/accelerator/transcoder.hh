@@ -103,8 +103,8 @@ public:
             , udp::endpoint& app_endpoint
             , udp::socket& socket
             , udp::endpoint& endpoint)
-    : m_ack_timer(io, boost::posix_time::milliseconds(100))
-    , m_stats_timer(io, boost::posix_time::seconds(5))
+    : m_ack_timer(io, std::chrono::milliseconds(100))
+    , m_stats_timer(io, std::chrono::seconds(5))
     , m_app_socket(app_socket)
     , m_app_endpoint(app_endpoint)
     , m_socket(socket)
@@ -188,7 +188,7 @@ private:
   void
   start_timer_handler()
   {
-    m_ack_timer.expires_from_now(boost::posix_time::milliseconds(100));
+    m_ack_timer.expires_from_now(std::chrono::milliseconds(100));
     m_ack_timer.async_wait([this](const asio::error_code& err)
                       {
                         if (err)
@@ -207,7 +207,7 @@ private:
   void
   start_stats_timer_handler()
   {
-    m_stats_timer.expires_from_now(boost::posix_time::seconds(5));
+    m_stats_timer.expires_from_now(std::chrono::seconds(5));
     m_stats_timer.async_wait([this](const asio::error_code& err)
                              {
                                if (err)
@@ -241,10 +241,10 @@ private:
 private:
 
   /// @brief Timer to send ack
-  asio::deadline_timer m_ack_timer;
+  asio::steady_timer m_ack_timer;
 
   /// @brief Timer to display statistics
-  asio::deadline_timer m_stats_timer;
+  asio::steady_timer m_stats_timer;
 
   /// @brief The proxied application's socket
   udp::socket& m_app_socket;

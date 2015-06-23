@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -8,8 +9,6 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
-#define BOOST_DATE_TIME_NO_LIB
-#define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
 #pragma GCC diagnostic pop
 
@@ -117,9 +116,9 @@ listen( udp::socket& in_socket, udp::endpoint& in_endpoint
 /*------------------------------------------------------------------------------------------------*/
 
 void
-display(asio::deadline_timer& timer)
+display(asio::steady_timer& timer)
 {
-  timer.expires_from_now(boost::posix_time::seconds(display_timer));
+  timer.expires_from_now(std::chrono::seconds(display_timer));
   timer.async_wait([&](const asio::error_code& err)
                     {
                       if (err)
@@ -136,9 +135,7 @@ display(asio::deadline_timer& timer)
                                 << " , "
                                 << ( static_cast<float>(b_to_a_losses)
                                    / static_cast<float>(b_to_a_total)) * 100
-                                //<< '\r';
                                 << std::endl;
-                      //std::cout.flush();
                       display(timer);
                     }
                   );
@@ -159,7 +156,7 @@ proxy(unsigned short a_port, const std::string& b_ip, const std::string& b_port,
   udp::resolver resolver(io);
   udp::endpoint b_endpoint = *resolver.resolve({udp::v4(), b_ip, b_port});
 
-  asio::deadline_timer timer{io, boost::posix_time::seconds(display_timer)};
+  asio::steady_timer timer{io, std::chrono::seconds(display_timer)};
 
   std::array<char, 4096> a_to_b;
   std::array<char, 4096> b_to_a;
@@ -208,7 +205,6 @@ main(int argc, char** argv)
       const auto p_bad_inv = static_cast<unsigned int>(std::atoi(argv[8]));      
 
       proxy(from_port, to_ip, to_port, loss::burst{p_good, p_bad}, loss::burst{p_good_inv, p_bad_inv});
-      //proxy(from_port, to_ip, to_port, burst_loss{p_good, p_bad});
     }
     else if (std::strncmp(argv[4], "uniform", 8) == 0)
     {
@@ -216,13 +212,11 @@ main(int argc, char** argv)
       const auto p_inv = static_cast<unsigned int>(std::atoi(argv[6]));
 
       proxy(from_port, to_ip, to_port, loss::uniform{100 - p}, loss::uniform{100 - p_inv});
-      //proxy(from_port, to_ip, to_port, uniform_loss{100 - p});
     }
     else if (std::strncmp(argv[4], "file", 5) == 0)
     {
       
       proxy(from_port, to_ip, to_port, file_loss{argv[5]}, file_loss{argv[6]});
-      //proxy(from_port, to_ip, to_port, file_loss{argv[5]});
     }
     else
     {
