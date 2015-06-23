@@ -42,7 +42,8 @@ noexcept;
 /// @param dec The decoder to delete
 void
 ntc_delete_decoder(ntc_decoder_t* dec)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -56,7 +57,8 @@ noexcept;
 /// @note The returned value is invalid if an error occurred
 size_t
 ntc_decoder_add_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -66,7 +68,8 @@ noexcept;
 /// @param error The reported error, if any
 void
 ntc_decoder_generate_ack(ntc_decoder_t* dec, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -76,7 +79,8 @@ noexcept;
 /// @param frequency The requested frequency, if 0, deactivate this feature
 void
 ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -85,7 +89,8 @@ noexcept;
 /// @pre @p nb > 0
 void
 ntc_decoder_set_ack_nb_packets(ntc_decoder_t* dec, uint16_t nb)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 

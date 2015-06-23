@@ -49,7 +49,8 @@ noexcept;
 /// @post @ref ntc_data_get_reserved_size(ntc_new_data_copy(@p src, @p size)) >= @p size
 ntc_data_t*
 ntc_new_data_copy(const char* src, uint16_t size)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -58,7 +59,8 @@ noexcept;
 /// @param data The data to delete
 void
 ntc_delete_data(ntc_data_t* data)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -67,7 +69,8 @@ noexcept;
 /// @param data The data to modify
 char*
 ntc_data_buffer(ntc_data_t* data)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -81,7 +84,8 @@ noexcept;
 /// - when resetting with ntc_data_reset()
 uint16_t
 ntc_data_get_reserved_size(const ntc_data_t* data)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -94,7 +98,8 @@ noexcept;
 /// ntc_data_buffer()
 void
 ntc_data_set_used_bytes(ntc_data_t* data, uint16_t nb)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -102,7 +107,8 @@ noexcept;
 /// @ingroup c_data
 uint16_t
 ntc_data_get_used_bytes(const ntc_data_t* data)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -113,7 +119,8 @@ noexcept;
 /// @param error The reported error, if any
 void
 ntc_data_reset(ntc_data_t* data, uint16_t new_size, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 

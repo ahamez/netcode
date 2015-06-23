@@ -48,7 +48,8 @@ noexcept;
 /// @param enc The encoder to delete
 void
 ntc_delete_encoder(ntc_encoder_t* enc)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -62,7 +63,8 @@ noexcept;
 /// @note It's possible to put @p data back in an usable state by calling ntc_data_reset()
 void
 ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -76,7 +78,8 @@ noexcept;
 /// @note The returned value is invalid if an error occurred
 size_t
 ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -86,7 +89,8 @@ noexcept;
 /// @param error The reported error, if any
 void
 ntc_encoder_generate_repair(ntc_encoder_t* enc, ntc_error* error)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -96,7 +100,8 @@ noexcept;
 /// @return The queried size
 size_t
 ntc_encoder_window(ntc_encoder_t* enc)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -107,7 +112,8 @@ noexcept;
 /// @note The default mode of an encoder is systematic
 void
 ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type code_type)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -119,7 +125,8 @@ noexcept;
 /// @note If the adaptive mode is set, the rate will change automatically
 void
 ntc_encoder_set_rate(ntc_encoder_t* enc, size_t rate)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -130,7 +137,8 @@ noexcept;
 /// @pre @p size > 0
 void
 ntc_encoder_set_window_size(ntc_encoder_t* enc, size_t size)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -141,7 +149,8 @@ noexcept;
 /// @note An encoder is not adaptive by default
 void
 ntc_encoder_set_adaptive(ntc_encoder_t* enc, bool adaptive)
-noexcept;
+noexcept
+__attribute__((nonnull));
 
 /*------------------------------------------------------------------------------------------------*/
 

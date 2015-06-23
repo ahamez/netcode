@@ -15,6 +15,7 @@ namespace ntc { namespace detail {
 /// @brief Apply function @p fn and fill @p error if necessary
 template <typename Fn>
 auto
+__attribute__((nonnull))
 check_error(Fn&& fn, ntc_error* error)
 -> decltype(fn())
 {
