@@ -1,6 +1,6 @@
 ### Description
 
-The netcode library is a C++11 network coding library, with C interfaces.
+The `netcode` library is a C++11 network coding library. C interfaces are also provided.
 
 ### Requirements
 
