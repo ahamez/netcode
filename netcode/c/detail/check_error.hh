@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <new> // nothrow
 #include <stdexcept>
 
 #include "netcode/c/error.h"
