@@ -93,19 +93,25 @@ int main(int argc, char** argv)
   loss::burst loss{100, 0};
   std::size_t to_dec_nb_loss = 0;
   std::size_t to_enc_nb_loss = 0;
-  std::size_t nb_packets = 9999;
-  if (argc == 2)
+  const auto nb_packets = [&]
   {
-    try
+    if (argc == 2)
     {
-      nb_packets = static_cast<std::size_t>(std::stoi(argv[1]));
+      try
+      {
+        return static_cast<std::size_t>(std::stoi(argv[1]));
+      }
+      catch (std::exception&)
+      {
+        std::cerr << "Can't read number of packets\n";
+        std::exit(1);
+      }
     }
-    catch (std::exception&)
+    else
     {
-      std::cerr << "Can't read number of packets\n";
-      std::exit(1);
+      return 10000ul;
     }
-  }
+  }();
 
   std::size_t ack_frequency = 50;
   std::uint16_t packet_size = 1024;
@@ -191,7 +197,7 @@ int main(int argc, char** argv)
   std::cout << "Decoded " << dec.nb_decoded() << '\n';
   std::cout << '\n';
 
-  return 0;
+  std::exit(0);
 }
 
 /*------------------------------------------------------------------------------------------------*/

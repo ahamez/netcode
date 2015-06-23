@@ -178,7 +178,7 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
 
 /*------------------------------------------------------------------------------------------------*/
 
-int main()
+int main(int argc, char** argv)
 {
   std::uint16_t packet_size = 1024;
   if ((packet_size % sizeof(std::uint32_t)) != 0)
@@ -186,6 +186,26 @@ int main()
     std::cerr << "Invalid packet size\n";
     return 1;
   }
+
+  const auto test_time = [&]
+  {
+    if (argc == 2)
+    {
+      try
+      {
+        return std::stoi(argv[1]);
+      }
+      catch (std::exception&)
+      {
+        std::cerr << "Can't read testing time\n";
+        std::exit(1);
+      }
+    }
+    else
+    {
+      return 10;
+    }
+  }();
 
   // Avoid warning with clang static analyser.
   bool _run = true;
@@ -202,14 +222,14 @@ int main()
   std::thread decoder_thread{ decoder, std::ref(to_dec), std::ref(to_dec_mutex), std::ref(to_enc)
                             , std::ref(to_enc_mutex), run, packet_size};
 
-  std::this_thread::sleep_for(std::chrono::seconds{10});
+  std::this_thread::sleep_for(std::chrono::seconds{test_time});
 
   *run = false;
 
   encoder_thread.join();
   decoder_thread.join();
 
-  return 0;
+  std::exit(0);
 }
 
 /*------------------------------------------------------------------------------------------------*/

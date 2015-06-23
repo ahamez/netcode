@@ -33,5 +33,5 @@ add_executable(end_to_end_mt ${END_TO_END_MT_SOURCES})
 target_link_libraries(end_to_end_mt ntc ${GF_COMPLETE_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
 add_test(Tests tests)
-add_test(EndToEnd end_to_end)
-add_test(EndToEnd-MT end_to_end_mt)
+add_test(EndToEnd end_to_end 1000)
+add_test(EndToEnd-MT end_to_end_mt 2)
