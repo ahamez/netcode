@@ -47,8 +47,11 @@ noexcept
     error->type = ntc_unknown_error;
     const auto sz = std::strlen(e.what());
     delete error->message;
-    error->message = new char[sz];
-    std::copy_n(e.what(), sz, error->message);
+    error->message = new (std::nothrow) char[sz];
+    if (error->message)
+    {
+      std::copy_n(e.what(), sz, error->message);
+    }
   }
 
   catch (...)
