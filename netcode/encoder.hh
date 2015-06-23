@@ -14,40 +14,35 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
+#include "netcode/systematic.hh"
 
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Describe if a code is systematic or not.
-/// @ingroup ntc_configuration
-enum class code {systematic, non_systematic};
-
-/*------------------------------------------------------------------------------------------------*/
-
-/// @brief The class to interact with on the sender side.
+/// @brief The class to interact with on the sender side
 /// @ingroup ntc_encoder
 template <typename PacketHandler>
 class encoder final
 {
 public:
 
-  /// @brief The type of the handler that processes data ready to be sent on the network.
+  /// @brief The type of the handler that processes data ready to be sent on the network
   using packet_handler_type = PacketHandler;
 
 public:
 
-  /// @brief Can't copy-construct an encoder.
+  /// @brief Can't copy-construct an encoder
   encoder(const encoder&) = delete;
 
-  /// @brief Can't copy an encoder.
+  /// @brief Can't copy an encoder
   encoder& operator=(const encoder&) = delete;
 
-  /// @brief Constructor.
+  /// @brief Constructor
   template <typename PacketHandler_>
   encoder(std::uint8_t galois_field_size, PacketHandler_&& packet_handler)
     : m_galois_field_size{galois_field_size}
-    , m_code_type{code::systematic}
+    , m_code_type{systematic::yes}
     , m_rate{5}
     , m_window_size{std::numeric_limits<std::size_t>::max()}
     , m_adaptive{false}
@@ -73,8 +68,8 @@ public:
     // m_repair.source_ids().reserve(128);
   }
 
-  /// @brief Give the encoder a new data.
-  /// @param d The data to add.
+  /// @brief Give the encoder a new data
+  /// @param d The data to add
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
   /// except for one case: calling data::reset() will put back @p d in a usable state.
   /// @see data::reset
@@ -89,29 +84,29 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param packet The incoming packet.
-  /// @param max_len The maximum number of bytes to read from @p packet.
-  /// @return The number of bytes that have been read.
-  /// @throw overflow_error when the number of read bytes > @p max_len.
-  /// @throw packet_type_error when the packet has an incorrect type.
+  /// @brief Notify the encoder of a new incoming packet
+  /// @param packet The incoming packet
+  /// @param max_len The maximum number of bytes to read from @p packet
+  /// @return The number of bytes that have been read
+  /// @throw overflow_error when the number of read bytes > @p max_len
+  /// @throw packet_type_error when the packet has an incorrect type
   std::size_t
   operator()(const char* packet, std::size_t max_len)
   {
     return notify_impl(packet, max_len);
   }
 
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param packet The incoming packet stored in a vector.
-  /// @return The number of bytes that have been read.
-  /// @throw packet_type_error when the packet has an incorrect type.
+  /// @brief Notify the encoder of a new incoming packet
+  /// @param packet The incoming packet stored in a vector
+  /// @return The number of bytes that have been read
+  /// @throw packet_type_error when the packet has an incorrect type
   std::size_t
   operator()(const std::vector<char>& packet)
   {
     return operator()(packet.data(), packet.size());
   }
 
-  /// @brief The number of packets which have not been acknowledged.
+  /// @brief The number of packets which have not been acknowledged
   std::size_t
   window()
   const noexcept
@@ -119,7 +114,7 @@ public:
     return m_sources.size();
   }
 
-  /// @brief Get the number of received acks.
+  /// @brief Get the number of received acks
   std::size_t
   nb_received_acks()
   const noexcept
@@ -127,7 +122,7 @@ public:
     return m_nb_acks;
   }
 
-  /// @brief Get the number of sent repairs.
+  /// @brief Get the number of sent repairs
   std::size_t
   nb_sent_repairs()
   const noexcept
@@ -135,7 +130,7 @@ public:
     return m_nb_sent_repairs;
   }
 
-  /// @brief Get the number of sent sources.
+  /// @brief Get the number of sent sources
   std::size_t
   nb_sent_sources()
   const noexcept
@@ -143,7 +138,7 @@ public:
     return m_nb_sent_sources;
   }
 
-  /// @brief Get the data handler.
+  /// @brief Get the data handler
   const packet_handler_type&
   packet_handler()
   const noexcept
@@ -151,7 +146,7 @@ public:
     return m_packet_handler;
   }
 
-  /// @brief Get the data handler.
+  /// @brief Get the data handler
   packet_handler_type&
   packet_handler()
   noexcept
@@ -159,7 +154,7 @@ public:
     return m_packet_handler;
   }
 
-  /// @brief Force the generation of a repair.
+  /// @brief Force the generation of a repair
   void
   generate_repair()
   {
@@ -169,7 +164,7 @@ public:
     m_packetizer.write_repair(m_repair);
   }
 
-  /// @brief Get the Galois's field size.
+  /// @brief Get the Galois's field size
   std::uint8_t
   galois_field_size()
   const noexcept
@@ -177,23 +172,23 @@ public:
     return m_galois_field_size;
   }
 
-  /// @brief Set the systematic/non-systematic mode of the code.
+  /// @brief Set the systematic/non-systematic mode of the code
   void
-  set_code_type(code c)
+  set_code_type(systematic c)
   noexcept
   {
     m_code_type = c;
   }
 
-  /// @brief Get the systematic/non-systematic mode of the code.
-  code
+  /// @brief Get the systematic/non-systematic mode of the code
+  systematic
   code_type()
   const noexcept
   {
     return m_code_type;
   }
 
-  /// @brief Set how many sources are sent before a repair is generated.
+  /// @brief Set how many sources are sent before a repair is generated
   /// @pre @p rate > 0
   void
   set_rate(std::size_t rate)
@@ -203,7 +198,7 @@ public:
     m_rate = rate;
   }
 
-  /// @brief Get how many sources are sent before a repair is generated.
+  /// @brief Get how many sources are sent before a repair is generated
   std::size_t
   rate()
   const noexcept
@@ -211,7 +206,7 @@ public:
     return m_rate;
   }
 
-  /// @brief Set the maximal permitted size of the encoder's window.
+  /// @brief Set the maximal permitted size of the encoder's window
   /// @pre @p sz > 0
   void
   set_window_size(std::size_t sz)
@@ -221,7 +216,7 @@ public:
     m_window_size = sz;
   }
 
-  /// @brief Get the maximal permitted size of the encoder's window.
+  /// @brief Get the maximal permitted size of the encoder's window
   std::size_t
   window_size()
   const noexcept
@@ -229,7 +224,7 @@ public:
     return m_window_size;
   }
 
-  /// @brief Set the adaptive mode of the code.
+  /// @brief Set the adaptive mode of the code
   void
   set_adaptive(bool adaptive)
   noexcept
@@ -237,7 +232,7 @@ public:
     m_adaptive = adaptive;
   }
 
-  /// @brief Get the adaptative mode of the code.
+  /// @brief Get the adaptative mode of the code
   bool
   adaptive()
   const noexcept
@@ -247,8 +242,8 @@ public:
 
 private:
 
-  /// @brief Create a source from the given data and generate a repair if needed.
-  /// @param d The data to add.
+  /// @brief Create a source from the given data and generate a repair if needed
+  /// @param d The data to add
   void
   commit_impl(data&& d)
   {
@@ -264,7 +259,7 @@ private:
     const auto& insertion
       = m_sources.emplace(m_current_source_id, std::move(d.buffer_impl()), d.used_bytes());
 
-    if (m_code_type == code::systematic)
+    if (m_code_type == systematic::yes)
     {
       ++m_nb_sent_sources;
       ++m_nb_sent_packets;
@@ -285,8 +280,8 @@ private:
     ++m_current_source_id;
   }
 
-  /// @brief Notify the encoder that some packet has been received (should be an ack).
-  /// @return The number of bytes that have been read (0 if the packet was not decoded).
+  /// @brief Notify the encoder that some packet has been received (should be an ack)
+  /// @return The number of bytes that have been read (0 if the packet was not decoded)
   /// @throw packet_type_error
   std::size_t
   notify_impl(const char* packet, std::size_t max_len)
@@ -319,7 +314,7 @@ private:
     }
   }
 
-  /// @brief Launch the generation of a repair.
+  /// @brief Launch the generation of a repair
   void
   mk_repair()
   {
@@ -334,7 +329,7 @@ private:
     ++m_nb_sent_repairs;
   }
 
-  /// @brief Compute the code rate needed for a given loss rate.
+  /// @brief Compute the code rate needed for a given loss rate
   static
   std::size_t
   rate_for_loss(double loss)
@@ -347,52 +342,52 @@ private:
 
 private:
 
-  /// @brief The Galois field size.
+  /// @brief The Galois field size
   const std::uint8_t m_galois_field_size;
 
-  /// @brief Tell if the code is systematic or not.
-  code m_code_type;
+  /// @brief Tell if the code is systematic or not
+  systematic m_code_type;
 
-  /// @brief How many sources to send before a repair is generated.
+  /// @brief How many sources to send before a repair is generated
   std::size_t m_rate;
 
-  /// @brief The maximal number of sources to keep on the encoder side before discarding them.
+  /// @brief The maximal number of sources to keep on the encoder side before discarding them
   std::size_t m_window_size;
 
-  /// @brief Tell if the code is adaptive.
+  /// @brief Tell if the code is adaptive
   bool m_adaptive;
 
-  /// @brief The counter for source packets identifiers.
+  /// @brief The counter for source packets identifiers
   std::uint32_t m_current_source_id;
 
-  /// @brief The counter for repair packets identifiers.
+  /// @brief The counter for repair packets identifiers
   std::uint32_t m_current_repair_id;
 
-  /// @brief The set of souces which have not yet been acknowledged.
+  /// @brief The set of souces which have not yet been acknowledged
   detail::source_list m_sources;
 
-  /// @brief Re-use the same memory to prepare a repair packet.
+  /// @brief Re-use the same memory to prepare a repair packet
   detail::repair m_repair;
 
-  /// @brief The user's handler.
+  /// @brief The user's handler
   packet_handler_type m_packet_handler;
 
-  /// @brief The component that handles the coding process.
+  /// @brief The component that handles the coding process
   detail::encoder m_encoder;
 
-  /// @brief How to read and write packets.
+  /// @brief How to read and write packets
   detail::packetizer<packet_handler_type> m_packetizer;
 
-  /// @brief The number of generated repairs.
+  /// @brief The number of generated repairs
   std::size_t m_nb_sent_repairs;
 
-  /// @brief The number of received ack.
+  /// @brief The number of received ack
   std::size_t m_nb_acks;
 
-  /// @brief The number of sent sources.
+  /// @brief The number of sent sources
   std::size_t m_nb_sent_sources;
 
-  /// @brief The number of sent packets since last ack.
+  /// @brief The number of sent packets since last ack
   std::uint16_t m_nb_sent_packets;
 };
 

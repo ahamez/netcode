@@ -221,7 +221,7 @@ test_case_1(ntc::in_order order)
 {
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(4);
-  enc.set_code_type(code::non_systematic);
+  enc.set_code_type(systematic::no);
 
   decoder<packet_handler, data_handler> dec{8, order, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});
@@ -334,7 +334,7 @@ TEST_CASE("Decoder invalid read scenario")
 {
   encoder<packet_handler> enc{8, packet_handler{}};
   enc.set_rate(3);
-  enc.set_code_type(code::non_systematic);
+  enc.set_code_type(systematic::no);
 
   decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
   dec.set_ack_frequency(std::chrono::milliseconds{0});

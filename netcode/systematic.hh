@@ -4,10 +4,11 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief Describe if a decoder gives data in order or not
-/// @see decoder::decoder
-/// @ingroup ntc_decoder
-enum class in_order {yes, no};
+/// @brief Describe if a code is systematic or not.
+/// @see encoder::set_code_type
+/// @see encoder::code_type
+/// @ingroup ntc_encoder
+enum class systematic {yes, no};
 
 /*------------------------------------------------------------------------------------------------*/
 

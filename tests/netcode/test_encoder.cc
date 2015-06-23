@@ -306,7 +306,7 @@ TEST_CASE("Non systematic encoder")
 {
   encoder<packet_handler> encoder{8, packet_handler{}};
   encoder.set_rate(3);
-  encoder.set_code_type(code::non_systematic);
+  encoder.set_code_type(systematic::no);
   auto& enc_handler = encoder.packet_handler();
 
   const auto data = std::vector<char>(100, 'x');

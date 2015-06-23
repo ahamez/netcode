@@ -10,7 +10,6 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief Class to store data given to encoder.
-///
 /// @attention When using buffer() to directly write data, because it's not possible for the library
 /// to keep track of the number of written bytes, when the data is completely written in the
 /// buffer, used_bytes() must be called.

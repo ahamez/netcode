@@ -1179,6 +1179,7 @@
 		2B59931C1B38EF3000DCBB13 /* burst.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = burst.hh; sourceTree = "<group>"; };
 		2B59931D1B38EFC300DCBB13 /* uniform.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uniform.hh; sourceTree = "<group>"; };
 		2B59931E1B39561500DCBB13 /* in_order.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = in_order.hh; sourceTree = "<group>"; };
+		2B59931F1B397A1A00DCBB13 /* systematic.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = systematic.hh; sourceTree = "<group>"; };
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
@@ -3157,6 +3158,7 @@
 				2BE319511AB0C550001AA9DF /* encoder.hh */,
 				2B5FFAC51B0D1C0800CAB33E /* errors.hh */,
 				2B59931E1B39561500DCBB13 /* in_order.hh */,
+				2B59931F1B397A1A00DCBB13 /* systematic.hh */,
 			);
 			path = netcode;
 			sourceTree = "<group>";

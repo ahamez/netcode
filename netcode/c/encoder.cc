@@ -64,20 +64,9 @@ void
 ntc_encoder_set_code_type(ntc_encoder_t* enc, ntc_code_type code_type)
 noexcept
 {
-  switch (code_type)
-  {
-    case ntc_systematic:
-    {
-      enc->set_code_type(ntc::code::systematic);
-      break;
-    }
-
-    case ntc_non_systematic:
-    default:
-    {
-      enc->set_code_type(ntc::code::non_systematic);
-    }
-  }
+  enc->set_code_type( code_type == ntc_systematic
+                    ? ntc::systematic::yes
+                    : ntc::systematic::no);
 }
 
 /*------------------------------------------------------------------------------------------------*/
