@@ -82,8 +82,8 @@ display(asio::deadline_timer& timer)
                                 << " , "
                                 << ( static_cast<float>(b_to_a_losses)
                                    / static_cast<float>(b_to_a_total)) * 100
-                                << '\r';
-                      std::cout.flush();
+                                << '\r'
+                                << std::flush;
                       display(timer);
                     }
                   );
