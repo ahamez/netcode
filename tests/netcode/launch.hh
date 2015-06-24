@@ -5,6 +5,6 @@ launch(Fn&& fn)
 {
   for (const auto size : {4, 8, 16, 32})
   {
-    fn(size);
+    fn(static_cast<std::uint8_t>(size));
   }
 }
