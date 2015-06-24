@@ -1,18 +1,18 @@
 #pragma once
 
-#include <fstream>
+#include <iosfwd>
 #include <string>
 
 namespace loss {
 
 /*------------------------------------------------------------------------------------------------*/
 
-class file
+class stream
 {
 public:
 
-  explicit file(std::ifstream&& file)
-    : m_loss_file{std::move(file)}
+  explicit stream(std::istream& s)
+    : m_loss_stream{s}
   {}
 
   /// @return true if packet should be lost.
@@ -20,7 +20,7 @@ public:
   operator()()
   noexcept
   {
-    if (getline(m_loss_file, m_line))
+    if (getline(m_loss_stream, m_line))
     {
       return m_line[0] != '0';
     }
@@ -34,7 +34,7 @@ public:
 private:
 
   std::string m_line;
-  std::ifstream m_loss_file;
+  std::istream& m_loss_stream;
 };
 
 /*------------------------------------------------------------------------------------------------*/

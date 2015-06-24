@@ -1,5 +1,6 @@
 #include <array>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -12,8 +13,8 @@
 #pragma GCC diagnostic pop
 
 #include "tools/loss/burst.hh"
+#include "tools/loss/stream.hh"
 #include "tools/loss/uniform.hh"
-#include "tools/loss/file.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -185,8 +186,7 @@ main(int argc, char** argv)
       {
         std::cerr << "Can't open file " << argv[6] << '\n';
       }
-      proxy( from_port, to_ip, to_port, loss::file{std::move(loss_file_a)}
-           , loss::file{std::move(loss_file_b)});
+      proxy(from_port, to_ip, to_port, loss::stream{loss_file_a}, loss::stream{loss_file_b});
     }
     else
     {
