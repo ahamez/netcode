@@ -3468,6 +3468,7 @@
 					"-Wsign-compare",
 					"-Wextra",
 					"-Wshadow",
+					"-Wno-unused-local-typedef",
 				);
 			};
 			name = Debug;
@@ -3490,6 +3491,7 @@
 					"-Wsign-compare",
 					"-Wextra",
 					"-Wshadow",
+					"-Wno-unused-local-typedef",
 				);
 			};
 			name = Release;

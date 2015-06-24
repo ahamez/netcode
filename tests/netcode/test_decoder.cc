@@ -4,6 +4,7 @@
 
 #include "tests/catch.hpp"
 #include "tests/netcode/common.hh"
+#include "tests/netcode/launch.hh"
 
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
@@ -17,131 +18,146 @@ using namespace ntc;
 
 TEST_CASE("Decoder gives a correct source to user")
 {
-  encoder<packet_handler> enc{8, packet_handler{}};
-  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
+  launch([](std::uint8_t gf_size)
+  {
+    encoder<packet_handler> enc{gf_size, packet_handler{}};
+    decoder<packet_handler, data_handler> dec{ gf_size, in_order::yes, packet_handler{}
+                                             , data_handler{}};
 
-  auto& enc_packet_handler = enc.packet_handler();
-  auto& dec_data_handler = dec.data_handler();
+    auto& enc_packet_handler = enc.packet_handler();
+    auto& dec_data_handler = dec.data_handler();
 
-  const auto s0 = {'a', 'b', 'c'};
+    const auto s0 = {'a','b','c','d'};
+    enc(data{s0});
 
-  enc(data{begin(s0), end(s0)});
+    // Send serialized data to decoder.
+    dec(enc_packet_handler[0]);
 
-  // Send serialized data to decoder.
-  dec(enc_packet_handler[0]);
-
-  REQUIRE(dec_data_handler[0].size() == s0.size());
-  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    REQUIRE(dec_data_handler[0].size() == s0.size());
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder repairs a lost source")
 {
-  encoder<packet_handler> enc{8, packet_handler{}};
-  enc.set_rate(1);
+  launch([](std::uint8_t gf_size)
+  {
+    encoder<packet_handler> enc{gf_size, packet_handler{}};
+    enc.set_rate(1);
 
-  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
+    decoder<packet_handler, data_handler> dec{ gf_size, in_order::yes, packet_handler{}
+                                             , data_handler{}};
 
-  auto& enc_packet_handler = enc.packet_handler();
-  auto& dec_data_handler = dec.data_handler();
+    auto& enc_packet_handler = enc.packet_handler();
+    auto& dec_data_handler = dec.data_handler();
 
-  // Give a source to the encoder.
-  const auto s0 = {'a', 'b', 'c'};
-  enc(data{begin(s0), end(s0)});
+    // Give a source to the encoder.
+    const auto s0 = {'a','b','c','d'};
+    enc(data{begin(s0), end(s0)});
 
-  // Skip first source.
-  auto repair = enc_packet_handler[1];
+    // Skip first source.
+    auto repair = enc_packet_handler[1];
 
-  // Send repair to decoder.
-  REQUIRE(dec(repair.data(), repair.size()));
-  REQUIRE(dec.nb_received_repairs() == 1);
-  REQUIRE(dec.nb_received_sources() == 0);
-  REQUIRE(dec.nb_decoded() == 1);
-  REQUIRE(dec_data_handler[0].size() == s0.size());
-  REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+    // Send repair to decoder.
+    REQUIRE(dec(repair.data(), repair.size()));
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_received_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 1);
+    REQUIRE(dec_data_handler[0].size() == s0.size());
+    REQUIRE(std::equal(begin(s0), end(s0), begin(dec_data_handler[0])));
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder generate correct ack")
 {
-  encoder<packet_handler> enc{8, packet_handler{}};
-  enc.set_rate(100);
-
-  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
-  dec.set_ack_frequency(std::chrono::milliseconds{100});
-
-  auto& enc_packet_handler = enc.packet_handler();
-  auto& dec_packet_handler = dec.packet_handler();
-
-  // Give a source to the encoder.
-  const auto s0 = {'a', 'b', 'c'};
-  enc(data{begin(s0), end(s0)});
-  REQUIRE(enc.window() == 1);
-
-  // Send source to decoder.
-  dec(enc_packet_handler[0].data(), enc_packet_handler[0].size());
-
-  SECTION("Force ack")
+  launch([](std::uint8_t gf_size)
   {
-    // Now force the sending of an ack.
-    dec.generate_ack();
-    REQUIRE(dec.nb_sent_acks() == 1);
+    encoder<packet_handler> enc{gf_size, packet_handler{}};
+    enc.set_rate(100);
 
-    // Sent it to the encoder.
-    enc(dec_packet_handler[0].data(), dec_packet_handler[0].size());
-    REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
-  }
+    decoder<packet_handler, data_handler> dec{ gf_size, in_order::yes, packet_handler{}
+                                             , data_handler{}};
+    dec.set_ack_frequency(std::chrono::milliseconds{100});
 
-  SECTION("Wait for trigger")
-  {
-    // Wait long enough just to be sure.
-    std::this_thread::sleep_for(std::chrono::milliseconds{200});
-    dec.maybe_ack();
-    REQUIRE(dec.nb_sent_acks() == 1);
+    auto& enc_packet_handler = enc.packet_handler();
+    auto& dec_packet_handler = dec.packet_handler();
 
-    // Sent it to the encoder.
-    enc(dec_packet_handler[0]);
-    REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
-  }
+    // Give a source to the encoder.
+    const auto s0 = {'a','b','c','d'};
+    enc(data{begin(s0), end(s0)});
+    REQUIRE(enc.window() == 1);
+
+    // Send source to decoder.
+    dec(enc_packet_handler[0].data(), enc_packet_handler[0].size());
+
+    SECTION("Force ack")
+    {
+      // Now force the sending of an ack.
+      dec.generate_ack();
+      REQUIRE(dec.nb_sent_acks() == 1);
+
+      // Sent it to the encoder.
+      enc(dec_packet_handler[0].data(), dec_packet_handler[0].size());
+      REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
+    }
+
+    SECTION("Wait for trigger")
+    {
+      // Wait long enough just to be sure.
+      std::this_thread::sleep_for(std::chrono::milliseconds{200});
+      dec.maybe_ack();
+      REQUIRE(dec.nb_sent_acks() == 1);
+
+      // Sent it to the encoder.
+      enc(dec_packet_handler[0]);
+      REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
+    }
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder generate acks when N packets are received")
 {
-  encoder<packet_handler> enc{8, packet_handler{}};
-  enc.set_rate(100);
+  launch([](std::uint8_t gf_size)
+  {
+    encoder<packet_handler> enc{gf_size, packet_handler{}};
+    enc.set_rate(100);
 
-  decoder<packet_handler, data_handler> dec{8, in_order::yes, packet_handler{}, data_handler{}};
-  dec.set_ack_frequency(std::chrono::milliseconds{0});
-  dec.set_ack_nb_packets(4);
+    decoder<packet_handler, data_handler> dec{ gf_size, in_order::yes, packet_handler{}
+                                             , data_handler{}};
+    dec.set_ack_frequency(std::chrono::milliseconds{0});
+    dec.set_ack_nb_packets(4);
 
-  auto& enc_packet_handler = enc.packet_handler();
-  auto& dec_packet_handler = dec.packet_handler();
+    auto& enc_packet_handler = enc.packet_handler();
+    auto& dec_packet_handler = dec.packet_handler();
 
-  // Give a source to the encoder.
-  const auto s0 = {'a', 'b', 'c'};
-  enc(data{begin(s0), end(s0)});
-  enc(data{begin(s0), end(s0)});
-  enc(data{begin(s0), end(s0)});
-  enc(data{begin(s0), end(s0)});
-  REQUIRE(enc.window() == 4);
-  REQUIRE(enc_packet_handler.nb_packets() == 4);
-  REQUIRE(detail::get_packet_type(enc_packet_handler[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_packet_handler[3].data()) == detail::packet_type::source);
+    // Give a source to the encoder.
+    const auto s0 = {'a','b','c','d','e','f','g','i'};
+    enc(data{begin(s0), end(s0)});
+    enc(data{begin(s0), end(s0)});
+    enc(data{begin(s0), end(s0)});
+    enc(data{begin(s0), end(s0)});
+    REQUIRE(enc.window() == 4);
+    REQUIRE(enc_packet_handler.nb_packets() == 4);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[0].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[1].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[2].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[3].data()) == detail::packet_type::source);
 
-  // Send sources to decoder.
-  dec(enc_packet_handler[0]);
-  dec(enc_packet_handler[1]);
-  dec(enc_packet_handler[2]);
-  dec(enc_packet_handler[3]);
+    // Send sources to decoder.
+    dec(enc_packet_handler[0]);
+    dec(enc_packet_handler[1]);
+    dec(enc_packet_handler[2]);
+    dec(enc_packet_handler[3]);
 
-  REQUIRE(dec_packet_handler.nb_packets() == 1);
-  REQUIRE(detail::get_packet_type(dec_packet_handler[0].data()) == detail::packet_type::ack);
+    REQUIRE(dec_packet_handler.nb_packets() == 1);
+    REQUIRE(detail::get_packet_type(dec_packet_handler[0].data()) == detail::packet_type::ack);
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -149,58 +165,61 @@ TEST_CASE("Decoder generate acks when N packets are received")
 void
 test_case_0(ntc::in_order order)
 {
-  encoder<packet_handler> enc{8, packet_handler{}};
-  enc.set_rate(4);
-  enc.set_window_size(3);
+  launch([&](std::uint8_t gf_size)
+  {
+    encoder<packet_handler> enc{gf_size, packet_handler{}};
+    enc.set_rate(4);
+    enc.set_window_size(3);
 
-  decoder<packet_handler, data_handler> dec{8, order, packet_handler{}, data_handler{}};
-  dec.set_ack_frequency(std::chrono::milliseconds{0});
+    decoder<packet_handler, data_handler> dec{gf_size, order, packet_handler{}, data_handler{}};
+    dec.set_ack_frequency(std::chrono::milliseconds{0});
 
-  auto& enc_handler = enc.packet_handler();
-  auto& dec_data_handler = dec.data_handler();
+    auto& enc_handler = enc.packet_handler();
+    auto& dec_data_handler = dec.data_handler();
 
-  // Packets will be stored in enc_handler.vec.
-  const auto s0 = {'a', 'b', 'c'};
-  enc(data{begin(s0), end(s0)});
-  REQUIRE(enc.window() == 1);
+    // Packets will be stored in enc_handler.vec.
+    const auto s0 = {'a','a','a','a'};
+    enc(data{begin(s0), end(s0)});
+    REQUIRE(enc.window() == 1);
 
-  const auto s1 = {'d', 'e', 'f'};
-  enc(data{begin(s1), end(s1)});
-  REQUIRE(enc.window() == 2);
+    const auto s1 = {'b','b','b','b'};
+    enc(data{begin(s1), end(s1)});
+    REQUIRE(enc.window() == 2);
 
-  const auto s2 = {'g', 'h', 'i'};
-  enc(data{begin(s2), end(s2)});
-  REQUIRE(enc.window() == 3);
+    const auto s2 = {'c','c','c','c','c','c','c','c'};
+    enc(data{begin(s2), end(s2)});
+    REQUIRE(enc.window() == 3);
 
-  const auto s3 = {'j', 'k', 'l'};
-  enc(data{begin(s3), end(s3)});
-  REQUIRE(enc.window() == 3);
+    const auto s3 = {'d','d','d','d'};
+    enc(data{begin(s3), end(s3)});
+    REQUIRE(enc.window() == 3);
 
-  REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
-  REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
-  REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
+    REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
+    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
 
-  // Now send to decoder.
-  // Lost first source.
-  dec(enc_handler[1]);
-  dec(enc_handler[2]);
-  dec(enc_handler[3]);
-  // Because the encoder's window is 3, the incoming repair only encode s1, s2 and s3. Thus,
-  // s0 is completely lost and cannot be recovered.
-  dec(enc_handler[4]);
-  REQUIRE(dec.nb_received_sources() == 3);
-  REQUIRE(dec.nb_received_repairs() == 1);
-  REQUIRE(dec.nb_missing_sources() == 0);
-  REQUIRE(dec.nb_decoded() == 0);
+    // Now send to decoder.
+    // Lost first source.
+    dec(enc_handler[1]);
+    dec(enc_handler[2]);
+    dec(enc_handler[3]);
+    // Because the encoder's window is 3, the incoming repair only encode s1, s2 and s3. Thus,
+    // s0 is completely lost and cannot be recovered.
+    dec(enc_handler[4]);
+    REQUIRE(dec.nb_received_sources() == 3);
+    REQUIRE(dec.nb_received_repairs() == 1);
+    REQUIRE(dec.nb_missing_sources() == 0);
+    REQUIRE(dec.nb_decoded() == 0);
 
-  // Sources were correctly given to the user handler.
-  REQUIRE(dec_data_handler.nb_data() == 3);
-  REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[0])));
-  REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[1])));
-  REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[2])));
+    // Sources were correctly given to the user handler.
+    REQUIRE(dec_data_handler.nb_data() == 3);
+    REQUIRE(std::equal(begin(s1), end(s1), begin(dec_data_handler[0])));
+    REQUIRE(std::equal(begin(s2), end(s2), begin(dec_data_handler[1])));
+    REQUIRE(std::equal(begin(s3), end(s3), begin(dec_data_handler[2])));
+  });
 }
 
 
