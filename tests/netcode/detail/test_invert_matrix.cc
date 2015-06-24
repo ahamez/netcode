@@ -1,4 +1,5 @@
 #include "tests/catch.hpp"
+#include "tests/netcode/launch.hh"
 
 #include "netcode/detail/invert_matrix.hh"
 #include "netcode/detail/square_matrix.hh"
@@ -117,36 +118,40 @@ jerasure_invert_matrix( detail::square_matrix& mat, detail::square_matrix& inv
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Compare with jerasure matrix inversion", "[square_matrix][invert]" )
+TEST_CASE("Compare with jerasure matrix inversion")
 {
-  detail::galois_field gf{8};
-
-  detail::square_matrix m0{3};
-  std::uint32_t k = 0u;
-  for (auto i = 0ul; i < 3; ++i)
+  launch([](std::uint8_t gf_size)
   {
-    for (auto j = 0ul; j < 3; ++j, ++k)
+    detail::galois_field gf{gf_size};
+
+    detail::square_matrix m0{3};
+    std::uint32_t k = 0u;
+    for (auto i = 0ul; i < 3; ++i)
     {
-      m0(i, j) = k;
+      for (auto j = 0ul; j < 3; ++j, ++k)
+      {
+        m0(i, j) = k;
+      }
     }
-  }
-  auto m1 = m0;
+    auto m1 = m0;
 
-  detail::square_matrix inv0{3};
-  detail::square_matrix inv1{3};
+    detail::square_matrix inv0{3};
+    detail::square_matrix inv1{3};
 
-  // Matrix is invertible.
-  REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == 0);
-  REQUIRE(not detail::invert(gf, m1, inv1).first);
+    // Matrix is invertible.
+    REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == 0);
+    REQUIRE(not detail::invert(gf, m1, inv1).first);
 
-  // The result is the same as jerasure's.
-  REQUIRE(inv0.vec() == inv1.vec());
+    // The result is the same as jerasure's.
+    REQUIRE(inv0.vec() == inv1.vec());
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Non-invertible matrix", "[square_matrix][invert]" )
+TEST_CASE("Non-invertible matrix")
 {
+  /// @todo Find non invertible matrix for other GF sizes.
   detail::galois_field gf{8};
 
   detail::square_matrix m0{3};
@@ -169,54 +174,57 @@ TEST_CASE("Non-invertible matrix", "[square_matrix][invert]" )
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Matrix is correctly inverted", "[square_matrix][invert]")
+TEST_CASE("Matrix is correctly inverted")
 {
-  detail::galois_field gf{8};
-
-  detail::square_matrix m{3};
-  std::uint32_t k = 0u;
-  for (auto i = 0ul; i < 3; ++i)
+  launch([&](std::uint8_t gf_size)
   {
-    for (auto j = 0ul; j < 3; ++j, ++k)
+    detail::galois_field gf{gf_size};
+
+    detail::square_matrix m{3};
+    std::uint32_t k = 0u;
+    for (auto i = 0ul; i < 3; ++i)
     {
-      m(i, j) = k;
-    }
-  }
-
-  // Inverted matrix is destroyed, we need a copy.
-  auto copy = m;
-
-  detail::square_matrix inv{3};
-
-  // Matrix is invertible.
-  REQUIRE(not detail::invert(gf, copy, inv).first);
-
-  // Multiply m and inv
-  detail::square_matrix identity{3};
-  for (auto i = 0ul; i < identity.dimension(); ++i)
-  {
-    for (auto j = 0ul; j < identity.dimension(); ++j, ++k)
-    {
-      identity(i, j) = [&]
+      for (auto j = 0ul; j < 3; ++j, ++k)
       {
-        std::uint32_t tmp = 0;
-        for (k = 0ul; k < identity.dimension(); ++k)
-        {
-          tmp ^= gf.multiply(m(i, k), inv(k, j));
-        }
-        return tmp;
-      }();
+        m(i, j) = k;
+      }
     }
-  }
 
-  // Check that M * M^-1 = Id
-  for (auto i = 0ul; i < identity.dimension(); ++i)
-  {
-    for (auto j = 0ul; j < identity.dimension(); ++j)
+    // Inverted matrix is destroyed, we need a copy.
+    auto copy = m;
+
+    detail::square_matrix inv{3};
+
+    // Matrix is invertible.
+    REQUIRE(not detail::invert(gf, copy, inv).first);
+
+    // Multiply m and inv
+    detail::square_matrix identity{3};
+    for (auto i = 0ul; i < identity.dimension(); ++i)
     {
-      REQUIRE(identity(i,j) == (i == j ? 1 : 0));
+      for (auto j = 0ul; j < identity.dimension(); ++j, ++k)
+      {
+        identity(i, j) = [&]
+        {
+          std::uint32_t tmp = 0;
+          for (k = 0ul; k < identity.dimension(); ++k)
+          {
+            tmp ^= gf.multiply(m(i, k), inv(k, j));
+          }
+          return tmp;
+        }();
+      }
     }
-  }
+
+    // Check that M * M^-1 = Id
+    for (auto i = 0ul; i < identity.dimension(); ++i)
+    {
+      for (auto j = 0ul; j < identity.dimension(); ++j)
+      {
+        REQUIRE(identity(i,j) == (i == j ? 1 : 0));
+      }
+    }
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
