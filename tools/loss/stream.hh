@@ -12,7 +12,7 @@ class stream
 public:
 
   explicit stream(std::istream& s)
-    : m_loss_stream{s}
+    : m_loss_stream(s)
   {}
 
   /// @return true if packet should be lost.
