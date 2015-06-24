@@ -1,6 +1,7 @@
 #include <algorithm> // equal
 
 #include "tests/catch.hpp"
+#include "tests/netcode/launch.hh"
 #include "tests/netcode/common.hh"
 
 #include "netcode/detail/decoder.hh"
@@ -15,113 +16,123 @@ using namespace ntc;
 
 TEST_CASE("Decoder: reconstruct a source from a repair")
 {
-  // The payloads that should be reconstructed.
-  detail::byte_buffer s0_data{'a','b','c','d'};
+  launch([](std::uint8_t gf_size)
+  {
+    // The payloads that should be reconstructed.
+    detail::byte_buffer s0_data{'a','b','c','d'};
 
-  // Push the source.
-  detail::source_list sl;
-  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    // Push the source.
+    detail::source_list sl;
+    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
 
-  // A repair to store encoded sources
-  detail::repair r0{0 /* id */};
+    // A repair to store encoded sources
+    detail::repair r0{0 /* id */};
 
-  // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl);
+    // We need an encoder to fill the repair.
+    detail::encoder{gf_size}(r0, sl);
 
-  // Now test the decoder.
-  detail::decoder decoder{8, [](const detail::source&){}, in_order::no};
+    // Now test the decoder.
+    detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
-  const auto s0 = decoder.create_source_from_repair(r0);
-  REQUIRE(s0.user_size() == s0_data.size());
-  REQUIRE(std::equal( s0.buffer().begin()
-                      // The allocated buffer might be larger than the user size
-                    , s0.buffer().begin() + s0.user_size()
-                    , s0_data.begin()));
-
+    const auto s0 = decoder.create_source_from_repair(r0);
+    REQUIRE(s0.user_size() == s0_data.size());
+    REQUIRE(std::equal( s0.buffer().begin()
+                        // The allocated buffer might be larger than the user size
+                      , s0.buffer().begin() + s0.user_size()
+                      , s0_data.begin()));
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder: remove a source from a repair")
 {
-  // The payloads that should be reconstructed.
-  detail::byte_buffer s0_data{'a','b','c','d'};
-  detail::byte_buffer s1_data{'e','f','g','h','i'};
-
-  // Push 2 sources.
-  detail::source_list sl;
-  add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-  add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
-
-  // A repair to store encoded sources
-  detail::repair r0{0 /* id */};
-
-  // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl);
-
-  SECTION("Remove s0, we should be able to reconstruct s1")
+  launch([](std::uint8_t gf_size)
   {
-    detail::decoder decoder{8, [](const detail::source&){}, in_order::no};
-    const detail::source s0{0, detail::byte_buffer{s0_data}, static_cast<std::uint16_t>(s0_data.size())};
-    decoder.remove_source_from_repair(s0, r0);
-    REQUIRE(r0.source_ids().size() == 1);
-    REQUIRE(*(r0.source_ids().begin()) == 1);
+    // The payloads that should be reconstructed.
+    detail::byte_buffer s0_data{'a','b','c','d'};
+    detail::byte_buffer s1_data{'e','f','g','h','i','j','k','l'};
 
-    const auto s1 = decoder.create_source_from_repair(r0);
-    REQUIRE(s1.user_size() == s1_data.size());
-    REQUIRE(std::equal( s1.buffer().begin()
-                        // The allocated buffer might be larger than the user size
-                      , s1.buffer().begin() + s1.user_size()
-                      , s1_data.begin()));
-  }
+    // Push 2 sources.
+    detail::source_list sl;
+    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
 
-  SECTION("Remove s1, we should be able to reconstruct s0")
-  {
-    detail::decoder decoder{8, [](const detail::source&){}, in_order::no};
-    const detail::source s1{1, detail::byte_buffer{s1_data}, static_cast<std::uint16_t>(s1_data.size())};
-    decoder.remove_source_from_repair(s1, r0);
-    REQUIRE(r0.source_ids().size() == 1);
-    REQUIRE(*(r0.source_ids().begin()) == 0);
+    // A repair to store encoded sources
+    detail::repair r0{0 /* id */};
 
-    const auto s0 = decoder.create_source_from_repair(r0);
-    REQUIRE(s0.user_size() == s0_data.size());
-    REQUIRE(std::equal( s0.buffer().begin()
-                       // The allocated buffer might be larger than the user size
-                      , s0.buffer().begin() + s0.user_size()
-                      , s0_data.begin()));
-  }
+    // We need an encoder to fill the repair.
+    detail::encoder{gf_size}(r0, sl);
+
+    SECTION("Remove s0, we should be able to reconstruct s1")
+    {
+      detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
+      const detail::source s0{ 0, detail::byte_buffer{s0_data}
+                             , static_cast<std::uint16_t>(s0_data.size())};
+      decoder.remove_source_from_repair(s0, r0);
+      REQUIRE(r0.source_ids().size() == 1);
+      REQUIRE(*(r0.source_ids().begin()) == 1);
+
+      const auto s1 = decoder.create_source_from_repair(r0);
+      REQUIRE(s1.user_size() == s1_data.size());
+      REQUIRE(std::equal( s1.buffer().begin()
+                          // The allocated buffer might be larger than the user size
+                        , s1.buffer().begin() + s1.user_size()
+                        , s1_data.begin()));
+    }
+
+    SECTION("Remove s1, we should be able to reconstruct s0")
+    {
+      detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
+      const detail::source s1{ 1, detail::byte_buffer{s1_data}
+                             , static_cast<std::uint16_t>(s1_data.size())};
+      decoder.remove_source_from_repair(s1, r0);
+      REQUIRE(r0.source_ids().size() == 1);
+      REQUIRE(*(r0.source_ids().begin()) == 0);
+
+      const auto s0 = decoder.create_source_from_repair(r0);
+      REQUIRE(s0.user_size() == s0_data.size());
+      REQUIRE(std::equal( s0.buffer().begin()
+                         // The allocated buffer might be larger than the user size
+                         , s0.buffer().begin() + s0.user_size()
+                         , s0_data.begin()));
+    }
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 TEST_CASE("Decoder: useless repair")
 {
-  // Push 5 sources.
-  detail::source_list sl;
-  sl.emplace(0, detail::byte_buffer{}, 0);
-  sl.emplace(1, detail::byte_buffer{}, 0);
-  sl.emplace(2, detail::byte_buffer{}, 0);
-  sl.emplace(3, detail::byte_buffer{}, 0);
-  sl.emplace(4, detail::byte_buffer{}, 0);
+  launch([](std::uint8_t gf_size)
+  {
+    // Push 5 sources.
+    detail::source_list sl;
+    sl.emplace(0, detail::byte_buffer{}, 0);
+    sl.emplace(1, detail::byte_buffer{}, 0);
+    sl.emplace(2, detail::byte_buffer{}, 0);
+    sl.emplace(3, detail::byte_buffer{}, 0);
+    sl.emplace(4, detail::byte_buffer{}, 0);
 
-  // A repair to store encoded sources
-  detail::repair r0{0 /* id */};
+    // A repair to store encoded sources
+    detail::repair r0{0 /* id */};
 
-  // We need an encoder to fill the repair.
-  detail::encoder{8}(r0, sl);
+    // We need an encoder to fill the repair.
+    detail::encoder{gf_size}(r0, sl);
 
-  // Now test the decoder.
-  detail::decoder decoder{8, [](const detail::source&){}, in_order::no};
-  decoder(detail::source{0, detail::byte_buffer{}, 0});
-  decoder(detail::source{1, detail::byte_buffer{}, 0});
-  decoder(detail::source{2, detail::byte_buffer{}, 0});
-  decoder(detail::source{3, detail::byte_buffer{}, 0});
-  decoder(detail::source{4, detail::byte_buffer{}, 0});
-  decoder(std::move(r0));
-  REQUIRE(decoder.sources().size() == 5);
-  REQUIRE(decoder.missing_sources().empty());
-  REQUIRE(decoder.repairs().size() == 0);
-  REQUIRE(decoder.nb_useless_repairs() == 1);
+    // Now test the decoder.
+    detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
+    decoder(detail::source{0, detail::byte_buffer{}, 0});
+    decoder(detail::source{1, detail::byte_buffer{}, 0});
+    decoder(detail::source{2, detail::byte_buffer{}, 0});
+    decoder(detail::source{3, detail::byte_buffer{}, 0});
+    decoder(detail::source{4, detail::byte_buffer{}, 0});
+    decoder(std::move(r0));
+    REQUIRE(decoder.sources().size() == 5);
+    REQUIRE(decoder.missing_sources().empty());
+    REQUIRE(decoder.repairs().size() == 0);
+    REQUIRE(decoder.nb_useless_repairs() == 1);
+  });
 }
 
 /*------------------------------------------------------------------------------------------------*/
