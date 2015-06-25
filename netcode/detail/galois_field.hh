@@ -148,7 +148,7 @@ public:
   /// @todo When w_ = 32, computation could overflow.
   std::uint32_t
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
-  noexcept
+  const noexcept
   {
     return m_w == 32
          ? (((repair_id + 1) + (src_id + 1)) * (repair_id + 1))
