@@ -4,3 +4,4 @@ xcuserdata/
 *.o
 a.out
 build/
+data/
