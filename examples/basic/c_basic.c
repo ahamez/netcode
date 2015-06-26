@@ -82,7 +82,8 @@ int main(int argc, char** argv)
   ntc_data_handler decoder_data_handler = {&data_cxt, receive_data};
 
   // Create a decoder.
-  ntc_decoder_t* dec = ntc_new_decoder(8, true, decoder_packet_handler, decoder_data_handler);
+  ntc_decoder_t* dec = ntc_new_decoder( 8, ntc_in_order, decoder_packet_handler
+                                      , decoder_data_handler);
   ntc_decoder_set_ack_frequency(dec, 200 /* ms */);
 
   // Create an holder for some data with a size up to 1024 bytes.
