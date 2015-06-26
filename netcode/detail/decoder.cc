@@ -307,9 +307,7 @@ decoder::add_source_recursive(source&& src)
         m_repairs.erase(r_cit);
 
         // It's no longer a missing source.
-        const auto to_erase = miss_cit;
-        ++miss_cit;
-        m_missing_sources.erase(to_erase);
+        miss_cit = m_missing_sources.erase(miss_cit);
 
         // This newly decoded source might trigger the decoding of other sources.
         add_source_recursive(std::move(decoded_src));
@@ -366,9 +364,7 @@ noexcept
     // longer useful.
     if (id > *r.source_ids().begin())
     {
-      const auto to_erase = cit;
-      ++cit;
-      m_repairs.erase(to_erase);
+      cit = m_repairs.erase(cit);
     }
     else
     {
@@ -383,9 +379,7 @@ noexcept
     for (auto cit = m_ordered_sources.begin(), end = m_ordered_sources.lower_bound(id); cit != end;)
     {
       m_callback(*cit->second);
-      const auto to_erase = cit;
-      ++cit;
-      m_ordered_sources.erase(to_erase);
+      cit = m_ordered_sources.erase(cit);
     }
     if (m_first_missing_source_in_order < id)
     {
@@ -579,16 +573,18 @@ decoder::flush_ordered_sources()
   // If we find the first missing source, we can give to user all sources with a identifier
   // that follow m_first_missing_source in sequence.
   auto cit = m_ordered_sources.find(m_first_missing_source_in_order);
-  while (cit != m_ordered_sources.end())
+  if (cit == m_ordered_sources.end())
+  {
+    return;
+  }
+  while (true)
   {
     assert(cit->first == m_first_missing_source_in_order);
     m_callback(*cit->second);
-    const auto to_erase = cit;
-    ++cit;
-    m_ordered_sources.erase(to_erase);
+    cit = m_ordered_sources.erase(cit);
     m_first_missing_source_in_order += 1;
 
-    if (cit->first > m_first_missing_source_in_order)
+    if (cit == m_ordered_sources.end() or cit->first > m_first_missing_source_in_order)
     {
       break;
     }

@@ -40,10 +40,8 @@ public:
       if (source_it->id() == *id_cit)
       {
         // We found an identifier to erase.
-        auto to_erase = source_it;
-        ++source_it;
+        source_it = m_sources.erase(source_it);
         ++id_cit;
-        m_sources.erase(to_erase);
       }
       else if (source_it->id() > *id_cit)
       {
