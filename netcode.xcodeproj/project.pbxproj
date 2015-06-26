@@ -33,7 +33,6 @@
 		2B218B0D1AD80586000D2657 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2B218B0E1AD80586000D2657 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2B218B0F1AD80586000D2657 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2B218B181AD8066B000D2657 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B218B171AD8066B000D2657 /* libc++.dylib */; };
 		2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B272C511AC75C1800E6FEDC /* test_packetizer.cc */; };
 		2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BBE1AB861C200640FF8 /* test_decoder.cc */; };
@@ -61,6 +60,7 @@
 		2B7E42BD1ADC26D90035DA89 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42BB1ADC26D90035DA89 /* decoder.cc */; };
 		2B7E42BE1ADC26D90035DA89 /* decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42BC1ADC26D90035DA89 /* decoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
+		2B8148D51B3BE0F2003BF0D8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */; };
 		2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_data.cc */; };
 		2B9BD1051AF2A0E000856E96 /* end_to_end_mt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */; };
 		2B9DBE651B13B626000133D3 /* data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42AF1ADC26960035DA89 /* data.cc */; };
@@ -518,7 +518,6 @@
 		2B13A2BB1B3AF6CC003A3F52 /* throw_exception.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = throw_exception.hpp; sourceTree = "<group>"; };
 		2B13A2BC1B3AF6CC003A3F52 /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
 		2B218AEB1AD7C736000D2657 /* libcnetcode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcnetcode.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B218B171AD8066B000D2657 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2B272C501AC75A1E00E6FEDC /* packetizer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packetizer.hh; sourceTree = "<group>"; };
 		2B272C511AC75C1800E6FEDC /* test_packetizer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_packetizer.cc; sourceTree = "<group>"; };
 		2B282BB91AB8514700640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
@@ -953,8 +952,8 @@
 		2B59931F1B397A1A00DCBB13 /* systematic.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = systematic.hh; sourceTree = "<group>"; };
 		2B5993201B39919600DCBB13 /* decoder_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder_fwd.hh; sourceTree = "<group>"; };
 		2B5993211B3991C000DCBB13 /* encoder_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder_fwd.hh; sourceTree = "<group>"; };
-		2B5D46731B3D2173004AA409 /* forward */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = forward; path = /Users/hal/code/netcode/build/Debug/forward; sourceTree = "<absolute>"; };
 		2B5D467A1B3D218D004AA409 /* forward.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = forward.cc; sourceTree = "<group>"; };
+		2B5D467F1B3D2520004AA409 /* forward */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = forward; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
@@ -977,6 +976,8 @@
 		2B7F12711AD0523200CAA199 /* lossy_proxy.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lossy_proxy.cc; sourceTree = "<group>"; };
 		2B7F12741AD162FD00CAA199 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
+		2B8148D61B3BE1B2003BF0D8 /* handlers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = handlers.h; sourceTree = "<group>"; };
 		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B97BE8F1B2DC78000E496D8 /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c_basic; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1027,7 +1028,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B218B181AD8066B000D2657 /* libc++.dylib in Frameworks */,
 				2B218B0B1AD80566000D2657 /* libcnetcode.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2266,7 +2266,9 @@
 		2B9DBE681B13B7CA000133D3 /* c */ = {
 			isa = PBXGroup;
 			children = (
+				2B8148D61B3BE1B2003BF0D8 /* handlers.h */,
 				2B9DBE691B13B7CA000133D3 /* test_data.cc */,
+				2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */,
 			);
 			path = c;
 			sourceTree = "<group>";
@@ -2342,11 +2344,11 @@
 		2BE319691AB1DE32001AA9DF /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				2B5D467F1B3D2520004AA409 /* forward */,
 				2B97BE8F1B2DC78000E496D8 /* c_basic */,
 				2BAD81921B287C7F0010EAC4 /* cpp_basic */,
 				2BBBC5E41B022061005C1669 /* end_to_end */,
 				2B9BD0FB1AF2A0B100856E96 /* end_to_end-mt */,
-				2B218B171AD8066B000D2657 /* libc++.dylib */,
 				2B218AEB1AD7C736000D2657 /* libcnetcode.a */,
 				2B7F12771AD289EF00CAA199 /* lossy_proxy */,
 				2BBC05251ACC472C00EEDAC0 /* tests-one */,
@@ -2500,7 +2502,7 @@
 			);
 			name = forward;
 			productName = forward;
-			productReference = 2B5D46731B3D2173004AA409 /* forward */;
+			productReference = 2B5D467F1B3D2520004AA409 /* forward */;
 			productType = "com.apple.product-type.tool";
 		};
 		2B7F12671AD0520B00CAA199 /* lossy_proxy */ = {
@@ -2770,6 +2772,7 @@
 				2B9DBE651B13B626000133D3 /* data.cc in Sources */,
 				2B9DBE661B13B626000133D3 /* decoder.cc in Sources */,
 				2B9DBE671B13B626000133D3 /* encoder.cc in Sources */,
+				2B8148D51B3BE0F2003BF0D8 /* test_decoder.cc in Sources */,
 				2B516BEB1AC944AE00133F38 /* invert_matrix.cc in Sources */,
 				2B2A96271AC59120001B8F66 /* test_encoder.cc in Sources */,
 				2B516BE81AC944AE00133F38 /* encoder.cc in Sources */,
@@ -3759,6 +3762,7 @@
 				2B5D46781B3D2173004AA409 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2B7F126C1AD0520B00CAA199 /* Build configuration list for PBXNativeTarget "lossy_proxy" */ = {
 			isa = XCConfigurationList;
