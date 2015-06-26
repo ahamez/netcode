@@ -22,6 +22,14 @@ class data final
 {
 public:
 
+  /// @brief Random access iterator
+  using iterator = detail::byte_buffer::iterator;
+
+  /// @brief Constant random access iterator
+  using const_iterator = detail::byte_buffer::const_iterator;
+
+public:
+
   /// @brief Constructor
   /// @param size The size of the buffer to allocate
   ///
@@ -56,7 +64,7 @@ public:
   template < typename Container
            , typename Iterable = detail::enable_if_t<detail::has_begin<Container>::value, void>>
   data(Container&& c)
-    : data{begin(c), end(c)}
+    : data{std::begin(c), std::end(c)}
   {}
 
   /// @brief Get the buffer where to write the data
@@ -95,20 +103,20 @@ public:
     m_used_bytes = nb;
   }
 
-  /// @brief Get the implementation-defined underlying buffer (read-only)
-  const detail::byte_buffer&
-  buffer_impl()
-  const noexcept
+  /// @internal
+  /// @brief Get the implementation-defined underlying buffer
+  detail::byte_buffer&
+  impl()
+  noexcept
   {
     return m_buffer;
   }
 
-  /// @brief Get the implementation-defined underlying buffer
-  detail::byte_buffer&
-  buffer_impl()
-  noexcept
+  /// @brief Appends the given byte to the end of the container
+  void
+  push_back(char c)
   {
-    return m_buffer;
+    m_buffer.push_back(c);
   }
 
   /// @brief The useable size of the underlying buffer
@@ -129,6 +137,38 @@ public:
   {
     m_used_bytes = 0;
     resize(new_size);
+  }
+
+  /// @brief Returns an iterator to the first byte of the data
+  iterator
+  begin()
+  noexcept
+  {
+    return m_buffer.begin();
+  }
+
+  /// @brief Returns an iterator to the first byte of the data
+  const_iterator
+  begin()
+  const noexcept
+  {
+    return m_buffer.begin();
+  }
+
+  /// @brief Returns an iterator to the element following the last byte of the data
+  iterator
+  end()
+  noexcept
+  {
+    return m_buffer.end();
+  }
+
+  /// @brief Returns an iterator to the element following the last byte of the data
+  const_iterator
+  end()
+  const noexcept
+  {
+    return m_buffer.end();
   }
 
 private:

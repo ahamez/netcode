@@ -247,7 +247,7 @@ private:
   void
   commit_impl(data&& d)
   {
-    assert(d.used_bytes() <= d.buffer_impl().size() && "More used bytes than the buffer can hold");
+    assert(d.used_bytes() <= d.reserved_size() && "More used bytes than the buffer can hold");
 
     if (m_sources.size() == m_window_size)
     {
@@ -257,7 +257,7 @@ private:
     // Create a new source in-place at the end of the list of sources, "stealing" the data
     // buffer from d.
     const auto& insertion
-      = m_sources.emplace(m_current_source_id, std::move(d.buffer_impl()), d.used_bytes());
+      = m_sources.emplace(m_current_source_id, std::move(d.impl()), d.used_bytes());
 
     if (m_code_type == systematic::yes)
     {
