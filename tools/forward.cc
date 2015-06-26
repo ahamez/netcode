@@ -49,8 +49,8 @@ main(int argc, const char** argv)
     while (true)
     {
       udp::endpoint sender_endpoint;
-      in_socket.receive_from(asio::buffer(buffer), in_endpoint);
-      out_socket.send_to(asio::buffer(buffer), out_endpoint);
+      const auto sz = in_socket.receive_from(asio::buffer(buffer), in_endpoint);
+      out_socket.send_to(asio::buffer(buffer, sz), out_endpoint);
     }
   }
   catch (const std::exception& e)
