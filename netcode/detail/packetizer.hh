@@ -91,17 +91,17 @@ public:
     // Write packet identifier.
     write<std::uint32_t>(r.id());
 
-    // Write source identifiers.
-    write(r.source_ids());
-
-    // Write encoded size.
-    write<std::uint16_t>(r.encoded_size());
-
     // Write size of the repair symbol.
     write<std::uint16_t>(r.buffer().size());
 
     // Write repair symbol.
     write(r.buffer().data(), r.buffer().size());
+
+    // Write source identifiers.
+    write(r.source_ids());
+
+    // Write encoded size.
+    write<std::uint16_t>(r.encoded_size());
 
     // End of data.
     mark_end();
@@ -123,12 +123,6 @@ public:
     // Read identifier.
     const auto id = read<std::uint32_t>(data, max_len);
 
-    // Read source identifiers
-    auto ids = read_ids(data, max_len);
-
-    // Read encoded size.
-    const auto encoded_sz = read<std::uint16_t>(data, max_len);
-
     // Read size of the repair symbol.
     const auto symbol_size = read<std::uint16_t>(data, max_len);
 
@@ -136,6 +130,12 @@ public:
     zero_byte_buffer buffer;
     buffer.reserve(symbol_size);
     read(data, symbol_size, max_len, std::back_inserter(buffer));
+
+    // Read source identifiers
+    auto ids = read_ids(data, max_len);
+
+    // Read encoded size.
+    const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
     return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
