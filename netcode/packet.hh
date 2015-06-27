@@ -204,6 +204,23 @@ public:
     m_buffer.resize(size + shift, value);
   }
 
+  /// @internal
+  const char*
+  symbol()
+  const noexcept
+  {
+    return m_buffer.data() + padding;
+  }
+
+  /// @internal
+  char*
+  symbol()
+  noexcept
+  {
+    return m_buffer.data() + padding;
+  }
+
+
 private:
 
   detail::byte_buffer m_buffer;
