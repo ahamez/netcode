@@ -61,7 +61,7 @@ public:
   {
     // Let's reserve some memory for the repair, it will most likely avoid initial memory
     // allocations.
-    m_repair.buffer().reserve(2048);
+    m_repair.symbol().reserve(2048);
     // Same thing for the list of source identifiers.
     // Uncomment the following when the undefined behavior spotted by GCC 5.1 -fsanitize=undefined
     // is fixed. In the meantime, it's not a real problem,it will just cost a few initial

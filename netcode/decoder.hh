@@ -270,7 +270,7 @@ private:
   handle_source(const detail::source& src)
   {
     // Ask user to read the bytes of this new source.
-    m_data_handler(src.buffer().data(), src.buffer().size());
+    m_data_handler(src.symbol().data(), src.symbol().size());
 
     // Send an ack if necessary.
     maybe_ack();

@@ -63,7 +63,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
+    REQUIRE(r_in.symbol() == r_out.symbol());
   }
 
   SECTION("Large number of source ids")
@@ -82,7 +82,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
+    REQUIRE(r_in.symbol() == r_out.symbol());
   }
 
   SECTION("Sparse list of source ids")
@@ -95,7 +95,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
+    REQUIRE(r_in.symbol() == r_out.symbol());
   }
 
   SECTION("Big values")
@@ -109,7 +109,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
+    REQUIRE(r_in.symbol() == r_out.symbol());
   }
 
   SECTION("Repair with only one source")
@@ -121,7 +121,7 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.buffer() == r_out.buffer());
+    REQUIRE(r_in.symbol() == r_out.symbol());
   }
 }
 
@@ -145,7 +145,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
   const auto s_out = serializer.read_source(h.data_, 2048).first;
   REQUIRE(s_in.id() == s_out.id());
   REQUIRE(s_in.size() == s_out.size());
-  REQUIRE(s_in.buffer() == s_out.buffer());
+  REQUIRE(s_in.symbol() == s_out.symbol());
 }
 
 /*------------------------------------------------------------------------------------------------*/

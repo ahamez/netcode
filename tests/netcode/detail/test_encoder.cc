@@ -61,7 +61,7 @@ TEST_CASE("Encoder: large source")
       detail::repair r0{0};
       enc(r0, sl);
 
-      REQUIRE(r0.buffer().size() >= 8192);
+      REQUIRE(r0.symbol().size() >= 8192);
     }
 
     SECTION("Smallest first")
@@ -75,7 +75,7 @@ TEST_CASE("Encoder: large source")
       detail::repair r0{0};
       enc(r0, sl);
       
-      REQUIRE(r0.buffer().size() >= 8192);
+      REQUIRE(r0.symbol().size() >= 8192);
       
     }
   });
@@ -104,7 +104,7 @@ TEST_CASE("Encoder is deterministic")
     encoder1(r0_1, sl);
 
     REQUIRE(r0_0.id() == r0_1.id());
-    REQUIRE(r0_0.buffer() == r0_1.buffer());
+    REQUIRE(r0_0.symbol() == r0_1.symbol());
 
     // Once more.
     sl.emplace(1, {'e','f','g','h'});
@@ -118,7 +118,7 @@ TEST_CASE("Encoder is deterministic")
     encoder1(r1_1, sl);
 
     REQUIRE(r1_0.id() == r1_1.id());
-    REQUIRE(r1_0.buffer() == r1_1.buffer());
+    REQUIRE(r1_0.symbol() == r1_1.symbol());
   });
 }
 

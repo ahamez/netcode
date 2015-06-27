@@ -18,10 +18,10 @@ encoder::operator()(repair& repair, source_list& sources)
   auto cit = sources.cbegin();
   const auto src_end = sources.cend();
 
-  assert((reinterpret_cast<std::size_t>(cit->buffer().data()) % 16) == 0);
+  assert((reinterpret_cast<std::size_t>(cit->symbol().data()) % 16) == 0);
 
   // Resize the repair's symbol buffer to fit the first source symbol buffer.
-  repair.buffer().resize(cit->size());
+  repair.symbol().resize(cit->size());
 
   // Add the current source id to the list of encoded sources by this repair.
   repair.source_ids().insert(repair.source_ids().end(), cit->id());
@@ -30,7 +30,7 @@ encoder::operator()(repair& repair, source_list& sources)
   auto c = m_gf.coefficient(repair.id(), cit->id());
 
   // Only multiply for the first source, no need to add with repair.
-  m_gf.multiply(cit->buffer().data(), repair.buffer().data(), cit->size(), c);
+  m_gf.multiply(cit->symbol().data(), repair.symbol().data(), cit->size(), c);
 
   // Initialize the user's size.
   repair.encoded_size() = m_gf.multiply_size(cit->size(), c);
@@ -40,9 +40,9 @@ encoder::operator()(repair& repair, source_list& sources)
   for (++cit; cit != src_end; ++cit)
   {
     // The current repair's symbol buffer might be too small for the current source.
-    if (cit->size() > repair.buffer().size())
+    if (cit->size() > repair.symbol().size())
     {
-      repair.buffer().resize(cit->size());
+      repair.symbol().resize(cit->size());
     }
 
     // The coefficient for this repair and source.
@@ -52,7 +52,7 @@ encoder::operator()(repair& repair, source_list& sources)
     repair.source_ids().insert(repair.source_ids().end(), cit->id());
 
     // Multiply and add for all following sources.
-    m_gf.multiply_add(cit->buffer().data(), repair.buffer().data(), cit->size(), c);
+    m_gf.multiply_add(cit->symbol().data(), repair.symbol().data(), cit->size(), c);
 
     // Finally, add the user size.
     // Cast is necessary to inhibit conversion warning as xor implicitly convert to a signed value.

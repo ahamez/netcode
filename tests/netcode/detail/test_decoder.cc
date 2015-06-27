@@ -36,7 +36,7 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
 
     const auto s0 = decoder.create_source_from_repair(r0);
     REQUIRE(s0.size() == s0_data.size());
-    REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_data.begin()));
+    REQUIRE(std::equal(s0.symbol().begin(), s0.symbol().end(), s0_data.begin()));
   });
 }
 
@@ -71,7 +71,7 @@ TEST_CASE("Decoder: remove a source from a repair")
 
       const auto s1 = decoder.create_source_from_repair(r0);
       REQUIRE(s1.size() == s1_data.size());
-      REQUIRE(std::equal(s1.buffer().begin(), s1.buffer().end(), s1_data.begin()));
+      REQUIRE(std::equal(s1.symbol().begin(), s1.symbol().end(), s1_data.begin()));
     }
 
     SECTION("Remove s1, we should be able to reconstruct s0")
@@ -84,7 +84,7 @@ TEST_CASE("Decoder: remove a source from a repair")
 
       const auto s0 = decoder.create_source_from_repair(r0);
       REQUIRE(s0.size() == s0_data.size());
-      REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_data.begin()));
+      REQUIRE(std::equal(s0.symbol().begin(), s0.symbol().end(), s0_data.begin()));
     }
   });
 }
@@ -314,7 +314,7 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
                                       {
                                         REQUIRE(s0.id() == 0);
                                         REQUIRE(s0.size() == s0_data.size());
-                                        REQUIRE(std::equal( s0.buffer().begin(), s0.buffer().end()
+                                        REQUIRE(std::equal( s0.symbol().begin(), s0.symbol().end()
                                                           , s0_data.begin()));
                                      }
                            , in_order::no};
@@ -367,10 +367,10 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
     // Now, check contents.
     REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
-                      , decoder.sources().find(0)->second.buffer().begin()));
+                      , decoder.sources().find(0)->second.symbol().begin()));
     REQUIRE(decoder.sources().find(1)->second.size() == s1_data.size());
     REQUIRE(std::equal( s1_data.begin(), s1_data.end()
-                      , decoder.sources().find(1)->second.buffer().begin()));
+                      , decoder.sources().find(1)->second.symbol().begin()));
   });
 }
 
@@ -423,10 +423,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     // Now, check contents.
     REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
-                      , decoder.sources().find(0)->second.buffer().begin()));
+                      , decoder.sources().find(0)->second.symbol().begin()));
     REQUIRE(decoder.sources().find(1)->second.size() == s1_data.size());
     REQUIRE(std::equal( s1_data.begin(), s1_data.end()
-                      , decoder.sources().find(1)->second.buffer().begin()));
+                      , decoder.sources().find(1)->second.symbol().begin()));
 
     SECTION("Sources are not outdated")
     {
@@ -491,13 +491,13 @@ TEST_CASE("Decoder: several lost sources from several repairs")
         // Check contents.
         REQUIRE(decoder.sources().find(2)->second.size() == s2_data.size());
         REQUIRE(std::equal( s2_data.begin(), s2_data.end()
-                          , decoder.sources().find(2)->second.buffer().begin()));
+                          , decoder.sources().find(2)->second.symbol().begin()));
         REQUIRE(decoder.sources().find(3)->second.size() == s3_data.size());
         REQUIRE(std::equal( s3_data.begin(), s3_data.end()
-                          , decoder.sources().find(3)->second.buffer().begin()));
+                          , decoder.sources().find(3)->second.symbol().begin()));
         REQUIRE(decoder.sources().find(4)->second.size() == s4_data.size());
         REQUIRE(std::equal( s4_data.begin(), s4_data.end()
-                          , decoder.sources().find(4)->second.buffer().begin()));
+                          , decoder.sources().find(4)->second.symbol().begin()));
 
       }
     }
@@ -563,13 +563,13 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       // Check contents.
       REQUIRE(decoder.sources().find(2)->second.size() == s2_data.size());
       REQUIRE(std::equal( s2_data.begin(), s2_data.end()
-                        , decoder.sources().find(2)->second.buffer().begin()));
+                        , decoder.sources().find(2)->second.symbol().begin()));
       REQUIRE(decoder.sources().find(3)->second.size() == s3_data.size());
       REQUIRE(std::equal( s3_data.begin(), s3_data.end()
-                        , decoder.sources().find(3)->second.buffer().begin()));
+                        , decoder.sources().find(3)->second.symbol().begin()));
       REQUIRE(decoder.sources().find(4)->second.size() == s4_data.size());
       REQUIRE(std::equal( s4_data.begin(), s4_data.end()
-                        , decoder.sources().find(4)->second.buffer().begin()));
+                        , decoder.sources().find(4)->second.symbol().begin()));
     }
   });
 }
@@ -818,7 +818,7 @@ TEST_CASE("Decoder: repair with only one source")
     REQUIRE(decoder.sources().count(0));
     REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
-                      , decoder.sources().find(0)->second.buffer().begin()));
+                      , decoder.sources().find(0)->second.symbol().begin()));
     REQUIRE(decoder.missing_sources().size() == 0);
     REQUIRE(decoder.repairs().size() == 0);
   });
@@ -904,21 +904,21 @@ TEST_CASE("2 repairs for 3 sources")
     detail::decoder decoder{ gf_size
                            , [&](const detail::source& src)
                              {
-                               const auto& buffer = src.buffer();
+                               const auto& symbol = src.symbol();
                                if (src.id() == 0)
                                {
                                  REQUIRE(src.size() == s0_data.size());
-                                 REQUIRE(std::equal(begin(s0_data), end(s0_data), begin(buffer)));
+                                 REQUIRE(std::equal(begin(s0_data), end(s0_data), begin(symbol)));
                                }
                                else if (src.id() == 1)
                                {
                                  REQUIRE(src.size() == s1_data.size());
-                                 REQUIRE(std::equal(begin(s1_data), end(s1_data), begin(buffer)));
+                                 REQUIRE(std::equal(begin(s1_data), end(s1_data), begin(symbol)));
                                }
                                else if (src.id() == 2)
                                {
                                  REQUIRE(src.size() == s2_data.size());
-                                 REQUIRE(std::equal(begin(s2_data), end(s2_data), begin(buffer)));
+                                 REQUIRE(std::equal(begin(s2_data), end(s2_data), begin(symbol)));
                                }
                                else
                                {
