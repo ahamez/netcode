@@ -12,22 +12,6 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("compiling a galois_field")
-{
-  launch([](std::uint8_t gf_size)
-  {
-    detail::galois_field gf{gf_size};
-    std::array<char, 32> a0 = {{0,1,2,3,4,5,6,7
-                               ,0,1,2,3,4,5,6,7
-                               ,0,1,2,3,4,5,6,7
-                               ,0,1,2,3,4,5,6,7}};
-    std::array<char, 32> a1;
-    gf.multiply(a0.data(), a1.data(), 32, 42);
-  });
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
 TEST_CASE("Verify operations on single elements")
 {
   launch([](std::uint8_t gf_size)
