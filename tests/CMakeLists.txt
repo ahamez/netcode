@@ -10,7 +10,6 @@ set(SOURCES
    netcode/detail/test_packetizer.cc
    netcode/detail/test_source_list.cc
    netcode/detail/test_square_matrix.cc
-   netcode/test_data.cc
    netcode/test_decoder.cc
    netcode/test_encoder.cc
    netcode/test_reconstruction.cc

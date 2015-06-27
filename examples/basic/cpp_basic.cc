@@ -70,7 +70,7 @@ int main()
     dec.set_ack_frequency(std::chrono::milliseconds{200});
 
     // Create some data.
-    ntc::data data{std::vector<char>{'a','b','c'}};
+    ntc::data data{'a','b','c'};
 
     // Give this data to the encoder.
     // Be aware that the 'data' parameter will be invalid after this call. You can only call one
@@ -87,19 +87,17 @@ int main()
     assert(dec.data_handler().buffer[2] == 'c');
 
     // Reset data: it's now legit to use it again.
-    data.reset(1024);
+    data.resize(4);
 
     // We also clear buffers of handlers.
     enc.packet_handler().buffer.clear();
     dec.data_handler().buffer.clear();
 
-    // Fill some more data. Notice how we can directly modify the data's buffer if we want
-    // to avoid copy.
-    data.buffer()[0] = 'd';
-    data.buffer()[1] = 'e';
-    data.buffer()[2] = 'f';
-    data.buffer()[3] = 'g';
-    data.set_used_bytes(4);
+    // Fill some more data.
+    data[0] = 'd';
+    data[1] = 'e';
+    data[2] = 'f';
+    data[3] = 'g';
 
     // Give this new data to the encoder.
     enc(std::move(data));

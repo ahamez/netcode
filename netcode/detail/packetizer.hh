@@ -152,10 +152,10 @@ public:
     write<std::uint32_t>(src.id());
 
     // Write user size of the repair symbol.
-    write<std::uint16_t>(src.user_size());
+    write<std::uint16_t>(src.buffer().size());
 
     // Write source symbol.
-    write(src.buffer().data(), src.user_size());
+    write(src.buffer().data(), src.buffer().size());
 
     // End of data.
     mark_end();
@@ -185,7 +185,7 @@ public:
     buffer.reserve(symbol_size);
     read(data, symbol_size, max_len, std::back_inserter(buffer));
 
-    return std::make_pair( source{id, std::move(buffer), symbol_size}
+    return std::make_pair( source{id, std::move(buffer)}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 

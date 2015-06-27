@@ -169,7 +169,7 @@ noexcept
   const auto src_sz = m_gf.multiply_size(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
-  source src{src_id, byte_buffer(src_sz), src_sz};
+  source src{src_id, byte_buffer(src_sz)};
 
   // Reconstruct missing source.
   m_gf.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
@@ -400,16 +400,16 @@ decoder::remove_source_data_from_repair(const source& src, repair& r)
 noexcept
 {
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
-  assert(src.user_size() <= r.buffer().size());
+  assert(src.size() <= r.buffer().size());
 
   const auto coeff = m_gf.coefficient(r.id(), src.id());
 
   // Remove source size.
   r.encoded_size()
-    = static_cast<std::uint16_t>(m_gf.multiply_size(src.user_size(), coeff) ^ r.encoded_size());
+    = static_cast<std::uint16_t>(m_gf.multiply_size(src.size(), coeff) ^ r.encoded_size());
 
   // Remove symbol.
-  m_gf.multiply_add(src.buffer().data(), r.buffer().data(), src.user_size(), coeff);
+  m_gf.multiply_add(src.buffer().data(), r.buffer().data(), src.size(), coeff);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -502,7 +502,7 @@ decoder::attempt_full_decoding()
     }();
 
     // Now, decode symbol.
-    source src{miss.first, byte_buffer(src_sz, 0 /* zero out the buffer */), src_sz};
+    source src{miss.first, byte_buffer(src_sz, 0 /* zero out the buffer */)};
     auto repair_row = 0ul;
     auto coeff = 0u;
 

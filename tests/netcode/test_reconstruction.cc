@@ -29,7 +29,7 @@ TEST_CASE("Encode one source")
 
     // Push some sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
     REQUIRE(sl.size() == 1);
 
     // A repair to store encoded sources
@@ -48,7 +48,7 @@ TEST_CASE("Encode one source")
     const auto src_size = gf.multiply_size(r0.encoded_size(), inv);
     REQUIRE(src_size == 4);
 
-    detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, src_size};
+    detail::source s0{0, detail::byte_buffer(src_size, 'x')};
     gf.multiply(r0.buffer().data(), s0.buffer().data(), src_size, inv);
     REQUIRE(s0.buffer() == s0_data);
     REQUIRE(s0.buffer().size() == src_size);
@@ -117,8 +117,8 @@ TEST_CASE("Encode two sources")
 
     // Push two sources.
     detail::source_list sl;
-    const auto& s0 = add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    const auto& s1 = add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    const auto& s0 = add_source(sl, 0, detail::byte_buffer{s0_data});
+    const auto& s1 = add_source(sl, 1, detail::byte_buffer{s1_data});
     REQUIRE(sl.size() == 2);
 
     // A repair to store encoded sources
@@ -136,7 +136,7 @@ TEST_CASE("Encode two sources")
                         ^ r0.encoded_size();
 
       // Second, remove data.
-      gf.multiply_add(s1.buffer().data(), r0.buffer().data(), s1.user_size(), c1);
+      gf.multiply_add(s1.buffer().data(), r0.buffer().data(), s1.size(), c1);
 
       // The inverse of the coefficient.
       const auto inv0 = gf.invert(c0);
@@ -146,7 +146,7 @@ TEST_CASE("Encode two sources")
       REQUIRE(src_size == s0_data.size());
 
       // Now, reconstruct missing data.
-      detail::source s0_dst{1, detail::byte_buffer(src_size), src_size};
+      detail::source s0_dst{1, detail::byte_buffer(src_size)};
       gf.multiply(r0.buffer().data(), s0_dst.buffer().data(), src_size, inv0);
       REQUIRE(s0.buffer().size() == s0_dst.buffer().size());
       for (auto i = 0ul; i < src_size; ++i)
@@ -161,7 +161,7 @@ TEST_CASE("Encode two sources")
       r0.encoded_size() = gf.multiply_size(static_cast<std::uint16_t>(s0_data.size()), c0)
                         ^ r0.encoded_size();
       // Second, remove data.
-      gf.multiply_add(s0.buffer().data(), r0.buffer().data(), s0.user_size(), c0);
+      gf.multiply_add(s0.buffer().data(), r0.buffer().data(), s0.size(), c0);
 
       // The inverse of the coefficient.
       const auto inv1 = gf.invert(c1);
@@ -171,7 +171,7 @@ TEST_CASE("Encode two sources")
       REQUIRE(src_size == s1_data.size());
 
       // Now, reconstruct missing data.
-      detail::source s1_dst{1, detail::byte_buffer(src_size), src_size};
+      detail::source s1_dst{1, detail::byte_buffer(src_size)};
       gf.multiply(r0.buffer().data(), s1_dst.buffer().data(), src_size, inv1);
       REQUIRE(s1.buffer().size() == s1_dst.buffer().size());
       for (auto i = 0ul; i < src_size; ++i)
@@ -196,8 +196,8 @@ TEST_CASE("Two sources lost")
 
     // Push two sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
     REQUIRE(sl.size() == 2);
 
     // Repairs to store encoded sources.
@@ -252,7 +252,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,0));
     REQUIRE(s0_size == s0_data.size());
     // Were to reconstruct original source
-    detail::source s0{0, detail::byte_buffer{'x','x','x','x'}, s0_size};
+    detail::source s0{0, detail::byte_buffer(s0_size, 'x')};
 
     // Now, reconstruct the data.
     gf.multiply(r0.buffer().data(), s0.buffer().data(), s0_size, inv(0,0));
@@ -266,7 +266,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,1));
     REQUIRE(s1_size == s1_data.size());
     // Were to reconstruct original source
-    detail::source s1{0, detail::byte_buffer{'x','x','x','x','x','x','x','x'}, s1_size};
+    detail::source s1{0, detail::byte_buffer(s1_size, 'x')};
 
     // Now, reconstruct the data.
     gf.multiply(r0.buffer().data(), s1.buffer().data(), s1_size, inv(0,1));

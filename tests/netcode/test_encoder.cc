@@ -99,9 +99,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     // First, add some sources.
     for (auto i = 0ul; i < 4; ++i)
     {
-      auto data = ntc::data{512};
-      data.set_used_bytes(512);
-      encoder(std::move(data));
+      encoder(ntc::data(512));
     }
     REQUIRE(encoder.window() == 4);
 
@@ -206,7 +204,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     SECTION("incoming source")
     {
       // Create a source.
-      const auto source = detail::source{0, {}, 0};
+      const auto source = detail::source{0, {}};
       
       // Serialize the source.
       serializer.write_source(source);
@@ -286,32 +284,32 @@ TEST_CASE("Decoder: invalid memory access scenerio")
 
     {
       auto data_ptr = std::make_shared<ntc::data>(max_len);
-      std::copy(x.begin(),  x.end(), data_ptr->buffer());
-      data_ptr->set_used_bytes(static_cast<std::uint16_t>(x.size()));
+      std::copy(x.begin(),  x.end(), data_ptr->begin());
+      data_ptr->resize(x.size());
       enc(std::move(*data_ptr));
     }
     {
       auto data_ptr = std::make_shared<ntc::data>(max_len);
-      std::copy(y.begin(),  y.end(), data_ptr->buffer());
-      data_ptr->set_used_bytes(static_cast<std::uint16_t>(y.size()));
+      std::copy(y.begin(),  y.end(), data_ptr->begin());
+      data_ptr->resize(y.size());
       enc(std::move(*data_ptr));
     }
     {
       auto data_ptr = std::make_shared<ntc::data>(max_len);
-      std::copy(y.begin(),  y.end(), data_ptr->buffer());
-      data_ptr->set_used_bytes(static_cast<std::uint16_t>(y.size()));
+      std::copy(y.begin(),  y.end(), data_ptr->begin());
+      data_ptr->resize(y.size());
       enc(std::move(*data_ptr));
     }
     {
       auto data_ptr = std::make_shared<ntc::data>(max_len);
-      std::copy(y.begin(),  y.end(), data_ptr->buffer());
-      data_ptr->set_used_bytes(static_cast<std::uint16_t>(y.size()));
+      std::copy(y.begin(),  y.end(), data_ptr->begin());
+      data_ptr->resize(y.size());
       enc(std::move(*data_ptr));
     }
     {
       auto data_ptr = std::make_shared<ntc::data>(max_len);
-      std::copy(y.begin(),  y.end(), data_ptr->buffer());
-      data_ptr->set_used_bytes(static_cast<std::uint16_t>(y.size()));
+      std::copy(y.begin(),  y.end(), data_ptr->begin());
+      data_ptr->resize(y.size());
       enc(std::move(*data_ptr));
     }
     REQUIRE(enc_handler.nb_packets() == 6);
@@ -385,7 +383,7 @@ TEST_CASE("Encoder rejects sources and repairs")
 
     SECTION("source")
     {
-      serializer.write_source(detail::source{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4});
+      serializer.write_source(detail::source{394839, {'a', 'b', 'c', 'd'}});
       REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
     }
 

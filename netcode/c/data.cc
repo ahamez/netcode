@@ -9,16 +9,16 @@ ntc_data_t*
 ntc_new_data(uint16_t size)
 noexcept
 {
-  return new (std::nothrow) ntc_data_t{size};
+  return new (std::nothrow) ntc_data_t(size);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 ntc_data_t*
-ntc_new_data_copy(const char* src, uint16_t size)
+ntc_new_data_from(const char* src, uint16_t size)
 noexcept
 {
-  return new (std::nothrow) ntc_data_t{src, size};
+  return new (std::nothrow) ntc_data_t(src, src + size);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -36,43 +36,25 @@ char*
 ntc_data_buffer(ntc_data_t* data)
 noexcept
 {
-  return data->buffer();
+  return data->data();
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 uint16_t
-ntc_data_get_reserved_size(const ntc_data_t* data)
+ntc_data_get_size(const ntc_data_t* data)
 noexcept
 {
-  return data->reserved_size();
+  return static_cast<uint16_t>(data->size());
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_data_set_used_bytes(ntc_data_t* data, uint16_t size)
+ntc_data_resize(ntc_data_t* data, uint16_t new_size, ntc_error* error)
 noexcept
 {
-  data->set_used_bytes(size);
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-uint16_t
-ntc_data_get_used_bytes(const ntc_data_t* d)
-noexcept
-{
-  return d->used_bytes();
-}
-
-/*------------------------------------------------------------------------------------------------*/
-
-void
-ntc_data_reset(ntc_data_t* data, uint16_t new_size, ntc_error* error)
-noexcept
-{
-  ntc::detail::check_error([&]{data->reset(new_size);}, error);
+  ntc::detail::check_error([&]{data->resize(new_size);}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/

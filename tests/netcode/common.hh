@@ -12,9 +12,9 @@ using namespace ntc;
 
 inline
 const detail::source&
-add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf, std::size_t sz)
+add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf)
 {
-  return sl.emplace(id, std::move(buf), sz);
+  return sl.emplace(id, std::move(buf));
 }
 
 /*------------------------------------------------------------------------------------------------*/

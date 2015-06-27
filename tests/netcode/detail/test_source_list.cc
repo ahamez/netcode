@@ -29,10 +29,10 @@ TEST_CASE("add and remove sources in source_list")
   auto sl = detail::source_list{};
 
   // Push some sources.
-  sl.emplace(0, detail::byte_buffer{}, 0);
-  sl.emplace(1, detail::byte_buffer{}, 0);
-  sl.emplace(2, detail::byte_buffer{}, 0);
-  sl.emplace(3, detail::byte_buffer{}, 0);
+  sl.emplace(0, detail::byte_buffer{});
+  sl.emplace(1, detail::byte_buffer{});
+  sl.emplace(2, detail::byte_buffer{});
+  sl.emplace(3, detail::byte_buffer{});
 
   REQUIRE(sl.size() == 4);
 
@@ -116,7 +116,7 @@ TEST_CASE("add and remove sources in source_list")
 TEST_CASE("Error scenario")
 {
   auto sl = detail::source_list{};
-  sl.emplace(1, detail::byte_buffer{}, 0);
+  sl.emplace(1, detail::byte_buffer{});
   const auto ids = detail::source_id_list{0,1};
   sl.erase(begin(ids), end(ids));
   REQUIRE(sl.size() == 0);

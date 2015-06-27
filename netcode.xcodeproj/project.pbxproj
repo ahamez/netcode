@@ -61,15 +61,17 @@
 		2B7E42BE1ADC26D90035DA89 /* decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42BC1ADC26D90035DA89 /* decoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
 		2B8148D51B3BE0F2003BF0D8 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */; };
-		2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9222681AB4BCD4009A2843 /* test_data.cc */; };
 		2B9BD1051AF2A0E000856E96 /* end_to_end_mt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */; };
 		2B9DBE651B13B626000133D3 /* data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42AF1ADC26960035DA89 /* data.cc */; };
 		2B9DBE661B13B626000133D3 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42BB1ADC26D90035DA89 /* decoder.cc */; };
 		2B9DBE671B13B626000133D3 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42B71ADC26C70035DA89 /* encoder.cc */; };
 		2B9DBE6A1B13B7CA000133D3 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9DBE691B13B7CA000133D3 /* test_data.cc */; };
+		2B9E8BF61B3E638B00E3DAE4 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
+		2B9E8BF71B3E638B00E3DAE4 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
+		2B9E8BF81B3E638B00E3DAE4 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
+		2B9E8BFA1B3E6D4200E3DAE4 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B9E8BF91B3E6D4200E3DAE4 /* libc++.tbd */; };
 		2BAD818D1B287C570010EAC4 /* c_basic.c in Sources */ = {isa = PBXBuildFile; fileRef = 2BAD818C1B287C570010EAC4 /* c_basic.c */; };
 		2BAD819C1B287D0B0010EAC4 /* cpp_basic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BAD819B1B287D0B0010EAC4 /* cpp_basic.cc */; };
-		2BAD819D1B28805F0010EAC4 /* libcnetcode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B218AEB1AD7C736000D2657 /* libcnetcode.a */; };
 		2BBA82AB1AF7FA5000FB22BD /* end_to_end.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */; };
 		2BBA82AE1AF8016200FB22BD /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2BBA82AF1AF8016200FB22BD /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
@@ -978,7 +980,6 @@
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B8148D61B3BE1B2003BF0D8 /* handlers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = handlers.h; sourceTree = "<group>"; };
-		2B9222681AB4BCD4009A2843 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B97BE8F1B2DC78000E496D8 /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c_basic; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B97BE901B2DCD3900E496D8 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
@@ -987,6 +988,7 @@
 		2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = end_to_end_mt.cc; sourceTree = "<group>"; };
 		2B9BD1061AF2A18600856E96 /* udp_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = udp_generator.py; sourceTree = "<group>"; };
 		2B9DBE691B13B7CA000133D3 /* test_data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_data.cc; sourceTree = "<group>"; };
+		2B9E8BF91B3E6D4200E3DAE4 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		2BA513A41B0F9137009A28EC /* error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
 		2BAD818B1B287C0C0010EAC4 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2BAD818C1B287C570010EAC4 /* c_basic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = c_basic.c; sourceTree = "<group>"; };
@@ -1028,6 +1030,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B9E8BFA1B3E6D4200E3DAE4 /* libc++.tbd in Frameworks */,
 				2B218B0B1AD80566000D2657 /* libcnetcode.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1064,7 +1067,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BAD819D1B28805F0010EAC4 /* libcnetcode.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2295,6 +2297,7 @@
 		2BC3179E1AB0C53200C61FBB = {
 			isa = PBXGroup;
 			children = (
+				2B9E8BF91B3E6D4200E3DAE4 /* libc++.tbd */,
 				2B7526891AB41556008DEDAD /* CMakeLists.txt */,
 				2B75268D1AB48A18008DEDAD /* Doxyfile.in */,
 				2BBA00BE1B21CCD700633CA3 /* README.md */,
@@ -2389,7 +2392,6 @@
 				2BE319851AB32DA0001AA9DF /* detail */,
 				2BBC052B1ACD08C700EEDAC0 /* common.hh */,
 				2B56BA1F1B3ACF3F00AC688C /* launch.hh */,
-				2B9222681AB4BCD4009A2843 /* test_data.cc */,
 				2B282BB91AB8514700640FF8 /* test_decoder.cc */,
 				2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */,
 				2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */,
@@ -2738,6 +2740,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B9E8BF61B3E638B00E3DAE4 /* decoder.cc in Sources */,
+				2B9E8BF71B3E638B00E3DAE4 /* encoder.cc in Sources */,
+				2B9E8BF81B3E638B00E3DAE4 /* invert_matrix.cc in Sources */,
 				2BAD819C1B287D0B0010EAC4 /* cpp_basic.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2787,7 +2792,6 @@
 				2B282BBF1AB861C200640FF8 /* test_decoder.cc in Sources */,
 				2B282BBA1AB8514700640FF8 /* test_decoder.cc in Sources */,
 				2B516BE51AC944AE00133F38 /* decoder.cc in Sources */,
-				2B9222691AB4BCD4009A2843 /* test_data.cc in Sources */,
 				2B516BF31AC9997200133F38 /* test_invert_matrix.cc in Sources */,
 				2B4978001AC44CAD00A76CF8 /* test_reconstruction.cc in Sources */,
 			);

@@ -71,16 +71,15 @@ public:
   /// @brief Give the encoder a new data
   /// @param d The data to add
   /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::reset() will put back @p d in a usable state.
-  /// @see data::reset
+  /// except for one case: calling data::resize() will put back @p d in a usable state.
   void
   operator()(data&& d)
   {
-    assert(d.used_bytes() != 0 && "please use data::used_bytes()");
+    assert(d.size() != 0 && "empty data");
     assert( m_galois_field_size != 16
-            or (m_galois_field_size == 16 and d.used_bytes() % (16/8) == 0));
+            or (m_galois_field_size == 16 and d.size() % (16/8) == 0));
     assert( m_galois_field_size != 32
-            or (m_galois_field_size == 32 and d.used_bytes() % (32/8) == 0));
+            or (m_galois_field_size == 32 and d.size() % (32/8) == 0));
     commit_impl(std::move(d));
   }
 
@@ -247,8 +246,6 @@ private:
   void
   commit_impl(data&& d)
   {
-    assert(d.used_bytes() <= d.reserved_size() && "More used bytes than the buffer can hold");
-
     if (m_sources.size() == m_window_size)
     {
       m_sources.pop_front();
@@ -256,8 +253,7 @@ private:
 
     // Create a new source in-place at the end of the list of sources, "stealing" the data
     // buffer from d.
-    const auto& insertion
-      = m_sources.emplace(m_current_source_id, std::move(d.impl()), d.used_bytes());
+    const auto& insertion = m_sources.emplace(m_current_source_id, std::move(d));
 
     if (m_code_type == systematic::yes)
     {

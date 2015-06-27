@@ -23,7 +23,7 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
 
     // Push the source.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
 
     // A repair to store encoded sources
     detail::repair r0{0 /* id */};
@@ -35,11 +35,8 @@ TEST_CASE("Decoder: reconstruct a source from a repair")
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
     const auto s0 = decoder.create_source_from_repair(r0);
-    REQUIRE(s0.user_size() == s0_data.size());
-    REQUIRE(std::equal( s0.buffer().begin()
-                        // The allocated buffer might be larger than the user size
-                      , s0.buffer().begin() + s0.user_size()
-                      , s0_data.begin()));
+    REQUIRE(s0.size() == s0_data.size());
+    REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_data.begin()));
   });
 }
 
@@ -55,8 +52,8 @@ TEST_CASE("Decoder: remove a source from a repair")
 
     // Push 2 sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
 
     // A repair to store encoded sources
     detail::repair r0{0 /* id */};
@@ -67,35 +64,27 @@ TEST_CASE("Decoder: remove a source from a repair")
     SECTION("Remove s0, we should be able to reconstruct s1")
     {
       detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
-      const detail::source s0{ 0, detail::byte_buffer{s0_data}
-                             , static_cast<std::uint16_t>(s0_data.size())};
+      const detail::source s0{0, detail::byte_buffer{s0_data}};
       decoder.remove_source_from_repair(s0, r0);
       REQUIRE(r0.source_ids().size() == 1);
       REQUIRE(*(r0.source_ids().begin()) == 1);
 
       const auto s1 = decoder.create_source_from_repair(r0);
-      REQUIRE(s1.user_size() == s1_data.size());
-      REQUIRE(std::equal( s1.buffer().begin()
-                          // The allocated buffer might be larger than the user size
-                        , s1.buffer().begin() + s1.user_size()
-                        , s1_data.begin()));
+      REQUIRE(s1.size() == s1_data.size());
+      REQUIRE(std::equal(s1.buffer().begin(), s1.buffer().end(), s1_data.begin()));
     }
 
     SECTION("Remove s1, we should be able to reconstruct s0")
     {
       detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
-      const detail::source s1{ 1, detail::byte_buffer{s1_data}
-                             , static_cast<std::uint16_t>(s1_data.size())};
+      const detail::source s1{1, detail::byte_buffer{s1_data}};
       decoder.remove_source_from_repair(s1, r0);
       REQUIRE(r0.source_ids().size() == 1);
       REQUIRE(*(r0.source_ids().begin()) == 0);
 
       const auto s0 = decoder.create_source_from_repair(r0);
-      REQUIRE(s0.user_size() == s0_data.size());
-      REQUIRE(std::equal( s0.buffer().begin()
-                         // The allocated buffer might be larger than the user size
-                         , s0.buffer().begin() + s0.user_size()
-                         , s0_data.begin()));
+      REQUIRE(s0.size() == s0_data.size());
+      REQUIRE(std::equal(s0.buffer().begin(), s0.buffer().end(), s0_data.begin()));
     }
   });
 }
@@ -108,11 +97,11 @@ TEST_CASE("Decoder: useless repair")
   {
     // Push 5 sources.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
-    sl.emplace(1, detail::byte_buffer{}, 0);
-    sl.emplace(2, detail::byte_buffer{}, 0);
-    sl.emplace(3, detail::byte_buffer{}, 0);
-    sl.emplace(4, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
+    sl.emplace(1, detail::byte_buffer{});
+    sl.emplace(2, detail::byte_buffer{});
+    sl.emplace(3, detail::byte_buffer{});
+    sl.emplace(4, detail::byte_buffer{});
 
     // A repair to store encoded sources
     detail::repair r0{0 /* id */};
@@ -122,11 +111,11 @@ TEST_CASE("Decoder: useless repair")
 
     // Now test the decoder.
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
-    decoder(detail::source{0, detail::byte_buffer{}, 0});
-    decoder(detail::source{1, detail::byte_buffer{}, 0});
-    decoder(detail::source{2, detail::byte_buffer{}, 0});
-    decoder(detail::source{3, detail::byte_buffer{}, 0});
-    decoder(detail::source{4, detail::byte_buffer{}, 0});
+    decoder(detail::source{0, detail::byte_buffer{}});
+    decoder(detail::source{1, detail::byte_buffer{}});
+    decoder(detail::source{2, detail::byte_buffer{}});
+    decoder(detail::source{3, detail::byte_buffer{}});
+    decoder(detail::source{4, detail::byte_buffer{}});
     decoder(std::move(r0));
     REQUIRE(decoder.sources().size() == 5);
     REQUIRE(decoder.missing_sources().empty());
@@ -143,11 +132,11 @@ TEST_CASE("Decoder: missing sources")
   {
     // Push 5 sources.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
-    sl.emplace(1, detail::byte_buffer{}, 0);
-    sl.emplace(2, detail::byte_buffer{}, 0);
-    sl.emplace(3, detail::byte_buffer{}, 0);
-    sl.emplace(4, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
+    sl.emplace(1, detail::byte_buffer{});
+    sl.emplace(2, detail::byte_buffer{});
+    sl.emplace(3, detail::byte_buffer{});
+    sl.emplace(4, detail::byte_buffer{});
 
     // A repair to store encoded sources
     detail::repair r0{0 /* id */};
@@ -157,9 +146,9 @@ TEST_CASE("Decoder: missing sources")
 
     // Now test the decoder.
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
-    decoder(detail::source{0, detail::byte_buffer{}, 0});
-    decoder(detail::source{2, detail::byte_buffer{}, 0});
-    decoder(detail::source{4, detail::byte_buffer{}, 0});
+    decoder(detail::source{0, detail::byte_buffer{}});
+    decoder(detail::source{2, detail::byte_buffer{}});
+    decoder(detail::source{4, detail::byte_buffer{}});
     decoder(std::move(r0));
     REQUIRE(decoder.sources().size() == 3);
     REQUIRE(decoder.missing_sources().size() == 2);
@@ -181,15 +170,15 @@ TEST_CASE("Decoder: drop outdated sources")
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
     // Send some sources to the decoder.
-    decoder(detail::source{0, detail::byte_buffer{}, 0});
-    decoder(detail::source{1, detail::byte_buffer{}, 0});
+    decoder(detail::source{0, detail::byte_buffer{}});
+    decoder(detail::source{1, detail::byte_buffer{}});
     REQUIRE(decoder.sources().size() == 2);
 
     // Now create a repair that acknowledges the 2 first sources.
     detail::source_list sl;
-    sl.emplace(2, detail::byte_buffer{}, 0);
-    sl.emplace(3, detail::byte_buffer{}, 0);
-    sl.emplace(4, detail::byte_buffer{}, 0);
+    sl.emplace(2, detail::byte_buffer{});
+    sl.emplace(3, detail::byte_buffer{});
+    sl.emplace(4, detail::byte_buffer{});
     detail::repair r0{0};
     encoder(r0, sl);
 
@@ -211,9 +200,9 @@ TEST_CASE("Decoder: drop outdated sources")
     SECTION("sources received")
     {
       // Send sources
-      decoder(detail::source{2, detail::byte_buffer{}, 0});
-      decoder(detail::source{3, detail::byte_buffer{}, 0});
-      decoder(detail::source{4, detail::byte_buffer{}, 0});
+      decoder(detail::source{2, detail::byte_buffer{}});
+      decoder(detail::source{3, detail::byte_buffer{}});
+      decoder(detail::source{4, detail::byte_buffer{}});
 
       // Send repair.
       decoder(std::move(r0));
@@ -244,8 +233,8 @@ TEST_CASE("Decoder: drop outdated lost sources")
 
     // A repair with the first 2 sources.
     detail::source_list sl0;
-    sl0.emplace(0, detail::byte_buffer{}, 0);
-    sl0.emplace(1, detail::byte_buffer{}, 0);
+    sl0.emplace(0, detail::byte_buffer{});
+    sl0.emplace(1, detail::byte_buffer{});
     detail::repair r0{0};
     encoder(r0, sl0);
 
@@ -259,8 +248,8 @@ TEST_CASE("Decoder: drop outdated lost sources")
 
     // Now create a repair that drops the 2 first sources due to a limited window size.
     detail::source_list sl1;
-    sl1.emplace(2, detail::byte_buffer{}, 0);
-    sl1.emplace(3, detail::byte_buffer{}, 0);
+    sl1.emplace(2, detail::byte_buffer{});
+    sl1.emplace(3, detail::byte_buffer{});
     detail::repair r1{1};
     encoder(r1, sl1);
 
@@ -283,8 +272,8 @@ TEST_CASE("Decoder: drop outdated lost sources")
     SECTION("sources received")
     {
       // Send sources
-      decoder(detail::source{2, detail::byte_buffer{}, 0});
-      decoder(detail::source{3, detail::byte_buffer{}, 0});
+      decoder(detail::source{2, detail::byte_buffer{}});
+      decoder(detail::source{3, detail::byte_buffer{}});
 
       // Send repair.
       decoder(std::move(r1));
@@ -312,7 +301,7 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
 
     // Push the source.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
 
     // A repair to store encoded sources
     detail::repair r0{0 /* id */};
@@ -324,9 +313,8 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
     detail::decoder decoder{ gf_size, [&](const detail::source& s0)
                                       {
                                         REQUIRE(s0.id() == 0);
-                                        REQUIRE(s0.user_size() == s0_data.size());
-                                        REQUIRE(std::equal( s0.buffer().begin()
-                                                          , s0.buffer().begin() + s0.user_size()
+                                        REQUIRE(s0.size() == s0_data.size());
+                                        REQUIRE(std::equal( s0.buffer().begin(), s0.buffer().end()
                                                           , s0_data.begin()));
                                      }
                            , in_order::no};
@@ -349,8 +337,8 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
 
     // Push 2 sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
 
     // 2 repairs to store encoded sources
     detail::repair r0{0 /* id */};
@@ -377,10 +365,10 @@ TEST_CASE("Decoder: 2 lost sources from 2 repairs")
     REQUIRE(decoder.repairs().size() == 0);
 
     // Now, check contents.
-    REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+    REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
                       , decoder.sources().find(0)->second.buffer().begin()));
-    REQUIRE(decoder.sources().find(1)->second.user_size() == s1_data.size());
+    REQUIRE(decoder.sources().find(1)->second.size() == s1_data.size());
     REQUIRE(std::equal( s1_data.begin(), s1_data.end()
                       , decoder.sources().find(1)->second.buffer().begin()));
   });
@@ -406,8 +394,8 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
     // Push 2 sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
 
     // 2 repairs to store encoded sources
     detail::repair r0{0};
@@ -433,10 +421,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
     REQUIRE(decoder.repairs().size() == 0);
 
     // Now, check contents.
-    REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+    REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
                       , decoder.sources().find(0)->second.buffer().begin()));
-    REQUIRE(decoder.sources().find(1)->second.user_size() == s1_data.size());
+    REQUIRE(decoder.sources().find(1)->second.size() == s1_data.size());
     REQUIRE(std::equal( s1_data.begin(), s1_data.end()
                       , decoder.sources().find(1)->second.buffer().begin()));
 
@@ -450,10 +438,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       detail::repair r4{4};
 
       // Push 3 new sources.
-      add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
-      add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
+      add_source(sl, 2, detail::byte_buffer{s2_data});
+      add_source(sl, 3, detail::byte_buffer{s3_data});
       encoder(r2, sl);
-      add_source(sl, 4, detail::byte_buffer{s4_data}, s4_data.size());
+      add_source(sl, 4, detail::byte_buffer{s4_data});
       encoder(r3, sl);
       encoder(r4, sl);
 
@@ -501,13 +489,13 @@ TEST_CASE("Decoder: several lost sources from several repairs")
 
 
         // Check contents.
-        REQUIRE(decoder.sources().find(2)->second.user_size() == s2_data.size());
+        REQUIRE(decoder.sources().find(2)->second.size() == s2_data.size());
         REQUIRE(std::equal( s2_data.begin(), s2_data.end()
                           , decoder.sources().find(2)->second.buffer().begin()));
-        REQUIRE(decoder.sources().find(3)->second.user_size() == s3_data.size());
+        REQUIRE(decoder.sources().find(3)->second.size() == s3_data.size());
         REQUIRE(std::equal( s3_data.begin(), s3_data.end()
                           , decoder.sources().find(3)->second.buffer().begin()));
-        REQUIRE(decoder.sources().find(4)->second.user_size() == s4_data.size());
+        REQUIRE(decoder.sources().find(4)->second.size() == s4_data.size());
         REQUIRE(std::equal( s4_data.begin(), s4_data.end()
                           , decoder.sources().find(4)->second.buffer().begin()));
 
@@ -528,10 +516,10 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       sl.pop_front();
 
       // Push 3 new sources.
-      add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
-      add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
+      add_source(sl, 2, detail::byte_buffer{s2_data});
+      add_source(sl, 3, detail::byte_buffer{s3_data});
       encoder(r2, sl);
-      add_source(sl, 4, detail::byte_buffer{s4_data}, s4_data.size());
+      add_source(sl, 4, detail::byte_buffer{s4_data});
       encoder(r3, sl);
       encoder(r4, sl);
 
@@ -573,13 +561,13 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       REQUIRE(decoder.repairs().size() == 0);
 
       // Check contents.
-      REQUIRE(decoder.sources().find(2)->second.user_size() == s2_data.size());
+      REQUIRE(decoder.sources().find(2)->second.size() == s2_data.size());
       REQUIRE(std::equal( s2_data.begin(), s2_data.end()
                         , decoder.sources().find(2)->second.buffer().begin()));
-      REQUIRE(decoder.sources().find(3)->second.user_size() == s3_data.size());
+      REQUIRE(decoder.sources().find(3)->second.size() == s3_data.size());
       REQUIRE(std::equal( s3_data.begin(), s3_data.end()
                         , decoder.sources().find(3)->second.buffer().begin()));
-      REQUIRE(decoder.sources().find(4)->second.user_size() == s4_data.size());
+      REQUIRE(decoder.sources().find(4)->second.size() == s4_data.size());
       REQUIRE(std::equal( s4_data.begin(), s4_data.end()
                         , decoder.sources().find(4)->second.buffer().begin()));
     }
@@ -595,14 +583,14 @@ TEST_CASE("Decoder: duplicate source")
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
     // Send source.
-    decoder(detail::source{0, detail::byte_buffer{}, 0});
+    decoder(detail::source{0, detail::byte_buffer{}});
     REQUIRE(decoder.sources().size() == 1);
     REQUIRE(decoder.missing_sources().size() == 0);
     REQUIRE(decoder.repairs().size() == 0);
     REQUIRE(decoder.nb_useless_repairs() == 0);
 
     // Send duplicate source.
-    decoder(detail::source{0, detail::byte_buffer{}, 0});
+    decoder(detail::source{0, detail::byte_buffer{}});
     REQUIRE(decoder.sources().size() == 1);
     REQUIRE(decoder.missing_sources().size() == 0);
     REQUIRE(decoder.repairs().size() == 0);
@@ -620,7 +608,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
     detail::repair r0{0};
     encoder(r0, sl);
 
@@ -632,7 +620,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
     SECTION("Lost source is not outdated")
     {
       // Eventually, the missing source is received.
-      decoder(detail::source{0, detail::byte_buffer{}, 0});
+      decoder(detail::source{0, detail::byte_buffer{}});
       REQUIRE(decoder.sources().size() == 1);
       REQUIRE(decoder.sources().count(0));
     }
@@ -643,7 +631,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
       sl.pop_front();
 
       // A new source along with a new repair.
-      sl.emplace(1, detail::byte_buffer{}, 0);
+      sl.emplace(1, detail::byte_buffer{});
       detail::repair r1{0};
       encoder(r1, sl);
 
@@ -653,7 +641,7 @@ TEST_CASE("Decoder: out-of-order source after repair")
       REQUIRE(decoder.sources().count(1));
 
       // Eventually, the missing source is received.
-      decoder(detail::source{0, detail::byte_buffer{}, 0});
+      decoder(detail::source{0, detail::byte_buffer{}});
       REQUIRE(decoder.sources().size() == 1);
       REQUIRE(decoder.sources().count(1));
     }
@@ -674,7 +662,7 @@ TEST_CASE("Decoder: duplicate repair 1")
 
     // A dummy lost source. Should be repaired immediatly.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
 
     // Create original repair.
     detail::repair r0{0};
@@ -704,7 +692,7 @@ TEST_CASE("Decoder: duplicate repair 1")
     SECTION("Reconstructed source is outdated")
     {
       sl.pop_front();
-      sl.emplace(1, detail::byte_buffer{}, 0);
+      sl.emplace(1, detail::byte_buffer{});
       detail::repair r1{0};
       encoder0(r1, sl);
       // Send repair.
@@ -735,8 +723,8 @@ TEST_CASE("Decoder: duplicate repair 2")
 
     // Some dummy lost sources.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
-    sl.emplace(1, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
+    sl.emplace(1, detail::byte_buffer{});
 
     // Create original repair.
     detail::repair r0{0};
@@ -777,8 +765,8 @@ TEST_CASE("Decoder: source after repair")
 
     // Push 2 sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
 
     // 2 repairs to store encoded sources
     detail::repair r0{0};
@@ -793,7 +781,7 @@ TEST_CASE("Decoder: source after repair")
     REQUIRE(decoder.repairs().size() == 1);
 
     // s0 is received
-    decoder({0, detail::byte_buffer{s0_data}, static_cast<std::uint16_t>(s0_data.size())});
+    decoder({0, detail::byte_buffer{s0_data}});
     REQUIRE(decoder.sources().size() == 2);
     REQUIRE(decoder.sources().count(0));
     REQUIRE(decoder.sources().count(1));
@@ -813,7 +801,7 @@ TEST_CASE("Decoder: repair with only one source")
 
     // Push the source.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
 
     // A repair to store encoded sources
     detail::repair r0{0};
@@ -828,7 +816,7 @@ TEST_CASE("Decoder: repair with only one source")
     decoder(std::move(r0));
     REQUIRE(decoder.sources().size() == 1);
     REQUIRE(decoder.sources().count(0));
-    REQUIRE(decoder.sources().find(0)->second.user_size() == s0_data.size());
+    REQUIRE(decoder.sources().find(0)->second.size() == s0_data.size());
     REQUIRE(std::equal( s0_data.begin(), s0_data.end()
                       , decoder.sources().find(0)->second.buffer().begin()));
     REQUIRE(decoder.missing_sources().size() == 0);
@@ -850,10 +838,10 @@ TEST_CASE("Decoder: 1 packet loss")
 
     // Push the sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
-    add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
-    add_source(sl, 3, detail::byte_buffer{s3_data}, s3_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
+    add_source(sl, 2, detail::byte_buffer{s2_data});
+    add_source(sl, 3, detail::byte_buffer{s3_data});
 
     // A repair to store encoded sources
     detail::repair r0{0};
@@ -865,12 +853,9 @@ TEST_CASE("Decoder: 1 packet loss")
     detail::decoder decoder{gf_size, [](const detail::source&){}, in_order::no};
 
     // s1 -> s3 are received
-    decoder(detail::source{ 1, detail::byte_buffer{s1_data}
-                          , static_cast<std::uint16_t>(s1_data.size())});
-    decoder(detail::source{ 2, detail::byte_buffer{s2_data}
-                          , static_cast<std::uint16_t>(s2_data.size())});
-    decoder(detail::source{ 3, detail::byte_buffer{s3_data}
-                          , static_cast<std::uint16_t>(s3_data.size())});
+    decoder(detail::source{1, detail::byte_buffer{s1_data}});
+    decoder(detail::source{2, detail::byte_buffer{s2_data}});
+    decoder(detail::source{3, detail::byte_buffer{s3_data}});
     REQUIRE(decoder.sources().size() == 3);
     REQUIRE(decoder.sources().count(1));
     REQUIRE(decoder.sources().count(2));
@@ -903,9 +888,9 @@ TEST_CASE("2 repairs for 3 sources")
 
     // Push the sources.
     detail::source_list sl;
-    add_source(sl, 0, detail::byte_buffer{s0_data}, s0_data.size());
-    add_source(sl, 1, detail::byte_buffer{s1_data}, s1_data.size());
-    add_source(sl, 2, detail::byte_buffer{s2_data}, s2_data.size());
+    add_source(sl, 0, detail::byte_buffer{s0_data});
+    add_source(sl, 1, detail::byte_buffer{s1_data});
+    add_source(sl, 2, detail::byte_buffer{s2_data});
 
     // Two repairs to store encoded sources
     detail::repair r0{0};
@@ -922,17 +907,17 @@ TEST_CASE("2 repairs for 3 sources")
                                const auto& buffer = src.buffer();
                                if (src.id() == 0)
                                {
-                                 REQUIRE(src.user_size() == s0_data.size());
+                                 REQUIRE(src.size() == s0_data.size());
                                  REQUIRE(std::equal(begin(s0_data), end(s0_data), begin(buffer)));
                                }
                                else if (src.id() == 1)
                                {
-                                 REQUIRE(src.user_size() == s1_data.size());
+                                 REQUIRE(src.size() == s1_data.size());
                                  REQUIRE(std::equal(begin(s1_data), end(s1_data), begin(buffer)));
                                }
                                else if (src.id() == 2)
                                {
-                                 REQUIRE(src.user_size() == s2_data.size());
+                                 REQUIRE(src.size() == s2_data.size());
                                  REQUIRE(std::equal(begin(s2_data), end(s2_data), begin(buffer)));
                                }
                                else
@@ -949,8 +934,7 @@ TEST_CASE("2 repairs for 3 sources")
     REQUIRE(decoder.missing_sources().size() == 3);
 
     // s2 is received, s0 and s1 should be decoded.
-    decoder(detail::source{ 2, detail::byte_buffer{s2_data}
-                          , static_cast<std::uint16_t>(s2_data.size())});
+    decoder(detail::source{2, detail::byte_buffer{s2_data}});
     REQUIRE(decoder.nb_decoded() == 2);
     REQUIRE(decoder.missing_sources().size() == 0);
   });

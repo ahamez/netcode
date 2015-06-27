@@ -28,7 +28,7 @@ TEST_CASE("Decoder gives a correct source to user")
     auto& dec_data_handler = dec.data_handler();
 
     const auto s0 = {'a','b','c','d'};
-    enc(data{s0});
+    enc(data{begin(s0), end(s0)});
 
     // Send serialized data to decoder.
     dec(enc_packet_handler[0]);
@@ -421,13 +421,13 @@ TEST_CASE("In order decoder")
 
     // Packets will be stored in enc_handler.vec.
     const auto s0 = {'a','a','a','a'};
-    enc(data{s0});
+    enc(data{begin(s0), end(s0)});
     const auto s1 = {'b','b','b','b'};
-    enc(data{s1});
+    enc(data{begin(s1), end(s1)});
     const auto s2 = {'c','c','c','c'};
-    enc(data{s2});
+    enc(data{begin(s2), end(s2)});
     const auto s3 = {'d','d','d','d'};
-    enc(data{s3});
+    enc(data{begin(s3), end(s3)});
 
     REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
     REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);

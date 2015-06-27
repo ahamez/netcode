@@ -21,11 +21,11 @@ TEST_CASE("Encoder: create repairs")
 
     // Push two sources.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{}, 0);
-    sl.emplace(1, detail::byte_buffer{}, 0);
-    sl.emplace(2, detail::byte_buffer{}, 0);
-    sl.emplace(3, detail::byte_buffer{}, 0);
-    sl.emplace(4, detail::byte_buffer{}, 0);
+    sl.emplace(0, detail::byte_buffer{});
+    sl.emplace(1, detail::byte_buffer{});
+    sl.emplace(2, detail::byte_buffer{});
+    sl.emplace(3, detail::byte_buffer{});
+    sl.emplace(4, detail::byte_buffer{});
     REQUIRE(sl.size() == 5);
 
     // A repair to store encoded sources
@@ -54,8 +54,8 @@ TEST_CASE("Encoder: large source")
     {
       // Push sources of different sizes.
       detail::source_list sl;
-      sl.emplace(0, detail::byte_buffer(8192), 8192);
-      sl.emplace(1, detail::byte_buffer(128), 128);
+      sl.emplace(0, detail::byte_buffer(8192));
+      sl.emplace(1, detail::byte_buffer(128));
 
       // Create repair.
       detail::repair r0{0};
@@ -68,8 +68,8 @@ TEST_CASE("Encoder: large source")
     {
       // Push sources of different sizes.
       detail::source_list sl;
-      sl.emplace(0, detail::byte_buffer(128), 128);
-      sl.emplace(1, detail::byte_buffer(8192), 8192);
+      sl.emplace(0, detail::byte_buffer(128));
+      sl.emplace(1, detail::byte_buffer(8192));
 
       // Create repair.
       detail::repair r0{0};
@@ -93,7 +93,7 @@ TEST_CASE("Encoder is deterministic")
 
     // A dummy source.
     detail::source_list sl;
-    sl.emplace(0, detail::byte_buffer{'a','b','c','d'}, 4);
+    sl.emplace(0, {'a','b','c','d'});
 
     // First encoder.
     detail::repair r0_0{0};
@@ -107,7 +107,7 @@ TEST_CASE("Encoder is deterministic")
     REQUIRE(r0_0.buffer() == r0_1.buffer());
 
     // Once more.
-    sl.emplace(1, detail::byte_buffer{'e','f','g','h'}, 4);
+    sl.emplace(1, {'e','f','g','h'});
 
     // First encoder.
     detail::repair r1_0{1};

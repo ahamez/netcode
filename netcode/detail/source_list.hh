@@ -21,9 +21,9 @@ public:
   /// @brief Add a source packet in-place.
   /// @return A reference the added source.
   const detail::source&
-  emplace(std::uint32_t id, byte_buffer&& buf, std::size_t user_size)
+  emplace(std::uint32_t id, byte_buffer&& buf)
   {
-    m_sources.emplace_back(id, std::move(buf), user_size);
+    m_sources.emplace_back(id, std::move(buf));
     return m_sources.back();
   }
 

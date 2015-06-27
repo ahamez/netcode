@@ -160,7 +160,7 @@ private:
   void
   start_app_handler()
   {
-    m_app_socket.async_receive_from( asio::buffer(m_data.buffer(), buffer_size)
+    m_app_socket.async_receive_from( asio::buffer(m_data)
                                    , m_app_endpoint
                                    , [this](const asio::error_code& err, std::size_t len)
                                      {
@@ -170,14 +170,14 @@ private:
                                        }
 
                                        // m_data has been filled by asio, but we still need to tell
-                                       // the netcode library how many bytes were written.
-                                       m_data.set_used_bytes(static_cast<std::uint16_t>(len));
+                                       // the netcode library how many bytes were really written.
+                                       m_data.resize(len);
 
                                        // We can now safely give the data to the encoder.
                                        m_encoder(std::move(m_data));
 
                                        // To avoid allocating a new data, we reset m_data.
-                                       m_data.reset(buffer_size);
+                                       m_data.resize(buffer_size);
 
                                        // Listen again for incoming data.
                                        start_app_handler();

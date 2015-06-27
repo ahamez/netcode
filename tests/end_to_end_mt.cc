@@ -103,10 +103,10 @@ struct in_order_data_handler
 ntc::data
 generate_data(std::uint32_t id, std::uint16_t packet_size)
 {
-  ntc::data data{packet_size};
-  auto data_as_int = reinterpret_cast<std::uint32_t*>(data.buffer());
+  ntc::data data(packet_size);
+  auto data_as_int = reinterpret_cast<std::uint32_t*>(data.data());
   std::fill(data_as_int, data_as_int + packet_size/sizeof(std::uint32_t), id);
-  data.set_used_bytes(packet_size);
+  data.resize(packet_size);
   return data;
 }
 

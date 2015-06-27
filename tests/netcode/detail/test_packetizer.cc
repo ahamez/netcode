@@ -132,7 +132,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
   handler h;
   detail::packetizer<handler> serializer{h};
 
-  const detail::source s_in{394839, detail::byte_buffer{'a', 'b', 'c', 'd'}, 4};
+  const detail::source s_in{394839, {'a', 'b', 'c', 'd'}};
 
   serializer.write_source(s_in);
 
@@ -144,7 +144,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
 
   const auto s_out = serializer.read_source(h.data_, 2048).first;
   REQUIRE(s_in.id() == s_out.id());
-  REQUIRE(s_in.user_size() == s_out.user_size());
+  REQUIRE(s_in.size() == s_out.size());
   REQUIRE(s_in.buffer() == s_out.buffer());
 }
 
@@ -172,7 +172,7 @@ TEST_CASE("Prevent buffer overflow")
 
   SECTION("source")
   {
-    const detail::source s_in{394839, detail::byte_buffer(1024, 'x'), 1024};
+    const detail::source s_in{394839, detail::byte_buffer(1024, 'x')};
     serializer.write_source(s_in);
     REQUIRE_THROWS_AS(serializer.read_source(h.data_, 512), overflow_error);
   }

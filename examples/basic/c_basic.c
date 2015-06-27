@@ -86,16 +86,13 @@ int main(int argc, char** argv)
                                       , decoder_data_handler);
   ntc_decoder_set_ack_frequency(dec, 200 /* ms */);
 
-  // Create an holder for some data with a size up to 1024 bytes.
-  ntc_data_t* data = ntc_new_data(1024);
+  // Create an holder for 3 bytes.
+  ntc_data_t* data = ntc_new_data(3);
 
   // Fill the data.
   ntc_data_buffer(data)[0] = 'a';
   ntc_data_buffer(data)[1] = 'b';
   ntc_data_buffer(data)[2] = 'c';
-
-  // Don't forget to tell how many bytes were written.
-  ntc_data_set_used_bytes(data, 3);
 
   // Filled by the library if an error happen.
   ntc_error error;
@@ -113,7 +110,7 @@ int main(int argc, char** argv)
 
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 1, &error);
+  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
 
   // Check if the previous operation succeeded.
   if (error.type != ntc_no_error)
@@ -128,7 +125,7 @@ int main(int argc, char** argv)
   assert(data_cxt.buffer[2] == 'c');
 
   // Reset data: it's now legit to use it again.
-  ntc_data_reset(data, 1024, &error);
+  ntc_data_resize(data, 1024, &error);
 
   // Check if the previous operation succeeded.
   if (error.type != ntc_no_error)
@@ -141,7 +138,10 @@ int main(int argc, char** argv)
   ntc_data_buffer(data)[1] = 'e';
   ntc_data_buffer(data)[2] = 'f';
   ntc_data_buffer(data)[3] = 'g';
-  ntc_data_set_used_bytes(data, 4);
+
+  // We finally only used 4 bytes, thus the data has to be resized. As the new size is smaller than
+  // the previous one, no allocation or copy occurs.
+  ntc_data_resize(data, 4, &error);
 
   // Give this new data to the encoder.
   ntc_encoder_add_data(enc, data, &error);

@@ -25,10 +25,9 @@ public:
   source& operator=(source&&) = default;
 
   /// @brief Constructor
-  source(std::uint32_t id, byte_buffer&& buf, std::uint16_t user_size)
+  source(std::uint32_t id, byte_buffer&& buf)
     : m_id{id}
     , m_symbol_buffer{std::move(buf)}
-    , m_user_size{user_size}
   {}
 
   /// @brief Get this source's identifier
@@ -55,12 +54,13 @@ public:
     return m_symbol_buffer;
   }
 
-  /// @brief Get the number of bytes really used by the user's symbol
+  /// @brief Get the number of bytes in the user's symbol
+  /// @note This method is just a helper to avoid the static_cast eveywhere the size is needed
   std::uint16_t
-  user_size()
+  size()
   const noexcept
   {
-    return m_user_size;
+    return static_cast<std::uint16_t>(m_symbol_buffer.size());
   }
 
 private:
@@ -70,9 +70,6 @@ private:
 
   /// @brief This source's symbol
   byte_buffer m_symbol_buffer;
-
-  /// @brief The number of bytes really used by the user's symbol in the buffer
-  std::uint16_t m_user_size;
 };
 
 /*------------------------------------------------------------------------------------------------*/
