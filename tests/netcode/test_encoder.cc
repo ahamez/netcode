@@ -105,14 +105,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 
     struct handler
     {
-      char pkt[2048];
-      std::size_t written = 0ul;
+//      char pkt[2048];
+//      std::size_t written = 0ul;
+      packet pkt;
 
       void
       operator()(const char* src, std::size_t len)
       {
-        std::copy_n(src, len, pkt + written);
-        written += len;
+        std::copy_n(src, len, std::back_inserter(pkt));
       }
 
       void operator()() const noexcept {} // end of data
@@ -131,7 +131,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_ack(ack);
 
       // Finally, notify the encoder.
-      const auto result = encoder(h.pkt, 2048);
+      const auto result = encoder(packet{h.pkt});
       REQUIRE(result);
 
       // The number of sources should have decreased.
@@ -147,14 +147,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_ack(ack0);
 
       // Finally, notify the encoder.
-      const auto result0 = encoder(h.pkt, 2048);
+      const auto result0 = encoder(packet{h.pkt});
       REQUIRE(result0);
 
       // The number of sources should have decreased.
       REQUIRE(encoder.window() == 2);
 
-      /// Reset handler.
-      h.written = 0;
+      // Reset handler.
+      h.pkt.clear();
 
       // Create an ack for some sources, with an already deleted source.
       const auto ack1 = detail::ack{{0}, 0};
@@ -163,14 +163,14 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_ack(ack1);
 
       // Finally, notify the encoder.
-      const auto result1 = encoder(h.pkt, 2048);
+      const auto result1 = encoder(packet{h.pkt});
       REQUIRE(result1);
 
       // The number of sources should have decreased.
       REQUIRE(encoder.window() == 2);
 
-      /// Reset handler.
-      h.written = 0;
+      // Reset handler.
+      h.pkt.clear();
 
       // Create an ack for some sources, with a source that wasn't deleted before.
       const auto ack2 = detail::ack{{1}, 0};
@@ -179,7 +179,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_ack(ack2);
 
       // Finally, notify the encoder.
-      const auto result2 = encoder(h.pkt, 2048);
+      const auto result2 = encoder(packet{h.pkt});
       REQUIRE(result2);
 
       // The number of sources should have decreased.
@@ -195,7 +195,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_repair(repair);
 
       // Finally, notify the encoder.
-      REQUIRE_THROWS_AS(encoder(h.pkt, 2048), ntc::packet_type_error);
+      REQUIRE_THROWS_AS(encoder(packet{h.pkt}), ntc::packet_type_error);
 
       // The number of sources should not have decreased.
       REQUIRE(encoder.window() == 4);
@@ -210,7 +210,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
       serializer.write_source(source);
       
       // Finally, notify the encoder.
-      REQUIRE_THROWS_AS(encoder(h.pkt, 2048), ntc::packet_type_error);
+      REQUIRE_THROWS_AS(encoder(packet{h.pkt}), ntc::packet_type_error);
       
       // The number of sources should not have decreased.
       REQUIRE(encoder.window() == 4);
@@ -258,8 +258,8 @@ TEST_CASE("Encoder sends repairs")
 
     enc(data{begin(s0), end(s0)});
     REQUIRE(enc_handler.nb_packets() == 2 /* 1 source +  1 repair */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::repair);
   });
 }
 
@@ -357,11 +357,11 @@ TEST_CASE("Non systematic encoder")
     REQUIRE(encoder.nb_sent_repairs() == 5);
 
     REQUIRE(enc_handler.nb_packets() == 5 /* 5 repairs */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[4]) == detail::packet_type::repair);
   });
 }
 
@@ -389,8 +389,7 @@ TEST_CASE("Encoder rejects sources and repairs")
 
     SECTION("Garbage")
     {
-      char garbage[4] = {33,35,1,0};
-      REQUIRE_THROWS_AS(encoder(garbage, 4), packet_type_error);
+      REQUIRE_THROWS_AS(encoder(packet{33,35,1,0}), packet_type_error);
     }
   });
 }
@@ -425,7 +424,7 @@ TEST_CASE("Encoder adapts rate automatically")
     }
     serializer.write_ack(detail::ack{std::move(ids0), 200});
 
-    REQUIRE_NOTHROW(enc(h_decoder[0]));
+    REQUIRE_NOTHROW(enc(packet{h_decoder[0]}));
     REQUIRE(enc.window() == 0);
     REQUIRE(enc.rate() == 50); // default maximal rate
 
@@ -443,7 +442,7 @@ TEST_CASE("Encoder adapts rate automatically")
     }
     serializer.write_ack(detail::ack{std::move(ids1), 50});
     
-    REQUIRE_NOTHROW(enc(h_decoder[1]));
+    REQUIRE_NOTHROW(enc(packet{h_decoder[1]}));
     REQUIRE(enc.rate() == 1); // minimal rate
   });
 }

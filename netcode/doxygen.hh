@@ -28,6 +28,9 @@
 /// @defgroup c_data Manipulating data
 /// @ingroup c_ntc
 
+/// @defgroup c_packet Manipulating packets
+/// @ingroup c_ntc
+
 /// @defgroup c_handlers Signature of handlers to interact with encoder and decoder
 /// @ingroup c_ntc
 

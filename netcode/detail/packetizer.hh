@@ -60,8 +60,8 @@ public:
   std::pair<ack, std::size_t>
   read_ack(const char* data, std::size_t max_len)
   {
-    // Packet type should have been verified by the caller.
-    assert(get_packet_type(data) == packet_type::ack);
+//    // Packet type should have been verified by the caller.
+//    assert(get_packet_type(data) == packet_type::ack);
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
@@ -111,8 +111,8 @@ public:
   std::pair<repair, std::size_t>
   read_repair(const char* data, std::size_t max_len)
   {
-    // Packet type should have been verified by the caller.
-    assert(get_packet_type(data) == packet_type::repair);
+//    // Packet type should have been verified by the caller.
+//    assert(get_packet_type(data) == packet_type::repair);
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
@@ -165,8 +165,8 @@ public:
   std::pair<source, std::size_t>
   read_source(const char* data, std::size_t max_len)
   {
-    // Packet type should have been verified by the caller.
-    assert(get_packet_type(data) == packet_type::source);
+//    // Packet type should have been verified by the caller.
+//    assert(get_packet_type(data) == packet_type::source);
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);

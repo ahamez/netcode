@@ -3,12 +3,18 @@
 #include "netcode/data.hh"
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
+#include "netcode/packet.hh"
 #include "netcode/c/detail/handlers.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
 using ntc_data_t = ntc::data;
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @internal
+using ntc_packet_t = ntc::packet;
 
 /*------------------------------------------------------------------------------------------------*/
 

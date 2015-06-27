@@ -36,7 +36,6 @@ void
 send_packet(void* cxt)
 {
   printf("packet is ready to be sent!\n");
-  ((context*)cxt)->nb_read = 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -99,7 +98,7 @@ int main(int argc, char** argv)
 
   // Give this data to the encoder.
   // Be aware that the 'data' parameter will be invalid after this call. You can only call two
-  // functions on an invalid data: ntc_data_reset or ntc_delete_data.
+  // functions on an invalid data: ntc_data_resize or ntc_delete_data.
   ntc_encoder_add_data(enc, data, &error);
 
   // Check if the previous operation succeeded.
@@ -108,9 +107,20 @@ int main(int argc, char** argv)
     goto handle_error;
   }
 
+  // The type to store data coming from a socket.
+  ntc_packet_t* packet = ntc_new_packet(1024);
+
+  // Simulate the writing of the data coming from a socket.
+  memcpy(ntc_packet_buffer(packet), encoder_cxt.buffer, encoder_cxt.nb_read);
+
+  // Resizing a packet is the way of saying how much bytes were read.
+  ntc_packet_resize(packet, encoder_cxt.nb_read, &error);
+
   // The context of the packet handler for the encoder is now given to the decoder, as if it was
   // received from the network.
-  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
+  // Be aware that the 'packet' parameter will be invalid after this call. You can only call two
+  // functions on an invalid packet: ntc_packet_resize or ntc_delete_packet.
+  ntc_decoder_add_packet(dec, packet, &error);
 
   // Check if the previous operation succeeded.
   if (error.type != ntc_no_error)
@@ -126,6 +136,13 @@ int main(int argc, char** argv)
 
   // Reset data: it's now legit to use it again.
   ntc_data_resize(data, 1024, &error);
+
+  // Also reset the packet.
+  ntc_packet_resize(packet, 1024, &error);
+
+  // Finally, reset the context of the encoder packet handler as it is used like a socket in this
+  // example.
+  encoder_cxt.nb_read = 0;
 
   // Check if the previous operation succeeded.
   if (error.type != ntc_no_error)
@@ -152,9 +169,14 @@ int main(int argc, char** argv)
     goto handle_error;
   }
 
-  // Again, the context of the packet handler for the encoder is now given to the decoder, as if it
-  //  was received from the network.
-  ntc_decoder_add_packet(dec, encoder_cxt.buffer, 4096, &error);
+  // Simulate the writing of the data coming from a socket.
+  memcpy(ntc_packet_buffer(packet), encoder_cxt.buffer, encoder_cxt.nb_read);
+
+  // Resizing a packet is the way of saying how much bytes were read.
+  ntc_packet_resize(packet, encoder_cxt.nb_read, &error);
+
+  // Give the newly revceived packet.
+  ntc_decoder_add_packet(dec, packet, &error);
 
   // Check if the previous operation succeeded.
   if (error.type != ntc_no_error)

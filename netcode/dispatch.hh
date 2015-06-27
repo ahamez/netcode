@@ -4,6 +4,7 @@
 #include "netcode/detail/traits.hh"
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
+#include "netcode/packet.hh"
 
 namespace ntc {
 
@@ -14,22 +15,22 @@ namespace ntc {
 /// @ingroup ntc
 template <typename Encoder, typename Decoder>
 std::size_t
-dispatch(Encoder& encoder, Decoder& decoder, const char* packet, std::size_t len)
+dispatch(Encoder& encoder, Decoder& decoder, packet&& p)
 {
   static_assert(detail::is_encoder<Encoder>::value, "parameter encoder is not a ntc::encoder");
   static_assert(detail::is_decoder<Decoder>::value, "parameter decoder is not a ntc::decoder");
 
-  switch (ntc::detail::get_packet_type(packet))
+  switch (ntc::detail::get_packet_type(p))
   {
     case ntc::detail::packet_type::ack:
     {
-      return encoder(packet, len);
+      return encoder(std::move(p));
     }
 
     case ntc::detail::packet_type::repair:
     case ntc::detail::packet_type::source:
     {
-      return decoder(packet, len);
+      return decoder(std::move(p));
     }
 
     default:

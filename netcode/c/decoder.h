@@ -4,8 +4,10 @@
 #include "netcode/c/detail/types.hh"
 #endif
 
+#include "netcode/c/detail/noexcept.hh"
 #include "netcode/c/error.h"
 #include "netcode/c/handlers.h"
+#include "netcode/c/packet.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -16,15 +18,10 @@ extern "C" {
 /*------------------------------------------------------------------------------------------------*/
 
 #ifndef __cplusplus
-
 /// @brief The type of a decoder
 /// @ingroup c_decoder
 typedef struct ntc_decoder_t ntc_decoder_t;
-
-// Hide this C++ keyword from C
-#define noexcept
-
-#endif // __cplusplus
+#endif
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -56,13 +53,14 @@ __attribute__((nonnull));
 /// @ingroup c_decoder
 /// @brief Notify an decoder with a new incoming packet
 /// @param dec The decoder to notify
-/// @param packet The pointer to the beginning of the incoming packet
-/// @param max_size The maximal number of bytes the decoder is allowed to read from @p packet
+/// @param packet The incoming packet
 /// @param error The reported error, if any
 /// @return The number of read bytes from packet
 /// @note The returned value is invalid if an error occurred
+/// @post @p packet is invalid
+/// @note It's possible to put @p packet back in an usable state by calling ntc_packet_resize()
 size_t
-ntc_decoder_add_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
+ntc_decoder_add_packet(ntc_decoder_t* dec, ntc_packet_t* packet, ntc_error* error)
 noexcept
 __attribute__((nonnull));
 

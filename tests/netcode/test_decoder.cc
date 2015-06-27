@@ -61,7 +61,7 @@ TEST_CASE("Decoder repairs a lost source")
     auto repair = enc_packet_handler[1];
 
     // Send repair to decoder.
-    REQUIRE(dec(repair.data(), repair.size()));
+    REQUIRE(dec(repair));
     REQUIRE(dec.nb_received_repairs() == 1);
     REQUIRE(dec.nb_received_sources() == 0);
     REQUIRE(dec.nb_decoded() == 1);
@@ -92,7 +92,7 @@ TEST_CASE("Decoder generate correct ack")
     REQUIRE(enc.window() == 1);
 
     // Send source to decoder.
-    dec(enc_packet_handler[0].data(), enc_packet_handler[0].size());
+    dec(enc_packet_handler[0]);
 
     SECTION("Force ack")
     {
@@ -101,7 +101,7 @@ TEST_CASE("Decoder generate correct ack")
       REQUIRE(dec.nb_sent_acks() == 1);
 
       // Sent it to the encoder.
-      enc(dec_packet_handler[0].data(), dec_packet_handler[0].size());
+      enc(dec_packet_handler[0]);
       REQUIRE(enc.window() == 0); // Source was correctly removed from the encoder window.
     }
 
@@ -144,10 +144,10 @@ TEST_CASE("Decoder generate acks when N packets are received")
     enc(data{begin(s0), end(s0)});
     REQUIRE(enc.window() == 4);
     REQUIRE(enc_packet_handler.nb_packets() == 4);
-    REQUIRE(detail::get_packet_type(enc_packet_handler[0].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_packet_handler[1].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_packet_handler[2].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_packet_handler[3].data()) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[0]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[1]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[2]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_packet_handler[3]) == detail::packet_type::source);
 
     // Send sources to decoder.
     dec(enc_packet_handler[0]);
@@ -156,7 +156,7 @@ TEST_CASE("Decoder generate acks when N packets are received")
     dec(enc_packet_handler[3]);
 
     REQUIRE(dec_packet_handler.nb_packets() == 1);
-    REQUIRE(detail::get_packet_type(dec_packet_handler[0].data()) == detail::packet_type::ack);
+    REQUIRE(detail::get_packet_type(dec_packet_handler[0]) == detail::packet_type::ack);
   });
 }
 
@@ -195,11 +195,11 @@ test_case_0(ntc::in_order order)
     REQUIRE(enc.window() == 3);
 
     REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[4]) == detail::packet_type::repair);
 
     // Now send to decoder.
     // Lost first source.
@@ -268,11 +268,11 @@ test_case_1(ntc::in_order order)
 
     // Only repairs
     REQUIRE(enc_handler.nb_packets() == 5 /* repairs */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[4]) == detail::packet_type::repair);
 
     SECTION("Lost first repair")
     {
@@ -379,10 +379,10 @@ TEST_CASE("Decoder invalid read scenario")
 
     // Only repairs
     REQUIRE(enc_handler.nb_packets() == 4 /* repairs */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::repair);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::repair);
 
     SECTION("Lost 1st repair")
     {
@@ -430,11 +430,11 @@ TEST_CASE("In order decoder")
     enc(data{begin(s3), end(s3)});
 
     REQUIRE(enc_handler.nb_packets() == 5 /* 4 src + 1 repair */);
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[4]) == detail::packet_type::repair);
 
     SECTION("Wrong order of sources")
     {
@@ -533,15 +533,15 @@ TEST_CASE("In order decoder, missing sources")
 
     REQUIRE(enc_handler.nb_packets() == 8 /* 6 src + 2 repair */);
 
-    REQUIRE(detail::get_packet_type(enc_handler[0].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[1].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[2].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[3].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[0]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[1]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[2]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[3]) == detail::packet_type::repair);
 
-    REQUIRE(detail::get_packet_type(enc_handler[4].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[5].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[6].data()) == detail::packet_type::source);
-    REQUIRE(detail::get_packet_type(enc_handler[7].data()) == detail::packet_type::repair);
+    REQUIRE(detail::get_packet_type(enc_handler[4]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[5]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[6]) == detail::packet_type::source);
+    REQUIRE(detail::get_packet_type(enc_handler[7]) == detail::packet_type::repair);
 
     SECTION("Right order")
     {
@@ -688,8 +688,7 @@ TEST_CASE("Decoder rejects ack")
 
     SECTION("Garbage")
     {
-      char garbage[4] = {33,35,1,0};
-      REQUIRE_THROWS_AS(dec(garbage, 4), packet_type_error);
+      REQUIRE_THROWS_AS(dec(packet{33,35,1,0}), packet_type_error);
     }
   });
 }

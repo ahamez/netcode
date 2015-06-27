@@ -1,6 +1,7 @@
 #pragma once
 
 #include "netcode/detail/source_list.hh"
+#include "netcode/packet.hh"
 
 namespace /* unnamed */ {
 
@@ -39,7 +40,7 @@ public:
     m_vec.emplace_back();
   }
 
-  std::vector<char>
+  const packet&
   operator[](std::size_t pos)
   const noexcept
   {
@@ -56,7 +57,7 @@ public:
 private:
 
   // Stores all packets.
-  std::vector<std::vector<char>> m_vec;
+  std::vector<packet> m_vec;
 };
 
 /*------------------------------------------------------------------------------------------------*/

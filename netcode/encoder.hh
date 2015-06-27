@@ -14,6 +14,7 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
+#include "netcode/packet.hh"
 #include "netcode/systematic.hh"
 
 namespace ntc {
@@ -83,26 +84,20 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief Notify the encoder of a new incoming packet
-  /// @param packet The incoming packet
-  /// @param max_len The maximum number of bytes to read from @p packet
-  /// @return The number of bytes that have been read
-  /// @throw overflow_error when the number of read bytes > @p max_len
-  /// @throw packet_type_error when the packet has an incorrect type
+  /// @brief
   std::size_t
-  operator()(const char* packet, std::size_t max_len)
+  operator()(packet&& p)
   {
-    return notify_impl(packet, max_len);
+    assert(p.size() != 0 && "empty packet");
+    return notify_impl(std::move(p));
   }
 
-  /// @brief Notify the encoder of a new incoming packet
-  /// @param packet The incoming packet stored in a vector
-  /// @return The number of bytes that have been read
-  /// @throw packet_type_error when the packet has an incorrect type
+  /// @brief
   std::size_t
-  operator()(const std::vector<char>& packet)
+  operator()(const packet& p)
   {
-    return operator()(packet.data(), packet.size());
+    assert(p.size() != 0 && "empty packet");
+    return notify_impl(packet{p});
   }
 
   /// @brief The number of packets which have not been acknowledged
@@ -280,13 +275,16 @@ private:
   /// @return The number of bytes that have been read (0 if the packet was not decoded)
   /// @throw packet_type_error
   std::size_t
-  notify_impl(const char* packet, std::size_t max_len)
+  notify_impl(packet&& p)
   {
-    assert(packet != nullptr);
-    if (detail::get_packet_type(packet) == detail::packet_type::ack)
+    if (detail::get_packet_type(p) != detail::packet_type::ack)
+    {
+      throw packet_type_error{};
+    }
+    else
     {
       ++m_nb_acks;
-      const auto res = m_packetizer.read_ack(packet, max_len);
+      const auto res = m_packetizer.read_ack(p.data(), p.size());
       if (m_adaptive)
       {
         if (m_nb_sent_packets > 0)
@@ -303,10 +301,6 @@ private:
       m_nb_sent_packets = 0;
       m_sources.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
-    }
-    else
-    {
-      throw packet_type_error{};
     }
   }
 

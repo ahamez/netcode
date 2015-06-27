@@ -10,6 +10,7 @@ set(
   c/data.cc
   c/decoder.cc
   c/encoder.cc
+  c/packet.cc
 )
 
 

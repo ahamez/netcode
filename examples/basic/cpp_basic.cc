@@ -79,7 +79,8 @@ int main()
 
     // The buffer of the packet handler for the encoder is now given to the decoder, as if it was
     // received from the network.
-    dec(enc.packet_handler().buffer);
+    ntc::packet incoming(enc.packet_handler().buffer.begin(), enc.packet_handler().buffer.end());
+    dec(std::move(incoming));
 
     // Now the context of the decoder's data handler contains the sent data.
     assert(dec.data_handler().buffer[0] == 'a');
@@ -102,9 +103,10 @@ int main()
     // Give this new data to the encoder.
     enc(std::move(data));
 
-    // Again, The buffer of the packet handler for the encoder is now given to the decoder, as if it
+    // Again, the buffer of the packet handler for the encoder is now given to the decoder, as if it
     // was received from the network.
-    dec(enc.packet_handler().buffer);
+    incoming.assign(enc.packet_handler().buffer.begin(), enc.packet_handler().buffer.end());
+    dec(std::move(incoming));
 
     // Now the context of the decoder's data handler contains the sent data.
     assert(dec.data_handler().buffer[0] == 'd');
