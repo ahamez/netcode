@@ -40,7 +40,7 @@ public:
 
   /// @brief Get the bytes of the symbol
   const byte_buffer&
-  buffer()
+  symbol()
   const noexcept
   {
     return m_symbol_buffer;
@@ -48,7 +48,7 @@ public:
 
   /// @brief Get the bytes of the symbol
   byte_buffer&
-  buffer()
+  symbol()
   noexcept
   {
     return m_symbol_buffer;

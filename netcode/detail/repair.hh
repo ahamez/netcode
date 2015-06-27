@@ -76,7 +76,7 @@ public:
 
   /// @brief This repair's symbol.
   const detail::zero_byte_buffer&
-  buffer()
+  symbol()
   const noexcept
   {
     return m_buffer;
@@ -84,7 +84,7 @@ public:
 
   /// @brief This repair's symbol (mutable).
   detail::zero_byte_buffer&
-  buffer()
+  symbol()
   noexcept
   {
     return m_buffer;

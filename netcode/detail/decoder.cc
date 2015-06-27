@@ -172,7 +172,7 @@ noexcept
   source src{src_id, byte_buffer(src_sz)};
 
   // Reconstruct missing source.
-  m_gf.multiply(r.buffer().data(), src.buffer().data(), src_sz, inv);
+  m_gf.multiply(r.symbol().data(), src.symbol().data(), src_sz, inv);
 
   m_nb_decoded += 1;
 
@@ -400,7 +400,7 @@ decoder::remove_source_data_from_repair(const source& src, repair& r)
 noexcept
 {
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
-  assert(src.size() <= r.buffer().size());
+  assert(src.size() <= r.symbol().size());
 
   const auto coeff = m_gf.coefficient(r.id(), src.id());
 
@@ -409,7 +409,7 @@ noexcept
     = static_cast<std::uint16_t>(m_gf.multiply_size(src.size(), coeff) ^ r.encoded_size());
 
   // Remove symbol.
-  m_gf.multiply_add(src.buffer().data(), r.buffer().data(), src.size(), coeff);
+  m_gf.multiply_add(src.symbol().data(), r.symbol().data(), src.size(), coeff);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -520,16 +520,16 @@ decoder::attempt_full_decoding()
     // Repair's buffer might be smaller than the size of the source to decode, or it could be
     // the opposite situation. Thus, we need to make sure that we only read the right number of
     // bytes.
-    auto sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
-    m_gf.multiply(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
+    auto sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->symbol().size()));
+    m_gf.multiply(index[repair_row]->symbol().data(), src.symbol().data(), sz, coeff);
 
     for (++repair_row; repair_row < m_inv.dimension(); ++repair_row)
     {
       coeff = m_inv(repair_row, src_col);
       if (coeff != 0)
       {
-        sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->buffer().size()));
-        m_gf.multiply_add(index[repair_row]->buffer().data(), src.buffer().data(), sz, coeff);
+        sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->symbol().size()));
+        m_gf.multiply_add(index[repair_row]->symbol().data(), src.symbol().data(), sz, coeff);
       }
     }
     ++src_col;

@@ -82,7 +82,7 @@ public:
   void
   write_repair(const repair& r)
   {
-    assert(r.buffer().size() > 0 && "A repair's symbol shall not be empty");
+    assert(r.symbol().size() > 0 && "A repair's symbol shall not be empty");
 
     // Write packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::repair);
@@ -98,10 +98,10 @@ public:
     write<std::uint16_t>(r.encoded_size());
 
     // Write size of the repair symbol.
-    write<std::uint16_t>(r.buffer().size());
+    write<std::uint16_t>(r.symbol().size());
 
     // Write repair symbol.
-    write(r.buffer().data(), r.buffer().size());
+    write(r.symbol().data(), r.symbol().size());
 
     // End of data.
     mark_end();
@@ -152,10 +152,10 @@ public:
     write<std::uint32_t>(src.id());
 
     // Write user size of the repair symbol.
-    write<std::uint16_t>(src.buffer().size());
+    write<std::uint16_t>(src.symbol().size());
 
     // Write source symbol.
-    write(src.buffer().data(), src.buffer().size());
+    write(src.symbol().data(), src.symbol().size());
 
     // End of data.
     mark_end();
