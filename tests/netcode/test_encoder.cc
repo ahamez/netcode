@@ -375,7 +375,8 @@ TEST_CASE("Encoder rejects sources and repairs")
 
     SECTION("repair")
     {
-      serializer.write_repair(detail::encoder_repair{42, 54, {0,1}, detail::zero_byte_buffer(1024, 'x')});
+      serializer.write_repair( detail::encoder_repair{42, 54, {0,1}
+                             , detail::zero_byte_buffer(1024, 'x')});
       REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
     }
 

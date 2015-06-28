@@ -316,7 +316,8 @@ TEST_CASE("Decoder: one source lost encoded in one received repair")
                                       {
                                         REQUIRE(s0.id() == 0);
                                         REQUIRE(s0.symbol_size() == s0_data.size());
-                                        REQUIRE(std::equal( s0.symbol(), s0.symbol() + s0.symbol_size()
+                                        REQUIRE(std::equal( s0.symbol()
+                                                          , s0.symbol() + s0.symbol_size()
                                                           , s0_data.begin()));
                                      }
                            , in_order::no};
@@ -513,7 +514,7 @@ TEST_CASE("Decoder: several lost sources from several repairs")
       detail::encoder_repair r3{3};
       detail::encoder_repair r4{4};
 
-      // Ack : remove the 2 previously sent sources, thus they won't be encoded in following repairs.
+      // Ack: remove the 2 previously sent sources, thus they won't be encoded in following repairs.
       sl.pop_front();
       sl.pop_front();
 

@@ -282,7 +282,6 @@ private:
   ntc::encoder<packet_handler> m_encoder;
 
   /// @brief Store packets received from the tunnel
-//  char m_packet[buffer_size];
   ntc::packet m_packet;
 
   /// @brief Store data received from the proxied application

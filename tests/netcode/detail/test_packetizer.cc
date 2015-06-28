@@ -86,7 +86,8 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   SECTION("Sparse list of source ids")
   {
     // The values in the constructor are completely meaningless for this test.
-    const detail::encoder_repair r_in{42, 54, {0,1,4,5,6,100,101}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    const detail::encoder_repair r_in{ 42, 54, {0,1,4,5,6,100,101}
+                                     , detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
     const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
@@ -99,8 +100,9 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   SECTION("Big values")
   {
     const auto base = 1 << 21;
-    const detail::encoder_repair r_in{ 1 << 20, 54, {base, base + 1, base + 2, base + 100, base + 101}
-                             , detail::zero_byte_buffer{'a', 'b', 'c'}};
+    const detail::encoder_repair r_in{ 1 << 20, 54
+                                     , {base, base + 1, base + 2, base + 100, base + 101}
+                                     , detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
     const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
