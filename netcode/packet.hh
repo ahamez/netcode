@@ -12,10 +12,15 @@ namespace ntc {
 ///// @brief
 class packet
 {
-private:
+public:
 
+  /// @internal
   static constexpr auto padding = 16ul;
+
+  /// @internal
   static constexpr auto headers = 7ul;
+
+  /// @internal
   static constexpr auto shift   = padding - headers;
 
 public:

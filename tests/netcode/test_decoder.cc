@@ -238,7 +238,7 @@ TEST_CASE("Out of order decoder: lost packet with an encoder's limited window")
 /*------------------------------------------------------------------------------------------------*/
 
 void
-test_case_1(ntc::in_order order)
+test_non_systematic(ntc::in_order order)
 {
   launch({8,16,32}, [&](std::uint8_t gf_size)
   {
@@ -344,12 +344,12 @@ test_case_1(ntc::in_order order)
 
 TEST_CASE("In order decoder: non systematic code")
 {
-  test_case_1(ntc::in_order::yes);
+  test_non_systematic(ntc::in_order::yes);
 }
 
 TEST_CASE("Out of order decoder: non systematic code")
 {
-  test_case_1(ntc::in_order::no);
+  test_non_systematic(ntc::in_order::no);
 }
 
 /*------------------------------------------------------------------------------------------------*/
