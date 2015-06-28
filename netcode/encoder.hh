@@ -170,11 +170,12 @@ public:
   }
 
   /// @brief Set the systematic/non-systematic mode of the code
-  void
+  encoder&
   set_code_type(systematic c)
   noexcept
   {
     m_code_type = c;
+    return *this;
   }
 
   /// @brief Get the systematic/non-systematic mode of the code
@@ -187,12 +188,13 @@ public:
 
   /// @brief Set how many sources are sent before a repair is generated
   /// @pre @p rate > 0
-  void
+  encoder&
   set_rate(std::size_t rate)
   noexcept
   {
     assert(rate > 0);
     m_rate = rate;
+    return *this;
   }
 
   /// @brief Get how many sources are sent before a repair is generated
@@ -205,12 +207,13 @@ public:
 
   /// @brief Set the maximal permitted size of the encoder's window
   /// @pre @p sz > 0
-  void
+  encoder&
   set_window_size(std::size_t sz)
   noexcept
   {
     assert(sz > 0);
     m_window_size = sz;
+    return *this;
   }
 
   /// @brief Get the maximal permitted size of the encoder's window
@@ -222,11 +225,12 @@ public:
   }
 
   /// @brief Set the adaptive mode of the code
-  void
+  encoder&
   set_adaptive(bool adaptive)
   noexcept
   {
     m_adaptive = adaptive;
+    return *this;
   }
 
   /// @brief Get the adaptative mode of the code

@@ -131,8 +131,8 @@ public:
   {
     // Deactivate automatic sending of ack by the library, we'll take care of it.
     m_decoder.set_ack_frequency(std::chrono::milliseconds{0});
-    m_encoder.set_window_size(32);
-    m_encoder.set_adaptive(true);
+    m_encoder.set_window_size(32)
+             .set_adaptive(true);
 
     // Start all handlers.
     start_handler();

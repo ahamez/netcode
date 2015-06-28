@@ -231,11 +231,12 @@ public:
   ///
   /// If 0, ack won't be sent automatically. The method @ref decoder::generate_ack can still be
   /// called to force the generation of an ack.
-  void
+  decoder&
   set_ack_frequency(std::chrono::milliseconds f)
   noexcept
   {
     m_ack_frequency = f;
+    return *this;
   }
 
   /// @brief Get the frequency at which ack will be sent from the decoder to the encoder.
@@ -248,12 +249,13 @@ public:
 
   /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
   /// @pre @p nb > 0
-  void
+  decoder&
   set_ack_nb_packets(std::uint16_t nb)
   noexcept
   {
     assert(nb > 0);
     m_ack_nb_packets = std::min(nb, static_cast<std::uint16_t>(128));
+    return *this;
   }
 
   /// @brief Get how many packets to receive before an ack is sent from the decoder to the encoder.
