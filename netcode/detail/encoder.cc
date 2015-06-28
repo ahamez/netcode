@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "netcode/detail/encoder.hh"
 
 namespace ntc { namespace detail {
@@ -18,7 +20,7 @@ encoder::operator()(repair& repair, source_list& sources)
   auto cit = sources.cbegin();
   const auto src_end = sources.cend();
 
-  assert((reinterpret_cast<std::size_t>(cit->buffer().data()) % 16) == 0);
+  assert((reinterpret_cast<std::uintptr_t>(cit->buffer().data()) % 16) == 0);
 
   // Resize the repair's symbol buffer to fit the first source symbol buffer.
   repair.buffer().resize(cit->size());
