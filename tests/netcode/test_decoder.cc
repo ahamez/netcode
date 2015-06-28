@@ -10,6 +10,8 @@
 #include "netcode/encoder.hh"
 #include "netcode/detail/packet_type.hh"
 
+#include <iostream>
+
 /*------------------------------------------------------------------------------------------------*/
 
 using namespace ntc;

@@ -12,7 +12,7 @@ using namespace ntc;
 /*------------------------------------------------------------------------------------------------*/
 
 inline
-const detail::source&
+const detail::esource&
 add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf)
 {
   return sl.emplace(id, std::move(buf));
@@ -90,7 +90,7 @@ public:
     return m_vec.size();
   }
 
-private:
+//private:
 
   // Stores all symbols.
   std::vector<std::vector<char>> m_vec;

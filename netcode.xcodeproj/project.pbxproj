@@ -73,6 +73,7 @@
 		2B9E8C051B3F32E200E3DAE4 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42B71ADC26C70035DA89 /* encoder.cc */; };
 		2B9E8C061B3F32E200E3DAE4 /* test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9DBE691B13B7CA000133D3 /* test_data.cc */; };
 		2B9E8C071B3F32E200E3DAE4 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */; };
+		2B9E8C0A1B3FCCEB00E3DAE4 /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2BAD818D1B287C570010EAC4 /* c_basic.c in Sources */ = {isa = PBXBuildFile; fileRef = 2BAD818C1B287C570010EAC4 /* c_basic.c */; };
 		2BAD819C1B287D0B0010EAC4 /* cpp_basic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BAD819B1B287D0B0010EAC4 /* cpp_basic.cc */; };
 		2BBA82AB1AF7FA5000FB22BD /* end_to_end.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */; };
@@ -83,7 +84,6 @@
 		2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2BBC05281ACC477D00EEDAC0 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2BBC05291ACC477D00EEDAC0 /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2BD072791B121C170010282D /* test_decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B282BB91AB8514700640FF8 /* test_decoder.cc */; };
 		2BE319871AB32DA0001AA9DF /* tests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BE319861AB32DA0001AA9DF /* tests.cc */; };
 		2BF1A63A1ABAC84A009C32B9 /* test_source_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */; };
 		2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */; };
@@ -2776,7 +2776,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BD072791B121C170010282D /* test_decoder.cc in Sources */,
+				2B9E8C0A1B3FCCEB00E3DAE4 /* test_decoder.cc in Sources */,
 				2BBC05271ACC477D00EEDAC0 /* decoder.cc in Sources */,
 				2BBC05281ACC477D00EEDAC0 /* encoder.cc in Sources */,
 				2BBC05291ACC477D00EEDAC0 /* invert_matrix.cc in Sources */,

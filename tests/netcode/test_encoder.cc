@@ -204,7 +204,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     SECTION("incoming source")
     {
       // Create a source.
-      const auto source = detail::source{0, {}};
+      const auto source = detail::esource{0, {}};
       
       // Serialize the source.
       serializer.write_source(source);
@@ -383,7 +383,7 @@ TEST_CASE("Encoder rejects sources and repairs")
 
     SECTION("source")
     {
-      serializer.write_source(detail::source{394839, {'a', 'b', 'c', 'd'}});
+      serializer.write_source(detail::esource{394839, {'a', 'b', 'c', 'd'}});
       REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
     }
 

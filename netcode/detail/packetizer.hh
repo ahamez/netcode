@@ -142,7 +142,7 @@ public:
   }
 
   void
-  write_source(const source& src)
+  write_source(const esource& src)
   {
     // Write packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);
@@ -163,10 +163,15 @@ public:
 
   /// @throw overflow_error
   std::pair<source, std::size_t>
-  read_source(const char* data, std::size_t max_len)
+  read_source(packet&& p)
   {
-//    // Packet type should have been verified by the caller.
-//    assert(get_packet_type(data) == packet_type::source);
+    // Packet type should have been verified by the caller.
+    assert(get_packet_type(p) == packet_type::source);
+
+    const char* data = p.data();
+
+    // To prevent overrun
+    auto max_len = p.size();
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
@@ -180,12 +185,7 @@ public:
     // Read user size of the source symbol.
     const auto symbol_size = read<std::uint16_t>(data, max_len);
 
-    // Read the source symbol.
-    byte_buffer buffer;
-    buffer.reserve(symbol_size);
-    read(data, symbol_size, max_len, std::back_inserter(buffer));
-
-    return std::make_pair( source{id, std::move(buffer)}
+    return std::make_pair( source{id, std::move(p), symbol_size}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 

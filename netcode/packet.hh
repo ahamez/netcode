@@ -62,6 +62,15 @@ public:
     std::copy(std::begin(init), std::end(init), m_buffer.begin() + shift);
   }
 
+  /// @internal
+  /// @note For testing purposes only
+  /// @attention The buffer should be crafted as it if received from the network
+  packet(const detail::byte_buffer& symbol)
+    : m_buffer(symbol.size() + padding)
+  {
+    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + padding);
+  }
+
   void
   assign(size_type count, char value)
   {
@@ -219,7 +228,6 @@ public:
   {
     return m_buffer.data() + padding;
   }
-
 
 private:
 

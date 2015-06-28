@@ -246,8 +246,7 @@ private:
       m_sources.pop_front();
     }
 
-    // Create a new source in-place at the end of the list of sources, "stealing" the data
-    // buffer from d.
+    // Create a new source in-place at the end of the list of sources.
     const auto& insertion = m_sources.emplace(m_current_source_id, std::move(d));
 
     if (m_code_type == systematic::yes)
