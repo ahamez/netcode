@@ -105,8 +105,6 @@ TEST_CASE("Encoder correctly handles new incoming packets")
 
     struct handler
     {
-//      char pkt[2048];
-//      std::size_t written = 0ul;
       packet pkt;
 
       void
@@ -189,7 +187,7 @@ TEST_CASE("Encoder correctly handles new incoming packets")
     SECTION("incoming repair")
     {
       // Create a repair.
-      const auto repair = detail::repair{0, 42, {0,1}, detail::zero_byte_buffer{'x'}};
+      const auto repair = detail::encoder_repair{0, 42, {0,1}, detail::zero_byte_buffer{'x'}};
 
       // Serialize the repair.
       serializer.write_repair(repair);
@@ -377,7 +375,7 @@ TEST_CASE("Encoder rejects sources and repairs")
 
     SECTION("repair")
     {
-      serializer.write_repair(detail::repair{42, 54, {0,1}, detail::zero_byte_buffer(1024, 'x')});
+      serializer.write_repair(detail::encoder_repair{42, 54, {0,1}, detail::zero_byte_buffer(1024, 'x')});
       REQUIRE_THROWS_AS(encoder(h[0]), packet_type_error);
     }
 

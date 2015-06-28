@@ -69,8 +69,15 @@ public:
 
   /// @internal
   /// @note For testing purposes only
-  /// @attention The buffer should be crafted as it if received from the network
   packet(const detail::byte_buffer& symbol)
+    : m_buffer(symbol.size() + padding)
+  {
+    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + padding);
+  }
+
+  /// @internal
+  /// @note For testing purposes only
+  packet(const detail::zero_byte_buffer& symbol)
     : m_buffer(symbol.size() + padding)
   {
     std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + padding);

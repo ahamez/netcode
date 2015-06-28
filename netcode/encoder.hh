@@ -356,7 +356,7 @@ private:
   detail::source_list m_sources;
 
   /// @brief Re-use the same memory to prepare a repair packet
-  detail::repair m_repair;
+  detail::encoder_repair m_repair;
 
   /// @brief The user's handler
   packet_handler_type m_packet_handler;

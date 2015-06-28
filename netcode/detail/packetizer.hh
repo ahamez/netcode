@@ -80,7 +80,7 @@ public:
   }
 
   void
-  write_repair(const repair& r)
+  write_repair(const encoder_repair& r)
   {
     assert(r.symbol().size() > 0 && "A repair's symbol shall not be empty");
 
@@ -109,10 +109,15 @@ public:
 
   /// @throw overflow_error
   std::pair<repair, std::size_t>
-  read_repair(const char* data, std::size_t max_len)
+  read_repair(packet&& p)
   {
-//    // Packet type should have been verified by the caller.
-//    assert(get_packet_type(data) == packet_type::repair);
+    // Packet type should have been verified by the caller.
+    assert(get_packet_type(p) == packet_type::repair);
+
+    const char* data = p.data();
+    // To prevent overrun
+    auto max_len = p.size();
+
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
@@ -126,10 +131,8 @@ public:
     // Read size of the repair symbol.
     const auto symbol_size = read<std::uint16_t>(data, max_len);
 
-    // Read the repair symbol.
-    zero_byte_buffer buffer;
-    buffer.reserve(symbol_size);
-    read(data, symbol_size, max_len, std::back_inserter(buffer));
+    // Skip the repair symbol.
+    data += symbol_size;
 
     // Read source identifiers
     auto ids = read_ids(data, max_len);
@@ -137,7 +140,7 @@ public:
     // Read encoded size.
     const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
-    return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(buffer)}
+    return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(p), symbol_size}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
@@ -169,7 +172,6 @@ public:
     assert(get_packet_type(p) == packet_type::source);
 
     const char* data = p.data();
-
     // To prevent overrun
     auto max_len = p.size();
 

@@ -54,14 +54,14 @@ TEST_CASE("A repair is (de)serialized by packetizer")
   SECTION("Small number of source ids")
   {
     // The values in the constructor are completely meaningless for this test.
-    const detail::repair r_in{42, 54, {1,2,3,4}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    const detail::encoder_repair r_in{42, 54, {1,2,3,4}, detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
-    const auto r_out = serializer.read_repair(h.pkt.data(), h.pkt.size()).first;
+    const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.symbol() == r_out.symbol());
+    REQUIRE(std::equal(r_in.symbol().begin(), r_in.symbol().end(), r_out.symbol()));
   }
 
   SECTION("Large number of source ids")
@@ -73,53 +73,53 @@ TEST_CASE("A repair is (de)serialized by packetizer")
     }
 
     // The values in the constructor are completely meaningless for this test.
-    detail::repair r_in{42, 3, std::move(sl), detail::zero_byte_buffer{'a', 'b', 'c'}};
+    detail::encoder_repair r_in{42, 3, std::move(sl), detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
-    const auto r_out = serializer.read_repair(h.pkt.data(), h.pkt.size()).first;
+    const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.symbol() == r_out.symbol());
+    REQUIRE(std::equal(r_in.symbol().begin(), r_in.symbol().end(), r_out.symbol()));
   }
 
   SECTION("Sparse list of source ids")
   {
     // The values in the constructor are completely meaningless for this test.
-    const detail::repair r_in{42, 54, {0,1,4,5,6,100,101}, detail::zero_byte_buffer{'a', 'b', 'c'}};
+    const detail::encoder_repair r_in{42, 54, {0,1,4,5,6,100,101}, detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
-    const auto r_out = serializer.read_repair(h.pkt.data(), h.pkt.size()).first;
+    const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.symbol() == r_out.symbol());
+    REQUIRE(std::equal(r_in.symbol().begin(), r_in.symbol().end(), r_out.symbol()));
   }
 
   SECTION("Big values")
   {
     const auto base = 1 << 21;
-    const detail::repair r_in{ 1 << 20, 54, {base, base + 1, base + 2, base + 100, base + 101}
+    const detail::encoder_repair r_in{ 1 << 20, 54, {base, base + 1, base + 2, base + 100, base + 101}
                              , detail::zero_byte_buffer{'a', 'b', 'c'}};
     serializer.write_repair(r_in);
 
-    const auto r_out = serializer.read_repair(h.pkt.data(), h.pkt.size()).first;
+    const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.symbol() == r_out.symbol());
+    REQUIRE(std::equal(r_in.symbol().begin(), r_in.symbol().end(), r_out.symbol()));
   }
 
   SECTION("Repair with only one source")
   {
-    const detail::repair r_in{ 0, 33, {4242}, detail::zero_byte_buffer{'x'}};
+    const detail::encoder_repair r_in{ 0, 33, {4242}, detail::zero_byte_buffer{'x'}};
     serializer.write_repair(r_in);
 
-    const auto r_out = serializer.read_repair(h.pkt.data(), h.pkt.size()).first;
+    const auto r_out = serializer.read_repair(std::move(h.pkt)).first;
     REQUIRE(r_in.id() == r_out.id());
     REQUIRE(r_in.source_ids() == r_out.source_ids());
     REQUIRE(r_in.encoded_size() == r_out.encoded_size());
-    REQUIRE(r_in.symbol() == r_out.symbol());
+    REQUIRE(std::equal(r_in.symbol().begin(), r_in.symbol().end(), r_out.symbol()));
   }
 }
 
@@ -142,7 +142,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
 
   const auto s_out = serializer.read_source(std::move(h.pkt)).first;
   REQUIRE(s_in.id() == s_out.id());
-  REQUIRE(s_in.size() == s_out.size());
+  REQUIRE(s_in.size() == s_out.symbol_size());
   REQUIRE(std::equal(s_in.symbol().begin(), s_in.symbol().end(), s_out.symbol()));
 }
 
@@ -153,19 +153,9 @@ TEST_CASE("Prevent buffer overflow")
   handler h;
   detail::packetizer<handler> serializer{h};
 
-  SECTION("repair 1")
+  SECTION("repair")
   {
-    const detail::repair r{42, 54, {0,1,4,5,6,100,101}, detail::zero_byte_buffer(1024, 'x')};
-    serializer.write_repair(r);
-    REQUIRE_THROWS_AS(serializer.read_repair(h.pkt.data(), 512), overflow_error);
-  }
-
-  SECTION("repair 2")
-  {
-    const detail::repair r{ 42, 54, {0,1,4,6,9,15,16,30,33,40,42,60,63}
-                          , detail::zero_byte_buffer{'x'}};
-    serializer.write_repair(r);
-    REQUIRE_THROWS_AS(serializer.read_repair(h.pkt.data(), 8), overflow_error);
+    /// @todo Craft a packet with an invalid symbol size
   }
 
   SECTION("source")

@@ -79,7 +79,7 @@ public:
       {
         ++m_nb_received_repairs;
         ++m_ack.nb_packets();
-        auto res = m_packetizer.read_repair(p.data(), p.size());
+        auto res = m_packetizer.read_repair(std::move(p));
         m_decoder(std::move(res.first));
         return res.second;
       }
@@ -270,7 +270,7 @@ private:
   handle_source(const detail::source& src)
   {
     // Ask user to read the bytes of this new source.
-    m_data_handler(src.symbol(), src.size());
+    m_data_handler(src.symbol(), src.symbol_size());
 
     // Send an ack if necessary.
     maybe_ack();

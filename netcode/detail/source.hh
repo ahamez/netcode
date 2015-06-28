@@ -75,6 +75,9 @@ private:
 
 /// @internal
 /// @brief A decoder source packet holding a user's symbol
+///
+/// To avoid copies, a source on the decoder side is constructed using directly the packet received
+/// from the network.
 class source final
 {
 public:
@@ -124,7 +127,7 @@ public:
 
   /// @brief Get the number of bytes in the user's symbol
   std::uint16_t
-  size()
+  symbol_size()
   const noexcept
   {
     return m_symbol_size;
