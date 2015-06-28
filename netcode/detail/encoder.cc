@@ -13,7 +13,7 @@ encoder::encoder(std::uint8_t galois_field_size)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-encoder::operator()(repair& repair, source_list& sources)
+encoder::operator()(encoder_repair& repair, source_list& sources)
 {
   assert(sources.size() && "Empty source list");
 

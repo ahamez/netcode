@@ -4,9 +4,11 @@
 #include "netcode/c/detail/types.hh"
 #endif
 
+#include "netcode/c/detail/noexcept.hh"
 #include "netcode/c/data.h"
 #include "netcode/c/error.h"
 #include "netcode/c/handlers.h"
+#include "netcode/c/packet.h"
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -17,14 +19,9 @@ extern "C" {
 /*------------------------------------------------------------------------------------------------*/
 
 #ifndef __cplusplus
-
 /// @brief The type of an encoder.
 /// @ingroup c_encoder
 typedef struct ntc_encoder_t ntc_encoder_t;
-
-// Hide this C++ keyword from C
-#define noexcept
-
 #endif // __cplusplus
 
 /*------------------------------------------------------------------------------------------------*/
@@ -60,7 +57,7 @@ __attribute__((nonnull));
 /// @param error The reported error, if any
 /// @pre @ref ntc_data_get_used_bytes (@p data) > 0
 /// @post @p data is invalid
-/// @note It's possible to put @p data back in an usable state by calling ntc_data_reset()
+/// @note It's possible to put @p data back in an usable state by calling ntc_data_resize()
 void
 ntc_encoder_add_data(ntc_encoder_t* enc, ntc_data_t* data, ntc_error* error)
 noexcept
@@ -71,13 +68,14 @@ __attribute__((nonnull));
 /// @ingroup c_encoder
 /// @brief Notify an encoder with a new incoming packet
 /// @param enc The encoder to notify
-/// @param packet The pointer to the beginning of the incoming packet
-/// @param max_size The maximal number of bytes the encoder is allowed to read from @p packet
+/// @param packet The incoming packet
 /// @param error The reported error, if any
 /// @return The number of read bytes from packet
 /// @note The returned value is invalid if an error occurred
+/// @post @p packet is invalid
+/// @note It's possible to put @p packet back in an usable state by calling ntc_packet_resize()
 size_t
-ntc_encoder_add_packet(ntc_encoder_t* enc, const char* packet, size_t max_size, ntc_error* error)
+ntc_encoder_add_packet(ntc_encoder_t* enc, ntc_packet_t* packet, ntc_error* error)
 noexcept
 __attribute__((nonnull));
 

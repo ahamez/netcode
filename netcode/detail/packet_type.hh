@@ -1,6 +1,7 @@
 #pragma once
 
 #include "netcode/errors.hh"
+#include "netcode/packet.hh"
 
 namespace ntc { namespace detail {
 
@@ -15,9 +16,9 @@ enum class packet_type : std::uint8_t {ack = 0, repair = 1, source = 2};
 /// @throw packet_type_error if the type could not have been read.
 inline
 packet_type
-get_packet_type(const char* data)
+get_packet_type(const packet& p)
 {
-  const auto ty = *reinterpret_cast<const std::uint8_t*>(data);
+  const auto ty = *reinterpret_cast<const std::uint8_t*>(p.data());
   switch (ty)
   {
     case 0:

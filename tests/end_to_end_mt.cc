@@ -129,7 +129,8 @@ encoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
       std::lock_guard<std::mutex> lock{to_enc_mutex};
       if (not to_enc.empty())
       {
-        enc(to_enc.front().data(), to_enc.front().size());
+        ntc::packet pkt{to_enc.front().data(), to_enc.front().data() + to_enc.front().size()};
+        enc(std::move(pkt));
         to_enc.pop();
       }
     }
@@ -160,7 +161,8 @@ decoder( queue_type& to_dec, std::mutex& to_dec_mutex, queue_type& to_enc, std::
       std::lock_guard<std::mutex> lock{to_dec_mutex};
       if (not to_dec.empty())
       {
-        dec(to_dec.front().data(), to_dec.front().size());
+        ntc::packet pkt{to_dec.front().data(), to_dec.front().data() + to_dec.front().size()};
+        dec(std::move(pkt));
         to_dec.pop();
       }
     }

@@ -10,20 +10,22 @@ namespace ntc { namespace detail {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief Hold a list of @ref source.
+/// @brief Hold a list of @ref encoder_source.
 class source_list final
 {
 public:
 
   /// @brief An iterator on sources.
-  using const_iterator = std::list<detail::source>::const_iterator;
+  using const_iterator = std::list<encoder_source>::const_iterator;
+
+public:
 
   /// @brief Add a source packet in-place.
-  /// @return A reference the added source.
-  const detail::source&
-  emplace(std::uint32_t id, byte_buffer&& buf)
+  /// @return A reference to the added source.
+  const encoder_source&
+  emplace(std::uint32_t id, byte_buffer&& symbol)
   {
-    m_sources.emplace_back(id, std::move(buf));
+    m_sources.emplace_back(id, std::move(symbol));
     return m_sources.back();
   }
 
@@ -92,7 +94,7 @@ public:
 private:
 
   /// @brief The real container of source packets.
-  std::list<detail::source> m_sources;
+  std::list<encoder_source> m_sources;
 };
 
 /*------------------------------------------------------------------------------------------------*/

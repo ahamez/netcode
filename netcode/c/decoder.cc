@@ -30,10 +30,10 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 size_t
-ntc_decoder_add_packet(ntc_decoder_t* dec, const char* packet, size_t max_size, ntc_error* error)
+ntc_decoder_add_packet(ntc_decoder_t* dec, ntc_packet_t* packet, ntc_error* error)
 noexcept
 {
-  return ntc::detail::check_error([&]{return (*dec)(packet, max_size);}, error);
+  return ntc::detail::check_error([&]{return (*dec)(std::move(*packet));}, error);
 }
 
 /*------------------------------------------------------------------------------------------------*/

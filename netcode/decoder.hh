@@ -62,23 +62,25 @@ public:
     // m_ack.source_ids().reserve(128);
   }
 
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param packet The incoming packet.
-  /// @param max_len The maximum number of bytes to read from @p packet.
-  /// @return The number of bytes that have been read.
-  /// @throw overflow_error when the number of read bytes > @p max_len.
-  /// @throw packet_type_error when the packet has an incorrect type.
-  /// @note To fulfill memory alignement requirements, a copy will occur.
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
-  operator()(const char* packet, std::size_t max_len)
+  operator()(const packet& p)
   {
-    switch (detail::get_packet_type(packet))
+    return operator()(packet{p});
+  }
+
+  /// @brief Notify the decoder of an incoming packet
+  std::size_t
+  operator()(packet&& p)
+  {
+    assert(p.size() != 0 && "empty packet");
+    switch (detail::get_packet_type(p))
     {
       case detail::packet_type::repair:
       {
         ++m_nb_received_repairs;
         ++m_ack.nb_packets();
-        auto res = m_packetizer.read_repair(packet, max_len);
+        auto res = m_packetizer.read_repair(std::move(p));
         m_decoder(std::move(res.first));
         return res.second;
       }
@@ -87,7 +89,7 @@ public:
       {
         ++m_nb_received_sources;
         ++m_ack.nb_packets();
-        auto res = m_packetizer.read_source(packet, max_len);
+        auto res = m_packetizer.read_source(std::move(p));
         m_decoder(std::move(res.first));
         return res.second;
       }
@@ -97,17 +99,6 @@ public:
         throw packet_type_error{};
       }
     }
-  }
-
-  /// @brief Notify the encoder of a new incoming packet.
-  /// @param packet The incoming packet stored in a vector.
-  /// @return The number of bytes that have been read.
-  /// @throw packet_type_error when the packet has an incorrect type.
-  /// @note To fulfill memory alignement requirements, a copy will occur.
-  std::size_t
-  operator()(const std::vector<char>& packet)
-  {
-    return operator()(packet.data(), packet.size());
   }
 
   /// @brief Get the data handler.

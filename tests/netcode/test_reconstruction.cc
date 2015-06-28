@@ -33,7 +33,7 @@ TEST_CASE("Encode one source")
     REQUIRE(sl.size() == 1);
 
     // A repair to store encoded sources
-    detail::repair r0{0 /* id */};
+    detail::encoder_repair r0{0 /* id */};
 
     // We need an encoder to fill the repair.
     detail::encoder{gf_size}(r0, sl);
@@ -122,7 +122,7 @@ TEST_CASE("Encode two sources")
     REQUIRE(sl.size() == 2);
 
     // A repair to store encoded sources
-    detail::repair r0{0 /* id */};
+    detail::encoder_repair r0{0 /* id */};
 
     // We need an encoder to fill the repair.
     detail::encoder{gf_size}(r0, sl);
@@ -201,8 +201,8 @@ TEST_CASE("Two sources lost")
     REQUIRE(sl.size() == 2);
 
     // Repairs to store encoded sources.
-    detail::repair r0{0 /* id */};
-    detail::repair r1{1 /* id */};
+    detail::encoder_repair r0{0 /* id */};
+    detail::encoder_repair r1{1 /* id */};
 
     // Create first repair.
     detail::encoder{gf_size}(r0, sl);
@@ -252,7 +252,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,0));
     REQUIRE(s0_size == s0_data.size());
     // Were to reconstruct original source
-    detail::source s0{0, detail::byte_buffer(s0_size, 'x')};
+    detail::source s0{0, detail::byte_buffer(s0_size, 'x'), s0_size};
 
     // Now, reconstruct the data.
     gf.multiply(r0.symbol().data(), s0.symbol().data(), s0_size, inv(0,0));
@@ -266,7 +266,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,1));
     REQUIRE(s1_size == s1_data.size());
     // Were to reconstruct original source
-    detail::source s1{0, detail::byte_buffer(s1_size, 'x')};
+    detail::source s1{0, detail::byte_buffer(s1_size, 'x'), s1_size};
 
     // Now, reconstruct the data.
     gf.multiply(r0.symbol().data(), s1.symbol().data(), s1_size, inv(0,1));

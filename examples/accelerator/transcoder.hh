@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm> // copy_n
+#include <chrono>
 #include <memory>
 #include <iostream>
 #include <vector>
@@ -8,14 +9,26 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #define ASIO_STANDALONE
-#define BOOST_DATE_TIME_NO_LIB
-#define ASIO_HAS_BOOST_DATE_TIME
 #include <asio.hpp>
 #pragma GCC diagnostic pop
 
 #include <netcode/decoder.hh>
 #include <netcode/dispatch.hh>
 #include <netcode/encoder.hh>
+
+/*------------------------------------------------------------------------------------------------*/
+
+namespace asio {
+
+/// @brief Make ntc::packet usable as a mutable buffer for Asio.
+inline
+mutable_buffers_1
+buffer(ntc::packet& p)
+{
+  return mutable_buffers_1{mutable_buffer{p.size() ? p.data() : nullptr, p.size()}};
+}
+
+} // namespace asio
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -112,7 +125,7 @@ public:
     , m_decoder(8, ntc::in_order::yes, packet_handler( m_socket, m_endpoint)
                                                      , data_handler(m_app_socket, m_app_endpoint))
     , m_encoder(8, packet_handler(m_socket, m_endpoint))
-    , m_packet()
+    , m_packet(buffer_size)
     , m_data(buffer_size)
     , m_other_side_seen(false)
   {
@@ -134,7 +147,7 @@ private:
   void
   start_handler()
   {
-    m_socket.async_receive_from( asio::buffer(m_packet, buffer_size)
+    m_socket.async_receive_from( asio::buffer(m_packet)
                                , m_endpoint
                                , [this](const asio::error_code& err, std::size_t len)
                                  {
@@ -143,13 +156,17 @@ private:
                                      throw std::runtime_error(err.message());
                                    }
 
+                                   m_packet.resize(len);
+
                                    m_other_side_seen = true;
 
                                    // The received packet might be for the encoder or the decoder.
                                    // The netcode library provides the following function to
                                    // dispatch to the appropriate component using the packet's type
                                    // (source, ack or repair).
-                                   ntc::dispatch(m_encoder, m_decoder, m_packet, len);
+                                   ntc::dispatch(m_encoder, m_decoder, std::move(m_packet));
+
+                                   m_packet.resize(buffer_size);
 
                                    // Listen again for incoming packets.
                                    start_handler();
@@ -265,7 +282,7 @@ private:
   ntc::encoder<packet_handler> m_encoder;
 
   /// @brief Store packets received from the tunnel
-  char m_packet[buffer_size];
+  ntc::packet m_packet;
 
   /// @brief Store data received from the proxied application
   ntc::data m_data;

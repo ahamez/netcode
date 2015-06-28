@@ -149,10 +149,10 @@ int main(int argc, char** argv)
     for ( auto cit = enc_packet_handler.buffer.begin(), end = enc_packet_handler.buffer.end() - 1
         ; cit != end; ++cit)
     {
-      const auto& packet = *cit;
+      const auto& pkt = *cit;
       if (not loss())
       {
-        dec(packet.data(), packet.size());
+        dec(ntc::packet{pkt.data(), pkt.data() + pkt.size()});
       }
       else
       {
@@ -168,10 +168,10 @@ int main(int argc, char** argv)
       for ( auto cit = dec_packet_handler.buffer.begin(), end = dec_packet_handler.buffer.end() - 1
           ; cit != end; ++cit)
       {
-        const auto& packet = *cit;
+        const auto& pkt = *cit;
         if (not loss())
         {
-          enc(packet.data(), packet.size());
+          enc(ntc::packet{pkt.data(), pkt.data() + pkt.size()});
         }
         else
         {

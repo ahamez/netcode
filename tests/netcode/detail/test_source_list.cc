@@ -16,7 +16,7 @@ bool
 contains_id(const detail::source_list& sl, std::size_t id)
 {
   return std::find_if( sl.cbegin(), sl.cend()
-                     , [&](const detail::source& src){return src.id() == id;})
+                     , [&](const detail::encoder_source& src){return src.id() == id;})
         != sl.cend();
 }
 

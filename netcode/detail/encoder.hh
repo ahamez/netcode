@@ -22,7 +22,7 @@ public:
   /// @param repair The repair to fill.
   /// @param sources The container of @ref detail::source to build the repair from.
   void
-  operator()(repair& repair, source_list& sources);
+  operator()(encoder_repair& repair, source_list& sources);
 
 private:
 

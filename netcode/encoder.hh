@@ -14,6 +14,7 @@
 #include "netcode/detail/source_list.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
+#include "netcode/packet.hh"
 #include "netcode/systematic.hh"
 
 namespace ntc {
@@ -69,9 +70,13 @@ public:
   }
 
   /// @brief Give the encoder a new data
-  /// @param d The data to add
-  /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::resize() will put back @p d in a usable state.
+  void
+  operator()(const data& d)
+  {
+    operator()(data{d});
+  }
+
+  /// @brief Give the encoder a new data
   void
   operator()(data&& d)
   {
@@ -83,26 +88,19 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief Notify the encoder of a new incoming packet
-  /// @param packet The incoming packet
-  /// @param max_len The maximum number of bytes to read from @p packet
-  /// @return The number of bytes that have been read
-  /// @throw overflow_error when the number of read bytes > @p max_len
-  /// @throw packet_type_error when the packet has an incorrect type
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
-  operator()(const char* packet, std::size_t max_len)
+  operator()(const packet& p)
   {
-    return notify_impl(packet, max_len);
+    return operator()(packet{p});
   }
 
-  /// @brief Notify the encoder of a new incoming packet
-  /// @param packet The incoming packet stored in a vector
-  /// @return The number of bytes that have been read
-  /// @throw packet_type_error when the packet has an incorrect type
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
-  operator()(const std::vector<char>& packet)
+  operator()(packet&& p)
   {
-    return operator()(packet.data(), packet.size());
+    assert(p.size() != 0 && "empty packet");
+    return notify_impl(std::move(p));
   }
 
   /// @brief The number of packets which have not been acknowledged
@@ -251,8 +249,7 @@ private:
       m_sources.pop_front();
     }
 
-    // Create a new source in-place at the end of the list of sources, "stealing" the data
-    // buffer from d.
+    // Create a new source in-place at the end of the list of sources.
     const auto& insertion = m_sources.emplace(m_current_source_id, std::move(d));
 
     if (m_code_type == systematic::yes)
@@ -280,13 +277,16 @@ private:
   /// @return The number of bytes that have been read (0 if the packet was not decoded)
   /// @throw packet_type_error
   std::size_t
-  notify_impl(const char* packet, std::size_t max_len)
+  notify_impl(packet&& p)
   {
-    assert(packet != nullptr);
-    if (detail::get_packet_type(packet) == detail::packet_type::ack)
+    if (detail::get_packet_type(p) != detail::packet_type::ack)
+    {
+      throw packet_type_error{};
+    }
+    else
     {
       ++m_nb_acks;
-      const auto res = m_packetizer.read_ack(packet, max_len);
+      const auto res = m_packetizer.read_ack(p.data(), p.size());
       if (m_adaptive)
       {
         if (m_nb_sent_packets > 0)
@@ -303,10 +303,6 @@ private:
       m_nb_sent_packets = 0;
       m_sources.erase(begin(res.first.source_ids()), end(res.first.source_ids()));
       return res.second;
-    }
-    else
-    {
-      throw packet_type_error{};
     }
   }
 
@@ -363,7 +359,7 @@ private:
   detail::source_list m_sources;
 
   /// @brief Re-use the same memory to prepare a repair packet
-  detail::repair m_repair;
+  detail::encoder_repair m_repair;
 
   /// @brief The user's handler
   packet_handler_type m_packet_handler;

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "netcode/detail/repair.hh"
 #include "netcode/detail/source_list.hh"
+#include "netcode/packet.hh"
 
 namespace /* unnamed */ {
 
@@ -10,8 +12,20 @@ using namespace ntc;
 
 /*------------------------------------------------------------------------------------------------*/
 
+// Convert an encoder repair to a decoder repair
 inline
-const detail::source&
+detail::repair
+mk_decoder_repair(const detail::encoder_repair& r)
+{
+  packet p;
+  return { r.id(), r.encoded_size(), detail::source_id_list{r.source_ids()}
+         , r.symbol(), r.symbol().size()};
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+inline
+const detail::encoder_source&
 add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf)
 {
   return sl.emplace(id, std::move(buf));
@@ -39,7 +53,7 @@ public:
     m_vec.emplace_back();
   }
 
-  std::vector<char>
+  const packet&
   operator[](std::size_t pos)
   const noexcept
   {
@@ -56,7 +70,7 @@ public:
 private:
 
   // Stores all packets.
-  std::vector<std::vector<char>> m_vec;
+  std::vector<packet> m_vec;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -89,7 +103,7 @@ public:
     return m_vec.size();
   }
 
-private:
+//private:
 
   // Stores all symbols.
   std::vector<std::vector<char>> m_vec;
