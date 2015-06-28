@@ -130,7 +130,7 @@ TEST_CASE("A source is (de)serialized by packetizer")
   handler h;
   detail::packetizer<handler> serializer{h};
 
-  const detail::esource s_in{394839, {'a', 'b', 'c', 'd'}};
+  const detail::encoder_source s_in{394839, {'a', 'b', 'c', 'd'}};
 
   serializer.write_source(s_in);
 

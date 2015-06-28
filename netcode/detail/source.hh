@@ -8,24 +8,24 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief An encoder's source packet holding a user's symbol
-class esource final
+class encoder_source final
 {
 public:
 
   /// @brief Can't copy-construct a source
-  esource(const esource&) = delete;
+  encoder_source(const encoder_source&) = delete;
 
   /// @brief Can't copy a source
-  esource& operator=(const esource&) = delete;
+  encoder_source& operator=(const encoder_source&) = delete;
 
   /// @brief Can move-construct a source
-  esource(esource&&) = default;
+  encoder_source(encoder_source&&) = default;
 
   /// @brief Can move a source
-  esource& operator=(esource&&) = default;
+  encoder_source& operator=(encoder_source&&) = default;
 
   /// @brief Constructor
-  esource(std::uint32_t id, detail::byte_buffer&& p)
+  encoder_source(std::uint32_t id, detail::byte_buffer&& p)
     : m_id{id}
     , m_symbol_buffer{std::move(p)}
   {}

@@ -145,7 +145,7 @@ public:
   }
 
   void
-  write_source(const esource& src)
+  write_source(const encoder_source& src)
   {
     // Write packet type.
     static const auto packet_ty = static_cast<std::uint8_t>(packet_type::source);

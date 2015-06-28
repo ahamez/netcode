@@ -25,7 +25,7 @@ mk_decoder_repair(const detail::encoder_repair& r)
 /*------------------------------------------------------------------------------------------------*/
 
 inline
-const detail::esource&
+const detail::encoder_source&
 add_source(detail::source_list& sl,std::uint32_t id, detail::byte_buffer&& buf)
 {
   return sl.emplace(id, std::move(buf));
