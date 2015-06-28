@@ -137,7 +137,10 @@ private:
 /*------------------------------------------------------------------------------------------------*/
 
 /// @internal
-/// @brief A repair packet.
+/// @brief A decoder repair packet.
+///
+/// To avoid copies, a repair on the decoder side is constructed using directly the packet received
+/// from the network.
 class repair final
 {
 public:

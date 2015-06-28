@@ -62,17 +62,18 @@ public:
     // m_ack.source_ids().reserve(128);
   }
 
-  /// @brief
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
   operator()(const packet& p)
   {
     return operator()(packet{p});
   }
 
-  /// @brief
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
   operator()(packet&& p)
   {
+    assert(p.size() != 0 && "empty packet");
     switch (detail::get_packet_type(p))
     {
       case detail::packet_type::repair:

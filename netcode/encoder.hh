@@ -70,9 +70,13 @@ public:
   }
 
   /// @brief Give the encoder a new data
-  /// @param d The data to add
-  /// @attention Any use of the data @p d after this call will result in an undefined behavior,
-  /// except for one case: calling data::resize() will put back @p d in a usable state.
+  void
+  operator()(const data& d)
+  {
+    operator()(data{d});
+  }
+
+  /// @brief Give the encoder a new data
   void
   operator()(data&& d)
   {
@@ -84,20 +88,19 @@ public:
     commit_impl(std::move(d));
   }
 
-  /// @brief
+  /// @brief Notify the decoder of an incoming packet
+  std::size_t
+  operator()(const packet& p)
+  {
+    return operator()(packet{p});
+  }
+
+  /// @brief Notify the decoder of an incoming packet
   std::size_t
   operator()(packet&& p)
   {
     assert(p.size() != 0 && "empty packet");
     return notify_impl(std::move(p));
-  }
-
-  /// @brief
-  std::size_t
-  operator()(const packet& p)
-  {
-    assert(p.size() != 0 && "empty packet");
-    return notify_impl(packet{p});
   }
 
   /// @brief The number of packets which have not been acknowledged

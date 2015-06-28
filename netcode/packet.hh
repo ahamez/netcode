@@ -9,7 +9,10 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-///// @brief
+/// @brief The type to hold data coming from the network
+///
+/// It's a wrapper around a std::vector<char>. Most of this container's member functions are
+/// replicated.
 class packet
 {
 public:
