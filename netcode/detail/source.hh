@@ -110,7 +110,7 @@ public:
   }
 
   /// @brief Get the bytes of the symbol
-  const byte_buffer&
+  const char*
   symbol()
   const noexcept
   {
@@ -118,7 +118,7 @@ public:
   }
 
   /// @brief Get the bytes of the symbol
-  byte_buffer&
+  char*
   symbol()
   noexcept
   {
