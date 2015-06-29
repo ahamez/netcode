@@ -236,8 +236,8 @@ private:
   write(const U& data)
   noexcept(noexcept(std::declval<PacketHandler>()(nullptr, 0ul)))
   {
-    const auto native = boost::endian::native_to_big(static_cast<T>(data));
-    m_packet_handler(reinterpret_cast<const char*>(&native), sizeof(T));
+    const auto big = boost::endian::native_to_big(static_cast<T>(data));
+    m_packet_handler(reinterpret_cast<const char*>(&big), sizeof(T));
   }
 
   /// @brief Serialize a list of source identifiers.
