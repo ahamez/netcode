@@ -127,11 +127,9 @@ public:
   multiply(std::uint32_t x, std::uint32_t y)
   noexcept
   {
-    if (x == 0 or y == 0)
-    {
-      return 0;
-    }
-    return m_gf.multiply.w32(&m_gf, x, y);
+    return (x == 0 or y == 0)
+         ? 0
+         : m_gf.multiply.w32(&m_gf, x, y);
   }
 
   /// @brief Invert a coeeficient.
@@ -145,14 +143,21 @@ public:
 
   /// @brief Get the coefficient for a repair and a source.
   /// @note The result is guaranted to be different from 0.
-  /// @todo When w_ = 32, computation could overflow.
   std::uint32_t
   coefficient(std::uint32_t repair_id, std::uint32_t src_id)
   const noexcept
   {
-    return m_w == 32
-         ? (((repair_id + 1) + (src_id + 1)) * (repair_id + 1))
-         : (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << m_w) - 1) + 1;
+    if (m_w == 32)
+    {
+      // Unsigned integer overflow is well defined: http://stackoverflow.com/q/18195715/21584
+      const auto res = ((repair_id + 1) + (src_id + 1)) * (repair_id + 1);
+      // But it still can be 0.
+      return res == 0 ? 1 : res;
+    }
+    else
+    {
+      return (((repair_id + 1) + (src_id + 1)) * (repair_id + 1)) % ((1 << m_w) - 1) + 1;
+    }
   }
 
 private:
