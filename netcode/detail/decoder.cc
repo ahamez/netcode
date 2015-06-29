@@ -59,7 +59,7 @@ decoder::operator()(repair&& incoming_r)
   assert(not incoming_r.source_ids().empty());
 
   //                     last id in source_ids
-  //               ------------------------------------
+  //                vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
   if (m_last_id and *(incoming_r.source_ids().end() - 1) < *m_last_id)
   {
     // It's a repair that provide outdated informations, drop it.
@@ -169,7 +169,7 @@ noexcept
   const auto src_sz = m_gf.multiply_size(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
-  source src{src_id, packet(src_sz + packet::padding), src_sz};
+  source src{src_id, packet(src_sz + packet::alignment), src_sz};
 
   // Reconstruct missing source.
   m_gf.multiply(r.symbol(), src.symbol(), src_sz, inv);
@@ -505,7 +505,7 @@ decoder::attempt_full_decoding()
     // When sources are directly received from the network, they are constructed in a such way that
     // there is a padding before the symbol and the headers (to avoid copy). Here, we have to
     // construct the source in the same way.
-    source src{miss.first, packet(src_sz + packet::padding, 0 /* zero out the buffer */), src_sz};
+    source src{miss.first, packet(src_sz + packet::alignment, 0 /* zero out the buffer */), src_sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 

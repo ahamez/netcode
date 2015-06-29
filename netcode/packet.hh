@@ -4,6 +4,7 @@
 #include <initializer_list>
 
 #include "netcode/detail/buffer.hh"
+#include "netcode/detail/symbol_alignment.hh"
 
 namespace ntc {
 
@@ -12,19 +13,18 @@ namespace ntc {
 /// @brief The type to hold data coming from the network
 ///
 /// It's a wrapper around a std::vector<char>. Most of this container's member functions are
-/// replicated.
+/// replicated, thus the STL documentation is sufficient for this type.
 class packet
 {
 public:
 
   /// @internal
-  static constexpr auto padding = 16ul;
+  /// @brief The number of bytes before the symbol
+  static constexpr auto alignment = detail::symbol_alignment;
 
   /// @internal
-  static constexpr auto headers = 7ul;
-
-  /// @internal
-  static constexpr auto shift   = padding - headers;
+  /// @brief The number of bytes before the beginning of the packet
+  static constexpr auto shift = detail::symbol_alignment - detail::source_and_repair_headers;
 
 public:
 
@@ -73,17 +73,17 @@ public:
   /// @internal
   /// @note For testing purposes only
   packet(const detail::byte_buffer& symbol)
-    : m_buffer(symbol.size() + padding)
+    : m_buffer(symbol.size() + alignment)
   {
-    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + padding);
+    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + alignment);
   }
 
   /// @internal
   /// @note For testing purposes only
   packet(const detail::zero_byte_buffer& symbol)
-    : m_buffer(symbol.size() + padding)
+    : m_buffer(symbol.size() + alignment)
   {
-    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + padding);
+    std::copy(symbol.begin(), symbol.end(), m_buffer.begin() + alignment);
   }
 
   void
@@ -233,7 +233,7 @@ public:
   symbol()
   const noexcept
   {
-    return m_buffer.data() + padding;
+    return m_buffer.data() + alignment;
   }
 
   /// @internal
@@ -241,7 +241,7 @@ public:
   symbol()
   noexcept
   {
-    return m_buffer.data() + padding;
+    return m_buffer.data() + alignment;
   }
 
 private:

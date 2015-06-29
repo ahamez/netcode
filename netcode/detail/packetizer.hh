@@ -27,6 +27,13 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief Prepare and construct ack/repair/source for network.
+/// @attention All types of packets should begin by the packet identifier.
+/// @attention Sources and repairs must be serialized the same way. That is, they must have the same
+/// header: [packet_type (1 byte) | packet id (4 bytes) | symbol size (2 bytes)], followed by the
+/// symbol. If the packet, like repair, needs more data, it must be put after the symbol. The goal
+/// is, in combination with @ref packet, to have the symbol aligned on a 16-bytes boundary directly
+/// when received from the network by putting a fixed-size padding in @ref packet in front of the
+/// symbol.
 template <typename PacketHandler>
 class packetizer final
 {
@@ -358,7 +365,7 @@ private:
 
   /// @brief A pre-allocated buffer to re-use when computing adjacent difference for ids list.
   /// @note We use a 32-bits type as the first element will always be exactly the same as the
-  /// ids list, which are on 32 bits.
+  /// ids list, which are on 32 bits, even if other differences will be on 16 bits.
   std::vector<std::uint32_t> m_difference_buffer;
 
   /// @brief A pre-allocated buffer to re-use when performing the running length encoding.
