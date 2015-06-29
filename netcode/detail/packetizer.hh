@@ -58,10 +58,14 @@ public:
 
   /// @throw overflow_error
   std::pair<ack, std::size_t>
-  read_ack(const char* data, std::size_t max_len)
+  read_ack(packet&& p)
   {
-//    // Packet type should have been verified by the caller.
-//    assert(get_packet_type(data) == packet_type::ack);
+    // Packet type should have been verified by the caller.
+    assert(get_packet_type(p) == packet_type::ack);
+
+    const char* data = p.data();
+    // To prevent overrun
+    auto max_len = p.size();
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);
@@ -123,7 +127,6 @@ public:
     const char* data = p.data();
     // To prevent overrun
     auto max_len = p.size();
-
 
     // Keep the initial memory location.
     const auto begin = reinterpret_cast<std::size_t>(data);

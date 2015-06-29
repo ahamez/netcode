@@ -39,7 +39,7 @@ TEST_CASE("An ack is (de)serialized by packetizer")
 
   serializer.write_ack(a_in);
   
-  const auto a_out = serializer.read_ack(h.pkt.data(), h.pkt.size()).first;
+  const auto a_out = serializer.read_ack(std::move(h.pkt)).first;
   REQUIRE(a_in.source_ids() == a_out.source_ids());
   REQUIRE(a_in.nb_packets() == a_out.nb_packets());
 }

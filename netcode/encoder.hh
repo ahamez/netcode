@@ -290,7 +290,7 @@ private:
     else
     {
       ++m_nb_acks;
-      const auto res = m_packetizer.read_ack(p.data(), p.size());
+      const auto res = m_packetizer.read_ack(std::move(p));
       if (m_adaptive)
       {
         if (m_nb_sent_packets > 0)
