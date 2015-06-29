@@ -219,22 +219,6 @@ private:
     return res;
   }
 
-  /// @brief Convenient method to read data and verify the size of read data.
-  /// @throw overflow_error
-  template <typename OutputIterator>
-  static
-  void
-  read(const char*& data, std::size_t size, std::size_t& max_len, OutputIterator it)
-  {
-    if (max_len < size)
-    {
-      throw overflow_error{};
-    }
-    std::copy_n(data, size, it);
-    data += size;
-    max_len -= size;
-  }
-
   /// @brief Convenient method to write data using user's handler.
   void
   write(const char* data, std::size_t len)
