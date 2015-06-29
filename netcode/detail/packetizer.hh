@@ -141,6 +141,11 @@ public:
     const auto symbol_size = read<std::uint16_t>(data, max_len);
 
     // Skip the repair symbol.
+    if (max_len < symbol_size)
+    {
+      throw overflow_error{};
+    }
+    max_len -= symbol_size;
     data += symbol_size;
 
     // Read source identifiers
@@ -195,6 +200,14 @@ public:
 
     // Read user size of the source symbol.
     const auto symbol_size = read<std::uint16_t>(data, max_len);
+
+    // Skip the repair symbol.
+    if (max_len < symbol_size)
+    {
+      throw overflow_error{};
+    }
+    max_len -= symbol_size;
+    data += symbol_size;
 
     return std::make_pair( source{id, std::move(p), symbol_size}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.

@@ -1,4 +1,5 @@
 #include <algorithm> // copy_n
+#include <vector>
 
 #include "tests/catch.hpp"
 
@@ -157,12 +158,73 @@ TEST_CASE("Prevent buffer overflow")
 
   SECTION("repair")
   {
-    /// @todo Craft a packet with an invalid symbol size
+    std::vector<char> crafted(512, 0);
+
+    // We need a valid packet type.
+    crafted[0] = static_cast<std::uint8_t>(detail::packet_type::repair);
+
+    // Write symbol size > packet size
+    const auto symbol_size = boost::endian::native_to_big(static_cast<std::uint16_t>(1024));
+
+    const auto symbol_size_addr = reinterpret_cast<const char*>(&symbol_size);
+    crafted[5] = symbol_size_addr[0];
+    crafted[6] = symbol_size_addr[1];
+
+    REQUIRE_THROWS_AS(serializer.read_repair(packet{begin(crafted), end(crafted)}), overflow_error);
   }
 
   SECTION("source")
   {
-    /// @todo Craft a packet with an invalid symbol size
+    SECTION("Much larger")
+    {
+      std::vector<char> crafted(512, 0);
+
+      // We need a valid packet type.
+      crafted[0] = static_cast<std::uint8_t>(detail::packet_type::source);
+
+      // Write symbol size > packet size
+      const auto symbol_size = boost::endian::native_to_big(static_cast<std::uint16_t>(1024));
+
+      const auto symbol_size_addr = reinterpret_cast<const char*>(&symbol_size);
+      crafted[5] = symbol_size_addr[0];
+      crafted[6] = symbol_size_addr[1];
+
+      REQUIRE_THROWS_AS( serializer.read_source(packet{begin(crafted), end(crafted)})
+                       , overflow_error);
+    }
+
+    SECTION("Exact size")
+    {
+      std::vector<char> crafted(512, 0);
+
+      // We need a valid packet type.
+      crafted[0] = static_cast<std::uint8_t>(detail::packet_type::source);
+
+      // Maximal symbol size (7 == source's headers size)
+      const auto symbol_size = boost::endian::native_to_big(static_cast<std::uint16_t>(512-7));
+
+      const auto symbol_size_addr = reinterpret_cast<const char*>(&symbol_size);
+      crafted[5] = symbol_size_addr[0];
+      crafted[6] = symbol_size_addr[1];
+      REQUIRE_NOTHROW(serializer.read_source(packet{begin(crafted), end(crafted)}));
+    }
+
+    SECTION("Exact size + 1")
+    {
+      std::vector<char> crafted(512, 0);
+
+      // We need a valid packet type.
+      crafted[0] = static_cast<std::uint8_t>(detail::packet_type::source);
+
+      // Maximal symbol size (7 == source's headers size)
+      const auto symbol_size = boost::endian::native_to_big(static_cast<std::uint16_t>(512-7 + 1));
+
+      const auto symbol_size_addr = reinterpret_cast<const char*>(&symbol_size);
+      crafted[5] = symbol_size_addr[0];
+      crafted[6] = symbol_size_addr[1];
+      REQUIRE_THROWS_AS( serializer.read_source(packet{begin(crafted), end(crafted)})
+                       , overflow_error);
+    }
   }
 }
 
