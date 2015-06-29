@@ -11,6 +11,15 @@ namespace ntc {
 /*------------------------------------------------------------------------------------------------*/
 
 /// @brief The type to hold data coming from the network
+/// @note It's useable as an Asio buffer with the following code:
+/// @code
+/// namespace asio {
+///  inline mutable_buffers_1 buffer(ntc::packet& p)
+///  {
+///    return mutable_buffers_1{mutable_buffer{p.size() ? p.data() : nullptr, p.size()}};
+///  }
+///}
+/// @endcode
 ///
 /// It's a wrapper around a std::vector<char>. Most of this container's member functions are
 /// replicated, thus the STL documentation is sufficient for this type.
