@@ -55,7 +55,6 @@ decoder::operator()(source&& src)
 void
 decoder::operator()(repair&& incoming_r)
 {
-  // By construction, the list of source identifiers should be empty.
   assert(not incoming_r.source_ids().empty());
 
   //                     last id in source_ids
