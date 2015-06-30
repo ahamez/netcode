@@ -260,7 +260,7 @@ decoder::add_source_recursive(source&& src)
     m_callback(src);
     m_first_missing_source_in_order += 1;
     // Send all sources that could not be previously sent because their ids were greater than
-    // first_missing_source_.
+    // m_first_missing_source_in_order.
     flush_ordered_sources();
   }
 
