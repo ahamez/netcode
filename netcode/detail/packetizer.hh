@@ -325,6 +325,7 @@ private:
     {
       return ids;
     }
+    ids.reserve(nb_elements);
 
     // Read first identifier.
     const auto first_id = read<std::uint32_t>(data, max_len);
