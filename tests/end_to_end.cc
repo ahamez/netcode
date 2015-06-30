@@ -90,7 +90,7 @@ generate_data(std::uint32_t id, std::uint16_t packet_size)
 int main(int argc, char** argv)
 {
   std::uint32_t id = 0;
-  loss::burst loss{100, 0};
+  loss::burst loss{95, 5};
   std::size_t to_dec_nb_loss = 0;
   std::size_t to_enc_nb_loss = 0;
   const auto nb_packets = [&]
