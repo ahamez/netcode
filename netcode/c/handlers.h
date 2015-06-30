@@ -1,29 +1,36 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*------------------------------------------------------------------------------------------------*/
 
+/// @ingroup c_handlers
 /// @brief The type of the callback called each time some bytes are ready.
-/// @ingroup c_handlers
-typedef void (*ntc_prepare_packet)(void*, const char* data, size_t sz);
+///
+/// @p cxt is the context given when constructing a ntc_packet_handler
+///
+/// @p pkt points to the beginning of a bunch of bytes the decoder or the encoder wants to send
+///
+/// @p sz is the number of bytes to read from @p pkt
+typedef void (*ntc_prepare_packet)(void*, const char* pkt, size_t sz);
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The type of the callback called each time a packet is completely ready to be sent.
 /// @ingroup c_handlers
+/// @brief The type of the callback called each time a packet is completely ready to be sent.
+///
+/// @p cxt is the context given when constructing a ntc_packet_handler
 typedef void (*ntc_send_packet)(void*);
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The type of the callback called each time a data has been received or decoded by the
-/// decoder.
 /// @ingroup c_handlers
-typedef void (*ntc_read_data)(void*, const char* data, size_t sz);
-
-/*------------------------------------------------------------------------------------------------*/
-
 /// @brief The type of the handler called by encoder and decoder each time they need to send some
 /// data over the network.
-/// @ingroup c_handlers
+///
+/// @p cxt is the context given when constructing a ntc_packet_handler
 typedef struct
 {
   /// @brief Let user have a pointer to a context each time a callback is called.
@@ -39,8 +46,22 @@ typedef struct
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The type of the handler called by decoder each time a data has been received or decoded.
 /// @ingroup c_handlers
+/// @brief The type of the callback called each time a data has been received or decoded by the
+/// decoder.
+/// @note It is guarenteed that @p data is aligned on a 16-bytes boundary
+///
+/// @p cxt is the context given when constructing a ntc_data_handler
+///
+/// @p data points to the beginning of the data received or decoded by the decoder
+///
+/// @p sz is the number of bytes to read from @p data
+typedef void (*ntc_read_data)(void* cxt, const char* data, size_t sz);
+
+/*------------------------------------------------------------------------------------------------*/
+
+/// @ingroup c_handlers
+/// @brief The type of the handler called by decoder each time a data has been received or decoded.
 typedef struct
 {
   /// @brief Let user have a pointer to a context each time a callback is called.
@@ -52,3 +73,7 @@ typedef struct
 } ntc_data_handler;
 
 /*------------------------------------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+} // extern "C"
+#endif

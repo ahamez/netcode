@@ -10,8 +10,6 @@
 #include "netcode/c/detail/noexcept.hh"
 #include "netcode/c/error.h"
 
-/*------------------------------------------------------------------------------------------------*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif

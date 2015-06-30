@@ -10,8 +10,6 @@
 #include "netcode/c/handlers.h"
 #include "netcode/c/packet.h"
 
-/*------------------------------------------------------------------------------------------------*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif
