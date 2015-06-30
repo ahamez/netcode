@@ -29,13 +29,15 @@ if(DOXYGEN_FOUND)
   else ()
     set(GEN_INTERNAL_DOC "NO")
   endif ()
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/Doxyfile.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY
+                )
   add_custom_target(doc
                     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/Doxyfile.in
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     COMMENT "Generating API documentation with Doxygen" VERBATIM
-                    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+                    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/Doxyfile.in
                    )
 endif()
 
@@ -81,6 +83,7 @@ include_directories("${GF_COMPLETE_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/ext")
 include_directories("${PROJECT_SOURCE_DIR}/ext/asio")
+add_subdirectory(doc/examples)
 add_subdirectory(examples)
 add_subdirectory(netcode)
 add_subdirectory(tests)

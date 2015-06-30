@@ -11,6 +11,9 @@
 /// @defgroup ntc_data Manipulating data
 /// @ingroup ntc
 
+/// @defgroup ntc_packets Manipulating packets
+/// @ingroup ntc
+
 /// @defgroup ntc_error Error reporting
 /// @ingroup ntc
 

@@ -530,6 +530,15 @@
 		2B282BBE1AB861C200640FF8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = test_decoder.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2B2A96261AC59120001B8F66 /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = test_encoder.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2B377EA01B416F5800796F20 /* symbol_alignment.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = symbol_alignment.hh; sourceTree = "<group>"; };
+		2B377EA31B428DFE00796F20 /* bootstrap.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = bootstrap.css; sourceTree = "<group>"; };
+		2B377EA41B428DFE00796F20 /* bootstrap.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = bootstrap.js; sourceTree = "<group>"; };
+		2B377EA51B428DFE00796F20 /* customdoxygen.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = customdoxygen.css; sourceTree = "<group>"; };
+		2B377EA61B428DFE00796F20 /* customdoxygen.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = customdoxygen.js; sourceTree = "<group>"; };
+		2B377EA71B428DFE00796F20 /* Doxyfile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
+		2B377EA81B428DFE00796F20 /* footer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = footer.html; sourceTree = "<group>"; };
+		2B377EA91B428DFE00796F20 /* header.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = header.html; sourceTree = "<group>"; };
+		2B377EAB1B428DFE00796F20 /* resize_packet.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = resize_packet.cc; sourceTree = "<group>"; };
+		2B377EAC1B42994500796F20 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = test_reconstruction.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2B4DC02A1ADBE515006C548B /* accelerator.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = accelerator.cc; sourceTree = "<group>"; };
 		2B4DC02B1ADBE515006C548B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -966,7 +975,6 @@
 		2B7526891AB41556008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268A1AB41560008DEDAD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B75268B1AB43A87008DEDAD /* packet_type.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = packet_type.hh; sourceTree = "<group>"; };
-		2B75268D1AB48A18008DEDAD /* Doxyfile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
 		2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = test_encoder.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2B7526921AB4ABE9008DEDAD /* source_id_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_id_list.hh; sourceTree = "<group>"; };
 		2B7E42AF1ADC26960035DA89 /* data.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = data.cc; sourceTree = "<group>"; };
@@ -1622,6 +1630,38 @@
 				2B7E42C21ADC2E3A0035DA89 /* CMakeLists.txt */,
 				2B4DC0291ADBE515006C548B /* accelerator */,
 				2BAD818A1B287C0C0010EAC4 /* basic */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
+		2B377EA11B428DFE00796F20 /* doc */ = {
+			isa = PBXGroup;
+			children = (
+				2B377EA21B428DFE00796F20 /* doxygen */,
+				2B377EAA1B428DFE00796F20 /* examples */,
+			);
+			path = doc;
+			sourceTree = "<group>";
+		};
+		2B377EA21B428DFE00796F20 /* doxygen */ = {
+			isa = PBXGroup;
+			children = (
+				2B377EA31B428DFE00796F20 /* bootstrap.css */,
+				2B377EA41B428DFE00796F20 /* bootstrap.js */,
+				2B377EA51B428DFE00796F20 /* customdoxygen.css */,
+				2B377EA61B428DFE00796F20 /* customdoxygen.js */,
+				2B377EA71B428DFE00796F20 /* Doxyfile.in */,
+				2B377EA81B428DFE00796F20 /* footer.html */,
+				2B377EA91B428DFE00796F20 /* header.html */,
+			);
+			path = doxygen;
+			sourceTree = "<group>";
+		};
+		2B377EAA1B428DFE00796F20 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				2B377EAC1B42994500796F20 /* CMakeLists.txt */,
+				2B377EAB1B428DFE00796F20 /* resize_packet.cc */,
 			);
 			path = examples;
 			sourceTree = "<group>";
@@ -2310,10 +2350,10 @@
 			isa = PBXGroup;
 			children = (
 				2B7526891AB41556008DEDAD /* CMakeLists.txt */,
-				2B75268D1AB48A18008DEDAD /* Doxyfile.in */,
 				2BBA00BE1B21CCD700633CA3 /* README.md */,
 				2BE319691AB1DE32001AA9DF /* bin */,
 				2BBA00BC1B21CCD700633CA3 /* cmake */,
+				2B377EA11B428DFE00796F20 /* doc */,
 				2BE3198C1AB35D35001AA9DF /* ext */,
 				2B218AF31AD7FB85000D2657 /* examples */,
 				2BE3194F1AB0C550001AA9DF /* netcode */,

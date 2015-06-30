@@ -55,7 +55,7 @@ __attribute__((nonnull));
 /// @param enc The encoder to notify
 /// @param data The data to add
 /// @param error The reported error, if any
-/// @pre @ref ntc_data_get_used_bytes (@p data) > 0
+/// @pre @ref ntc_data_get_size (@p data) > 0
 /// @post @p data is invalid
 /// @note It's possible to put @p data back in an usable state by calling ntc_data_resize()
 void

@@ -15,8 +15,8 @@ namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
 
-/// @brief The class to interact with on the receiver side.
 /// @ingroup ntc_decoder
+/// @brief The class to interact with on the receiver side.
 template <typename PacketHandler, typename DataHandler>
 class decoder final
 {
