@@ -27,6 +27,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const sourc
   , m_nb_decoded{0}
   , m_coefficients{32}
   , m_inv{32}
+  , m_index()
 {}
 
 /*------------------------------------------------------------------------------------------------*/
@@ -474,11 +475,11 @@ decoder::attempt_full_decoding()
   // Matrix successfully inverted, we can now decode missing sources. Phew!
 
   // Build an index for fast retreiving of repairs from the inverted matrix.
-  std::vector<repair*> index;
-  index.reserve(m_repairs.size());
+  m_index.clear();
+  m_index.reserve(m_repairs.size());
   for (auto& rid_repair : m_repairs)
   {
-    index.emplace_back(&rid_repair.second);
+    m_index.emplace_back(&rid_repair.second);
   }
 
   auto src_col = 0u;
@@ -493,7 +494,7 @@ decoder::attempt_full_decoding()
         const auto coeff = m_inv(repair_row, src_col);
         if (coeff != 0)
         {
-          const auto tmp = m_gf.multiply_size(index[repair_row]->encoded_size(), coeff);
+          const auto tmp = m_gf.multiply_size(m_index[repair_row]->encoded_size(), coeff);
           res = static_cast<std::uint16_t>(tmp) ^ res;
         }
       }
@@ -522,16 +523,16 @@ decoder::attempt_full_decoding()
     // Repair's buffer might be smaller than the size of the source to decode, or it could be
     // the opposite situation. Thus, we need to make sure that we only read the right number of
     // bytes.
-    auto sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->symbol_size()));
-    m_gf.multiply(index[repair_row]->symbol(), src.symbol(), sz, coeff);
+    auto sz = std::min(src_sz, static_cast<std::uint16_t>(m_index[repair_row]->symbol_size()));
+    m_gf.multiply(m_index[repair_row]->symbol(), src.symbol(), sz, coeff);
 
     for (++repair_row; repair_row < m_inv.dimension(); ++repair_row)
     {
       coeff = m_inv(repair_row, src_col);
       if (coeff != 0)
       {
-        sz = std::min(src_sz, static_cast<std::uint16_t>(index[repair_row]->symbol_size()));
-        m_gf.multiply_add(index[repair_row]->symbol(), src.symbol(), sz, coeff);
+        sz = std::min(src_sz, static_cast<std::uint16_t>(m_index[repair_row]->symbol_size()));
+        m_gf.multiply_add(m_index[repair_row]->symbol(), src.symbol(), sz, coeff);
       }
     }
     ++src_col;

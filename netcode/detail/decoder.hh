@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory> // unique_ptr
+#include <vector>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -189,6 +190,9 @@ private:
 
   /// @brief Re-use the same memory for the inverted matrix of coefficients.
   square_matrix m_inv;
+
+  /// @brief Re-use the same memory for the index of repairs in the inverted matrix.
+  std::vector<repair*> m_index;
 };
 
 /*------------------------------------------------------------------------------------------------*/
