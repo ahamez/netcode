@@ -79,9 +79,9 @@ class app_handler
 public:
 
   app_handler(ntc::encoder<packet_handler>& encoder, udp::socket& socket, udp::endpoint& end)
-    : m_encoder{encoder}
-    , m_socket{socket}
-    , m_endpoint{end}
+    : m_encoder(encoder)
+    , m_socket(socket)
+    , m_endpoint(end)
     , m_data(2048)
   {
     start();
@@ -126,9 +126,9 @@ class netcode_handler
 public:
 
   netcode_handler(ntc::encoder<packet_handler>& encoder, udp::socket& socket, udp::endpoint& end)
-    : m_encoder{encoder}
-    , m_socket{socket}
-    , m_endpoint{end}
+    : m_encoder(encoder)
+    , m_socket(socket)
+    , m_endpoint(end)
     , m_packet(2048)
   {
     start();
