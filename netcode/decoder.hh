@@ -1,6 +1,9 @@
 #pragma once
 
 #include <chrono>
+#ifdef NTC_DUMP_PACKETS
+#include <fstream>
+#endif
 #include <functional>
 
 #include "netcode/detail/decoder.hh"
@@ -54,6 +57,9 @@ public:
     , m_nb_received_repairs{0}
     , m_nb_received_sources{0}
     , m_nb_sent_ack{0}
+#ifdef NTC_DUMP_PACKETS
+    , m_dump_file{NTC_DUMP_PACKETS_FILE}
+#endif
   {
     // Let's reserve some memory for the ack, it will most likely avoid memory re-allocations.
     // Uncomment the following when the undefined behavior spotted by GCC 5.1 -fsanitize=undefined
@@ -78,6 +84,9 @@ public:
     {
       case detail::packet_type::repair:
       {
+#ifdef NTC_DUMP_PACKETS
+        std::copy(std::begin(p), std::end(p), std::ostream_iterator<char>(m_dump_file));
+#endif
         ++m_nb_received_repairs;
         ++m_ack.nb_packets();
         auto res = m_packetizer.read_repair(std::move(p));
@@ -87,6 +96,9 @@ public:
 
       case detail::packet_type::source:
       {
+#ifdef NTC_DUMP_PACKETS
+        std::copy(std::begin(p), std::end(p), std::ostream_iterator<char>(m_dump_file));
+#endif
         ++m_nb_received_sources;
         ++m_ack.nb_packets();
         auto res = m_packetizer.read_source(std::move(p));
@@ -316,6 +328,10 @@ private:
 
   /// @brief The number of ack sent back to the encoder.
   std::size_t m_nb_sent_ack;
+
+#ifdef NTC_DUMP_PACKETS
+  std::ofstream m_dump_file;
+#endif
 };
 
 /*------------------------------------------------------------------------------------------------*/
