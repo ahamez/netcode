@@ -325,7 +325,10 @@ private:
     {
       return ids;
     }
-    ids.reserve(nb_elements);
+    // Uncomment the following when the undefined behavior spotted by GCC 5.1 -fsanitize=undefined
+    // is fixed. In the meantime, it's not a real problem,it will just cost a few initial
+    // allocations before the source ids list grows to a suitable size.
+    // ids.reserve(nb_elements);
 
     // Read first identifier.
     const auto first_id = read<std::uint32_t>(data, max_len);
