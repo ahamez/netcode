@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <memory>
 
@@ -9,6 +10,10 @@
 #pragma GCC diagnostic pop
 
 #include "netcode/encoder.hh"
+
+/*------------------------------------------------------------------------------------------------*/
+
+static constexpr auto buffer_size = 4096;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -45,7 +50,7 @@ public:
   packet_handler(udp::socket& sock, udp::endpoint& end)
     : m_socket(sock), m_endpoint(end), m_buffer()
   {
-    m_buffer.reserve(2048);
+    m_buffer.reserve(buffer_size);
   }
 
   /// @brief This function is invoked repeatedly until the packet is complete
@@ -59,16 +64,22 @@ public:
   void
   operator()()
   {
-    // End of packet, we can now send it.
-    m_socket.send_to(asio::buffer(m_buffer), m_endpoint);
-    m_buffer.clear();
+    auto buffer = std::make_shared<std::vector<char>>(std::move(m_buffer));
+    m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
+                          , [buffer](const asio::error_code& err, std::size_t)
+                            {
+                              if (err)
+                              {
+                                throw std::runtime_error(err.message());
+                              }
+                            });
+   m_buffer.reserve(buffer_size);
   }
 
 private:
 
   udp::socket& m_socket;
   udp::endpoint& m_endpoint;
-
   std::vector<char> m_buffer;
 };
 
@@ -82,7 +93,7 @@ public:
     : m_encoder(encoder)
     , m_socket(socket)
     , m_endpoint(end)
-    , m_data(2048)
+    , m_data(buffer_size)
   {
     start();
   }
@@ -102,10 +113,11 @@ private:
 
                                    if (len > 0)
                                    {
+                                     m_data.resize(len);
                                      m_encoder(std::move(m_data));
+                                     m_data.resize(buffer_size);
                                    }
 
-                                   m_data.resize(2048);
                                    start();
                                  }
                                );
@@ -125,13 +137,15 @@ class netcode_handler
 {
 public:
 
-  netcode_handler(ntc::encoder<packet_handler>& encoder, udp::socket& socket, udp::endpoint& end)
+  netcode_handler(asio::io_service& io, ntc::encoder<packet_handler>& encoder, udp::socket& socket, udp::endpoint& end)
     : m_encoder(encoder)
     , m_socket(socket)
     , m_endpoint(end)
-    , m_packet(2048)
+    , m_packet(buffer_size)
+   , m_stats_timer(io, std::chrono::seconds(5))
   {
     start();
+    start_stats_timer();
   }
 
 private:
@@ -150,12 +164,36 @@ private:
                                    if (len > 0)
                                    {
                                      m_encoder(std::move(m_packet));
+                                     m_packet.resize(buffer_size);
                                    }
 
-                                   m_packet.resize(2048);
                                    start();
                                  }
                                );
+  }
+
+  void
+  start_stats_timer()
+  {
+    m_stats_timer.expires_from_now(std::chrono::seconds(5));
+    m_stats_timer.async_wait([this](const asio::error_code& err)
+                             {
+                               if (err)
+                               {
+                                 throw std::runtime_error(err.message());
+                               }
+
+                               std::cout
+                                 << "in  acks   : " << m_encoder.nb_received_acks() << '\n'
+                                 << "out repairs: " << m_encoder.nb_sent_repairs() << '\n'
+                                 << "out sources: " << m_encoder.nb_sent_sources() << '\n'
+                                 << "window : " << m_encoder.window() << '\n'
+                                 << "rate : " << m_encoder.rate() << '\n'
+                                 << '\n'
+                                 << std::endl;
+
+                               start_stats_timer();
+                             });
   }
 
 private:
@@ -164,6 +202,7 @@ private:
   udp::socket& m_socket;
   udp::endpoint& m_endpoint;
   ntc::packet m_packet;
+  asio::steady_timer m_stats_timer;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -181,29 +220,24 @@ main(int argc, char** argv)
   {
     asio::io_service io;
 
-    // Connection with the proxied application.
-    udp::socket app_socket{io};
-    udp::endpoint app_endpoint;
-
-    // Encoded tunnel.
-    udp::socket netcode_socket{io};
-    udp::endpoint netcode_endpoint;
-
     const auto app_port = static_cast<unsigned short>(std::atoi(argv[1]));
     const auto server_url = argv[2];
     const auto server_port = argv[3];
 
-    app_socket = udp::socket{io, udp::endpoint{udp::v4(), app_port}};
-    netcode_socket = udp::socket{io, udp::endpoint(udp::v4(), 0)};
+    udp::socket app_socket{io, udp::endpoint{udp::v4(), app_port}};
+    udp::endpoint app_endpoint;    
+
+    udp::socket netcode_socket{io, udp::endpoint(udp::v4(), 0)};
     udp::resolver resolver(io);
-    netcode_endpoint = *resolver.resolve({udp::v4(), server_url, server_port});
+    udp::endpoint netcode_endpoint = *resolver.resolve({udp::v4(), server_url, server_port});
 
     ntc::encoder<packet_handler> encoder(8, packet_handler{netcode_socket, netcode_endpoint});
+    encoder.set_window_size(256);
+    encoder.set_adaptive(true);
 
     app_handler app{encoder, app_socket, app_endpoint};
-    netcode_handler netcode{encoder, netcode_socket, netcode_endpoint};
+    netcode_handler netcode{io, encoder, netcode_socket, netcode_endpoint};
 
-    // Launch the event loop (runs forever).
     io.run();
   }
   catch (const std::exception& e)
