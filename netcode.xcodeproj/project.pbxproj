@@ -603,6 +603,7 @@
 		2B38B4C81B491C0100280E86 /* accelerator-oneway-sender */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "accelerator-oneway-sender"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B38B4D01B492D4300280E86 /* accelerator-oneway-receiver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "accelerator-oneway-receiver"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B38B4D71B492D6500280E86 /* receiver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = receiver.cc; sourceTree = "<group>"; };
+		2B38B4E61B49343300280E86 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2B4977FF1AC44CAD00A76CF8 /* test_reconstruction.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = test_reconstruction.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2B4DC02A1ADBE515006C548B /* accelerator.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = accelerator.cc; sourceTree = "<group>"; };
 		2B4DC02B1ADBE515006C548B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1748,6 +1749,7 @@
 		2B38B4C31B491B8800280E86 /* accelerator-oneway */ = {
 			isa = PBXGroup;
 			children = (
+				2B38B4E61B49343300280E86 /* CMakeLists.txt */,
 				2B38B4D71B492D6500280E86 /* receiver.cc */,
 				2B38B4C41B491BA900280E86 /* sender.cc */,
 			);
