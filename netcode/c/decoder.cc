@@ -12,8 +12,8 @@ ntc_new_decoder( uint8_t galois_field_size, ntc_ordering_type order
 noexcept
 {
   return new (std::nothrow) ntc_decoder_t{ galois_field_size
-                                         , order == ntc_in_order ? ntc::in_order::yes
-                                                                 : ntc::in_order::no
+                                         , order == ntc_in_order_yes ? ntc::in_order::yes
+                                                                     : ntc::in_order::no
                                          , ntc::detail::c_packet_handler{packet_handler}
                                          , ntc::detail::c_data_handler{data_handler}};
 }

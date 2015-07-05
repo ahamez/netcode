@@ -25,7 +25,7 @@ typedef struct ntc_decoder_t ntc_decoder_t;
 
 /// @ingroup c_decoder
 /// @brief Describe if an decoder gives data in order or not
-typedef enum {ntc_in_order, ntc_non_in_order} ntc_ordering_type;
+typedef enum {ntc_in_order_yes, ntc_in_order_no} ntc_ordering_type;
 
 /*------------------------------------------------------------------------------------------------*/
 

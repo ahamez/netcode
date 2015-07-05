@@ -26,7 +26,7 @@ typedef struct ntc_encoder_t ntc_encoder_t;
 
 /// @ingroup c_encoder
 /// @brief Describe if an encoder uses a systematic code or not
-typedef enum {ntc_systematic, ntc_non_systematic} ntc_code_type;
+typedef enum {ntc_systematic_yes, ntc_systematic_no} ntc_code_type;
 
 /*------------------------------------------------------------------------------------------------*/
 
