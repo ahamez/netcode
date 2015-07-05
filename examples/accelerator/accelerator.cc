@@ -16,6 +16,9 @@
 int
 main(int argc, char** argv)
 {
+  using asio::ip::address_v4;
+  using asio::ip::udp;
+
   const auto usage = [&]
   {
     std::cerr << "Usage\n";

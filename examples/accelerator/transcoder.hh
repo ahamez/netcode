@@ -95,7 +95,6 @@ struct data_handler
 
   void
   operator()(const char* data, std::size_t sz)
-  noexcept
   {
     socket.send_to(asio::buffer(data, sz), endpoint);
   }
@@ -156,17 +155,18 @@ private:
                                      throw std::runtime_error(err.message());
                                    }
 
-                                   m_packet.resize(len);
-
                                    m_other_side_seen = true;
 
-                                   // The received packet might be for the encoder or the decoder.
-                                   // The netcode library provides the following function to
-                                   // dispatch to the appropriate component using the packet's type
-                                   // (source, ack or repair).
-                                   ntc::dispatch(m_encoder, m_decoder, std::move(m_packet));
+                                   if (len > 0)
+                                   {
+                                     // The received packet might be for the encoder or the decoder.
+                                     // The netcode library provides the following function to
+                                     // dispatch to the appropriate component using the packet's
+                                     // type (source, ack or repair).
+                                     ntc::dispatch(m_encoder, m_decoder, std::move(m_packet));
 
-                                   m_packet.resize(buffer_size);
+                                     m_packet.resize(buffer_size);
+                                   }
 
                                    // Listen again for incoming packets.
                                    start_handler();
@@ -186,15 +186,18 @@ private:
                                          throw std::runtime_error(err.message());
                                        }
 
-                                       // m_data has been filled by asio, but we still need to tell
-                                       // the netcode library how many bytes were really written.
-                                       m_data.resize(len);
+                                       if (len > 0)
+                                       {
+                                         // m_data has been filled by asio, but we still need to
+                                         // tell to netcode how many bytes were really written.
+                                         m_data.resize(len);
 
-                                       // We can now safely give the data to the encoder.
-                                       m_encoder(std::move(m_data));
+                                         // We can now safely give the data to the encoder.
+                                         m_encoder(std::move(m_data));
 
-                                       // To avoid allocating a new data, we reset m_data.
-                                       m_data.resize(buffer_size);
+                                         // To avoid allocating a new data, we reset m_data.
+                                         m_data.resize(buffer_size);
+                                       }
 
                                        // Listen again for incoming data.
                                        start_app_handler();
