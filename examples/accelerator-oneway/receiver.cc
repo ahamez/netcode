@@ -156,9 +156,9 @@ private:
                                    {
                                      m_decoder(std::move(m_packet));
                                      m_tunnel_up = true;
+                                     m_packet.resize(buffer_size);
                                    }
 
-                                   m_packet.resize(buffer_size);
                                    start();
                                  });
   }

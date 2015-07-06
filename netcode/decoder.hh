@@ -85,7 +85,7 @@ public:
       case detail::packet_type::repair:
       {
 #ifdef NTC_DUMP_PACKETS
-        std::copy(std::begin(p), std::end(p), std::ostream_iterator<char>(m_dump_file));
+        p.dump(m_dump_file);
 #endif
         ++m_nb_received_repairs;
         ++m_ack.nb_packets();
@@ -97,7 +97,7 @@ public:
       case detail::packet_type::source:
       {
 #ifdef NTC_DUMP_PACKETS
-        std::copy(std::begin(p), std::end(p), std::ostream_iterator<char>(m_dump_file));
+        p.dump(m_dump_file);
 #endif
         ++m_nb_received_sources;
         ++m_ack.nb_packets();
