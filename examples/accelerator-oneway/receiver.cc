@@ -68,11 +68,16 @@ public:
 
     auto buffer = std::make_shared<std::vector<char>>(std::move(m_buffer));
     m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
-                          , [buffer](const asio::error_code& err, std::size_t)
+                          , [buffer](const asio::error_code& err, std::size_t len)
                             {
                               if (err)
                               {
                                 throw std::runtime_error(err.message());
+                              }
+
+                              if (len != buffer->size())
+                              {
+                                throw std::runtime_error{"Invalid number of sent bytes"};
                               }
                             });
     m_buffer.reserve(buffer_size);
@@ -100,14 +105,18 @@ public:
   void
   operator()(const char* data, std::size_t sz)
   {
-
     auto buffer = std::make_shared<std::vector<char>>(data, data + sz);
     m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
-                          , [buffer](const asio::error_code& err, std::size_t)
+                          , [buffer](const asio::error_code& err, std::size_t len)
                             {
                               if (err)
                               {
                                 throw std::runtime_error(err.message());
+                              }
+
+                              if (len != buffer->size())
+                              {
+                                throw std::runtime_error{"Invalid number of sent bytes"};
                               }
                             });
   }
@@ -255,9 +264,15 @@ main(int argc, char** argv)
     netcode_handler netcode{io, decoder, netcode_socket, netcode_endpoint};
     io.run();
   }
+  catch (const ntc::packet_type_error& e)
+  {
+    std::cerr << "Invalid packet type " << +e.error_packet.data()[0] << '\n';
+    std::exit(2);
+  }
   catch (const std::exception& e)
   {
     std::cerr << e.what() << '\n';
+    std::exit(3);
   }
   return 0;
 }

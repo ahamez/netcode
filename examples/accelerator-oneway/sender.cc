@@ -66,11 +66,16 @@ public:
   {
     auto buffer = std::make_shared<std::vector<char>>(std::move(m_buffer));
     m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
-                          , [buffer](const asio::error_code& err, std::size_t)
+                          , [buffer](const asio::error_code& err, std::size_t len)
                             {
                               if (err)
                               {
-                                throw std::runtime_error(err.message());
+                                throw std::runtime_error{err.message()};
+                              }
+
+                              if (len != buffer->size())
+                              {
+                                throw std::runtime_error{"Invalid number of sent bytes"};
                               }
                             });
    m_buffer.reserve(buffer_size);
