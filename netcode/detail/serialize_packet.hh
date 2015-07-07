@@ -17,17 +17,18 @@ namespace ntc { namespace detail {
 /// @internal
 struct serialize_packet
 {
-  stat
+  static
   void
-  operator()(std::ostream& os, const packet& p)
+  write(std::ostream& os, const packet& p)
   {
     const auto sz = boost::endian::native_to_big(static_cast<std::uint16_t>(p.m_buffer.size()));
     os.write(reinterpret_cast<const char*>(&sz), sizeof(sz));
     std::copy(std::begin(p.m_buffer), std::end(p.m_buffer), std::ostreambuf_iterator<char>(os));
   }
 
+  static
   packet
-  operator()(std::istream& is)
+  read(std::istream& is)
   {
     packet p;
 
