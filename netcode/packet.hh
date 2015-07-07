@@ -3,15 +3,8 @@
 #include <algorithm> // copy
 #include <initializer_list>
 
-#ifdef NTC_DUMP_PACKETS
-#include <iostream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#include <boost/endian/conversion.hpp>
-#pragma GCC diagnostic pop
-#endif
-
 #include "netcode/detail/buffer.hh"
+#include "netcode/detail/serialize_packet_fwd.hh"
 #include "netcode/detail/symbol_alignment.hh"
 
 namespace ntc {
@@ -340,32 +333,9 @@ public:
     return m_buffer.data() + alignment;
   }
 
-#ifdef NTC_DUMP_PACKETS
-  /// @internal
-  void
-  dump(std::ostream& os)
-  {
-    const auto sz = boost::endian::native_to_big(static_cast<std::uint16_t>(m_buffer.size()));
-    os.write(reinterpret_cast<const char*>(&sz), sizeof(sz));
-    std::copy(std::begin(m_buffer), std::end(m_buffer), std::ostreambuf_iterator<char>(os));
-  }
-
-  /// @internal
-  void
-  load(std::istream& is)
-  {
-    std::istreambuf_iterator<char> isb(is);
-    std::uint16_t sz;
-    std::copy_n(isb, 2, reinterpret_cast<char*>(&sz));
-    ++isb;
-    sz = boost::endian::big_to_native(sz);
-    m_buffer.resize(sz);
-    std::copy_n(isb, sz, m_buffer.begin());
-    ++isb;
-  }
-#endif
-
 private:
+
+  friend struct detail::serialize_packet;
 
   detail::byte_buffer m_buffer;
 };

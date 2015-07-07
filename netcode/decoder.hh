@@ -1,9 +1,11 @@
 #pragma once
 
-#include <chrono>
 #ifdef NTC_DUMP_PACKETS
 #include <fstream>
+#include "netcode/detail/serialize_packet.hh"
 #endif
+
+#include <chrono>
 #include <functional>
 
 #include "netcode/detail/decoder.hh"
@@ -80,13 +82,15 @@ public:
   operator()(packet&& p)
   {
     assert(p.size() != 0 && "empty packet");
+
+#ifdef NTC_DUMP_PACKETS
+    detail::serialize_packet::write(m_dump_file, p);
+#endif
+
     switch (detail::get_packet_type(p))
     {
       case detail::packet_type::repair:
       {
-#ifdef NTC_DUMP_PACKETS
-        p.dump(m_dump_file);
-#endif
         ++m_nb_received_repairs;
         ++m_ack.nb_packets();
         auto res = m_packetizer.read_repair(std::move(p));
@@ -96,9 +100,6 @@ public:
 
       case detail::packet_type::source:
       {
-#ifdef NTC_DUMP_PACKETS
-        p.dump(m_dump_file);
-#endif
         ++m_nb_received_sources;
         ++m_ack.nb_packets();
         auto res = m_packetizer.read_source(std::move(p));
