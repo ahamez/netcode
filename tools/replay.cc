@@ -69,8 +69,7 @@ main(int argc, const char** argv)
     auto counter = 0ul;
     while (true)
     {
-      ntc::packet packet;
-      ntc::detail::serialize_packet::read(dump_file);
+      const auto packet = ntc::detail::serialize_packet::read(dump_file);
 
       if (dump_file.peek() == std::char_traits<char>::eof())
       {
