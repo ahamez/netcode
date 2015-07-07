@@ -108,7 +108,7 @@ public:
 
       default:
       {
-        throw packet_type_error{};
+        throw packet_type_error{p};
       }
     }
   }

@@ -2,6 +2,8 @@
 
 #include <exception>
 
+#include "netcode/packet.hh"
+
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
@@ -10,7 +12,13 @@ namespace ntc {
 /// @ingroup ntc_error
 struct packet_type_error
   : public std::exception
-{};
+{
+  packet_type_error(const packet& p)
+    : error_packet{p}
+  {}
+
+  packet error_packet;
+};
 
 /*------------------------------------------------------------------------------------------------*/
 

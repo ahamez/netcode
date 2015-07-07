@@ -31,7 +31,7 @@ get_packet_type(const packet& p)
       return packet_type::source;
 
     default:
-      throw packet_type_error{};
+      throw packet_type_error{p};
   }
 }
 

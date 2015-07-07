@@ -285,7 +285,7 @@ private:
   {
     if (detail::get_packet_type(p) != detail::packet_type::ack)
     {
-      throw packet_type_error{};
+      throw packet_type_error{p};
     }
     else
     {
