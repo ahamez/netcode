@@ -347,7 +347,21 @@ public:
   {
     const auto sz = boost::endian::native_to_big(static_cast<std::uint16_t>(m_buffer.size()));
     os.write(reinterpret_cast<const char*>(&sz), sizeof(sz));
-    std::copy(std::begin(m_buffer), std::end(m_buffer), std::ostream_iterator<char>(os));
+    std::copy(std::begin(m_buffer), std::end(m_buffer), std::ostreambuf_iterator<char>(os));
+  }
+
+  /// @internal
+  void
+  load(std::istream& is)
+  {
+    std::istreambuf_iterator<char> isb(is);
+    std::uint16_t sz;
+    std::copy_n(isb, 2, reinterpret_cast<char*>(&sz));
+    ++isb;
+    sz = boost::endian::big_to_native(sz);
+    m_buffer.resize(sz);
+    std::copy_n(isb, sz, m_buffer.begin());
+    ++isb;
   }
 #endif
 
