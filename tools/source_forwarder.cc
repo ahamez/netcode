@@ -1,4 +1,3 @@
-#include <array>
 #include <iostream>
 #include <stdexcept>
 
@@ -7,14 +6,42 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
 #include <asio.hpp>
+#include <boost/endian/conversion.hpp>
 #pragma GCC diagnostic pop
+
+#include "netcode/packet.hh"
+#include "netcode/detail/packetizer.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
 using asio::ip::address_v4;
 using asio::ip::udp;
 
+namespace asio {
+
+  inline
+  mutable_buffers_1
+  buffer(ntc::packet& p)
+  {
+    return mutable_buffers_1{mutable_buffer{p.size() ? p.data() : nullptr, p.size()}};
+  }
+
+} // namespace asio
+
 /*------------------------------------------------------------------------------------------------*/
+
+struct packet_handler
+{
+  void
+  operator()(const char*, std::size_t)
+  {
+  }
+
+  void
+  operator()()
+  {
+  }
+};
 
 int
 main(int argc, const char** argv)
@@ -38,19 +65,30 @@ main(int argc, const char** argv)
     asio::io_service io;
 
     udp::socket in_socket{io, udp::endpoint{udp::v4(), in_port}};
+    in_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
     udp::endpoint in_endpoint;
 
     udp::socket out_socket{io, udp::endpoint(udp::v4(), 0)};
+    out_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
     udp::resolver resolver(io);
     udp::endpoint out_endpoint = *resolver.resolve({udp::v4(), out_ip, out_port});
 
-    std::array<char, 4096> buffer;
+    packet_handler ph; // dummy
+    ntc::detail::packetizer<packet_handler> packetizer{ph};
 
     while (true)
     {
-      udp::endpoint sender_endpoint;
+      ntc::packet buffer(4096);
+
       const auto sz = in_socket.receive_from(asio::buffer(buffer), in_endpoint);
-      out_socket.send_to(asio::buffer(buffer, sz), out_endpoint);
+      if (sz > 0)
+      {
+        if (buffer[0] == 2) // source
+        {
+          const auto src = packetizer.read_source(std::move(buffer)).first;
+          out_socket.send_to(asio::buffer(src.symbol(), src.symbol_size()), out_endpoint);
+        }
+      }
     }
   }
   catch (const std::exception& e)

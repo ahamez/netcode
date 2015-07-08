@@ -1,4 +1,4 @@
-add_executable(forward forward.cc)
+add_executable(source_forwarder source_forwarder.cc)
 
 add_executable(lossy_proxy lossy_proxy.cc)
 

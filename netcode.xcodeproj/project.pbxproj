@@ -66,7 +66,7 @@
 		2B5D0FFA1B4B810C005A428F /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2B5D0FFB1B4B810C005A428F /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
 		2B5D0FFC1B4B810C005A428F /* invert_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BE01AC944AE00133F38 /* invert_matrix.cc */; };
-		2B5D467B1B3D218D004AA409 /* forward.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B5D467A1B3D218D004AA409 /* forward.cc */; };
+		2B5D467B1B3D218D004AA409 /* source_forwarder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B5D467A1B3D218D004AA409 /* source_forwarder.cc */; };
 		2B75268F1AB4A0E0008DEDAD /* test_encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B75268E1AB4A0E0008DEDAD /* test_encoder.cc */; };
 		2B7E42B11ADC26960035DA89 /* data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42AF1ADC26960035DA89 /* data.cc */; };
 		2B7E42B21ADC26960035DA89 /* data.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42B01ADC26960035DA89 /* data.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1039,8 +1039,8 @@
 		2B5993211B3991C000DCBB13 /* encoder_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = encoder_fwd.hh; sourceTree = "<group>"; };
 		2B5D0FFD1B4C5023005A428F /* serialize_packet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = serialize_packet.hh; sourceTree = "<group>"; };
 		2B5D0FFE1B4C5A7B005A428F /* serialize_packet_fwd.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = serialize_packet_fwd.hh; sourceTree = "<group>"; };
-		2B5D467A1B3D218D004AA409 /* forward.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = forward.cc; sourceTree = "<group>"; };
-		2B5D467F1B3D2520004AA409 /* forward */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = forward; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B5D467A1B3D218D004AA409 /* source_forwarder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = source_forwarder.cc; sourceTree = "<group>"; };
+		2B5D467F1B3D2520004AA409 /* source_forwarder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = source_forwarder; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B5FFAC41B0D181500CAB33E /* dispatch.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dispatch.hh; sourceTree = "<group>"; };
 		2B5FFAC51B0D1C0800CAB33E /* errors.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = errors.hh; sourceTree = "<group>"; };
 		2B5FFAC81B0F527200CAB33E /* doxygen.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = doxygen.hh; sourceTree = "<group>"; };
@@ -2414,9 +2414,9 @@
 			children = (
 				2B59931B1B38EF2000DCBB13 /* loss */,
 				2B7F12741AD162FD00CAA199 /* CMakeLists.txt */,
-				2B5D467A1B3D218D004AA409 /* forward.cc */,
 				2B7F12711AD0523200CAA199 /* lossy_proxy.cc */,
 				2B2D24531B4B7DB200E63D8A /* replay.cc */,
+				2B5D467A1B3D218D004AA409 /* source_forwarder.cc */,
 				2B9BD1061AF2A18600856E96 /* udp_generator.py */,
 			);
 			path = tools;
@@ -2508,7 +2508,7 @@
 				2B38B4D01B492D4300280E86 /* accelerator-oneway-receiver */,
 				2B38B4C81B491C0100280E86 /* accelerator-oneway-sender */,
 				2B9E8BF91B3E6D4200E3DAE4 /* libc++.tbd */,
-				2B5D467F1B3D2520004AA409 /* forward */,
+				2B5D467F1B3D2520004AA409 /* source_forwarder */,
 				2B97BE8F1B2DC78000E496D8 /* c_basic */,
 				2BAD81921B287C7F0010EAC4 /* cpp_basic */,
 				2BBBC5E41B022061005C1669 /* end_to_end */,
@@ -2706,9 +2706,9 @@
 			productReference = 2B516BC91AC8881C00133F38 /* accelerator */;
 			productType = "com.apple.product-type.tool";
 		};
-		2B5D46721B3D2173004AA409 /* forward */ = {
+		2B5D46721B3D2173004AA409 /* source_forwarder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B5D46791B3D2173004AA409 /* Build configuration list for PBXNativeTarget "forward" */;
+			buildConfigurationList = 2B5D46791B3D2173004AA409 /* Build configuration list for PBXNativeTarget "source_forwarder" */;
 			buildPhases = (
 				2B5D466F1B3D2173004AA409 /* Sources */,
 				2B5D46701B3D2173004AA409 /* Frameworks */,
@@ -2718,9 +2718,9 @@
 			);
 			dependencies = (
 			);
-			name = forward;
+			name = source_forwarder;
 			productName = forward;
-			productReference = 2B5D467F1B3D2520004AA409 /* forward */;
+			productReference = 2B5D467F1B3D2520004AA409 /* source_forwarder */;
 			productType = "com.apple.product-type.tool";
 		};
 		2B7F12671AD0520B00CAA199 /* lossy_proxy */ = {
@@ -2896,7 +2896,7 @@
 				2B7F12671AD0520B00CAA199 /* lossy_proxy */,
 				2BE3197B1AB32D7F001AA9DF /* tests */,
 				2BBC050D1ACC472C00EEDAC0 /* test-one */,
-				2B5D46721B3D2173004AA409 /* forward */,
+				2B5D46721B3D2173004AA409 /* source_forwarder */,
 				2B38B4BB1B491B6900280E86 /* accelerator-oneway-sender */,
 				2B38B4CF1B492D4300280E86 /* accelerator-oneway-receiver */,
 				2B2D244B1B4B7D7200E63D8A /* replay */,
@@ -2975,7 +2975,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B5D467B1B3D218D004AA409 /* forward.cc in Sources */,
+				2B5D467B1B3D218D004AA409 /* source_forwarder.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3101,7 +3101,7 @@
 		};
 		2B5D467D1B3D2414004AA409 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B5D46721B3D2173004AA409 /* forward */;
+			target = 2B5D46721B3D2173004AA409 /* source_forwarder */;
 			targetProxy = 2B5D467C1B3D2414004AA409 /* PBXContainerItemProxy */;
 		};
 		2B7F12701AD0521300CAA199 /* PBXTargetDependency */ = {
@@ -4302,7 +4302,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B5D46791B3D2173004AA409 /* Build configuration list for PBXNativeTarget "forward" */ = {
+		2B5D46791B3D2173004AA409 /* Build configuration list for PBXNativeTarget "source_forwarder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B5D46771B3D2173004AA409 /* Debug */,
