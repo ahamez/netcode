@@ -53,7 +53,7 @@ main(int argc, const char** argv)
   }
   try
   {
-    auto dump_file = std::ifstream(argv[1]);
+    std::ifstream dump_file{argv[1]};
     if (not dump_file.is_open())
     {
       std::cerr << "Can't open " << argv[1] << '\n';
