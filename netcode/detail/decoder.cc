@@ -364,6 +364,10 @@ noexcept
     // longer useful.
     if (id > *r.source_ids().begin())
     {
+      for (const auto src_id : r.source_ids())
+      {
+        m_missing_sources.find(src_id)->second.erase(cit);
+      }
       cit = m_repairs.erase(cit);
     }
     else
