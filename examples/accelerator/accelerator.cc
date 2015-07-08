@@ -52,7 +52,12 @@ main(int argc, char** argv)
       const auto app_port = argv[4];
 
       app_socket = udp::socket{io, udp::endpoint(udp::v4(), 0)}; // a client socket
+      app_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+      app_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
+
       socket = udp::socket{io, udp::endpoint{udp::v4(), server_port}};  // a server socket
+      socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+      socket.set_option(asio::socket_base::send_buffer_size{8192*64});
 
       udp::resolver resolver(io);
       app_endpoint = *resolver.resolve({udp::v4(), app_url, app_port});
@@ -64,7 +69,12 @@ main(int argc, char** argv)
       const auto server_port = argv[4];
 
       app_socket = udp::socket{io, udp::endpoint{udp::v4(), app_port}}; // a server socket
+      app_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+      app_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
+
       socket = udp::socket{io, udp::endpoint(udp::v4(), 0)};            // a client socket
+      socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+      socket.set_option(asio::socket_base::send_buffer_size{8192*64});
 
       udp::resolver resolver(io);
       endpoint = *resolver.resolve({udp::v4(), server_url, server_port});

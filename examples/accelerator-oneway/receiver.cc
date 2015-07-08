@@ -248,9 +248,11 @@ main(int argc, char** argv)
     const auto app_port = argv[3];
 
     udp::socket netcode_socket{io, udp::endpoint{udp::v4(), netcode_port}};
+    netcode_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
     udp::endpoint netcode_endpoint;
 
     udp::socket app_socket{io, udp::endpoint(udp::v4(), 0)};
+    app_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
     udp::resolver resolver(io);
     udp::endpoint app_endpoint = *resolver.resolve({udp::v4(), app_url, app_port});
 
