@@ -8,6 +8,7 @@ set(SOURCES
    netcode/detail/test_galois_field.cc
    netcode/detail/test_invert_matrix.cc
    netcode/detail/test_packetizer.cc
+   netcode/detail/test_serialize_packet.cc
    netcode/detail/test_source_list.cc
    netcode/detail/test_square_matrix.cc
    netcode/test_decoder.cc

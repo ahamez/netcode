@@ -75,6 +75,7 @@
 		2B7E42BD1ADC26D90035DA89 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7E42BB1ADC26D90035DA89 /* decoder.cc */; };
 		2B7E42BE1ADC26D90035DA89 /* decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7E42BC1ADC26D90035DA89 /* decoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B7F12721AD0523200CAA199 /* lossy_proxy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F12711AD0523200CAA199 /* lossy_proxy.cc */; };
+		2B81F0511B55099C00B4C523 /* test_serialize_packet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B81F0501B55099C00B4C523 /* test_serialize_packet.cc */; };
 		2B9BD1051AF2A0E000856E96 /* end_to_end_mt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */; };
 		2B9E8BF61B3E638B00E3DAE4 /* decoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDE1AC944AE00133F38 /* decoder.cc */; };
 		2B9E8BF71B3E638B00E3DAE4 /* encoder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B516BDF1AC944AE00133F38 /* encoder.cc */; };
@@ -1064,6 +1065,7 @@
 		2B7F12771AD289EF00CAA199 /* lossy_proxy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lossy_proxy; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B8148D41B3BE0F2003BF0D8 /* test_decoder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_decoder.cc; sourceTree = "<group>"; };
 		2B8148D61B3BE1B2003BF0D8 /* handlers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = handlers.h; sourceTree = "<group>"; };
+		2B81F0501B55099C00B4C523 /* test_serialize_packet.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_serialize_packet.cc; sourceTree = "<group>"; };
 		2B92226B1AB5BC4E009A2843 /* decoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = decoder.hh; sourceTree = "<group>"; };
 		2B97BE8F1B2DC78000E496D8 /* c_basic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c_basic; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B97BE901B2DCD3900E496D8 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
@@ -2573,6 +2575,7 @@
 				2B4E310C1AC07DDD0002E97C /* test_galois_field.cc */,
 				2B516BF21AC9997200133F38 /* test_invert_matrix.cc */,
 				2B272C511AC75C1800E6FEDC /* test_packetizer.cc */,
+				2B81F0501B55099C00B4C523 /* test_serialize_packet.cc */,
 				2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */,
 				2B4E310E1AC0871D0002E97C /* test_square_matrix.cc */,
 			);
@@ -3047,6 +3050,7 @@
 				2B516BE81AC944AE00133F38 /* encoder.cc in Sources */,
 				2B272C521AC75C1800E6FEDC /* test_packetizer.cc in Sources */,
 				2BF1A63C1ABAFA07009C32B9 /* test_buffer.cc in Sources */,
+				2B81F0511B55099C00B4C523 /* test_serialize_packet.cc in Sources */,
 				2B4E310F1AC0871D0002E97C /* test_square_matrix.cc in Sources */,
 				2B4E310D1AC07DDD0002E97C /* test_galois_field.cc in Sources */,
 				2B9E8BFD1B3F296F00E3DAE4 /* test_packet.cc in Sources */,
