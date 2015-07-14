@@ -41,16 +41,12 @@ struct data_handler
 int
 main(int argc, const char** argv)
 {
-  const auto usage = [&]
+  if (argc != 2)
   {
     std::cerr << "Usage:\n" << argv[0] << " dump_file\n";
     std::exit(1);
-  };
-
-  if (argc != 2)
-  {
-    usage();
   }
+
   try
   {
     std::ifstream dump_file{argv[1]};
@@ -66,7 +62,6 @@ main(int argc, const char** argv)
     ntc::decoder<packet_handler, data_handler> decoder{ 8, ntc::in_order::yes, packet_handler{}
                                                       , data_handler{}};
 
-    auto counter = 0ul;
     while (true)
     {
       const auto packet = ntc::detail::serialize_packet::read(dump_file);
@@ -76,7 +71,6 @@ main(int argc, const char** argv)
         break;
       }
 
-      std::cout << counter++ << " ";
       switch (ntc::detail::get_packet_type(packet))
       {
         case ntc::detail::packet_type::ack:
@@ -88,21 +82,18 @@ main(int argc, const char** argv)
         case ntc::detail::packet_type::repair:
         {
           const auto r = packetizer.read_repair(ntc::packet{packet}).first;
-          std::cout << "repair id " << r.id();
           break;
         }
 
         case ntc::detail::packet_type::source:
         {
           const auto s = packetizer.read_source(ntc::packet{packet}).first;
-          std::cout << "source id " << s.id();
           break;
         }
 
         default:
           break;
       }
-      std::cout << '\n';
 
       decoder(std::move(packet));
     }
