@@ -163,6 +163,7 @@ private:
 
                                    if (len > 0)
                                    {
+                                     m_packet.resize(len);
                                      m_decoder(std::move(m_packet));
                                      m_tunnel_up = true;
                                      m_packet.resize(buffer_size);
@@ -239,6 +240,7 @@ main(int argc, char** argv)
     std::cerr << argv[0] << " receiver_port app_ip app_port\n";
     std::exit(1);
   }
+
   try
   {
     asio::io_service io;
@@ -248,11 +250,11 @@ main(int argc, char** argv)
     const auto app_port = argv[3];
 
     udp::socket netcode_socket{io, udp::endpoint{udp::v4(), netcode_port}};
-    netcode_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+    netcode_socket.set_option(asio::socket_base::receive_buffer_size{1 << 21});
     udp::endpoint netcode_endpoint;
 
     udp::socket app_socket{io, udp::endpoint(udp::v4(), 0)};
-    app_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
+    app_socket.set_option(asio::socket_base::send_buffer_size{1 << 21});
     udp::resolver resolver(io);
     udp::endpoint app_endpoint = *resolver.resolve({udp::v4(), app_url, app_port});
 
@@ -262,7 +264,8 @@ main(int argc, char** argv)
              , data_handler{app_socket, app_endpoint});
 
 
-    decoder.set_ack_frequency(std::chrono::milliseconds{0});
+    decoder.set_ack_frequency(std::chrono::milliseconds{5});
+    decoder.set_ack_nb_packets(64);
     netcode_handler netcode{io, decoder, netcode_socket, netcode_endpoint};
     io.run();
   }
