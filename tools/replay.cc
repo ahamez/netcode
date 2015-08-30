@@ -76,7 +76,6 @@ main(int argc, const char** argv)
         case ntc::detail::packet_type::ack:
         {
           throw std::runtime_error{"ack"};
-          break;
         }
 
         case ntc::detail::packet_type::repair:
