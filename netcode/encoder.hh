@@ -233,7 +233,7 @@ public:
     return *this;
   }
 
-  /// @brief Get the adaptative mode of the code
+  /// @brief Get the adaptive mode of the code
   bool
   adaptive()
   const noexcept
