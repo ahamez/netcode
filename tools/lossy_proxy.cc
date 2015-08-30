@@ -2,7 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
+#include <stdexcept> // runtime_error
 #include <string>
 
 #pragma GCC diagnostic push

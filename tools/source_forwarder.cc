@@ -1,12 +1,10 @@
 #include <iostream>
-#include <stdexcept>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
 #include <asio.hpp>
-#include <boost/endian/conversion.hpp>
 #pragma GCC diagnostic pop
 
 #include "netcode/packet.hh"
@@ -34,13 +32,11 @@ struct packet_handler
 {
   void
   operator()(const char*, std::size_t)
-  {
-  }
+  {}
 
   void
   operator()()
-  {
-  }
+  {}
 };
 
 int

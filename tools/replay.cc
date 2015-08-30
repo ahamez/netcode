@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <stdexcept>
+#include <stdexcept> // runtime_error
 
 #define NTC_DUMP_PACKETS
 #include "netcode/packet.hh"
@@ -15,14 +15,12 @@ struct packet_handler
   void
   operator()(const char*, std::size_t)
   noexcept
-  {
-  }
+  {}
 
   void
   operator()()
   noexcept
-  {
-  }
+  {}
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -32,8 +30,7 @@ struct data_handler
   void
   operator()(const char*, std::size_t)
   noexcept
-  {
-  }
+  {}
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -80,18 +77,15 @@ main(int argc, const char** argv)
 
         case ntc::detail::packet_type::repair:
         {
-          const auto r = packetizer.read_repair(ntc::packet{packet}).first;
+          packetizer.read_repair(ntc::packet{packet});
           break;
         }
 
         case ntc::detail::packet_type::source:
         {
-          const auto s = packetizer.read_source(ntc::packet{packet}).first;
+          packetizer.read_source(ntc::packet{packet});
           break;
         }
-
-        default:
-          break;
       }
 
       decoder(std::move(packet));
