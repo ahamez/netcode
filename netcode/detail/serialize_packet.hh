@@ -33,7 +33,7 @@ struct serialize_packet
     packet p;
 
     std::istreambuf_iterator<char> isb(is);
-    std::uint16_t sz;
+    auto sz = std::uint16_t{};
     std::copy_n(isb, 2, reinterpret_cast<char*>(&sz));
     ++isb;
     sz = boost::endian::big_to_native(sz);

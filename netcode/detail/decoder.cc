@@ -490,7 +490,7 @@ decoder::attempt_full_decoding()
     // First, decode the size of the source.
     const auto src_sz = [&,this]
     {
-      std::uint16_t res = 0;
+      auto res = std::uint16_t{0};
       for (auto repair_row = 0ul; repair_row < m_inv.dimension(); ++repair_row)
       {
         const auto coeff = m_inv(repair_row, src_col);
