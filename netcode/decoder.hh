@@ -283,7 +283,7 @@ private:
 
   /// @brief Callback given to the real encoder to be notified when a source is processed.
   void
-  handle_source(const detail::source& src)
+  handle_source(const detail::decoder_source& src)
   {
     // Ask user to read the bytes of this new source.
     m_data_handler(src.symbol(), src.symbol_size());

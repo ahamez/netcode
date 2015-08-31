@@ -48,7 +48,7 @@ TEST_CASE("Encode one source")
     const auto src_size = gf.multiply_size(r0.encoded_size(), inv);
     REQUIRE(src_size == 4);
 
-    detail::source s0{0, detail::byte_buffer(src_size, 'x'), src_size};
+    detail::decoder_source s0{0, detail::byte_buffer(src_size, 'x'), src_size};
     gf.multiply(r0.symbol().data(), s0.symbol(), src_size, inv);
     REQUIRE(s0.symbol_size() == src_size);
     REQUIRE(std::equal(s0.symbol(), s0.symbol() + s0.symbol_size(), s0_data.begin()));
@@ -146,7 +146,7 @@ TEST_CASE("Encode two sources")
       REQUIRE(src_size == s0_data.size());
 
       // Now, reconstruct missing data.
-      detail::source s0_dst{1, detail::byte_buffer(src_size), src_size};
+      detail::decoder_source s0_dst{1, detail::byte_buffer(src_size), src_size};
       gf.multiply(r0.symbol().data(), s0_dst.symbol(), src_size, inv0);
       REQUIRE(s0.symbol().size() == s0_dst.symbol_size());
       for (auto i = 0ul; i < src_size; ++i)
@@ -171,7 +171,7 @@ TEST_CASE("Encode two sources")
       REQUIRE(src_size == s1_data.size());
 
       // Now, reconstruct missing data.
-      detail::source s1_dst{1, detail::byte_buffer(src_size), src_size};
+      detail::decoder_source s1_dst{1, detail::byte_buffer(src_size), src_size};
       gf.multiply(r0.symbol().data(), s1_dst.symbol(), src_size, inv1);
       REQUIRE(s1.size() == s1_dst.symbol_size());
       for (auto i = 0ul; i < src_size; ++i)
@@ -252,7 +252,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,0));
     REQUIRE(s0_size == s0_data.size());
     // Were to reconstruct original source
-    detail::source s0{0, detail::byte_buffer(s0_size, 'x'), s0_size};
+    detail::decoder_source s0{0, detail::byte_buffer(s0_size, 'x'), s0_size};
 
     // Now, reconstruct the data.
     gf.multiply(r0.symbol().data(), s0.symbol(), s0_size, inv(0,0));
@@ -266,7 +266,7 @@ TEST_CASE("Two sources lost")
                                 ^ gf.multiply_size(r1.encoded_size(), inv(1,1));
     REQUIRE(s1_size == s1_data.size());
     // Were to reconstruct original source
-    detail::source s1{0, detail::byte_buffer(s1_size, 'x'), s1_size};
+    detail::decoder_source s1{0, detail::byte_buffer(s1_size, 'x'), s1_size};
 
     // Now, reconstruct the data.
     gf.multiply(r0.symbol().data(), s1.symbol(), s1_size, inv(0,1));

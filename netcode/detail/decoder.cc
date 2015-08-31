@@ -9,7 +9,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-decoder::decoder( std::uint8_t galois_field_size, std::function<void(const source&)> h
+decoder::decoder( std::uint8_t galois_field_size, std::function<void(const decoder_source&)> h
                 , in_order order)
   : m_gf{galois_field_size}
   , m_in_order{order == in_order::yes ? true : false}
@@ -31,7 +31,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const sourc
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::operator()(source&& src)
+decoder::operator()(decoder_source&& src)
 {
   if (m_last_id and src.id() < *m_last_id)
   {
@@ -153,7 +153,7 @@ decoder::operator()(repair&& incoming_r)
 
 /*------------------------------------------------------------------------------------------------*/
 
-source
+decoder_source
 decoder::create_source_from_repair(const repair& r)
 noexcept
 {
@@ -167,7 +167,7 @@ noexcept
   const auto src_sz = m_gf.multiply_size(r.encoded_size(), inv);
 
   // The source that will be reconstructed.
-  source src{src_id, packet(src_sz + packet::alignment), src_sz};
+  auto src = decoder_source{src_id, packet(src_sz + packet::alignment), src_sz};
 
   // Reconstruct missing source.
   m_gf.multiply(r.symbol(), src.symbol(), src_sz, inv);
@@ -180,7 +180,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::remove_source_from_repair(const source& src, repair& r)
+decoder::remove_source_from_repair(const decoder_source& src, repair& r)
 noexcept
 {
   remove_source_data_from_repair(src, r);
@@ -247,7 +247,7 @@ const noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::add_source_recursive(source&& src)
+decoder::add_source_recursive(decoder_source&& src)
 {
   if (not m_in_order)
   {
@@ -398,7 +398,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::remove_source_data_from_repair(const source& src, repair& r)
+decoder::remove_source_data_from_repair(const decoder_source& src, repair& r)
 noexcept
 {
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");
@@ -507,7 +507,9 @@ decoder::attempt_full_decoding()
     // When sources are directly received from the network, they are constructed in a such way that
     // there is a padding before the symbol and the headers (to avoid copy). Here, we have to
     // construct the source in the same way.
-    source src{miss.first, packet(src_sz + packet::alignment, 0 /* zero out the buffer */), src_sz};
+    auto src = decoder_source{ miss.first, packet( src_sz + packet::alignment
+                                                 , 0 /* zero out the buffer */)
+                             , src_sz};
     auto repair_row = 0ul;
     auto coeff = 0u;
 

@@ -31,7 +31,7 @@ public:
   using repairs_set_type = boost::container::map<std::uint32_t, repair>;
 
   /// @brief Type of an ordered container of sources.
-  using sources_set_type = boost::container::map<std::uint32_t, source>;
+  using sources_set_type = boost::container::map<std::uint32_t, decoder_source>;
 
 private:
 
@@ -59,11 +59,12 @@ public:
 public:
 
   /// @brief Constructor.
-  decoder(std::uint8_t galois_field_size, std::function<void(const source&)> h, in_order order);
+  decoder( std::uint8_t galois_field_size, std::function<void(const decoder_source&)> h
+         , in_order order);
 
   /// @brief What to do when a source is received.
   void
-  operator()(source&& src);
+  operator()(decoder_source&& src);
 
   /// @brief What to do when a repair is received.
   void
@@ -71,14 +72,14 @@ public:
 
   /// @brief Decode a source contained in a repair.
   /// @attention @p r shall encode exactly one source.
-  source
+  decoder_source
   create_source_from_repair(const repair& r)
   noexcept;
 
   /// @brief Remove a source from a repair.
   /// @attention @p r shall encode more than one source.
   void
-  remove_source_from_repair(const source& src, repair& r)
+  remove_source_from_repair(const decoder_source& src, repair& r)
   noexcept;
 
   /// @brief Get the current set of repairs, indexed by identifier.
@@ -115,7 +116,7 @@ private:
 
   /// @brief Recursively decode any repair that encodes only one source.
   void
-  add_source_recursive(source&& src);
+  add_source_recursive(decoder_source&& src);
 
   /// @brief Drop outdated sources and repairs.
   /// @param id The oldest id to keep. 
@@ -131,7 +132,7 @@ private:
   /// identifiers afterwards.
   /// @attention @p r shall encode more than one source.
   void
-  remove_source_data_from_repair(const source& src, repair& r)
+  remove_source_data_from_repair(const decoder_source& src, repair& r)
   noexcept;
 
   /// @brief Try to construct missing sources from the set of repairs.
@@ -157,10 +158,10 @@ private:
 
   /// @brief Maintains a list of sources which could not be given to callback when some older
   /// sources are still missing.
-  boost::container::map<std::uint32_t, const source*> m_ordered_sources;
+  boost::container::map<std::uint32_t, const decoder_source*> m_ordered_sources;
 
   /// @brief The callback to call when a source has been decoded or received.
-  const std::function<void(const source&)> m_callback;
+  const std::function<void(const decoder_source&)> m_callback;
 
   /// @brief The set of received repairs.
   repairs_set_type m_repairs;

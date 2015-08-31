@@ -78,24 +78,24 @@ private:
 ///
 /// To avoid copies, a source on the decoder side is constructed using directly the packet received
 /// from the network.
-class source final
+class decoder_source final
 {
 public:
 
   /// @brief Can't copy-construct a source
-  source(const source&) = delete;
+  decoder_source(const decoder_source&) = delete;
 
   /// @brief Can't copy a source
-  source& operator=(const source&) = delete;
+  decoder_source& operator=(const decoder_source&) = delete;
 
   /// @brief Can move-construct a source
-  source(source&&) = default;
+  decoder_source(decoder_source&&) = default;
 
   /// @brief Can move a source
-  source& operator=(source&&) = default;
+  decoder_source& operator=(decoder_source&&) = default;
 
   /// @brief Constructor
-  source(std::uint32_t id, packet&& p, std::size_t symbol_size)
+  decoder_source(std::uint32_t id, packet&& p, std::size_t symbol_size)
     : m_id{id}
     , m_symbol_buffer{std::move(p)}
     , m_symbol_size{static_cast<std::uint16_t>(symbol_size)}
