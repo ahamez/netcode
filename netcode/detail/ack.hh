@@ -26,7 +26,8 @@ public:
 
   /// @brief Default constructor.
   ack()
-    : m_source_ids{}, m_nb_packets{0}
+    : m_source_ids{}
+    , m_nb_packets{0}
   {}
 
   /// @brief Constructor.

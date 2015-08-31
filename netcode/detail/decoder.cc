@@ -4,8 +4,6 @@
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/invert_matrix.hh"
-#include "netcode/detail/repair.hh"
-#include "netcode/detail/source.hh"
 
 namespace ntc { namespace detail {
 
