@@ -25,10 +25,10 @@ public:
   // Can't copy a field.
   galois_field& operator=(const galois_field&) = delete;
 
-  // Can move-construct a field.
+  // Can't move-construct a field.
   galois_field(galois_field&&) = delete;
 
-  // Can move a field.
+  // Can't move a field.
   galois_field& operator=(galois_field&&) = delete;
 
 #pragma GCC diagnostic push
