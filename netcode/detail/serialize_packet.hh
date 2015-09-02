@@ -1,12 +1,9 @@
 #pragma once
 
 #include <algorithm> // copy
-
 #include <iostream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
+
 #include <boost/endian/conversion.hpp>
-#pragma GCC diagnostic pop
 
 #include "netcode/packet.hh"
 

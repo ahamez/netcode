@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 #include "tests/netcode/launch.hh"
 #include "tests/netcode/c/handlers.h"
 

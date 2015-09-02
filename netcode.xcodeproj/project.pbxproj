@@ -1094,6 +1094,7 @@
 		2BBC052B1ACD08C700EEDAC0 /* common.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = common.hh; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2BD072741B1053B40010282D /* check_error.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = check_error.hh; sourceTree = "<group>"; };
 		2BD072771B119B140010282D /* traits.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = traits.hh; sourceTree = "<group>"; };
+		2BE239E21B97871100DB8004 /* catch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319511AB0C550001AA9DF /* encoder.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = encoder.hh; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		2BE3196D1AB206FC001AA9DF /* data.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = data.hh; sourceTree = "<group>"; };
 		2BE319701AB237CA001AA9DF /* repair.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = repair.hh; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -1101,7 +1102,6 @@
 		2BE319721AB23910001AA9DF /* buffer.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = buffer.hh; sourceTree = "<group>"; };
 		2BE319731AB2CB1A001AA9DF /* ack.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ack.hh; sourceTree = "<group>"; };
 		2BE3197C1AB32D7F001AA9DF /* tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tests; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BE319831AB32DA0001AA9DF /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		2BE319861AB32DA0001AA9DF /* tests.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cc; sourceTree = "<group>"; };
 		2BE31A0F1AB3710F001AA9DF /* source_list.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_list.hh; sourceTree = "<group>"; };
 		2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_source_list.cc; sourceTree = "<group>"; };
@@ -2494,7 +2494,6 @@
 			isa = PBXGroup;
 			children = (
 				2B75268A1AB41560008DEDAD /* CMakeLists.txt */,
-				2BE319831AB32DA0001AA9DF /* catch.hpp */,
 				2BBA82AA1AF7FA5000FB22BD /* end_to_end.cc */,
 				2B9BD1041AF2A0E000856E96 /* end_to_end_mt.cc */,
 				2BE319841AB32DA0001AA9DF /* netcode */,
@@ -2585,6 +2584,7 @@
 		2BE3198C1AB35D35001AA9DF /* ext */ = {
 			isa = PBXGroup;
 			children = (
+				2BE239E21B97871100DB8004 /* catch.hpp */,
 				2B516A181AC87DC700133F38 /* asio */,
 				2B13A1861B3AF6CC003A3F52 /* boost */,
 			);
@@ -4126,17 +4126,21 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)",
 					/usr/local/include,
-					"$(SRCROOT)/ext",
-					"$(SRCROOT)/ext/asio",
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-isystem",
+					"$(SRCROOT)/ext/asio",
+					"-isystem",
+					"$(SRCROOT)/ext",
+				);
 				OTHER_LDFLAGS = "-lgf_complete";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wsign-compare",
 					"-Wextra",
 					"-Wshadow",
-					"-Wno-unused-local-typedef",
 				);
 			};
 			name = Debug;
@@ -4149,17 +4153,21 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)",
 					/usr/local/include,
-					"$(SRCROOT)/ext",
-					"$(SRCROOT)/ext/asio",
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-isystem",
+					"$(SRCROOT)/ext/asio",
+					"-isystem",
+					"$(SRCROOT)/ext",
+				);
 				OTHER_LDFLAGS = "-lgf_complete";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wsign-compare",
 					"-Wextra",
 					"-Wshadow",
-					"-Wno-unused-local-typedef",
 				);
 			};
 			name = Release;

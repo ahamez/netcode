@@ -1,11 +1,7 @@
 #include <iostream>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
 #include <asio.hpp>
-#pragma GCC diagnostic pop
 
 #include "netcode/packet.hh"
 #include "netcode/detail/packetizer.hh"

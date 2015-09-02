@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 
 #include "netcode/detail/square_matrix.hh"
 

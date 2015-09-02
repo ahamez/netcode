@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 
 #include "netcode/detail/serialize_packet.hh"
 

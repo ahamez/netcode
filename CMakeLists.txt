@@ -79,10 +79,18 @@ set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden ${CMAKE_CXX_FLAGS_RELEASE}")
 
 #--------------------------------------------------------------------------------------------------#
 
-include_directories("${GF_COMPLETE_INCLUDE_DIR}")
+# Workaround for CMake removing isystem flag on Mac OS X with GCC
+# See https://public.kitware.com/Bug/view.php?id=10837
+set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
+set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
+
+include_directories(SYSTEM "${GF_COMPLETE_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
-include_directories("${PROJECT_SOURCE_DIR}/ext")
-include_directories("${PROJECT_SOURCE_DIR}/ext/asio")
+include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext")
+include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext/asio")
+
+#--------------------------------------------------------------------------------------------------#
+
 add_subdirectory(doc/examples)
 add_subdirectory(examples)
 add_subdirectory(netcode)

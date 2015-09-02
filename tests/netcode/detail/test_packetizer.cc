@@ -1,7 +1,7 @@
 #include <algorithm> // copy_n
 #include <vector>
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 
 #include "netcode/detail/packetizer.hh"
 

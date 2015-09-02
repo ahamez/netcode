@@ -1,7 +1,7 @@
 #include <array>
 #include <algorithm>
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 #include "tests/netcode/launch.hh"
 
 #include "netcode/detail/galois_field.hh"

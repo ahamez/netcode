@@ -3,13 +3,8 @@
 #include <memory> // unique_ptr
 #include <vector>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wshadow"
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
-#pragma GCC diagnostic pop
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"

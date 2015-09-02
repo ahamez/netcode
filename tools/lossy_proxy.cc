@@ -5,12 +5,8 @@
 #include <stdexcept> // runtime_error
 #include <string>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #define ASIO_STANDALONE
 #include <asio.hpp>
-#pragma GCC diagnostic pop
 
 #include "tools/loss/burst.hh"
 #include "tools/loss/stream.hh"

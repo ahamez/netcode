@@ -1,6 +1,6 @@
 #include <algorithm> // equal
 
-#include "tests/catch.hpp"
+#include <catch.hpp>
 #include "tests/netcode/launch.hh"
 
 #include "netcode/detail/decoder.hh"
