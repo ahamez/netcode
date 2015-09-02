@@ -31,11 +31,9 @@ public:
   // Can't move a field.
   galois_field& operator=(galois_field&&) = delete;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
   /// @brief Constructor.
   explicit galois_field(std::uint8_t w)
-    : m_gf{}
+    : m_gf() // '()' to avoid warning about members uninitialized
     , m_w{w}
   {
     assert(w== 4 or w == 8 or w == 16 or w == 32);
@@ -44,7 +42,6 @@ public:
       throw std::runtime_error("Can't allocate galois field");
     }
   }
-#pragma GCC diagnostic pop
 
   /// @brief Destructor.
   ~galois_field()
@@ -70,11 +67,11 @@ public:
   noexcept
   {
     m_gf.multiply_region.w32( &m_gf
-                           , const_cast<char*>(src)
-                           , dst
-                           , coeff
-                           , static_cast<int>(len)
-                           , 0 /* don't add to src */);
+                            , const_cast<char*>(src)
+                            , dst
+                            , coeff
+                            , static_cast<int>(len)
+                            , 0 /* don't add to src */);
   }
 
   /// @brief Multiply a region with a constant, add the result with the source.
@@ -87,11 +84,11 @@ public:
   noexcept
   {
     m_gf.multiply_region.w32( &m_gf
-                           , const_cast<char*>(src)
-                           , dst
-                           , coeff
-                           , static_cast<int>(len)
-                           , 1 /* add to src */);
+                            , const_cast<char*>(src)
+                            , dst
+                            , coeff
+                            , static_cast<int>(len)
+                            , 1 /* add to src */);
   }
 
   /// @brief Multiply a size with a coefficient.
