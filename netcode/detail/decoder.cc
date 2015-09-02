@@ -18,7 +18,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const decod
   , m_callback(h)
   , m_repairs{}
   , m_sources{}
-  , m_last_id{nullptr}
+  , m_last_id{}
   , m_missing_sources{}
   , m_nb_useless_repairs{0}
   , m_nb_failed_full_decodings{0}
@@ -345,7 +345,7 @@ noexcept
   // All sources with an identifier strictly less than last_id_ are now considered outdated.
   if (not m_last_id)
   {
-    m_last_id = std::unique_ptr<std::uint32_t>(new std::uint32_t{id});
+    m_last_id = id;
   }
   else
   {

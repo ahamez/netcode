@@ -1,10 +1,10 @@
 #pragma once
 
-#include <memory> // unique_ptr
 #include <vector>
 
 #include <boost/container/flat_set.hpp>
 #include <boost/container/map.hpp>
+#include <boost/optional.hpp>
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"
@@ -167,7 +167,7 @@ private:
   /// @brief Remember the last source identifier.
   ///
   /// All sources with an identifier smaller than this value were received or decoded in the past.
-  std::unique_ptr<std::uint32_t> m_last_id;
+  boost::optional<std::uint32_t> m_last_id;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   missing_sources_type m_missing_sources;
