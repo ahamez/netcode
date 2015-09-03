@@ -15,7 +15,7 @@ decoder::decoder( std::uint8_t galois_field_size, std::function<void(const decod
   , m_in_order{order == in_order::yes ? true : false}
   , m_first_missing_source_in_order{0}
   , m_ordered_sources{}
-  , m_callback(h)
+  , m_callback(std::move(h))
   , m_repairs{}
   , m_sources{}
   , m_last_id{}
