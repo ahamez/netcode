@@ -476,7 +476,7 @@ decoder::attempt_full_decoding()
 
   // Matrix successfully inverted, we can now decode missing sources. Phew!
 
-  // Build an index for fast retreiving of repairs from the inverted matrix.
+  // Build an index for fast retrieving of repairs from the inverted matrix.
   m_index.clear();
   m_index.reserve(m_repairs.size());
   for (auto& rid_repair : m_repairs)
