@@ -13,8 +13,8 @@ namespace ntc {
 struct packet_type_error
   : public std::exception
 {
-  packet_type_error(const packet& p)
-    : error_packet{p}
+  packet_type_error(packet  p)
+    : error_packet{std::move(p)}
   {}
 
   packet error_packet;
