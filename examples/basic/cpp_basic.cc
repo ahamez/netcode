@@ -13,10 +13,6 @@ struct packet_handler
 {
   std::vector<char> buffer;
 
-  packet_handler()
-    : buffer()
-  {}
-
   // This function is invoked repeatedly until the packet is complete.
   void
   operator()(const char* packet, std::size_t sz)
@@ -39,10 +35,6 @@ struct packet_handler
 struct data_handler
 {
   std::vector<char> buffer;
-
-  data_handler()
-    : buffer()
-  {}
 
   // This function is invoked whenever a data is ready, that is a data which has been received or
   // decoded.
