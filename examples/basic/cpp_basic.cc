@@ -13,10 +13,6 @@ struct packet_handler
 {
   std::vector<char> buffer;
 
-  packet_handler()
-    : buffer()
-  {}
-
   // This function is invoked repeatedly until the packet is complete.
   void
   operator()(const char* packet, std::size_t sz)
@@ -39,10 +35,6 @@ struct packet_handler
 struct data_handler
 {
   std::vector<char> buffer;
-
-  data_handler()
-    : buffer()
-  {}
 
   // This function is invoked whenever a data is ready, that is a data which has been received or
   // decoded.
@@ -70,7 +62,7 @@ int main()
     dec.set_ack_frequency(std::chrono::milliseconds{200});
 
     // Create some data.
-    ntc::data data{'a','b','c'};
+    auto data = ntc::data{'a','b','c'};
 
     // Give this data to the encoder.
     // Be aware that the 'data' parameter will be invalid after this call. You can only call one
@@ -79,7 +71,8 @@ int main()
 
     // The buffer of the packet handler for the encoder is now given to the decoder, as if it was
     // received from the network.
-    ntc::packet incoming(enc.packet_handler().buffer.begin(), enc.packet_handler().buffer.end());
+    auto incoming = ntc::packet{ enc.packet_handler().buffer.begin()
+                               , enc.packet_handler().buffer.end()};
     dec(std::move(incoming));
 
     // Now the context of the decoder's data handler contains the sent data.
