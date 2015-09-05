@@ -12,6 +12,7 @@
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
 #include "netcode/detail/source_list.hh"
+#include "netcode/detail/visibility.hh"
 #include "netcode/data.hh"
 #include "netcode/errors.hh"
 #include "netcode/packet.hh"
@@ -24,7 +25,7 @@ namespace ntc {
 /// @brief The class to interact with on the sender side
 /// @ingroup ntc_encoder
 template <typename PacketHandler>
-class encoder final
+class NTC_PUBLIC encoder final
 {
 public:
 

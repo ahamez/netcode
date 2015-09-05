@@ -75,7 +75,7 @@ endif ()
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wsign-compare -Wconversion ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden ${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden -fvisibility-inlines-hidden ${CMAKE_CXX_FLAGS_RELEASE}")
 
 #--------------------------------------------------------------------------------------------------#
 

@@ -1107,6 +1107,7 @@
 		2BF1A6391ABAC84A009C32B9 /* test_source_list.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_source_list.cc; sourceTree = "<group>"; };
 		2BF1A63B1ABAFA07009C32B9 /* test_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_buffer.cc; sourceTree = "<group>"; };
 		2BF1A6401ABB6CCC009C32B9 /* encoder.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = encoder.hh; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		2BF733121B9AB321008965A2 /* visibility.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = visibility.hh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2546,6 +2547,7 @@
 				2BE31A0F1AB3710F001AA9DF /* source_list.hh */,
 				2B377EA01B416F5800796F20 /* symbol_alignment.hh */,
 				2BD072771B119B140010282D /* traits.hh */,
+				2BF733121B9AB321008965A2 /* visibility.hh */,
 			);
 			path = detail;
 			sourceTree = "<group>";

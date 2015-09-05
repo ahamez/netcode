@@ -2,6 +2,7 @@
 
 #include <exception>
 
+#include "netcode/detail/visibility.hh"
 #include "netcode/packet.hh"
 
 namespace ntc {
@@ -10,7 +11,7 @@ namespace ntc {
 
 /// @brief Exception thrown when a packet type could not have been decoded.
 /// @ingroup ntc_error
-struct packet_type_error
+struct NTC_PUBLIC packet_type_error
   : public std::exception
 {
   packet_type_error(packet  p)
@@ -24,7 +25,7 @@ struct packet_type_error
 
 /// @brief Exception raised when the maximum authorized number of bytes have been read.
 /// @ingroup ntc_error
-struct overflow_error
+struct NTC_PUBLIC overflow_error
   : public std::exception
 {};
 

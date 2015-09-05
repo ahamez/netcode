@@ -2,6 +2,7 @@
 
 #include "netcode/detail/packet_type.hh"
 #include "netcode/detail/traits.hh"
+#include "netcode/detail/visibility.hh"
 #include "netcode/decoder.hh"
 #include "netcode/encoder.hh"
 #include "netcode/packet.hh"
@@ -14,6 +15,7 @@ namespace ntc {
 /// @throw packet_type_error if the type could not have been read.
 /// @ingroup ntc
 template <typename Encoder, typename Decoder>
+NTC_PUBLIC
 std::size_t
 dispatch(Encoder& encoder, Decoder& decoder, packet&& p)
 {

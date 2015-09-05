@@ -1,5 +1,7 @@
 #pragma once
 
+#include "netcode/detail/visibility.hh"
+
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
@@ -7,7 +9,7 @@ namespace ntc {
 /// @brief Describe if a decoder gives data in order or not
 /// @see decoder::decoder
 /// @ingroup ntc_decoder
-enum class in_order {yes, no};
+enum class NTC_PUBLIC in_order {yes, no};
 
 /*------------------------------------------------------------------------------------------------*/
 

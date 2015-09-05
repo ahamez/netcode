@@ -6,6 +6,7 @@
 #include "netcode/detail/buffer.hh"
 #include "netcode/detail/serialize_packet_fwd.hh"
 #include "netcode/detail/symbol_alignment.hh"
+#include "netcode/detail/visibility.hh"
 
 namespace ntc {
 
@@ -22,7 +23,7 @@ namespace ntc {
 ///  }
 ///}
 /// @endcode
-class packet
+class NTC_PUBLIC packet
 {
 public:
 

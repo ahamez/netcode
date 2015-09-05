@@ -1,5 +1,7 @@
 #pragma once
 
+#include "netcode/detail/visibility.hh"
+
 namespace ntc {
 
 /*------------------------------------------------------------------------------------------------*/
@@ -8,7 +10,7 @@ namespace ntc {
 /// @see encoder::set_code_type
 /// @see encoder::code_type
 /// @ingroup ntc_encoder
-enum class systematic {yes, no};
+enum class NTC_PUBLIC systematic {yes, no};
 
 /*------------------------------------------------------------------------------------------------*/
 

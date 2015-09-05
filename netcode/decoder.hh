@@ -13,6 +13,7 @@
 #include "netcode/detail/packetizer.hh"
 #include "netcode/detail/repair.hh"
 #include "netcode/detail/source.hh"
+#include "netcode/detail/visibility.hh"
 #include "netcode/errors.hh"
 #include "netcode/in_order.hh"
 
@@ -23,7 +24,7 @@ namespace ntc {
 /// @ingroup ntc_decoder
 /// @brief The class to interact with on the receiver side.
 template <typename PacketHandler, typename DataHandler>
-class decoder final
+class NTC_PUBLIC decoder final
 {
 public:
 
