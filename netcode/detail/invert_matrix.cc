@@ -6,7 +6,7 @@ namespace ntc { namespace detail {
 
 /*------------------------------------------------------------------------------------------------*/
 
-std::pair<bool, std::size_t>
+boost::optional<std::size_t>
 invert(galois_field& gf, square_matrix& mat, square_matrix& inv)
 noexcept
 {
@@ -40,7 +40,7 @@ noexcept
       if (j == rows)
       {
         // Failure, matrix is not invertible.
-        return {true, j - 1};
+        return {j - 1};
       }
 
       const auto row_start2 = j * cols;
@@ -123,7 +123,7 @@ noexcept
   }
 
   // Everything went OK.
-  return {false, 0u};
+  return {};
 }
 
 /*------------------------------------------------------------------------------------------------*/

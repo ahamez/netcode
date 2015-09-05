@@ -452,7 +452,7 @@ decoder::attempt_full_decoding()
   // Invert it.
   m_inv.resize(m_coefficients.dimension());
   const auto r_col = invert(m_gf, m_coefficients, m_inv);
-  if (r_col.first)
+  if (r_col)
   {
     // Inversion failed, remove the faulty repair.
     m_nb_failed_full_decodings += 1;
@@ -461,7 +461,7 @@ decoder::attempt_full_decoding()
     auto r_cit = m_repairs.begin();
     // To avoid a conversion warning with clang's -Wconversion.
     using difference_type = std::iterator_traits<decltype(r_cit)>::difference_type;
-    std::advance(r_cit, static_cast<difference_type>(r_col.second));
+    std::advance(r_cit, static_cast<difference_type>(*r_col));
 
     // Remove repair from missing sources that reference it.
     for (const auto src : r_cit->second.source_ids())

@@ -140,7 +140,7 @@ TEST_CASE("Compare with jerasure matrix inversion")
 
     // Matrix is invertible.
     REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == 0);
-    REQUIRE(not detail::invert(gf, m1, inv1).first);
+    REQUIRE(not detail::invert(gf, m1, inv1));
 
     // The result is the same as jerasure's.
     for (auto i = 0ul; i < 3 * 3; ++i)
@@ -172,7 +172,7 @@ TEST_CASE("Non-invertible matrix")
   detail::square_matrix inv1{3};
 
   REQUIRE(jerasure_invert_matrix(m0, inv0, gf) == -1);
-  REQUIRE(detail::invert(gf, m1, inv1).first);
+  REQUIRE(detail::invert(gf, m1, inv1));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -199,7 +199,7 @@ TEST_CASE("Matrix is correctly inverted")
     detail::square_matrix inv{3};
 
     // Matrix is invertible.
-    REQUIRE(not detail::invert(gf, copy, inv).first);
+    REQUIRE(not detail::invert(gf, copy, inv));
 
     // Multiply m and inv
     detail::square_matrix identity{3};
