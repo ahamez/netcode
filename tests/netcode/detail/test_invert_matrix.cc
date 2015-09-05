@@ -143,7 +143,10 @@ TEST_CASE("Compare with jerasure matrix inversion")
     REQUIRE(not detail::invert(gf, m1, inv1).first);
 
     // The result is the same as jerasure's.
-    REQUIRE(inv0.vec() == inv1.vec());
+    for (auto i = 0ul; i < 3 * 3; ++i)
+    {
+      REQUIRE(inv0[i] == inv1[i]);
+    }
   });
 }
 

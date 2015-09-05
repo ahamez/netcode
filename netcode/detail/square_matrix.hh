@@ -75,13 +75,6 @@ public:
     return m_dimension;
   }
 
-  const buffer<std::uint32_t>&
-  vec()
-  const noexcept
-  {
-    return m_vec;
-  }
-
 private:
 
   std::size_t m_dimension;
