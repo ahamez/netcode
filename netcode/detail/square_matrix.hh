@@ -19,6 +19,7 @@ public:
     , m_vec(n*n)
   {}
 
+  /// @brief Get the value located at (@p row, @p col)
   std::uint32_t
   operator()(std::size_t row, std::size_t col)
   const noexcept
@@ -26,6 +27,7 @@ public:
     return m_vec[col * m_dimension + row];
   }
 
+  /// @brief Get a mutable reference to the value located at (@p row, @p col)
   std::uint32_t&
   operator()(std::size_t row, std::size_t col)
   noexcept
@@ -33,6 +35,7 @@ public:
      return m_vec[col * m_dimension + row];
   }
 
+  /// @brief Get a pointer to the (immutable) column @p col
   const std::uint32_t*
   column(std::size_t col)
   const noexcept
@@ -40,6 +43,7 @@ public:
     return m_vec.data() + (col * m_dimension);
   }
 
+  /// @brief Get a pointer to the column @p col
   std::uint32_t*
   column(std::size_t col)
   noexcept
@@ -47,6 +51,8 @@ public:
     return m_vec.data() + (col * m_dimension);
   }
 
+  /// @brief Get the value located at the position @p index
+  /// @note The matrix stores column by column, not row by row
   std::uint32_t
   operator[](std::size_t index)
   const noexcept
@@ -54,6 +60,8 @@ public:
     return m_vec[index];
   }
 
+  /// @brief Get a mutable reference to the value located at the position @p index
+  /// @note The matrix stores column by column, not row by row
   std::uint32_t&
   operator[](std::size_t index)
   noexcept
@@ -61,6 +69,8 @@ public:
     return m_vec[index];
   }
 
+  /// @brief Resize to a @p n * @p n matrix
+  /// @note Entries are not initialized
   void
   resize(std::size_t n)
   {
@@ -68,6 +78,7 @@ public:
     m_dimension = n;
   }
 
+  /// @brief Get the current dimension of the matrix
   std::size_t
   dimension()
   const noexcept
@@ -77,7 +88,10 @@ public:
 
 private:
 
+  /// @brief The current dimension
   std::size_t m_dimension;
+
+  /// @brief The internal storage
   buffer<std::uint32_t> m_vec;
 };
 
