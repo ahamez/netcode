@@ -581,20 +581,19 @@ decoder::flush_ordered_sources()
   // If we find the first missing source, we can give to user all sources with a identifier
   // that follow m_first_missing_source in sequence.
   auto cit = m_ordered_sources.find(m_first_missing_source_in_order);
-  if (cit == m_ordered_sources.end())
+  if (cit != m_ordered_sources.end())
   {
-    return;
-  }
-  while (true)
-  {
-    assert(cit->first == m_first_missing_source_in_order);
-    m_callback(*cit->second);
-    cit = m_ordered_sources.erase(cit);
-    m_first_missing_source_in_order += 1;
-
-    if (cit == m_ordered_sources.end() or cit->first > m_first_missing_source_in_order)
+    while (true)
     {
-      break;
+      assert(cit->first == m_first_missing_source_in_order);
+      m_callback(*cit->second);
+      cit = m_ordered_sources.erase(cit);
+      m_first_missing_source_in_order += 1;
+
+      if (cit == m_ordered_sources.end() or cit->first > m_first_missing_source_in_order)
+      {
+        break;
+      }
     }
   }
 }
