@@ -48,7 +48,8 @@ public:
   using repairs_iterators_type = boost::container::flat_set< repairs_set_type::iterator
                                                            , cmp_repairs_iterator>;
 
-  /// @brief Type of an ordered container of missing sources.
+  /// @brief Type of an ordered container that associate missing sources to the repairs that
+  /// contain them.
   using missing_sources_type = boost::container::map<std::uint32_t, repairs_iterators_type>;
 
 public:

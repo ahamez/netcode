@@ -98,6 +98,7 @@ decoder::operator()(decoder_repair&& incoming_r)
   auto r_cit = insertion.first;
   auto& r = insertion.first->second;
 
+  // Remove from incoming repair all existing sources and link with missing sources.
   // Reverse loop as flat_set::erase() invalidates iterators behind the one being erased.
   for ( auto id_rcit = r.source_ids().rbegin(), end = r.source_ids().rend(); id_rcit != end
       ; ++id_rcit)
@@ -113,9 +114,8 @@ decoder::operator()(decoder_repair&& incoming_r)
       const auto to_erase = std::next(id_rcit).base();
       r.source_ids().erase(to_erase);
     }
-    else
+    else // Link this repair with the missing sources it references.
     {
-      // Link this repair with the missing sources it references.
       auto search_src_id = m_missing_sources.find(*id_rcit);
       if (search_src_id == m_missing_sources.end())
       {
@@ -131,6 +131,7 @@ decoder::operator()(decoder_repair&& incoming_r)
   }
   assert(not r.source_ids().empty());
 
+  // Check if we can rebuild a missing source directly with this repair.
   if (r.source_ids().size() == 1)
   {
     // Create missing source.
@@ -262,7 +263,7 @@ decoder::add_source_recursive(decoder_source&& src)
     flush_ordered_sources();
   }
 
-  // First, look for all repairs that encode this source.
+  // First, remove this source from all repairs that encode it.
   const auto search = m_missing_sources.find(src.id());
   if (search != m_missing_sources.end())
   {
