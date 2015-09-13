@@ -52,7 +52,7 @@ decoder::operator()(decoder_source&& src)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::operator()(repair&& incoming_r)
+decoder::operator()(decoder_repair&& incoming_r)
 {
   assert(not incoming_r.source_ids().empty());
 
@@ -154,7 +154,7 @@ decoder::operator()(repair&& incoming_r)
 /*------------------------------------------------------------------------------------------------*/
 
 decoder_source
-decoder::create_source_from_repair(const repair& r)
+decoder::create_source_from_repair(const decoder_repair& r)
 noexcept
 {
   assert(r.source_ids().size() == 1 && "Repair encodes more that 1 source");
@@ -180,7 +180,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::remove_source_from_repair(const decoder_source& src, repair& r)
+decoder::remove_source_from_repair(const decoder_source& src, decoder_repair& r)
 noexcept
 {
   remove_source_data_from_repair(src, r);
@@ -398,7 +398,7 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-decoder::remove_source_data_from_repair(const decoder_source& src, repair& r)
+decoder::remove_source_data_from_repair(const decoder_source& src, decoder_repair& r)
 noexcept
 {
   assert(r.source_ids().size() > 1 && "Repair encodes only one source");

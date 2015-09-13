@@ -141,25 +141,25 @@ private:
 ///
 /// To avoid copies, a repair on the decoder side is constructed using directly the packet received
 /// from the network.
-class repair final
+class decoder_repair final
 {
 public:
 
   /// @brief Can't copy-construct a repair.
-  repair(const repair&) = delete;
+  decoder_repair(const decoder_repair&) = delete;
 
   /// @brief Can't copy a repair.
-  repair& operator=(const repair&) = delete;
+  decoder_repair& operator=(const decoder_repair&) = delete;
 
   /// @brief Can move-construct a repair.
-  repair(repair&&) = default;
+  decoder_repair(decoder_repair&&) = default;
 
   /// @brief Can move a repair.
-  repair& operator=(repair&&) = default;
+  decoder_repair& operator=(decoder_repair&&) = default;
 
   /// @brief Construct with an existing list of source identifiers and a symbol.
-  repair( std::uint32_t id, std::uint16_t encoded_size, source_id_list&& ids
-        , packet&& p, std::size_t symbol_size)
+  decoder_repair( std::uint32_t id, std::uint16_t encoded_size, source_id_list&& ids
+                , packet&& p, std::size_t symbol_size)
     : m_id{id}
     , m_sources_ids{std::move(ids)}
     , m_encoded_size{encoded_size}

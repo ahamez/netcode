@@ -14,7 +14,7 @@ using namespace ntc;
 
 // Convert an encoder repair to a decoder repair
 inline
-detail::repair
+detail::decoder_repair
 mk_decoder_repair(const detail::encoder_repair& r)
 {
   packet p;

@@ -23,7 +23,7 @@ class decoder final
 public:
 
   /// @brief Type of an ordered container of repairs.
-  using repairs_set_type = boost::container::map<std::uint32_t, repair>;
+  using repairs_set_type = boost::container::map<std::uint32_t, decoder_repair>;
 
   /// @brief Type of an ordered container of sources.
   using sources_set_type = boost::container::map<std::uint32_t, decoder_source>;
@@ -63,18 +63,18 @@ public:
 
   /// @brief What to do when a repair is received.
   void
-  operator()(repair&& incoming_r);
+  operator()(decoder_repair&& incoming_r);
 
   /// @brief Decode a source contained in a repair.
   /// @attention @p r shall encode exactly one source.
   decoder_source
-  create_source_from_repair(const repair& r)
+  create_source_from_repair(const decoder_repair& r)
   noexcept;
 
   /// @brief Remove a source from a repair.
   /// @attention @p r shall encode more than one source.
   void
-  remove_source_from_repair(const decoder_source& src, repair& r)
+  remove_source_from_repair(const decoder_source& src, decoder_repair& r)
   noexcept;
 
   /// @brief Get the current set of repairs, indexed by identifier.
@@ -127,7 +127,7 @@ private:
   /// identifiers afterwards.
   /// @attention @p r shall encode more than one source.
   void
-  remove_source_data_from_repair(const decoder_source& src, repair& r)
+  remove_source_data_from_repair(const decoder_source& src, decoder_repair& r)
   noexcept;
 
   /// @brief Try to construct missing sources from the set of repairs.
@@ -188,7 +188,7 @@ private:
   square_matrix m_inv;
 
   /// @brief Re-use the same memory for the index of repairs in the inverted matrix.
-  std::vector<repair*> m_index;
+  std::vector<decoder_repair*> m_index;
 };
 
 /*------------------------------------------------------------------------------------------------*/

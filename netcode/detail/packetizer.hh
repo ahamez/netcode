@@ -122,7 +122,7 @@ public:
   }
 
   /// @throw overflow_error
-  std::pair<repair, std::size_t>
+  std::pair<decoder_repair, std::size_t>
   read_repair(packet&& p)
   {
     // Packet type should have been verified by the caller.
@@ -158,7 +158,7 @@ public:
     // Read encoded size.
     const auto encoded_sz = read<std::uint16_t>(data, max_len);
 
-    return std::make_pair( repair{id, encoded_sz, std::move(ids), std::move(p), symbol_size}
+    return std::make_pair( decoder_repair{id, encoded_sz, std::move(ids), std::move(p), symbol_size}
                          , reinterpret_cast<std::size_t>(data) - begin); // Number of read bytes.
   }
 
