@@ -6,7 +6,6 @@
 #endif
 
 #include <chrono>
-#include <functional>
 
 #include "netcode/detail/decoder.hh"
 #include "netcode/detail/packet_type.hh"
@@ -52,8 +51,9 @@ public:
     , m_last_ack_date(std::chrono::steady_clock::now())
     , m_ack{}
     , m_decoder{ m_galois_field_size
-              , std::bind(&decoder::handle_source, this, std::placeholders::_1)
-              , ordered}
+                 // The real decoder needs to know how to handle decoded or received sources.
+               , [this](const detail::decoder_source& src){handle_source(src);}
+               , ordered}
     , m_packet_handler(std::forward<PacketHandler_>(packet_handler))
     , m_data_handler(std::forward<DataHandler_>(data_handler))
     , m_packetizer{m_packet_handler}
