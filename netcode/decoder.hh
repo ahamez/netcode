@@ -35,11 +35,17 @@ public:
 
 public:
 
-  /// @brief Can't copy-construct an encoder.
+  /// @brief Can't copy-construct a decoder.
   decoder(const decoder&) = delete;
 
-  /// @brief Can't copy an encoder.
+  /// @brief Can't copy a decoder.
   decoder& operator=(const decoder&) = delete;
+
+  /// @brief Can't move-construct a decoder.
+  decoder(decoder&&) = delete;
+
+  /// @brief Can't move a decoder.
+  decoder& operator=(decoder&&) = delete;
 
   /// @brief Constructor.
   template <typename PacketHandler_, typename DataHandler_>

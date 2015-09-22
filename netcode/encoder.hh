@@ -40,6 +40,12 @@ public:
   /// @brief Can't copy an encoder
   encoder& operator=(const encoder&) = delete;
 
+  /// @brief Can't copy-construct an encoder
+  encoder(encoder&&) = delete;
+
+  /// @brief Can't copy an encoder
+  encoder& operator=(encoder&&) = delete;
+
   /// @brief Constructor
   template <typename PacketHandler_>
   encoder(std::uint8_t galois_field_size, PacketHandler_&& packet_handler)
