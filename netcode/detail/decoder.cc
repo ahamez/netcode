@@ -56,9 +56,8 @@ decoder::operator()(decoder_repair&& incoming_r)
 {
   assert(not incoming_r.source_ids().empty());
 
-  //                     last id in source_ids
-  //                vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-  if (m_last_id and *(incoming_r.source_ids().end() - 1) < *m_last_id)
+  const auto last_id_in_source_ids = *(incoming_r.source_ids().end() - 1);
+  if (m_last_id and last_id_in_source_ids < *m_last_id)
   {
     // It's a repair that provide outdated informations, drop it.
     return;
@@ -344,14 +343,7 @@ decoder::drop_outdated(std::uint32_t id)
 noexcept
 {
   // All sources with an identifier strictly less than last_id_ are now considered outdated.
-  if (not m_last_id)
-  {
-    m_last_id = id;
-  }
-  else
-  {
-    *m_last_id = id;
-  }
+  m_last_id = id;
 
   // Remove repairs which references this id.
   for (auto cit = m_repairs.begin(), end = m_repairs.end(); cit != end;)
