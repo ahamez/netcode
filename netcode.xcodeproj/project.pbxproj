@@ -2836,7 +2836,7 @@
 		2BC3179F1AB0C53200C61FBB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0720;
 				TargetAttributes = {
 					2B218AEA1AD7C736000D2657 = {
 						CreatedOnToolsVersion = 6.3;
@@ -3150,6 +3150,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3194,6 +3195,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -4123,19 +4125,22 @@
 		2BC317A31AB0C53200C61FBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)",
-					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-isystem",
 					"$(SRCROOT)/ext/asio",
 					"-isystem",
 					"$(SRCROOT)/ext",
+					"-isystem",
+					/usr/local/include,
 				);
 				OTHER_LDFLAGS = "-lgf_complete";
 				WARNING_CFLAGS = (
@@ -4154,7 +4159,6 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)",
-					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -4163,6 +4167,8 @@
 					"$(SRCROOT)/ext/asio",
 					"-isystem",
 					"$(SRCROOT)/ext",
+					"-isystem",
+					/usr/local/include,
 				);
 				OTHER_LDFLAGS = "-lgf_complete";
 				WARNING_CFLAGS = (
