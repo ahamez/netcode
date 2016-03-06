@@ -65,8 +65,6 @@ int main()
     auto data = ntc::data{'a','b','c'};
 
     // Give this data to the encoder.
-    // Be aware that the 'data' parameter will be invalid after this call. You can only call one
-    // function on an invalid data: data::reset.
     enc(std::move(data));
 
     // The buffer of the packet handler for the encoder is now given to the decoder, as if it was
@@ -80,7 +78,7 @@ int main()
     assert(dec.data_handler().buffer[1] == 'b');
     assert(dec.data_handler().buffer[2] == 'c');
 
-    // Reset data: it's now legit to use it again.
+    // Resize data: it's now legit to use it again.
     data.resize(4);
 
     // We also clear buffers of handlers.
