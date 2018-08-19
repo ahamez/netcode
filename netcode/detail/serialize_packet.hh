@@ -27,16 +27,17 @@ struct serialize_packet
   packet
   read(std::istream& is)
   {
-    packet p;
+    auto p = packet{};
 
     std::istreambuf_iterator<char> isb(is);
     auto sz = std::uint16_t{};
     std::copy_n(isb, 2, reinterpret_cast<char*>(&sz));
     ++isb;
-    sz = boost::endian::big_to_native(sz);
 
-    p.m_buffer.resize(sz);
-    std::copy_n(isb, sz, p.m_buffer.begin());
+    const auto sz_native = boost::endian::big_to_native(sz);
+
+    p.m_buffer.resize(sz_native);
+    std::copy_n(isb, sz_native, p.m_buffer.begin());
 
     ++isb;
     return p;
