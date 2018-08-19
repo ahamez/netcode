@@ -263,7 +263,7 @@ TEST_CASE("Encoder sends repairs")
 
 /*------------------------------------------------------------------------------------------------*/
 
-TEST_CASE("Decoder: invalid memory access scenerio")
+TEST_CASE("Decoder: invalid memory access scenario")
 {
   launch([](std::uint8_t gf_size)
   {
