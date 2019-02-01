@@ -17,7 +17,6 @@ inline
 detail::decoder_repair
 mk_decoder_repair(const detail::encoder_repair& r)
 {
-  packet p;
   return { r.id(), r.encoded_size(), detail::source_id_list{r.source_ids()}
          , r.symbol(), r.symbol().size()};
 }
