@@ -102,7 +102,7 @@ public:
     return m_vec.size();
   }
 
-//private:
+private:
 
   // Stores all symbols.
   std::vector<std::vector<char>> m_vec;
