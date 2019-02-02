@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   // Create a decoder.
   ntc_decoder_t* dec = ntc_new_decoder( 8, ntc_in_order_yes, decoder_packet_handler
                                       , decoder_data_handler);
-  ntc_decoder_set_ack_frequency(dec, 200 /* ms */);
+  ntc_decoder_set_ack_period(dec, 200 /* ms */);
 
   // Create an holder for 3 bytes.
   ntc_data_t* data = ntc_new_data(3);

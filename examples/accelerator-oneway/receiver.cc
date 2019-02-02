@@ -264,7 +264,7 @@ main(int argc, char** argv)
              , data_handler{app_socket, app_endpoint});
 
 
-    decoder.set_ack_frequency(std::chrono::milliseconds{5});
+    decoder.set_ack_period(std::chrono::milliseconds{5});
     decoder.set_ack_nb_packets(64);
     netcode_handler netcode{io, decoder, netcode_socket, netcode_endpoint};
     io.run();

@@ -76,11 +76,11 @@ __attribute__((nonnull));
 /*------------------------------------------------------------------------------------------------*/
 
 /// @ingroup c_decoder
-/// @brief Configure the frequency at which acknowledgments will be sent
+/// @brief Configure the period at which acknowledgments will be sent
 /// @param dec The decoder to configure
-/// @param frequency The requested frequency, if 0, deactivate this feature
+/// @param period The requested period, if 0, deactivate this feature
 void
-ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
+ntc_decoder_set_ack_period(ntc_decoder_t* dec, size_t period)
 noexcept
 __attribute__((nonnull));
 

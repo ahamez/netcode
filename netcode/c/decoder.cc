@@ -48,10 +48,10 @@ noexcept
 /*------------------------------------------------------------------------------------------------*/
 
 void
-ntc_decoder_set_ack_frequency(ntc_decoder_t* dec, size_t frequency)
+ntc_decoder_set_ack_period(ntc_decoder_t* dec, size_t period)
 noexcept
 {
-  dec->set_ack_frequency(std::chrono::milliseconds{frequency});
+  dec->set_ack_period(std::chrono::milliseconds{period});
 }
 
 /*------------------------------------------------------------------------------------------------*/

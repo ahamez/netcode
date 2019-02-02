@@ -18,8 +18,8 @@ def configure():
   client_parser = subparsers.add_parser('client', help='client mode')
   client_parser.add_argument('host', action='store')
   client_parser.add_argument('port', action='store', type=int)
-  client_parser.add_argument('--frequency', type=int, default=1, help='ms', metavar='value')
   
+  client_parser.add_argument('--period', type=int, default=1, help='ms', metavar='value')
   server_parser = subparsers.add_parser('server', help='server mode')
   server_parser.add_argument('--host', action='store', default='127.0.0.1')
   server_parser.add_argument('port', action='store', type=int)
@@ -83,8 +83,8 @@ def client(conf):
   for i in range(0, conf.nb_packets):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(make_packet(conf, i), (host, port))
-    time.sleep(conf.frequency / 1000)
     
+    time.sleep(conf.period / 1000)
 #------------------------------------------------------------------------------------------------------------#
 
 def main(conf):

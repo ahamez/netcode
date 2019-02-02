@@ -59,7 +59,7 @@ int main()
     // Create a decoder.
     ntc::decoder<packet_handler, data_handler>
       dec{8, ntc::in_order::yes, packet_handler{}, data_handler{}};
-    dec.set_ack_frequency(std::chrono::milliseconds{200});
+    dec.set_ack_period(std::chrono::milliseconds{200});
 
     // Create some data.
     auto data = ntc::data{'a','b','c'};

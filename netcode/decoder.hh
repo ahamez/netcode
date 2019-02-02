@@ -52,7 +52,7 @@ public:
   decoder( std::uint8_t galois_field_size, in_order ordered, PacketHandler_&& packet_handler
          , DataHandler_&& data_handler)
     : m_galois_field_size{galois_field_size}
-    , m_ack_frequency{std::chrono::milliseconds{100}}
+    , m_ack_period{std::chrono::milliseconds{100}}
     , m_ack_nb_packets{50}
     , m_last_ack_date(std::chrono::steady_clock::now())
     , m_ack{}
@@ -236,10 +236,10 @@ public:
       generate_ack();
       m_last_ack_date = std::chrono::steady_clock::now();
     }
-    else if (m_ack_frequency != std::chrono::milliseconds{0})
+    else if (m_ack_period != std::chrono::milliseconds{0})
     {
       const auto now = std::chrono::steady_clock::now();
-      if ((now - m_last_ack_date) >= m_ack_frequency)
+      if ((now - m_last_ack_date) >= m_ack_period)
       {
         generate_ack();
         m_last_ack_date = now;
@@ -247,24 +247,24 @@ public:
     }
   }
 
-  /// @brief Set the frequency at which ack will be sent from the decoder to the encoder.
+  /// @brief Set the period at which ack will be sent from the decoder to the encoder.
   ///
   /// If 0, ack won't be sent automatically. The method @ref decoder::generate_ack can still be
   /// called to force the generation of an ack.
   decoder&
-  set_ack_frequency(std::chrono::milliseconds f)
+  set_ack_period(std::chrono::milliseconds f)
   noexcept
   {
-    m_ack_frequency = f;
+    m_ack_period = f;
     return *this;
   }
 
-  /// @brief Get the frequency at which ack will be sent from the decoder to the encoder.
+  /// @brief Get the period at which ack will be sent from the decoder to the encoder.
   std::chrono::milliseconds
-  ack_frequency()
+  ack_period()
   const noexcept
   {
-    return m_ack_frequency;
+    return m_ack_period;
   }
 
   /// @brief Set how many packets to receive before an ack is sent from the decoder to the encoder.
@@ -304,8 +304,8 @@ private:
   /// @brief The Galois field size.
   const std::uint8_t m_galois_field_size;
 
-  /// @brief The frequency at which ack will be sent back from the decoder to the encoder.
-  std::chrono::milliseconds m_ack_frequency;
+  /// @brief The period at which ack will be sent back from the decoder to the encoder.
+  std::chrono::milliseconds m_ack_period;
 
   /// @brief How many packets to receive before an ack is sent from the decoder to the encoder.
   std::uint16_t m_ack_nb_packets;
