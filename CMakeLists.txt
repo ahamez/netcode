@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.9)
+cmake_minimum_required (VERSION 3.10)
 
 #--------------------------------------------------------------------------------------------------#
 
@@ -82,11 +82,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden -fvisibility-inlines-hidden ${CMAKE_CXX_FLAGS_RELEASE}")
 
 #--------------------------------------------------------------------------------------------------#
-
-# Workaround for CMake removing isystem flag on Mac OS X with GCC
-# See https://public.kitware.com/Bug/view.php?id=10837
-set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
-set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 
 include_directories(SYSTEM "${GF_COMPLETE_INCLUDE_DIR}")
 include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
