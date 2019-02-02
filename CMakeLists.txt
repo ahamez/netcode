@@ -58,7 +58,7 @@ message(STATUS "Found ${GF_COMPLETE_LIBRARY}")
 
 #--------------------------------------------------------------------------------------------------#
 
-find_package(BOOST 1.68 REQUIRED)
+find_package(Boost 1.68 REQUIRED COMPONENTS system)
 
 #--------------------------------------------------------------------------------------------------#
 
@@ -86,7 +86,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden -fvisibility-inlines-hidden ${C
 include_directories(SYSTEM "${GF_COMPLETE_INCLUDE_DIR}")
 include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
 include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext")
-include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext/asio")
 include_directories("${PROJECT_SOURCE_DIR}")
 
 #--------------------------------------------------------------------------------------------------#

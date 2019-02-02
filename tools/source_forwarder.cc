@@ -1,16 +1,16 @@
 #include <iostream>
 
-#define ASIO_STANDALONE
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include "netcode/packet.hh"
 #include "netcode/detail/packetizer.hh"
 
 /*------------------------------------------------------------------------------------------------*/
 
-using asio::ip::address_v4;
-using asio::ip::udp;
+using boost::asio::ip::address_v4;
+using boost::asio::ip::udp;
 
+namespace boost {
 namespace asio {
 
   inline
@@ -21,6 +21,7 @@ namespace asio {
   }
 
 } // namespace asio
+} // namespace boost
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -54,14 +55,14 @@ main(int argc, const char** argv)
     const auto out_ip = argv[2];
     const auto out_port = argv[3];
 
-    asio::io_service io;
+    boost::asio::io_service io;
 
     udp::socket in_socket{io, udp::endpoint{udp::v4(), in_port}};
-    in_socket.set_option(asio::socket_base::receive_buffer_size{8192*64});
+    in_socket.set_option(boost::asio::socket_base::receive_buffer_size{8192*64});
     udp::endpoint in_endpoint;
 
     udp::socket out_socket{io, udp::endpoint(udp::v4(), 0)};
-    out_socket.set_option(asio::socket_base::send_buffer_size{8192*64});
+    out_socket.set_option(boost::asio::socket_base::send_buffer_size{8192*64});
     udp::resolver resolver(io);
     udp::endpoint out_endpoint = *resolver.resolve({udp::v4(), out_ip, out_port});
 
@@ -72,13 +73,13 @@ main(int argc, const char** argv)
     {
       ntc::packet buffer(4096);
 
-      const auto sz = in_socket.receive_from(asio::buffer(buffer), in_endpoint);
+      const auto sz = in_socket.receive_from(boost::asio::buffer(buffer), in_endpoint);
       if (sz > 0)
       {
         if (buffer[0] == 2) // source
         {
           const auto src = packetizer.read_source(std::move(buffer)).first;
-          out_socket.send_to(asio::buffer(src.symbol(), src.symbol_size()), out_endpoint);
+          out_socket.send_to(boost::asio::buffer(src.symbol(), src.symbol_size()), out_endpoint);
         }
       }
     }

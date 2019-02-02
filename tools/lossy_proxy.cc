@@ -5,8 +5,7 @@
 #include <stdexcept> // runtime_error
 #include <string>
 
-#define ASIO_STANDALONE
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include "tools/loss/burst.hh"
 #include "tools/loss/stream.hh"
@@ -25,8 +24,8 @@ static unsigned int display_timer = 5;
 
 /*------------------------------------------------------------------------------------------------*/
 
-using asio::ip::address_v4;
-using asio::ip::udp;
+using boost::asio::ip::address_v4;
+using boost::asio::ip::udp;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -36,8 +35,8 @@ listen( udp::socket& in_socket, udp::endpoint& in_endpoint
       , udp::socket& out_socket, udp::endpoint& out_endpoint
       , std::array<char, 4096>& buffer, Loss&& loss, std::size_t& losses, std::size_t& total)
 {
-  in_socket.async_receive_from( asio::buffer(buffer), in_endpoint
-                              , [&](const asio::error_code& err, std::size_t sz)
+  in_socket.async_receive_from( boost::asio::buffer(buffer), in_endpoint
+                              , [&](const boost::system::error_code& err, std::size_t sz)
                                 {
                                   if (err)
                                   {
@@ -51,7 +50,8 @@ listen( udp::socket& in_socket, udp::endpoint& in_endpoint
 
                                     if (not loss())
                                     {
-                                      out_socket.send_to(asio::buffer(buffer, sz), out_endpoint);
+                                      out_socket.send_to(boost::asio::buffer(buffer, sz),
+                                                         out_endpoint);
                                     }
                                     else
                                     {
@@ -69,10 +69,10 @@ listen( udp::socket& in_socket, udp::endpoint& in_endpoint
 /*------------------------------------------------------------------------------------------------*/
 
 void
-display(asio::steady_timer& timer)
+display(boost::asio::steady_timer& timer)
 {
   timer.expires_from_now(std::chrono::seconds(display_timer));
-  timer.async_wait([&](const asio::error_code& err)
+  timer.async_wait([&](const boost::system::error_code& err)
                    {
                      if (err)
                      {
@@ -100,7 +100,7 @@ void
 proxy( unsigned short a_port, const std::string& b_ip, const std::string& b_port, Loss&& loss
      , Loss&& loss_inverse)
 {
-  asio::io_service io;
+  boost::asio::io_service io;
 
   udp::socket a_socket{io, udp::endpoint{udp::v4(), a_port}};
   udp::endpoint a_endpoint;
@@ -109,7 +109,7 @@ proxy( unsigned short a_port, const std::string& b_ip, const std::string& b_port
   udp::resolver resolver(io);
   udp::endpoint b_endpoint = *resolver.resolve({udp::v4(), b_ip, b_port});
 
-  asio::steady_timer timer{io, std::chrono::seconds(display_timer)};
+  boost::asio::steady_timer timer{io, std::chrono::seconds(display_timer)};
 
   std::array<char, 4096> a_to_b;
   std::array<char, 4096> b_to_a;

@@ -2,12 +2,7 @@
 #include <iostream>
 #include <memory>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#define ASIO_STANDALONE
-#include <asio.hpp>
-#pragma GCC diagnostic pop
+#include <boost/asio.hpp>
 
 #include "netcode/decoder.hh"
 
@@ -17,6 +12,7 @@ static constexpr auto buffer_size = 4096;
 
 /*------------------------------------------------------------------------------------------------*/
 
+namespace boost {
 namespace asio {
 
 /// @brief Make ntc::packet usable as a mutable buffer for Asio.
@@ -28,11 +24,12 @@ buffer(ntc::packet& p)
 }
 
 } // namespace asio
+} // namespace boost
 
 /*------------------------------------------------------------------------------------------------*/
 
-using asio::ip::address_v4;
-using asio::ip::udp;
+using boost::asio::ip::address_v4;
+using boost::asio::ip::udp;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -67,8 +64,8 @@ public:
     // End of packet, we can now send it.
 
     auto buffer = std::make_shared<std::vector<char>>(std::move(m_buffer));
-    m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
-                          , [buffer](const asio::error_code& err, std::size_t len)
+    m_socket.async_send_to( boost::asio::buffer(*buffer), m_endpoint
+                          , [buffer](const boost::system::error_code& err, std::size_t len)
                             {
                               if (err)
                               {
@@ -106,8 +103,8 @@ public:
   operator()(const char* data, std::size_t sz)
   {
     auto buffer = std::make_shared<std::vector<char>>(data, data + sz);
-    m_socket.async_send_to( asio::buffer(*buffer), m_endpoint
-                          , [buffer](const asio::error_code& err, std::size_t len)
+    m_socket.async_send_to( boost::asio::buffer(*buffer), m_endpoint
+                          , [buffer](const boost::system::error_code& err, std::size_t len)
                             {
                               if (err)
                               {
@@ -133,7 +130,7 @@ class netcode_handler
 {
 public:
 
-  netcode_handler( asio::io_service& io, ntc::decoder<packet_handler, data_handler>& decoder
+  netcode_handler( boost::asio::io_service& io, ntc::decoder<packet_handler, data_handler>& decoder
                  , udp::socket& socket, udp::endpoint& end)
     : m_decoder(decoder)
     , m_socket(socket)
@@ -153,8 +150,8 @@ private:
   void
   start()
   {
-    m_socket.async_receive_from( asio::buffer(m_packet), m_endpoint
-                               , [this](const asio::error_code& err, std::size_t len)
+    m_socket.async_receive_from( boost::asio::buffer(m_packet), m_endpoint
+                                , [this](const boost::system::error_code& err, std::size_t len)
                                  {
                                    if (err)
                                    {
@@ -177,7 +174,7 @@ private:
   start_timer()
   {
     m_ack_timer.expires_from_now(std::chrono::milliseconds{1});
-    m_ack_timer.async_wait([this](const asio::error_code& err)
+    m_ack_timer.async_wait([this](const boost::system::error_code& err)
                            {
                              if (err)
                              {
@@ -196,7 +193,7 @@ private:
   start_stats_timer()
   {
     m_stats_timer.expires_from_now(std::chrono::seconds(5));
-    m_stats_timer.async_wait([this](const asio::error_code& err)
+    m_stats_timer.async_wait([this](const boost::system::error_code& err)
                              {
                                if (err)
                                {
@@ -224,9 +221,9 @@ private:
   udp::socket& m_socket;
   udp::endpoint& m_endpoint;
   ntc::packet m_packet;
-  asio::steady_timer m_ack_timer;
+  boost::asio::steady_timer m_ack_timer;
   bool m_tunnel_up;
-  asio::steady_timer m_stats_timer;
+  boost::asio::steady_timer m_stats_timer;
 };
 
 /*------------------------------------------------------------------------------------------------*/
@@ -243,18 +240,18 @@ main(int argc, char** argv)
 
   try
   {
-    asio::io_service io;
+    boost::asio::io_service io;
 
     const auto netcode_port = static_cast<unsigned short>(std::atoi(argv[1]));
     const auto app_url = argv[2];
     const auto app_port = argv[3];
 
     udp::socket netcode_socket{io, udp::endpoint{udp::v4(), netcode_port}};
-    netcode_socket.set_option(asio::socket_base::receive_buffer_size{1 << 21});
+    netcode_socket.set_option(boost::asio::socket_base::receive_buffer_size{1 << 21});
     udp::endpoint netcode_endpoint;
 
     udp::socket app_socket{io, udp::endpoint(udp::v4(), 0)};
-    app_socket.set_option(asio::socket_base::send_buffer_size{1 << 21});
+    app_socket.set_option(boost::asio::socket_base::send_buffer_size{1 << 21});
     udp::resolver resolver(io);
     udp::endpoint app_endpoint = *resolver.resolve({udp::v4(), app_url, app_port});
 

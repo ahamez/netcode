@@ -6,11 +6,7 @@
 #include <iostream>
 #include <vector>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#define ASIO_STANDALONE
-#include <asio.hpp>
-#pragma GCC diagnostic pop
+#include <boost/asio.hpp>
 
 #include <netcode/decoder.hh>
 #include <netcode/dispatch.hh>
@@ -18,6 +14,7 @@
 
 /*------------------------------------------------------------------------------------------------*/
 
+namespace boost{
 namespace asio {
 
 /// @brief Make ntc::packet usable as a mutable buffer for Asio.
@@ -29,11 +26,12 @@ buffer(ntc::packet& p)
 }
 
 } // namespace asio
+} // namespace boost
 
 /*------------------------------------------------------------------------------------------------*/
 
-using asio::ip::address_v4;
-using asio::ip::udp;
+using boost::asio::ip::address_v4;
+using boost::asio::ip::udp;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -76,7 +74,7 @@ public:
   operator()()
   {
     // End of packet, we can now send it.
-    socket.send_to(asio::buffer(buffer), endpoint);
+    socket.send_to(boost::asio::buffer(buffer), endpoint);
     buffer.clear();
   }
 };
@@ -96,7 +94,7 @@ struct data_handler
   void
   operator()(const char* data, std::size_t sz)
   {
-    socket.send_to(asio::buffer(data, sz), endpoint);
+    socket.send_to(boost::asio::buffer(data, sz), endpoint);
   }
 };
 
@@ -110,7 +108,7 @@ class transcoder
 public:
 
   /// @brief Constructor
-  transcoder( asio::io_service& io
+  transcoder( boost::asio::io_service& io
             , udp::socket& app_socket
             , udp::endpoint& app_endpoint
             , udp::socket& socket
@@ -146,9 +144,9 @@ private:
   void
   start_handler()
   {
-    m_socket.async_receive_from( asio::buffer(m_packet)
+    m_socket.async_receive_from( boost::asio::buffer(m_packet)
                                , m_endpoint
-                               , [this](const asio::error_code& err, std::size_t len)
+                                , [this](const boost::system::error_code& err, std::size_t len)
                                  {
                                    if (err)
                                    {
@@ -177,9 +175,9 @@ private:
   void
   start_app_handler()
   {
-    m_app_socket.async_receive_from( asio::buffer(m_data)
+    m_app_socket.async_receive_from( boost::asio::buffer(m_data)
                                    , m_app_endpoint
-                                   , [this](const asio::error_code& err, std::size_t len)
+                                    , [this](const boost::system::error_code& err, std::size_t len)
                                      {
                                        if (err)
                                        {
@@ -209,7 +207,7 @@ private:
   start_timer_handler()
   {
     m_ack_timer.expires_from_now(std::chrono::milliseconds(100));
-    m_ack_timer.async_wait([this](const asio::error_code& err)
+    m_ack_timer.async_wait([this](const boost::system::error_code& err)
                       {
                         if (err)
                         {
@@ -228,7 +226,7 @@ private:
   start_stats_timer_handler()
   {
     m_stats_timer.expires_from_now(std::chrono::seconds(5));
-    m_stats_timer.async_wait([this](const asio::error_code& err)
+    m_stats_timer.async_wait([this](const boost::system::error_code& err)
                              {
                                if (err)
                                {
@@ -261,10 +259,10 @@ private:
 private:
 
   /// @brief Timer to send ack
-  asio::steady_timer m_ack_timer;
+  boost::asio::steady_timer m_ack_timer;
 
   /// @brief Timer to display statistics
-  asio::steady_timer m_stats_timer;
+  boost::asio::steady_timer m_stats_timer;
 
   /// @brief The proxied application's socket
   udp::socket& m_app_socket;
