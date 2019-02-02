@@ -58,6 +58,10 @@ message(STATUS "Found ${GF_COMPLETE_LIBRARY}")
 
 #--------------------------------------------------------------------------------------------------#
 
+find_package(BOOST 1.68 REQUIRED)
+
+#--------------------------------------------------------------------------------------------------#
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 if (COVERAGE AND CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX)
   include(CodeCoverage)
@@ -85,9 +89,10 @@ set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
 set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 
 include_directories(SYSTEM "${GF_COMPLETE_INCLUDE_DIR}")
-include_directories("${PROJECT_SOURCE_DIR}")
+include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
 include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext")
 include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/ext/asio")
+include_directories("${PROJECT_SOURCE_DIR}")
 
 #--------------------------------------------------------------------------------------------------#
 

@@ -6,7 +6,8 @@ The `netcode` library is a C++11 network coding library. C interfaces are also p
 
 - gcc >= 4.7 or clang >= 3.3
 - gf-complete (https://github.com/ceph/gf-complete)
-- cmake >= 2.8.9
+- cmake >= 3.10
+- boost 1.68
 
 ### Building and installing
 
