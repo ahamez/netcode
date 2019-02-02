@@ -9,17 +9,17 @@ import time
 
 def configure():
 
-  parser = argparse.ArgumentParser()  
+  parser = argparse.ArgumentParser()
   parser.add_argument('--packet-size', type=int, default=1024, help='bytes', metavar='value')
   parser.add_argument('--nb-packets', type=int, default=1024*1024, metavar='value')
 
   subparsers = parser.add_subparsers(dest='mode')
-  
+
   client_parser = subparsers.add_parser('client', help='client mode')
   client_parser.add_argument('host', action='store')
   client_parser.add_argument('port', action='store', type=int)
-  
   client_parser.add_argument('--period', type=int, default=1, help='ms', metavar='value')
+
   server_parser = subparsers.add_parser('server', help='server mode')
   server_parser.add_argument('--host', action='store', default='127.0.0.1')
   server_parser.add_argument('port', action='store', type=int)
@@ -51,21 +51,21 @@ def server(conf):
 
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   sock.bind((conf.host, conf.port))
-  
+
   current_id = 0
   nb_packets = 0
 
   t0 = time.monotonic()
-  
+
   while True:
     data, _ = sock.recvfrom(4096)
     validate_packet(conf, current_id, data)
     current_id += 1
     nb_packets += 1
-    
+
     t1 = time.monotonic()
     if (t1 - t0) >= 1:
-      bandwidth = nb_packets * conf.packet_size / (t1 - t0) 
+      bandwidth = nb_packets * conf.packet_size / (t1 - t0)
       sys.stdout.write("Received {} packets @ ~{:.2f} Kbytes/s\r".format(current_id, bandwidth/1024))
       sys.stdout.flush()
       t0 = t1
@@ -83,8 +83,8 @@ def client(conf):
   for i in range(0, conf.nb_packets):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(make_packet(conf, i), (host, port))
-    
     time.sleep(conf.period / 1000)
+
 #------------------------------------------------------------------------------------------------------------#
 
 def main(conf):
