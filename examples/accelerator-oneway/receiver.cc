@@ -42,7 +42,6 @@ public:
   packet_handler& operator=(const packet_handler&) = delete;
 
   packet_handler(packet_handler&&) = default;
-  packet_handler& operator=(packet_handler&&) = default;
 
   packet_handler(udp::socket& sock, udp::endpoint& end)
     : m_socket(sock), m_endpoint(end), m_buffer()
