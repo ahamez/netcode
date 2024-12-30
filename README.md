@@ -1,6 +1,6 @@
 ### Description
 
-The `netcode` library is a C++11 network coding library. C interfaces are also provided.
+The `netcode` library is a C++11 [network coding](https://en.wikipedia.org/wiki/Linear_network_coding) library using [Galois fields](https://en.wikipedia.org/wiki/Finite_field). C interfaces are also provided.
 
 ### Requirements
 
