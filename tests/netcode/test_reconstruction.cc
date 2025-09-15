@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iterator>
 
 #include <catch.hpp>
 #include "tests/netcode/common.hh"
@@ -126,8 +127,8 @@ TEST_CASE("Encode two sources")
 
     // We need an encoder to fill the repair.
     detail::encoder{gf_size}(r0, sl);
-    REQUIRE(*(r0.source_ids().begin() + 0) == 0);
-    REQUIRE(*(r0.source_ids().begin() + 1) == 1);
+    REQUIRE(*r0.source_ids().begin() == 0);
+    REQUIRE(*std::next(r0.source_ids().begin()) == 1);
 
     SECTION("s0 is lost")
     {
@@ -207,14 +208,14 @@ TEST_CASE("Two sources lost")
     // Create first repair.
     detail::encoder{gf_size}(r0, sl);
     REQUIRE(r0.source_ids().size() == 2);
-    REQUIRE(*(r0.source_ids().begin() + 0) == 0);
-    REQUIRE(*(r0.source_ids().begin() + 1) == 1);
+    REQUIRE(*r0.source_ids().begin() == 0);
+    REQUIRE(*std::next(r0.source_ids().begin()) == 1);
 
     // Create second repair.
     detail::encoder{gf_size}(r1, sl);
     REQUIRE(r1.source_ids().size() == 2);
-    REQUIRE(*(r1.source_ids().begin() + 0) == 0);
-    REQUIRE(*(r1.source_ids().begin() + 1) == 1);
+    REQUIRE(*r1.source_ids().begin() == 0);
+    REQUIRE(*std::next(r1.source_ids().begin()) == 1);
 
     // Oops, s0 and s1 are lost, but not r0 and r1.
 

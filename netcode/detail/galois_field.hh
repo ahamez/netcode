@@ -107,8 +107,8 @@ public:
 
     if (m_w <= 8) // 4 or 8
     {
-      __attribute__((aligned(16))) std::uint16_t res;
-      __attribute__((aligned(16))) std::uint16_t size_ = size;
+      alignas(16) std::uint16_t res;
+      alignas(16) std::uint16_t size_ = size;
       multiply( reinterpret_cast<char*>(&size_), reinterpret_cast<char*>(&res)
               , sizeof(std::uint16_t), coeff);
       return res;

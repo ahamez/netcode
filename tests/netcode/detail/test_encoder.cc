@@ -1,4 +1,5 @@
 #include <algorithm> // equal
+#include <iterator>
 
 #include <catch.hpp>
 #include "tests/netcode/launch.hh"
@@ -34,11 +35,11 @@ TEST_CASE("Encoder: create repairs")
     // We need an encoder to fill the repair.
     detail::encoder{gf_size}(r0, sl);
     REQUIRE(r0.source_ids().size() == 5);
-    REQUIRE(*(r0.source_ids().begin() + 0) == 0);
-    REQUIRE(*(r0.source_ids().begin() + 1) == 1);
-    REQUIRE(*(r0.source_ids().begin() + 2) == 2);
-    REQUIRE(*(r0.source_ids().begin() + 3) == 3);
-    REQUIRE(*(r0.source_ids().begin() + 4) == 4);
+    REQUIRE(*r0.source_ids().begin() == 0);
+    REQUIRE(*std::next(r0.source_ids().begin(), 1) == 1);
+    REQUIRE(*std::next(r0.source_ids().begin(), 2) == 2);
+    REQUIRE(*std::next(r0.source_ids().begin(), 3) == 3);
+    REQUIRE(*std::next(r0.source_ids().begin(), 4) == 4);
   });
 }
 

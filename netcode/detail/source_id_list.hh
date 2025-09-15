@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/container/flat_set.hpp>
+#include <cstdint>
+#include <set>
 
 namespace ntc { namespace detail {
 
@@ -8,7 +9,7 @@ namespace ntc { namespace detail {
 
 /// @internal
 /// @brief A sorted list of source identifiers.
-using source_id_list = boost::container::flat_set<std::uint32_t>;
+using source_id_list = std::set<std::uint32_t>;
 
 /*------------------------------------------------------------------------------------------------*/
 

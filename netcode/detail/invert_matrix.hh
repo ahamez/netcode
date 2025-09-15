@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/optional.hpp>
+#include <cstddef>
+#include <optional>
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/square_matrix.hh"
@@ -16,7 +17,7 @@ namespace ntc { namespace detail {
 /// @related square_matrix
 /// @return A initialized optional value if inversion failed. In this case, the value is the column
 /// which made the inversion fail.
-boost::optional<std::size_t>
+std::optional<std::size_t>
 invert(galois_field& gf, square_matrix& mat, square_matrix& inv)
 noexcept;
 

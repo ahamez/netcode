@@ -1,8 +1,8 @@
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.20)
 
 #--------------------------------------------------------------------------------------------------#
 
-project (netcode)
+project (netcode LANGUAGES CXX)
 
 #--------------------------------------------------------------------------------------------------#
 
@@ -10,11 +10,9 @@ enable_testing()
 
 #--------------------------------------------------------------------------------------------------#
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if (NOT COMPILER_SUPPORTS_CXX11)
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif ()
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 #--------------------------------------------------------------------------------------------------#
 
@@ -77,7 +75,7 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif ()
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wconversion ${CMAKE_CXX_FLAGS}")
+add_compile_options(-Wall -Wextra -Wconversion)
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "-fvisibility=hidden -fvisibility-inlines-hidden ${CMAKE_CXX_FLAGS_RELEASE}")
 

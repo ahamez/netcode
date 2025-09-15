@@ -1,5 +1,6 @@
 #include <algorithm>  // all_of
 #include <cassert>
+#include <iterator>
 #include <vector>
 
 #include "netcode/detail/decoder.hh"
@@ -56,7 +57,7 @@ decoder::operator()(decoder_repair&& incoming_r)
 {
   assert(not incoming_r.source_ids().empty());
 
-  const auto last_id_in_source_ids = *(incoming_r.source_ids().end() - 1);
+  const auto last_id_in_source_ids = *std::prev(incoming_r.source_ids().end());
   if (m_last_id and last_id_in_source_ids < *m_last_id)
   {
     // It's a repair that provide outdated informations, drop it.

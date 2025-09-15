@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <map>
+#include <optional>
+#include <set>
 #include <vector>
-
-#include <boost/container/flat_set.hpp>
-#include <boost/container/map.hpp>
-#include <boost/optional.hpp>
 
 #include "netcode/detail/galois_field.hh"
 #include "netcode/detail/repair.hh"
@@ -23,10 +25,10 @@ class decoder final
 public:
 
   /// @brief Type of an ordered container of repairs.
-  using repairs_set_type = boost::container::map<std::uint32_t, decoder_repair>;
+  using repairs_set_type = std::map<std::uint32_t, decoder_repair>;
 
   /// @brief Type of an ordered container of sources.
-  using sources_set_type = boost::container::map<std::uint32_t, decoder_source>;
+  using sources_set_type = std::map<std::uint32_t, decoder_source>;
 
 private:
 
@@ -45,12 +47,11 @@ private:
 public:
 
   /// @brief Type of a sorted container of repair iterators.
-  using repairs_iterators_type = boost::container::flat_set< repairs_set_type::iterator
-                                                           , cmp_repairs_iterator>;
+  using repairs_iterators_type = std::set<repairs_set_type::iterator, cmp_repairs_iterator>;
 
   /// @brief Type of an ordered container that associate missing sources to the repairs that
   /// contain them.
-  using missing_sources_type = boost::container::map<std::uint32_t, repairs_iterators_type>;
+  using missing_sources_type = std::map<std::uint32_t, repairs_iterators_type>;
 
 public:
 
@@ -154,7 +155,7 @@ private:
 
   /// @brief Maintains a list of sources which could not be given to callback when some older
   /// sources are still missing.
-  boost::container::map<std::uint32_t, const decoder_source*> m_ordered_sources;
+  std::map<std::uint32_t, const decoder_source*> m_ordered_sources;
 
   /// @brief The callback to call when a source has been decoded or received.
   const std::function<void(const decoder_source&)> m_callback;
@@ -168,7 +169,7 @@ private:
   /// @brief Remember the last source identifier.
   ///
   /// All sources with an identifier smaller than this value were received or decoded in the past.
-  boost::optional<std::uint32_t> m_last_id;
+  std::optional<std::uint32_t> m_last_id;
 
   /// @brief All sources that have not been yet received, but which are referenced by a repair.
   missing_sources_type m_missing_sources;

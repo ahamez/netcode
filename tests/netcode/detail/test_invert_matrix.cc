@@ -1,4 +1,3 @@
-#include <boost/optional/optional_io.hpp>
 #include <catch.hpp>
 
 #include "tests/netcode/launch.hh"
